@@ -2,6 +2,8 @@
 
 This is an AI-first competition project for VnExpress Sáng kiến Khoa học 2026.
 
+Bootstrap exception: if any required `ai_first/` or `docs/superpowers/` operating file is missing, first follow the approved plan in `docs/superpowers/plans/2026-04-12-ai-first-project-os.md` to create the missing operating files. Do this before product or runtime work.
+
 Before making changes, every AI worker must:
 
 1. Read `ai_first/AI_OPERATING_PROMPT.md`.
@@ -25,8 +27,6 @@ After making changes:
 2. Update `ai_first/daily/YYYY-MM-DD.md`.
 3. Update `ai_first/CURRENT_STATE.md` or `ai_first/NEXT_ACTIONS.md` if project status changed.
 4. Leave handoff notes in the PR and task packet.
-
-Bootstrap exception: if any required `ai_first/` or `docs/superpowers/` operating file is missing, follow the approved plan in `docs/superpowers/plans/2026-04-12-ai-first-project-os.md` to create the missing operating files before doing product or runtime work.
 
 ---
 
