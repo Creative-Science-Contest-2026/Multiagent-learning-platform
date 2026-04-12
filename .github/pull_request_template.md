@@ -34,14 +34,17 @@ For more details, see our [CONTRIBUTING.md](https://github.com/HKUDS/DeepTutor/b
 
 ## User-visible changes
 
-## Architecture note
+## Architecture note (required)
 
-- [ ] Added or updated a PR architecture note under `docs/superpowers/pr-notes/`
-- [ ] The PR architecture note includes at least one Mermaid diagram
-- [ ] Updated `ai_first/architecture/MAIN_SYSTEM_MAP.md`
-- [ ] Main system map update is not needed because:
+Every PR must include a Markdown architecture note under `docs/superpowers/pr-notes/` with at least one Mermaid diagram.
 
-PR architecture note path:
+PR architecture note path: `docs/superpowers/pr-notes/...md`
+
+- [ ] I created or updated the PR architecture note above.
+- [ ] The PR architecture note includes at least one Mermaid diagram.
+- [ ] I updated `ai_first/architecture/MAIN_SYSTEM_MAP.md`, or explained below why no main map update is needed.
+
+Main map update decision:
 
 ## Data/API changes
 

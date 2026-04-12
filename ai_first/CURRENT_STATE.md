@@ -22,6 +22,13 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - GitHub Issues and PRs coordinate active execution.
 - Two Feature Pods may work in parallel after shared operating files land.
 
+## Active Branches and PRs
+
+- Active branch: `docs/ai-first-project-os`
+- Purpose: Milestone 0 AI-first Project OS setup.
+- PR status: not opened yet from this worktree.
+- Merge note: preserve parent-checkout historical files under `ai_first/2026-04-12-deeptutor-slimming/` when integrating this branch.
+
 ## Active Design
 
 - Spec: `docs/superpowers/specs/2026-04-12-ai-first-project-os-design.md`

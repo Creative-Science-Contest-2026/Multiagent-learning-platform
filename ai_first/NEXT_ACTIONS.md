@@ -4,18 +4,15 @@ Last updated: 2026-04-12
 
 ## Immediate
 
-1. Add architecture map and Mermaid rules from Task 3 of `docs/superpowers/plans/2026-04-12-ai-first-project-os.md`.
-2. Add competition and evidence skeleton from Task 4.
-3. Add decision log, daily log, and prompt instructions from Task 5.
-4. Add reusable templates from Task 6.
-5. Add `docs/superpowers` folder READMEs, update GitHub PR template, add PR note, and run final verification.
+1. Open a PR for branch `docs/ai-first-project-os` using `docs/superpowers/pr-notes/docs-ai-first-project-os.md`.
+2. Review and merge the AI-first Project OS PR without losing historical files under `ai_first/2026-04-12-deeptutor-slimming/` from the parent checkout.
+3. Create first task packet for Pod A: Teacher Knowledge Pack MVP.
+4. Create first task packet for Pod B: Assessment Builder + Student Tutor Workspace MVP.
+5. Mirror approved task packets to GitHub Issues with `pod-a` and `pod-b` labels.
 
 ## After Milestone 0
 
-1. Create task packet for Pod A: Teacher Knowledge Pack MVP.
-2. Create task packet for Pod B: Assessment Builder + Student Tutor Workspace MVP.
-3. Mirror active task packets to GitHub Issues.
-4. Start feature implementation branches.
+1. Start feature implementation branches.
 
 ## Human Review Needed
 
