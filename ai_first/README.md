@@ -4,9 +4,10 @@ This directory stores the long-term memory for the AI-first development process.
 
 AI workers must read these files before making changes:
 
-1. `AI_OPERATING_PROMPT.md`
-2. `CURRENT_STATE.md`
-3. `NEXT_ACTIONS.md`
+1. `AGENTS.md`
+2. `AI_OPERATING_PROMPT.md`
+3. `CURRENT_STATE.md`
+4. `NEXT_ACTIONS.md`
 
 Directory responsibilities:
 

@@ -23,6 +23,7 @@ Before edits:
 - Never push directly to `main`.
 - Use a focused branch.
 - Respect `Owned files/modules` and `Do-not-touch files/modules`.
+- For bootstrap tasks before task packets exist, use the current plan task's `Files:` section as the owned-file contract.
 - Do not revert user or other-agent changes.
 - Do not remove Apache 2.0 license or upstream credit.
 - Do not modify lockfiles unless dependency changes require it.
@@ -31,6 +32,7 @@ Before edits:
 ## Architecture rules
 
 - `ai_first/architecture/MAIN_SYSTEM_MAP.md` is the main system map.
+- During bootstrap, create missing architecture and PR-note folders from the approved plan before requiring future PRs to use them.
 - Every PR must include a PR architecture note in `docs/superpowers/pr-notes/`.
 - Every PR architecture note must include a Mermaid diagram.
 - Update `MAIN_SYSTEM_MAP.md` when adding, removing, or materially changing features, tools, capabilities, routers, routes, data models, or the AI-first workflow.

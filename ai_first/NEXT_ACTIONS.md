@@ -4,10 +4,11 @@ Last updated: 2026-04-12
 
 ## Immediate
 
-1. Implement Milestone 0 operating files from `docs/superpowers/plans/2026-04-12-ai-first-project-os.md`.
-2. Add required Mermaid architecture map and PR architecture note templates.
-3. Update PR template to enforce architecture notes, tests, and handoff.
-4. Create competition evidence skeleton for VnExpress submission.
+1. Add architecture map and Mermaid rules from Task 3 of `docs/superpowers/plans/2026-04-12-ai-first-project-os.md`.
+2. Add competition and evidence skeleton from Task 4.
+3. Add decision log, daily log, and prompt instructions from Task 5.
+4. Add reusable templates from Task 6.
+5. Add `docs/superpowers` folder READMEs, update GitHub PR template, add PR note, and run final verification.
 
 ## After Milestone 0
 

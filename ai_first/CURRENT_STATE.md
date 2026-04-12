@@ -31,9 +31,9 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 Before this operating system work, the repository had existing local changes:
 
-- `docs/package-lock.json`
-- `web/package-lock.json`
-- `ai_first/`
+- `docs/package-lock.json` and `web/package-lock.json` were dirty in the parent checkout before AI-first OS execution.
+- Historical analysis files exist in the parent checkout under `ai_first/2026-04-12-deeptutor-slimming/`; preserve them when merging the AI-first OS branch back.
+- In the isolated worktree, bootstrap files are being created incrementally from the approved plan.
 
 Do not revert unrelated changes.
 
