@@ -1,3 +1,33 @@
+# AI-first Project Operating Instructions
+
+This is an AI-first competition project for VnExpress Sáng kiến Khoa học 2026.
+
+Before making changes, every AI worker must:
+
+1. Read `ai_first/AI_OPERATING_PROMPT.md`.
+2. Read `ai_first/CURRENT_STATE.md`.
+3. Read `ai_first/NEXT_ACTIONS.md`.
+4. Check `git status --short --branch`.
+5. Confirm the assigned task scope, owned files, and do-not-touch files.
+
+While working:
+
+- Do not push directly to `main`.
+- Work on a branch named `pod-a/<feature>`, `pod-b/<feature>`, `docs/<topic>`, or `fix/<topic>`.
+- Do not modify files outside the assigned task scope unless the task packet is updated first.
+- Preserve Apache 2.0 license and upstream HKUDS/DeepTutor credit.
+- If adding, removing, or materially changing a feature, update `ai_first/architecture/MAIN_SYSTEM_MAP.md`.
+- Every PR must include a Markdown architecture note under `docs/superpowers/pr-notes/` with at least one Mermaid diagram.
+
+After making changes:
+
+1. Run relevant tests or explain why they could not be run.
+2. Update `ai_first/daily/YYYY-MM-DD.md`.
+3. Update `ai_first/CURRENT_STATE.md` or `ai_first/NEXT_ACTIONS.md` if project status changed.
+4. Leave handoff notes in the PR and task packet.
+
+---
+
 # DeepTutor — Agent-Native Architecture
 
 ## Overview
