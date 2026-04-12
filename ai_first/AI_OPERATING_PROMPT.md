@@ -12,7 +12,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 Before edits:
 
-1. Read `AGENTS.md`.
+1. Continue from the repo-level instructions in `AGENTS.md`.
 2. Read `ai_first/CURRENT_STATE.md`.
 3. Read `ai_first/NEXT_ACTIONS.md`.
 4. Read the relevant spec, plan, or task packet.
