@@ -50,4 +50,4 @@ rg -n "```mermaid|MAIN_SYSTEM_MAP|AI_OPERATING_PROMPT|Feature Pod" ai_first docs
 ## Main System Map Update
 
 - [ ] Not needed, because:
-- [x] Updated `ai_first/architecture/MAIN_SYSTEM_MAP.md`
+- [x] Updated `ai_first/architecture/MAIN_SYSTEM_MAP.md` earlier in this branch as part of the AI-first OS architecture map.
