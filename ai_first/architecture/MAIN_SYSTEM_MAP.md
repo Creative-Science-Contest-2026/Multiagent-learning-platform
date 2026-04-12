@@ -53,6 +53,8 @@ flowchart TD
   AIFirst --> Specs["docs/superpowers/specs"]
   AIFirst --> Plans["docs/superpowers/plans"]
   AIFirst --> Tasks["docs/superpowers/tasks"]
+  AIFirst --> PRs["GitHub Pull Requests"]
   AIFirst --> PRNotes["docs/superpowers/pr-notes"]
+  PRs --> PRNotes
   AIFirst --> Evidence["ai_first/evidence"]
 ```
