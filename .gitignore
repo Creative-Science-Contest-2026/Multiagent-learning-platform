@@ -99,6 +99,9 @@ cache/
 .cache/
 .ruff_cache
 
+# Local git worktrees for isolated AI implementation branches
+.worktrees/
+
 # Log files
 *.log
 
