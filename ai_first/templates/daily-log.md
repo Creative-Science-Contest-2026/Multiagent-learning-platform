@@ -20,8 +20,8 @@
 
 ## Human Review Needed
 
-- 
+- None yet.
 
 ## Architecture Map Updates
 
-- 
+- None yet.
