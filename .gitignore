@@ -99,6 +99,12 @@ cache/
 .cache/
 .ruff_cache
 
+# Local git worktrees for isolated AI implementation branches
+.worktrees/
+
+# Superpowers visual brainstorming companion runtime artifacts
+.superpowers/
+
 # Log files
 *.log
 

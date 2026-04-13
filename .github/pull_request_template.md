@@ -4,14 +4,19 @@ Please ensure your PR is ready for review and follows our contribution guideline
 For more details, see our [CONTRIBUTING.md](https://github.com/HKUDS/DeepTutor/blob/dev/CONTRIBUTING.md).
 -->
 
-### Description
+## Summary
+
+## Description
+
 *A clear and concise description of the changes.*
 
-### Related Issues
+## Related Issues
+
 - Closes #...
 - Related to #...
 
-### Module(s) Affected
+## Module(s) Affected
+
 - [ ] `agents`
 - [ ] `api`
 - [ ] `config`
@@ -27,13 +32,51 @@ For more details, see our [CONTRIBUTING.md](https://github.com/HKUDS/DeepTutor/b
 - [ ] `tests`
 - [ ] Other: `...`
 
-### Checklist
+## User-visible changes
+
+## Architecture note (required)
+
+Every PR must include a Markdown architecture note under `docs/superpowers/pr-notes/` with at least one Mermaid diagram.
+
+PR architecture note path: `docs/superpowers/pr-notes/...md`
+
+- [ ] I created or updated the PR architecture note above.
+- [ ] The PR architecture note includes at least one Mermaid diagram.
+- [ ] I updated `ai_first/architecture/MAIN_SYSTEM_MAP.md`, or explained below why no main map update is needed.
+
+Main map update decision:
+
+## Data/API changes
+
+## Tests run
+
+```bash
+
+```
+
+## Manual verification
+
+## Screenshots/video
+
+## Risk and rollback notes
+
+## AI handoff notes
+
+## Checklist
+
 - [ ] I have read and followed the [contribution guidelines](https://github.com/HKUDS/DeepTutor/blob/dev/CONTRIBUTING.md).
 - [ ] My code follows the project's coding standards.
-- [ ] I have run `pre-commit run --all-files` and fixed any issues.
+- [ ] I have run `pre-commit run --all-files` and fixed any issues, or I explained why it was not run.
 - [ ] I have added relevant tests for my changes.
 - [ ] I have updated the documentation (if necessary).
 - [ ] My changes do not introduce any new security vulnerabilities.
+- [ ] I checked `git status --short --branch` before starting.
+- [ ] I stayed within the task packet scope.
+- [ ] I did not revert unrelated user or other-agent changes.
+- [ ] I preserved Apache 2.0 license and upstream credit.
+- [ ] I updated `ai_first/daily/YYYY-MM-DD.md`.
+- [ ] I updated `ai_first/CURRENT_STATE.md` or `ai_first/NEXT_ACTIONS.md` if status changed.
 
-### Additional Notes
+## Additional Notes
+
 *Add any other context or screenshots about the pull request here.*

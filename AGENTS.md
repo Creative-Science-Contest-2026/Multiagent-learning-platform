@@ -1,3 +1,36 @@
+# AI-first Project Operating Instructions
+
+This is an AI-first competition project for VnExpress Sáng kiến Khoa học 2026.
+
+Bootstrap exception: if `ai_first/AI_OPERATING_PROMPT.md` is missing, first follow the approved plan in `docs/superpowers/plans/2026-04-12-ai-first-project-os.md` to restore the operating layer. If that plan file is also missing, stop product/runtime work and ask the human to restore or approve the AI-first operating plan. Rebuild the compatibility snapshots only if they are still useful.
+
+Before making changes, every AI worker must:
+
+1. Read `ai_first/AI_OPERATING_PROMPT.md`.
+2. Check `git status --short --branch`.
+3. Confirm the assigned task scope, owned files, and do-not-touch files.
+
+`ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md` are compatibility snapshots only. The authoritative operating instructions live in `ai_first/AI_OPERATING_PROMPT.md`.
+
+While working:
+
+- Do not push directly to `main`.
+- Work on a branch named `pod-a/<feature>`, `pod-b/<feature>`, `docs/<topic>`, or `fix/<topic>`.
+- Do not modify files outside the assigned task scope unless the task packet is updated first.
+- Preserve Apache 2.0 license and upstream HKUDS/DeepTutor credit.
+- If adding, removing, or materially changing a feature, update `ai_first/architecture/MAIN_SYSTEM_MAP.md`.
+- Every PR must include a Markdown architecture note under `docs/superpowers/pr-notes/` with at least one Mermaid diagram.
+
+After making changes:
+
+1. Run relevant tests or explain why they could not be run.
+2. Update `ai_first/daily/YYYY-MM-DD.md`.
+3. Update `ai_first/AI_OPERATING_PROMPT.md` if project status, operating rules, or next actions changed.
+4. Update the compatibility snapshots only if a shorter status mirror is still useful.
+5. Leave handoff notes in the PR and task packet.
+
+---
+
 # DeepTutor — Agent-Native Architecture
 
 ## Overview
