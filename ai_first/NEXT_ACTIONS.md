@@ -7,20 +7,20 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 ## Immediate
 
 1. Keep `ai_first/AI_OPERATING_PROMPT.md` as the single entry point for AI workers.
-2. Open or update the PR for branch `docs/ai-first-project-os` using `docs/superpowers/pr-notes/docs-ai-first-project-os.md`.
-3. Review and merge the AI-first Project OS PR without losing historical files under `ai_first/2026-04-12-deeptutor-slimming/` from the parent checkout.
-4. Create first task packet for Pod A: Teacher Knowledge Pack MVP.
-5. Create first task packet for Pod B: Assessment Builder + Student Tutor Workspace MVP.
-6. Mirror approved task packets to GitHub Issues with `pod-a` and `pod-b` labels.
+2. Review the first task packet for Pod A: Teacher Knowledge Pack MVP.
+3. Review the first task packet for Pod B: Assessment Builder + Student Tutor Workspace MVP.
+4. Start implementation branches from the approved task packets.
+5. Keep GitHub issues `#2` and `#3` aligned with the task packets and implementation PRs.
 
 ## After Milestone 0
 
-1. Start feature implementation branches.
+1. Add Teacher Dashboard MVP planning after Pod A ownership is stable.
+2. Keep the main system map updated when shared contracts change.
 
 ## Human Review Needed
 
-- Review the AI-first operating files after Milestone 0 PR.
 - Confirm the first two Feature Pod task packets before implementation.
+- Confirm whether Teacher Dashboard should stay in a later Pod A packet or be folded into the same implementation branch.
 
 ## Mirror Policy
 

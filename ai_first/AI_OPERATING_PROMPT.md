@@ -20,8 +20,8 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 - Repository: `Creative-Science-Contest-2026/Multiagent-learning-platform`
 - Base project: HKUDS/DeepTutor under Apache 2.0
-- Branch: `docs/ai-first-project-os`
-- Goal: make the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
+- Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
+- Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -83,5 +83,6 @@ Before handing off:
 
 1. Keep this file as the single entry point for future AI workers.
 2. Use `ai_first/USAGE_GUIDE.md` as the human-friendly quick start.
-3. Mirror only the minimal status needed into `ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md`.
-4. Use the approved docs/AI-first operating layer to drive feature pods, PRs, and evidence.
+3. Keep `docs/superpowers/tasks/` populated with current Feature Pod task packets before implementation starts.
+4. Mirror only the minimal status needed into `ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md`.
+5. Use the approved docs/AI-first operating layer to drive feature pods, PRs, and evidence.

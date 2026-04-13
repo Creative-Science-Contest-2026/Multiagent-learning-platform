@@ -27,11 +27,10 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Active branch: `docs/ai-first-project-os`
-- Purpose: Milestone 0 AI-first Project OS setup.
-- PR status: not opened yet from this worktree.
-- Merge note: preserve parent-checkout historical files under `ai_first/2026-04-12-deeptutor-slimming/` when integrating this branch.
-- Operating note: keep the entry-point prompt short, current, and self-directed.
+- Current branch for this docs update: `docs/first-task-packets`
+- Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
+- Current purpose: create the first execution task packets for Pod A and Pod B
+- Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
 
@@ -50,12 +49,18 @@ Do not revert unrelated changes.
 
 ## Near-term Milestones
 
-1. Milestone 0: AI-first Project OS.
-2. Milestone 1: Competition demo narrative.
-3. Milestone 2: Teacher Knowledge Pack MVP.
-4. Milestone 3: Assessment Builder MVP.
-5. Milestone 4: Student Tutor Workspace MVP.
-6. Milestone 5: Teacher Dashboard MVP.
+1. Milestone 1: Competition demo narrative.
+2. Milestone 2: Teacher Knowledge Pack MVP.
+3. Milestone 3: Assessment Builder MVP.
+4. Milestone 4: Student Tutor Workspace MVP.
+5. Milestone 5: Teacher Dashboard MVP.
+
+## Active Execution
+
+- Pod A task packet: `docs/superpowers/tasks/2026-04-13-teacher-knowledge-pack-pod-a.md`
+- Pod B task packet: `docs/superpowers/tasks/2026-04-13-assessment-student-workspace-pod-b.md`
+- Pod A GitHub issue: `#2`
+- Pod B GitHub issue: `#3`
 
 ## Mirror Policy
 
