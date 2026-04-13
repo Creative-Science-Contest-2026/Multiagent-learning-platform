@@ -1,6 +1,8 @@
 # Current State
 
-Last updated: 2026-04-12
+Last updated: 2026-04-13
+
+This file is a compatibility snapshot. The authoritative operating instructions live in `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Repository
 
@@ -20,6 +22,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Hybrid AI-first OS is approved.
 - Markdown in repo is long-term source of truth.
 - GitHub Issues and PRs coordinate active execution.
+- The AI operating prompt is the single entry point for new workers.
 - Two Feature Pods may work in parallel after shared operating files land.
 
 ## Active Branches and PRs
@@ -28,6 +31,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Purpose: Milestone 0 AI-first Project OS setup.
 - PR status: not opened yet from this worktree.
 - Merge note: preserve parent-checkout historical files under `ai_first/2026-04-12-deeptutor-slimming/` when integrating this branch.
+- Operating note: keep the entry-point prompt short, current, and self-directed.
 
 ## Active Design
 
@@ -52,3 +56,7 @@ Do not revert unrelated changes.
 4. Milestone 3: Assessment Builder MVP.
 5. Milestone 4: Student Tutor Workspace MVP.
 6. Milestone 5: Teacher Dashboard MVP.
+
+## Mirror Policy
+
+Use this file only as a compact status mirror. Do not rely on it for the full operating contract. For a human-friendly quick start, read `ai_first/USAGE_GUIDE.md`.

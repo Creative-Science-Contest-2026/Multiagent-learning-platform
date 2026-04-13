@@ -2,15 +2,15 @@
 
 This is an AI-first competition project for VnExpress Sáng kiến Khoa học 2026.
 
-Bootstrap exception: if any required `ai_first/` or `docs/superpowers/` operating file is missing, first follow the approved plan in `docs/superpowers/plans/2026-04-12-ai-first-project-os.md` to create the missing operating files. If that plan file is also missing, stop product/runtime work and ask the human to restore or approve the AI-first operating plan. Do this before product or runtime work.
+Bootstrap exception: if `ai_first/AI_OPERATING_PROMPT.md` is missing, first follow the approved plan in `docs/superpowers/plans/2026-04-12-ai-first-project-os.md` to restore the operating layer. If that plan file is also missing, stop product/runtime work and ask the human to restore or approve the AI-first operating plan. Rebuild the compatibility snapshots only if they are still useful.
 
 Before making changes, every AI worker must:
 
 1. Read `ai_first/AI_OPERATING_PROMPT.md`.
-2. Read `ai_first/CURRENT_STATE.md`.
-3. Read `ai_first/NEXT_ACTIONS.md`.
-4. Check `git status --short --branch`.
-5. Confirm the assigned task scope, owned files, and do-not-touch files.
+2. Check `git status --short --branch`.
+3. Confirm the assigned task scope, owned files, and do-not-touch files.
+
+`ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md` are compatibility snapshots only. The authoritative operating instructions live in `ai_first/AI_OPERATING_PROMPT.md`.
 
 While working:
 
@@ -25,8 +25,9 @@ After making changes:
 
 1. Run relevant tests or explain why they could not be run.
 2. Update `ai_first/daily/YYYY-MM-DD.md`.
-3. Update `ai_first/CURRENT_STATE.md` or `ai_first/NEXT_ACTIONS.md` if project status changed.
-4. Leave handoff notes in the PR and task packet.
+3. Update `ai_first/AI_OPERATING_PROMPT.md` if project status, operating rules, or next actions changed.
+4. Update the compatibility snapshots only if a shorter status mirror is still useful.
+5. Leave handoff notes in the PR and task packet.
 
 ---
 

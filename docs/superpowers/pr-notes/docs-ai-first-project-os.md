@@ -2,7 +2,7 @@
 
 ## Summary
 
-Adds the repository operating layer for AI-first development: injected AI instructions, project memory files, architecture maps, task templates, competition evidence skeleton, and PR documentation rules.
+Adds the repository operating layer for AI-first development: a single entry-point AI prompt, compatibility status mirrors, architecture maps, task templates, competition evidence skeleton, and PR documentation rules.
 
 ## Scope
 
@@ -33,7 +33,7 @@ flowchart TD
 
 ## Architecture Impact
 
-Creates an explicit operating layer around the existing DeepTutor architecture. The runtime remains unchanged.
+Creates an explicit operating layer around the existing DeepTutor architecture. The runtime remains unchanged, but the repo now has a single prompt that can direct AI workers without needing multiple overlapping instruction files.
 
 ## Data/API Changes
 
@@ -49,5 +49,5 @@ rg -n "```mermaid|MAIN_SYSTEM_MAP|AI_OPERATING_PROMPT|Feature Pod" ai_first docs
 
 ## Main System Map Update
 
-- [ ] Not needed, because:
-- [x] Updated `ai_first/architecture/MAIN_SYSTEM_MAP.md` earlier in this branch as part of the AI-first OS architecture map.
+- [x] Updated `ai_first/architecture/MAIN_SYSTEM_MAP.md`
+- Reason: the map now includes the GitHub execution layer and keeps the AI operating prompt as the single entry point.
