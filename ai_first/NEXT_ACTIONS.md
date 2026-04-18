@@ -6,8 +6,8 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Merge the docs-only CI task packet PR when eligible.
-2. Implement reliable backend, frontend, and docs CI checks from `docs/superpowers/tasks/2026-04-19-ci-backend-frontend.md`.
+1. Merge the runtime/workflow CI implementation PR only after backend, frontend, and docs checks pass.
+2. If CI fails, fix the failing workflow or dependency setup before starting another feature.
 3. Keep GitHub issues `#2`, `#3`, `#9`, `#12`, and `#16` linked to their implementation PRs.
 4. Preserve unrelated dirty files until they are intentionally handled.
 
