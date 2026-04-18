@@ -32,7 +32,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
 - PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
 - Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard MVPs are merged.
-- Current purpose: prepare the contest evidence/demo packet so the next worker can package proof of the MVP.
+- Current purpose: create the `docs/contest/` evidence bundle so a reviewer can follow and verify the MVP story.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -72,7 +72,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Contest evidence/demo packet is being prepared on `docs/contest-evidence-demo-packet`, mirrored by GitHub issue `#12`. After this docs PR merges, execute `docs/superpowers/tasks/2026-04-19-contest-evidence-demo.md` before starting another product feature.
+Contest evidence/demo bundle is being prepared on `docs/contest-evidence-demo`, mirrored by GitHub issue `#12`. After this docs PR merges, the next evidence step is screenshot/video capture from a local demo run.
 
 ## Autonomous Merge Policy
 
