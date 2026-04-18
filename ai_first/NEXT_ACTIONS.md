@@ -6,8 +6,8 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Merge the docs-only contest evidence bundle PR when eligible.
-2. Capture or link demo screenshots/video for `docs/contest/EVIDENCE_CHECKLIST.md` when a local demo environment is available.
+1. Merge the docs-only contest screenshot evidence PR when eligible.
+2. Create the CI task packet for reliable backend and frontend checks.
 3. Keep GitHub issues `#2`, `#3`, `#9`, and `#12` linked to their implementation PRs.
 4. Preserve unrelated dirty files until they are intentionally handled.
 
@@ -15,7 +15,7 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 1. Keep the main system map updated when shared contracts change.
 2. Keep `ai_first/AI_FIRST_ROADMAP.md` current when the autonomous operating loop changes.
-3. Add reliable backend and frontend CI checks before allowing broader runtime auto-merge.
+3. Implement reliable backend and frontend CI checks before allowing broader runtime auto-merge.
 
 ## Human Review Needed
 

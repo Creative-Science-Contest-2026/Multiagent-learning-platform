@@ -23,10 +23,24 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Current Known Limitations
 
-- Screenshot and video evidence are not captured yet.
+- Screenshot evidence is captured under `docs/contest/screenshots/`.
+- Video evidence is deferred unless the final contest submission requires it.
 - The frontend build emits a Next.js warning about multiple lockfiles and inferred workspace root. The build still completes successfully.
 - Provider-backed AI quality depends on configured model credentials. If credentials are unavailable during a demo, use the command validation and recorded UI flow as fallback evidence.
 - This report uses demo-safe descriptions only. Do not add real student data.
+
+## Local Demo Run
+
+The screenshot capture used local demo data only:
+
+- Backend: `.venv/bin/python -m deeptutor.api.run_server`
+- Frontend: `NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run dev`
+- Knowledge Pack: `contest-demo-quadratics`
+- Demo sessions:
+  - `contest-assessment-demo`
+  - `contest-tutor-demo`
+
+The first attempt to run `python3 -m deeptutor.api.run_server` failed because `python3` resolved to a different virtual environment without `uvicorn`. The backend was then run successfully with the repository-local `.venv/bin/python`.
 
 ## Manual Verification Template
 
@@ -34,12 +48,12 @@ Complete this section when the local app is running.
 
 | Step | Expected result | Status | Evidence link |
 | --- | --- | --- | --- |
-| Open Knowledge page | Teacher can create or edit Knowledge Pack metadata | Pending | Pending |
-| Reload Knowledge page | Metadata remains visible | Pending | Pending |
-| Generate assessment | Questions are generated from selected subject/context | Pending | Pending |
-| Review feedback | Common-mistake or guidance output is visible | Pending | Pending |
-| Ask Tutor Agent follow-up | Tutor responds to student question | Pending | Pending |
-| Open Dashboard | Recent assessment and tutoring activity appears | Pending | Pending |
+| Open Knowledge page | Teacher can create or edit Knowledge Pack metadata | Passed | [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png) |
+| Reload Knowledge page | Metadata remains visible | Passed | [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png) |
+| Generate assessment | Questions are generated from selected subject/context | Passed with seeded demo result metadata | [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png) |
+| Review feedback | Common-mistake or guidance output is visible | Passed | [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png) |
+| Ask Tutor Agent follow-up | Tutor responds to student question | Passed with seeded demo response | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
+| Open Dashboard | Recent assessment and tutoring activity appears | Passed | [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png) |
 
 ## PR Evidence Links
 
@@ -50,11 +64,9 @@ Complete this section when the local app is running.
 
 ## Next Evidence Actions
 
-1. Start backend and frontend locally.
-2. Follow `DEMO_SCRIPT.md`.
-3. Capture required screenshots listed in `EVIDENCE_CHECKLIST.md`.
-4. Add links or lightweight image files to this folder.
-5. Re-run docs validation:
+1. Use these screenshots for the current repo evidence review.
+2. Capture and link an external video only if the final submission requires video.
+3. Re-run docs validation after evidence docs change:
 
 ```bash
 rg -n "Knowledge Pack|assessment|Tutor|Dashboard|Mermaid|validation|screenshot|video" docs/contest docs/superpowers/pr-notes

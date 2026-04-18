@@ -16,13 +16,24 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
 - Local command validation is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
-- Screenshot and video capture are still pending and should be completed after starting the backend and frontend locally.
+- Screenshot evidence is captured in [`screenshots/`](./screenshots/).
+- Video capture is optional and deferred to avoid storing large media in the repository.
 
 ## Update Rules
 
 - Update this folder whenever the demo flow, API behavior, or UI route changes.
 - Keep evidence free of secrets, private data, local credentials, and real student information.
 - Store large videos outside the repository and link them from the checklist or validation report.
+
+## Screenshot Index
+
+- [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png)
+- [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png)
+- [`04-assessment-config.png`](./screenshots/04-assessment-config.png)
+- [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png)
+- [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png)
+- [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png)
+- [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png)
 
 ## Evidence Flow
 

@@ -72,7 +72,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Contest evidence/demo bundle is being prepared on `docs/contest-evidence-demo`, mirrored by GitHub issue `#12`. After this docs PR merges, the next evidence step is screenshot/video capture from a local demo run.
+Contest screenshot evidence is being prepared on `docs/contest-evidence-capture`, mirrored by GitHub issue `#12`. After this docs PR merges, create the CI task packet for reliable backend and frontend checks.
 
 ## Autonomous Merge Policy
 
