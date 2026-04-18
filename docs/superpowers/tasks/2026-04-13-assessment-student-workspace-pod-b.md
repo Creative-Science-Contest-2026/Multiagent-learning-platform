@@ -18,6 +18,7 @@ Teachers can generate exercises from a selected Knowledge Pack with Vietnamese-f
 - `deeptutor/api/routers/unified_ws.py`
 - `deeptutor/capabilities/deep_question.py`
 - `deeptutor/capabilities/chat.py`
+- `deeptutor/capabilities/request_contracts.py`
 - `web/app/(workspace)/page.tsx`
 - `web/components/quiz/`
 - `web/components/chat/`

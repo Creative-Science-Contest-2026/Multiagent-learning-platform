@@ -79,10 +79,13 @@ class DeepQuestionCapability(BaseCapability):
 
         mode = str(overrides.get("mode", "custom") or "custom").strip().lower()
         topic = str(overrides.get("topic") or context.user_message or "").strip()
+        subject = str(overrides.get("subject") or "").strip()
         num_questions = int(overrides.get("num_questions", 1) or 1)
         difficulty = str(overrides.get("difficulty", "") or "")
         question_type = str(overrides.get("question_type", "") or "")
         preference = str(overrides.get("preference", "") or "")
+        if subject:
+            preference = "\n".join(part for part in [f"Subject: {subject}", preference] if part).strip()
         history_context = str(
             context.metadata.get("conversation_context_text", "") or ""
         ).strip()
@@ -355,9 +358,40 @@ class DeepQuestionCapability(BaseCapability):
             if explanation:
                 lines.append(f"\n**Explanation:** {explanation}")
 
+            validation = qa_pair.get("validation", {})
+            issues: list[str] = []
+            if isinstance(validation, dict):
+                raw_issues = validation.get("issues", [])
+                if isinstance(raw_issues, list):
+                    issues = [
+                        self._humanize_validation_issue(issue)
+                        for issue in raw_issues
+                        if str(issue or "").strip()
+                    ]
+            if issues:
+                lines.append("\n**Common mistakes to avoid:**")
+                for issue in issues:
+                    lines.append(f"- {issue}")
+
             lines.append("")
 
         return "\n".join(lines).strip()
+
+    @staticmethod
+    def _humanize_validation_issue(issue: Any) -> str:
+        normalized = str(issue or "").strip()
+        if not normalized:
+            return "Review the generated answer format."
+        mapping = {
+            "choice_missing_options": "Include answer choices A through D.",
+            "choice_options_must_be_a_to_d": "Use exactly the A, B, C, and D options.",
+            "choice_correct_answer_must_be_option_key": "Mark the correct choice with its option letter.",
+            "non_choice_payload_looks_like_multiple_choice": "If this is multiple choice, add explicit options.",
+            "missing_question": "Include a clear question stem.",
+            "missing_correct_answer": "Include the correct answer.",
+            "missing_explanation": "Add a short explanation.",
+        }
+        return mapping.get(normalized, normalized.replace("_", " ").capitalize())
 
     def _build_trace_bridge(self, stream: StreamBus):
         async def _trace_bridge(update: dict[str, Any]) -> None:

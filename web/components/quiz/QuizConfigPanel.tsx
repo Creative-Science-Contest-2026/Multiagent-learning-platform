@@ -90,6 +90,16 @@ export default function QuizConfigPanel({
             </select>
           </Field>
 
+          <Field label="Subject" width="w-[130px]">
+            <input
+              type="text"
+              value={value.subject}
+              onChange={(e) => update("subject", e.target.value)}
+              placeholder={t("e.g. Mathematics")}
+              className={`${INPUT_CLS} w-full`}
+            />
+          </Field>
+
           <Field label="Preference" width="min-w-[140px] flex-1">
             <input
               type="text"
