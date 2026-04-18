@@ -2,7 +2,7 @@
 
 ## Summary
 
-Adds the contest evidence bundle entry point, demo script, evidence checklist, and validation report for the current MVP path.
+Adds the contest evidence bundle entry point, demo script, evidence checklist, validation report, and screenshot evidence for the current MVP path.
 
 ## Scope
 
@@ -10,6 +10,7 @@ Adds the contest evidence bundle entry point, demo script, evidence checklist, a
 - `docs/contest/DEMO_SCRIPT.md`
 - `docs/contest/EVIDENCE_CHECKLIST.md`
 - `docs/contest/VALIDATION_REPORT.md`
+- `docs/contest/screenshots/*.png`
 - AI-first status mirror updates
 
 ## Mermaid Diagram

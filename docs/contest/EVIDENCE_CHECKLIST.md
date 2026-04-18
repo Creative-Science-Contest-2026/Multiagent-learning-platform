@@ -6,15 +6,15 @@ Use this checklist after running the demo locally.
 
 | Area | Evidence | Status | Notes |
 | --- | --- | --- | --- |
-| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Pending capture | Use one consistent sample topic. |
-| Knowledge Pack | Metadata still visible after reload | Pending capture | Confirms persistence. |
-| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Pending capture | Avoid private source material. |
-| Assessment | Generated questions visible | Pending capture | Capture enough context to prove generation worked. |
-| Assessment | Common-mistake or feedback guidance visible | Pending capture | Shows learning support, not only question output. |
-| Tutor Agent | Student asks a follow-up question | Pending capture | Use a short student-style prompt. |
-| Tutor Agent | Tutor response with learning context | Pending capture | Confirm it is demo-safe. |
-| Dashboard | Summary cards visible | Pending capture | Include sessions, assessments, tutoring, and running activity. |
-| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Pending capture | Shows the loop closes for the teacher. |
+| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Captured | [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png) |
+| Knowledge Pack | Metadata still visible after reload | Captured | [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png) |
+| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Captured | [`04-assessment-config.png`](./screenshots/04-assessment-config.png) |
+| Assessment | Generated questions visible | Captured | [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png) |
+| Assessment | Common-mistake or feedback guidance visible | Captured | [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png) |
+| Tutor Agent | Student asks a follow-up question | Captured | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
+| Tutor Agent | Tutor response with learning context | Captured | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
+| Dashboard | Summary cards visible | Captured | [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png) |
+| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Captured | [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png) |
 
 ## Required Command Evidence
 
@@ -41,14 +41,14 @@ Capture one short video, ideally under five minutes:
 
 Store large video files outside the repository and link them here:
 
-- Video link: Pending.
+- Video link: Deferred. Screenshot evidence is complete; capture and link an external video only if the final contest submission requires it.
 
 ## Pass/Fail Summary
 
 | Criterion | Status | Notes |
 | --- | --- | --- |
-| Full MVP story can be followed from docs | Pending final read-through | Start with `docs/contest/README.md`. |
+| Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
 | Product commands have local validation evidence | Passed | See `VALIDATION_REPORT.md`. |
-| Screenshots are captured and linked | Pending capture | Requires running local app. |
-| Video is captured or explicitly deferred | Pending capture | Optional unless submission requires it. |
-| No secrets or private data in evidence | Pending review | Check before publishing. |
+| Screenshots are captured and linked | Passed | See screenshot rows above. |
+| Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |
+| No secrets or private data in evidence | Passed | Screenshots use demo-safe Knowledge Pack and session data. |
