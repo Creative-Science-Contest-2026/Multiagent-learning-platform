@@ -97,10 +97,84 @@ async def test_turn_runtime_replays_events_and_materializes_messages(
         "knowledge_bases": [],
         "language": "en",
     }
-
     persisted_turn = await store.get_turn(turn["id"])
     assert persisted_turn is not None
     assert persisted_turn["status"] == "completed"
+
+
+@pytest.mark.asyncio
+async def test_turn_runtime_passes_deep_question_subject_config(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+    captured: dict[str, object] = {}
+
+    class FakeContextBuilder:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        async def build(self, **_kwargs):
+            return SimpleNamespace(
+                conversation_history=[],
+                conversation_summary="",
+                context_text="",
+                token_count=0,
+                budget=0,
+            )
+
+    class FakeOrchestrator:
+        async def handle(self, context):
+            captured["config_overrides"] = context.config_overrides
+            yield StreamEvent(
+                type=StreamEventType.CONTENT,
+                source="deep_question",
+                stage="writing",
+                content="Generated quiz",
+                metadata={"call_kind": "llm_final_response"},
+            )
+            yield StreamEvent(type=StreamEventType.DONE, source="deep_question")
+
+    monkeypatch.setattr("deeptutor.services.llm.config.get_llm_config", lambda: SimpleNamespace())
+    monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
+    monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", FakeOrchestrator)
+    monkeypatch.setattr(
+        "deeptutor.services.memory.get_memory_service",
+        lambda: SimpleNamespace(
+            build_memory_context=lambda: "",
+            refresh_from_turn=_noop_refresh,
+        ),
+    )
+
+    _session, turn = await runtime.start_turn(
+        {
+            "type": "start_turn",
+            "content": "make a quiz",
+            "session_id": None,
+            "capability": "deep_question",
+            "tools": ["rag"],
+            "knowledge_bases": ["math-pack"],
+            "attachments": [],
+            "language": "en",
+            "config": {
+                "mode": "custom",
+                "topic": "quadratic equations",
+                "subject": "Physics",
+                "num_questions": 3,
+                "difficulty": "medium",
+                "question_type": "choice",
+            },
+        }
+    )
+
+    events = []
+    async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
+        events.append(event)
+
+    assert events[-1]["metadata"]["status"] == "completed"
+    assert captured["config_overrides"]["subject"] == "Physics"
+    assert captured["config_overrides"]["topic"] == "quadratic equations"
 
 
 @pytest.mark.asyncio

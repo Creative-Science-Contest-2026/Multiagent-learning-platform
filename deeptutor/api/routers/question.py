@@ -427,12 +427,18 @@ async def websocket_question_generate(websocket: WebSocket):
                 preference = (
                     requirement.get("preference", "") if isinstance(requirement, dict) else ""
                 )
+                subject = (
+                    requirement.get("subject", "") if isinstance(requirement, dict) else ""
+                )
                 difficulty = (
                     requirement.get("difficulty", "") if isinstance(requirement, dict) else ""
                 )
                 question_type = (
                     requirement.get("question_type", "") if isinstance(requirement, dict) else ""
                 )
+
+                if subject:
+                    preference = "\n".join(part for part in [f"Subject: {subject}", preference] if part).strip()
 
                 logger.info(
                     f"Starting question generation for {count} question(s), topic: {user_topic}"

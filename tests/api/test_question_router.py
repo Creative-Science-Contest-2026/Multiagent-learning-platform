@@ -136,6 +136,7 @@ def test_mimic_websocket_accepts_config_and_returns_messages(
                     "mode": "parsed",
                     "paper_path": str(tmp_path / "paper"),
                     "kb_name": "demo-kb",
+                    "subject": "Physics",
                     "max_questions": 3,
                 }
             )

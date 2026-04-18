@@ -33,6 +33,7 @@ class DeepQuestionRequestConfig(BaseModel):
 
     mode: Literal["custom", "mimic"] = "custom"
     topic: str = ""
+    subject: str = ""
     num_questions: int = Field(default=1, ge=1, le=50)
     difficulty: str = ""
     question_type: str = ""

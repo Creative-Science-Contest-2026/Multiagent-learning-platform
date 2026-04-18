@@ -37,7 +37,9 @@ flowchart TD
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
   Product --> AssessmentBuilder["Assessment Builder"]
+  AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
   Product --> StudentTutor["Student Tutor Workspace"]
+  StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
   Product --> TeacherDashboard["Teacher Dashboard"]
 
   Project --> Data["Data Layer"]

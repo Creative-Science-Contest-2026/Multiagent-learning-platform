@@ -568,6 +568,21 @@ export default function QuizViewer({
                 </div>
               </div>
             )}
+            {q.common_mistakes && q.common_mistakes.length > 0 && (
+              <div>
+                <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                  {t("Common mistakes to avoid")}
+                </div>
+                <ul className="space-y-1 text-[13px] leading-relaxed text-[var(--muted-foreground)]">
+                  {q.common_mistakes.map((mistake) => (
+                    <li key={mistake} className="flex gap-2">
+                      <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--primary)]/70" />
+                      <span>{mistake}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
       </div>
