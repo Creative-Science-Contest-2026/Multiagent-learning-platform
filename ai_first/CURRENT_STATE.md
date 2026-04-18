@@ -28,11 +28,11 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Current branch for this docs update: `docs/post-ci-state-sync`
+- Current branch for this docs update: `docs/execution-queue-status-board`
 - Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
 - PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
 - Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and runtime/backend/frontend/docs CI are merged.
-- Current purpose: sync control-plane status after CI merge, close stale execution issues, and queue the next docs/workflow packet for a compact execution status board.
+- Current purpose: use a compact execution queue/status board under `ai_first/` so humans and AI workers can inspect latest merges, active queue, and next work from one short document.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -68,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Create and execute the execution queue/status board packet mirrored by GitHub issue `#19`, so future AI workers and humans have one compact place to inspect latest merges, blockers, and next recommended work.
+Use `ai_first/EXECUTION_QUEUE.md` as the shortest read path before choosing the next feature or workflow packet. If the active queue becomes empty after issue `#19` is closed, create or update the next task packet before implementation starts.
 
 ## Autonomous Merge Policy
 
