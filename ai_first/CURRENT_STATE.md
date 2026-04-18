@@ -28,10 +28,10 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Current branch for this docs update: `docs/first-task-packets`
+- Current branch for this docs update: `docs/post-pr4-next-actions`
 - Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
-- Current PR: `#4 docs: add first feature pod task packets`
-- Current purpose: create the first execution task packets for Pod A and Pod B, then add safe autonomous PR completion rules.
+- PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
+- Current purpose: update the queue after PR `#4`, then continue with Pod A before Pod B.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -65,6 +65,10 @@ Do not revert unrelated changes.
 - Pod B GitHub issue: `#3`
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
+
+## Current Next Task
+
+Audit the existing `pod-a/teacher-knowledge-pack-mvp` worktree before continuing implementation. It contains uncommitted changes in both Pod A-owned files and Pod B-owned/do-not-touch files, so the next AI worker must separate scope before committing or editing.
 
 ## Autonomous Merge Policy
 
