@@ -68,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Pod A Teacher Knowledge Pack MVP is in progress on `pod-a/teacher-knowledge-pack-mvp-clean`. The clean branch contains only Pod A-owned changes copied from the dirty worktree plus the required architecture note and main system map update. The original dirty worktree still exists and should be preserved because it contains uncommitted Pod B and unrelated changes.
+Pod A Teacher Knowledge Pack MVP merged via PR `#6`. The current next task is Pod B: Assessment Builder and Student Tutor Workspace MVP from `docs/superpowers/tasks/2026-04-13-assessment-student-workspace-pod-b.md`. The preserved dirty `pod-a/teacher-knowledge-pack-mvp` worktree contains Pod B-owned changes that may be reused after audit, plus unrelated changes that must remain untouched.
 
 ## Autonomous Merge Policy
 
