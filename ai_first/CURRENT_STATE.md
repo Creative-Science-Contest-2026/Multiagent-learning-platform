@@ -73,7 +73,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-CI task packet is being prepared on `docs/ci-task-packet`, mirrored by GitHub issue `#16`. After this docs PR merges, implement `docs/superpowers/tasks/2026-04-19-ci-backend-frontend.md`.
+CI implementation is in progress on `fix/ci-backend-frontend-checks`, mirrored by GitHub issue `#16`. The workflow changes should land only after backend, frontend, and docs checks are green on the PR.
 
 ## Autonomous Merge Policy
 
