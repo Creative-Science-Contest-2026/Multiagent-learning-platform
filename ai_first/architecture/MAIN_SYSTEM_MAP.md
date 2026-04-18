@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-13
+Last updated: 2026-04-19
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -48,18 +48,30 @@ flowchart TD
 
   Project --> AIFirst["AI-first Operating Layer"]
   AIFirst --> OperatingPrompt["ai_first/AI_OPERATING_PROMPT.md"]
+  AIFirst --> Roadmap["ai_first/AI_FIRST_ROADMAP.md"]
   AIFirst --> CurrentState["ai_first/CURRENT_STATE.md"]
   AIFirst --> NextActions["ai_first/NEXT_ACTIONS.md"]
   AIFirst --> Specs["docs/superpowers/specs"]
   AIFirst --> Plans["docs/superpowers/plans"]
   AIFirst --> Tasks["docs/superpowers/tasks"]
   AIFirst --> Evidence["ai_first/evidence"]
+  AIFirst --> AutoLoop["Autonomous completion loop"]
+  AutoLoop --> MergeGates["Safe merge gates"]
+  AutoLoop --> NextTask["Next task selection"]
 
   Project --> GitHub["GitHub Execution Layer"]
   GitHub --> Issues["Issues"]
   GitHub --> Labels["pod-a / pod-b / blocked / needs-review"]
   GitHub --> PRs["Pull Requests"]
   GitHub --> CI["CI Checks"]
+  GitHub --> Reviews["Review blockers"]
   PRs --> PRNotes["docs/superpowers/pr-notes"]
   PRs --> CI
+  PRs --> Reviews
+  MergeGates --> PRs
+  MergeGates --> CI
+  MergeGates --> Reviews
+  NextTask --> Issues
+  NextTask --> Tasks
+  NextTask --> NextActions
 ```
