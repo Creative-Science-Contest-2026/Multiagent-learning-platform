@@ -7,6 +7,7 @@ import { useState, type ReactNode } from "react";
 import {
   BookOpen,
   Bot,
+  BarChart3,
   Brain,
   GraduationCap,
   MessageSquare,
@@ -33,6 +34,7 @@ const PRIMARY_NAV: NavEntry[] = [
   { href: "/agents", label: "TutorBot", icon: Bot },
   { href: "/co-writer", label: "Co-Writer", icon: PenLine },
   { href: "/guide", label: "Guided Learning", icon: GraduationCap },
+  { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
   { href: "/knowledge", label: "Knowledge", icon: BookOpen },
   { href: "/memory", label: "Memory", icon: Brain },
 ];

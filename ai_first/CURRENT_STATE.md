@@ -70,7 +70,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Pod B Assessment Builder and Student Tutor Workspace MVP merged via PR `#8`. The current next task is Pod A: Teacher Dashboard MVP from `docs/superpowers/tasks/2026-04-19-teacher-dashboard-pod-a.md`, mirrored by GitHub issue `#9`.
+Teacher Dashboard MVP is in progress on `pod-a/teacher-dashboard-mvp`, mirrored by GitHub issue `#9`. The implementation is read-only and uses existing unified session data instead of adding new persistence.
 
 ## Autonomous Merge Policy
 

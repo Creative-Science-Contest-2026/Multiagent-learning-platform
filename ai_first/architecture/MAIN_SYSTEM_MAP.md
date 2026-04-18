@@ -41,6 +41,7 @@ flowchart TD
   Product --> StudentTutor["Student Tutor Workspace"]
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
   Product --> TeacherDashboard["Teacher Dashboard"]
+  TeacherDashboard --> DashboardSummary["Session Activity Summary"]
 
   Project --> Data["Data Layer"]
   Data --> SQLite["data/user/chat_history.db"]
