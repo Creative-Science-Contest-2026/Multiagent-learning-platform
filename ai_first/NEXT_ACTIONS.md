@@ -6,10 +6,11 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Land the execution queue/status board packet from issue `#19`.
-2. Implement that packet before adding broader automation.
-3. Keep open issues aligned with active task packets and unfinished work only.
-4. Preserve unrelated dirty files until they are intentionally handled.
+1. Keep `ai_first/EXECUTION_QUEUE.md` current after merges and blocker changes.
+2. Use that board as the first stop before selecting the next feature or workflow packet.
+3. If the board shows no active queue item, derive the next short task from the MVP goal and create or update a task packet before implementation.
+4. Keep open issues aligned with active task packets and unfinished work only.
+5. Preserve unrelated dirty files until they are intentionally handled.
 
 ## After Milestone 0
 

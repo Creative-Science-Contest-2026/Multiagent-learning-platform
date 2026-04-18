@@ -5,9 +5,10 @@ This repository is designed so an AI worker can begin from one entry point and c
 ## What to read first
 
 1. `ai_first/AI_OPERATING_PROMPT.md`
-2. `AGENTS.md`
-3. `ai_first/CURRENT_STATE.md` if you need a compact status mirror
-4. `ai_first/NEXT_ACTIONS.md` if you need the current queue
+2. `ai_first/EXECUTION_QUEUE.md`
+3. `AGENTS.md`
+4. `ai_first/CURRENT_STATE.md` if you need a compact status mirror
+5. `ai_first/NEXT_ACTIONS.md` if you need the current queue
 
 ## How to start a task
 
@@ -20,6 +21,7 @@ This repository is designed so an AI worker can begin from one entry point and c
 ## How the repo is organized
 
 - `ai_first/AI_OPERATING_PROMPT.md`: the control plane and single entry point.
+- `ai_first/EXECUTION_QUEUE.md`: the shortest status board for latest merge result, active queue, and next task.
 - `ai_first/AI_FIRST_ROADMAP.md`: human-facing explanation of the autonomous AI loop and future operating direction.
 - `ai_first/CURRENT_STATE.md`: compact status mirror.
 - `ai_first/NEXT_ACTIONS.md`: compact queue mirror.

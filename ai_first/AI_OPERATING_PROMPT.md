@@ -12,6 +12,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ## Compatibility model
 
 - `ai_first/AI_OPERATING_PROMPT.md` is the single entry point.
+- `ai_first/EXECUTION_QUEUE.md` is the compact queue/status board for humans and AI workers who need the shortest current read.
 - `ai_first/AI_FIRST_ROADMAP.md` is the human-facing roadmap for the autonomous AI-first loop and future operating improvements.
 - `ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md` are compatibility snapshots only.
 - If a task packet exists, it remains the execution contract for the current feature pod.
@@ -24,7 +25,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
 - Latest product status: Knowledge Pack, assessment generation, student tutoring context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI are merged into `main`.
-- Latest operating status: the next docs/workflow task is to keep issue state aligned with merged PRs and add a compact execution queue/status board packet so future workers can choose the next task from one place.
+- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, and workers should keep it current after merges so the next task can be chosen from one place.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -99,10 +100,12 @@ Before handing off:
 ## Next actions
 
 1. Keep this file as the single entry point for future AI workers.
-2. Use `ai_first/USAGE_GUIDE.md` as the human-friendly quick start.
-3. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
-4. Keep GitHub issue state aligned with merged PRs so the queue mirrors real work, not historical leftovers.
-5. Implement the execution queue/status board packet from issue `#19` before broadening automation again.
-6. Keep `docs/superpowers/tasks/` populated with current Feature Pod task packets before implementation starts.
-7. Mirror only the minimal status needed into `ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md`.
-8. Use the approved docs/AI-first operating layer to drive feature pods, PRs, autonomous completion, and evidence.
+2. Use `ai_first/EXECUTION_QUEUE.md` as the shortest status board.
+3. Use `ai_first/USAGE_GUIDE.md` as the human-friendly quick start.
+4. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
+5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges and blocker changes.
+6. Keep GitHub issue state aligned with merged PRs so the queue mirrors real work, not historical leftovers.
+7. If the execution queue becomes empty, derive the next short task from the MVP goal and create or update a task packet before implementation.
+8. Keep `docs/superpowers/tasks/` populated with current Feature Pod task packets before implementation starts.
+9. Mirror only the minimal status needed into `ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md`.
+10. Use the approved docs/AI-first operating layer to drive feature pods, PRs, autonomous completion, and evidence.
