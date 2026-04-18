@@ -6,12 +6,11 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Finish and publish Pod A: Teacher Dashboard MVP from `pod-a/teacher-dashboard-mvp`.
-2. Keep GitHub issue `#9` aligned with the dashboard implementation PR.
-3. Fix any dashboard CI, test, or review blockers before starting the next feature.
-4. After dashboard merges, create the next contest evidence/demo task packet.
-5. Keep GitHub issues `#2`, `#3`, and `#9` linked to their implementation PRs.
-6. Preserve unrelated dirty files until they are intentionally handled.
+1. Merge the docs-only contest evidence/demo packet PR when eligible.
+2. Execute `docs/superpowers/tasks/2026-04-19-contest-evidence-demo.md`.
+3. Create `docs/contest/` evidence docs before starting another product feature.
+4. Keep GitHub issues `#2`, `#3`, `#9`, and `#12` linked to their implementation PRs.
+5. Preserve unrelated dirty files until they are intentionally handled.
 
 ## After Milestone 0
 
