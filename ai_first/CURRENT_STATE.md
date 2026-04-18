@@ -67,12 +67,13 @@ Do not revert unrelated changes.
 - Pod B GitHub issue: `#3`
 - Teacher Dashboard GitHub issue: `#9`
 - Contest evidence/demo GitHub issue: `#12`
+- CI backend/frontend checks GitHub issue: `#16`
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Contest screenshot evidence is being prepared on `docs/contest-evidence-capture`, mirrored by GitHub issue `#12`. After this docs PR merges, create the CI task packet for reliable backend and frontend checks.
+CI task packet is being prepared on `docs/ci-task-packet`, mirrored by GitHub issue `#16`. After this docs PR merges, implement `docs/superpowers/tasks/2026-04-19-ci-backend-frontend.md`.
 
 ## Autonomous Merge Policy
 
