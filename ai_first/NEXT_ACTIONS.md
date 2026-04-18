@@ -6,11 +6,10 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Merge the docs-only contest evidence/demo packet PR when eligible.
-2. Execute `docs/superpowers/tasks/2026-04-19-contest-evidence-demo.md`.
-3. Create `docs/contest/` evidence docs before starting another product feature.
-4. Keep GitHub issues `#2`, `#3`, `#9`, and `#12` linked to their implementation PRs.
-5. Preserve unrelated dirty files until they are intentionally handled.
+1. Merge the docs-only contest evidence bundle PR when eligible.
+2. Capture or link demo screenshots/video for `docs/contest/EVIDENCE_CHECKLIST.md` when a local demo environment is available.
+3. Keep GitHub issues `#2`, `#3`, `#9`, and `#12` linked to their implementation PRs.
+4. Preserve unrelated dirty files until they are intentionally handled.
 
 ## After Milestone 0
 
