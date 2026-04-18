@@ -55,17 +55,17 @@ Human review remains important for product direction, contest story, irreversibl
 
 ### Near Term
 
-- Merge the first task packet workflow PR.
-- Start Pod A and Pod B from their task packets.
+- Keep issue state aligned with merged PRs so completed work does not stay in the active queue.
+- Add a compact execution queue/status board packet for the next AI worker to implement.
 - Keep every PR tied to an architecture note with Mermaid.
 
 ### Mid Term
 
-- Add reliable CI checks for backend and frontend changes.
-- Tighten issue labels and PR status conventions for autonomous selection.
 - Keep evidence, demo scripts, and screenshots current for the contest.
+- Tighten issue labels and PR status conventions for autonomous selection.
+- Use the execution queue/status board to surface blockers, latest merges, and next recommended task.
 
 ### Later
 
 - Consider GitHub Actions or scripts for queue reporting after the manual loop is proven stable.
-- Add stronger automation only after merge gates, CI expectations, and review signals are reliable.
+- Add stronger automation only after merge gates, CI expectations, review signals, and queue hygiene are reliable.

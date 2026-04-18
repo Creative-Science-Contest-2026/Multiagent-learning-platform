@@ -28,11 +28,11 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Current branch for this docs update: `docs/post-pr4-next-actions`
+- Current branch for this docs update: `docs/post-ci-state-sync`
 - Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
 - PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
-- Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard MVPs are merged.
-- Current purpose: create the `docs/contest/` evidence bundle so a reviewer can follow and verify the MVP story.
+- Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and runtime/backend/frontend/docs CI are merged.
+- Current purpose: sync control-plane status after CI merge, close stale execution issues, and queue the next docs/workflow packet for a compact execution status board.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -60,20 +60,15 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Pod A task packet: `docs/superpowers/tasks/2026-04-13-teacher-knowledge-pack-pod-a.md`
-- Pod B task packet: `docs/superpowers/tasks/2026-04-13-assessment-student-workspace-pod-b.md`
-- Teacher Dashboard task packet: `docs/superpowers/tasks/2026-04-19-teacher-dashboard-pod-a.md`
-- Pod A GitHub issue: `#2`
-- Pod B GitHub issue: `#3`
-- Teacher Dashboard GitHub issue: `#9`
-- Contest evidence/demo GitHub issue: `#12`
-- CI backend/frontend checks GitHub issue: `#16`
+- Current open task packet: `docs/superpowers/tasks/2026-04-19-execution-queue-status-board.md`
+- Current open GitHub issue: `#19`
+- Recently completed merged work: Knowledge Pack (`#6`), Assessment + Student Tutor (`#8`), Teacher Dashboard (`#11`), contest evidence (`#13`, `#14`, `#15`), and CI (`#17`, `#18`)
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-CI implementation is in progress on `fix/ci-backend-frontend-checks`, mirrored by GitHub issue `#16`. The workflow changes should land only after backend, frontend, and docs checks are green on the PR.
+Create and execute the execution queue/status board packet mirrored by GitHub issue `#19`, so future AI workers and humans have one compact place to inspect latest merges, blockers, and next recommended work.
 
 ## Autonomous Merge Policy
 

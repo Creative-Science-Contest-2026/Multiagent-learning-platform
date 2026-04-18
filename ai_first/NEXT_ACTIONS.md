@@ -6,16 +6,16 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Merge the runtime/workflow CI implementation PR only after backend, frontend, and docs checks pass.
-2. If CI fails, fix the failing workflow or dependency setup before starting another feature.
-3. Keep GitHub issues `#2`, `#3`, `#9`, `#12`, and `#16` linked to their implementation PRs.
+1. Land the execution queue/status board packet from issue `#19`.
+2. Implement that packet before adding broader automation.
+3. Keep open issues aligned with active task packets and unfinished work only.
 4. Preserve unrelated dirty files until they are intentionally handled.
 
 ## After Milestone 0
 
 1. Keep the main system map updated when shared contracts change.
 2. Keep `ai_first/AI_FIRST_ROADMAP.md` current when the autonomous operating loop changes.
-3. Implement reliable backend and frontend CI checks before allowing broader runtime auto-merge.
+3. Keep CI green and treat CI failures as the next task before starting another runtime/product feature.
 
 ## Human Review Needed
 
