@@ -20,6 +20,7 @@ This repository is designed so an AI worker can begin from one entry point and c
 ## How the repo is organized
 
 - `ai_first/AI_OPERATING_PROMPT.md`: the control plane and single entry point.
+- `ai_first/AI_FIRST_ROADMAP.md`: human-facing explanation of the autonomous AI loop and future operating direction.
 - `ai_first/CURRENT_STATE.md`: compact status mirror.
 - `ai_first/NEXT_ACTIONS.md`: compact queue mirror.
 - `ai_first/architecture/`: Mermaid system maps and feature maps.
@@ -35,6 +36,16 @@ This repository is designed so an AI worker can begin from one entry point and c
 3. Update `ai_first/AI_OPERATING_PROMPT.md` if the operating model changed.
 4. Mirror only the minimum status into `CURRENT_STATE.md` and `NEXT_ACTIONS.md` if needed.
 5. Leave handoff notes in the PR and task packet.
+
+## What AI should do after a PR is ready
+
+1. Classify the PR as docs/task/workflow or runtime/product.
+2. For docs/task/workflow PRs, auto-merge only when mergeable, non-draft, and not blocked by review.
+3. For runtime/product PRs, auto-merge only when relevant tests or checks pass and no review blocks the PR.
+4. Treat failing CI, merge conflicts, and blocking reviews as the next task until fixed or explicitly deferred.
+5. After merge, sync from `main`, update status notes if useful, then select the next task from active PR blockers, task packets, `NEXT_ACTIONS.md`, or the long-term MVP goal.
+
+For the readable version of this loop and its future direction, read `ai_first/AI_FIRST_ROADMAP.md`.
 
 ## What not to do
 
