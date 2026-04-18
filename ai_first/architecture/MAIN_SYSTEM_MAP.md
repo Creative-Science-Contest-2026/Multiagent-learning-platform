@@ -35,6 +35,7 @@ flowchart TD
   Project --> Product["Contest MVP Product Layer"]
   Product --> TeacherWorkspace["Teacher Workspace"]
   Product --> KnowledgePack["Knowledge Pack"]
+  KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
   Product --> AssessmentBuilder["Assessment Builder"]
   Product --> StudentTutor["Student Tutor Workspace"]
   Product --> TeacherDashboard["Teacher Dashboard"]

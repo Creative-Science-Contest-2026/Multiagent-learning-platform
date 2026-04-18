@@ -68,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Audit the existing `pod-a/teacher-knowledge-pack-mvp` worktree before continuing implementation. It contains uncommitted changes in both Pod A-owned files and Pod B-owned/do-not-touch files, so the next AI worker must separate scope before committing or editing.
+Pod A Teacher Knowledge Pack MVP is in progress on `pod-a/teacher-knowledge-pack-mvp-clean`. The clean branch contains only Pod A-owned changes copied from the dirty worktree plus the required architecture note and main system map update. The original dirty worktree still exists and should be preserved because it contains uncommitted Pod B and unrelated changes.
 
 ## Autonomous Merge Policy
 

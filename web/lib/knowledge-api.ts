@@ -3,12 +3,22 @@ import { invalidateClientCache, withClientCache } from "@/lib/client-cache";
 
 const KNOWLEDGE_CACHE_PREFIX = "knowledge:";
 
+export interface TeacherPackMetadata {
+  subject?: string | null;
+  grade?: string | null;
+  curriculum?: string | null;
+  learning_objectives?: string[] | null;
+  owner?: string | null;
+  sharing_status?: "private" | "team" | "public" | null;
+}
+
 export interface KnowledgeBaseSummary {
   name: string;
   is_default?: boolean;
   status?: string;
   progress?: Record<string, unknown>;
   statistics?: Record<string, unknown>;
+  metadata?: TeacherPackMetadata | null;
 }
 
 export interface RagProviderSummary {
@@ -51,6 +61,27 @@ export async function listRagProviders(options?: { force?: boolean }) {
       force: options?.force,
     },
   );
+}
+
+export async function updateKnowledgeBaseConfig(
+  kbName: string,
+  config: TeacherPackMetadata | Record<string, unknown>,
+) {
+  const response = await fetch(apiUrl(`/api/v1/knowledge/${encodeURIComponent(kbName)}/config`), {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(config),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error?.detail || `Failed to update config for ${kbName}`);
+  }
+
+  invalidateKnowledgeCaches();
+  return response.json();
 }
 
 export function invalidateKnowledgeCaches() {

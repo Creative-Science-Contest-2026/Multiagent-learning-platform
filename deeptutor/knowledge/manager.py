@@ -21,6 +21,32 @@ from deeptutor.services.rag.factory import DEFAULT_PROVIDER, LEGACY_PROVIDER_ALI
 
 logger = get_logger("KnowledgeBaseManager")
 
+PACK_METADATA_FIELDS = (
+    "subject",
+    "grade",
+    "curriculum",
+    "learning_objectives",
+    "owner",
+    "sharing_status",
+)
+
+
+def _normalize_teacher_pack_field(field: str, value):
+    if value is None:
+        return None
+
+    if field == "learning_objectives":
+        if isinstance(value, list):
+            cleaned = [item.strip() for item in value if isinstance(item, str) and item.strip()]
+            return cleaned or None
+        return None
+
+    if isinstance(value, str):
+        normalized = value.strip()
+        return normalized or None
+
+    return None
+
 
 # Cross-platform file locking
 @contextmanager
@@ -441,6 +467,11 @@ class KnowledgeBaseManager:
                 "created_at": kb_config.get("created_at"),
                 "last_updated": kb_config.get("updated_at"),
             }
+            for field in PACK_METADATA_FIELDS:
+                if field in kb_config:
+                    normalized = _normalize_teacher_pack_field(field, kb_config[field])
+                    if normalized is not None:
+                        metadata[field] = normalized
             # Remove None values
             metadata = {k: v for k, v in metadata.items() if v is not None}
             return metadata
@@ -502,6 +533,11 @@ class KnowledgeBaseManager:
             "rag_provider": rag_provider,
             "needs_reindex": needs_reindex,
         }
+        for field in PACK_METADATA_FIELDS:
+            if field in kb_config:
+                normalized = _normalize_teacher_pack_field(field, kb_config[field])
+                if normalized is not None:
+                    metadata[field] = normalized
         if created_at:
             metadata["created_at"] = created_at
         if updated_at:
