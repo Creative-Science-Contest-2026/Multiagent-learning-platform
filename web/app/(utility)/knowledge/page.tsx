@@ -28,6 +28,8 @@ import {
   invalidateKnowledgeCaches,
   listKnowledgeBases,
   listRagProviders,
+  type TeacherPackMetadata,
+  updateKnowledgeBaseConfig,
 } from "@/lib/knowledge-api";
 import {
   getNotebookDetail,
@@ -57,6 +59,7 @@ interface KnowledgeBase {
   is_default?: boolean;
   status?: string;
   progress?: ProgressInfo;
+  metadata?: TeacherPackMetadata | null;
   statistics?: {
     raw_documents?: number;
     rag_provider?: string;
@@ -127,6 +130,45 @@ const kbNeedsReindex = (kb: KnowledgeBase): boolean =>
 const kbIsUploadable = (kb: KnowledgeBase): boolean =>
   resolveKbStatus(kb) === "ready" && !kbNeedsReindex(kb);
 
+const parseLearningObjectives = (value: string): string[] =>
+  value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+const formatLearningObjectives = (value?: string[] | null): string =>
+  Array.isArray(value) ? value.join("\n") : "";
+
+const normalizeSharingStatus = (value: string): "private" | "team" | "public" | null => {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "private" || normalized === "team" || normalized === "public") {
+    return normalized;
+  }
+  return null;
+};
+
+const buildTeacherPackMetadata = (input: {
+  subject: string;
+  grade: string;
+  curriculum: string;
+  learningObjectives: string;
+  owner: string;
+  sharingStatus: string;
+}): TeacherPackMetadata | null => {
+  const metadata: TeacherPackMetadata = {};
+  const learningObjectives = parseLearningObjectives(input.learningObjectives);
+
+  if (input.subject.trim()) metadata.subject = input.subject.trim();
+  if (input.grade.trim()) metadata.grade = input.grade.trim();
+  if (input.curriculum.trim()) metadata.curriculum = input.curriculum.trim();
+  if (learningObjectives.length) metadata.learning_objectives = learningObjectives;
+  if (input.owner.trim()) metadata.owner = input.owner.trim();
+  const sharingStatus = normalizeSharingStatus(input.sharingStatus);
+  if (sharingStatus) metadata.sharing_status = sharingStatus;
+
+  return Object.keys(metadata).length ? metadata : null;
+};
+
 export default function KnowledgePage() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -142,6 +184,21 @@ export default function KnowledgePage() {
   const [newKbName, setNewKbName] = useState("");
   const [newKbFiles, setNewKbFiles] = useState<File[]>([]);
   const [selectedProvider, setSelectedProvider] = useState("llamaindex");
+  const [newKbSubject, setNewKbSubject] = useState("");
+  const [newKbGrade, setNewKbGrade] = useState("");
+  const [newKbCurriculum, setNewKbCurriculum] = useState("");
+  const [newKbLearningObjectives, setNewKbLearningObjectives] = useState("");
+  const [newKbOwner, setNewKbOwner] = useState("");
+  const [newKbSharingStatus, setNewKbSharingStatus] = useState<"private" | "team" | "public">("private");
+  const [editingKbName, setEditingKbName] = useState<string | null>(null);
+  const [editKbSubject, setEditKbSubject] = useState("");
+  const [editKbGrade, setEditKbGrade] = useState("");
+  const [editKbCurriculum, setEditKbCurriculum] = useState("");
+  const [editKbLearningObjectives, setEditKbLearningObjectives] = useState("");
+  const [editKbOwner, setEditKbOwner] = useState("");
+  const [editKbSharingStatus, setEditKbSharingStatus] = useState<"private" | "team" | "public">("private");
+  const [savingKbMetadata, setSavingKbMetadata] = useState(false);
+  const [editKbError, setEditKbError] = useState<string | null>(null);
   const [uploadTarget, setUploadTarget] = useState("");
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [newNotebookName, setNewNotebookName] = useState("");
@@ -373,6 +430,14 @@ export default function KnowledgePage() {
     if (!newKbName.trim() || !newKbFiles.length) return;
     const kbName = newKbName.trim();
     const fileCount = newKbFiles.length;
+    const teacherPackMetadata = buildTeacherPackMetadata({
+      subject: newKbSubject,
+      grade: newKbGrade,
+      curriculum: newKbCurriculum,
+      learningObjectives: newKbLearningObjectives,
+      owner: newKbOwner,
+      sharingStatus: newKbSharingStatus,
+    });
     setCreating(true);
     try {
       const form = new FormData();
@@ -390,6 +455,19 @@ export default function KnowledgePage() {
       }
 
       const data = (await res.json()) as KnowledgeTaskResponse;
+      let metadataSyncError: string | null = null;
+
+      if (teacherPackMetadata) {
+        try {
+          await updateKnowledgeBaseConfig(kbName, teacherPackMetadata);
+        } catch (error) {
+          metadataSyncError =
+            error instanceof Error
+              ? error.message
+              : `Knowledge base '${kbName}' was created but teacher pack metadata could not be saved.`;
+        }
+      }
+
       invalidateKnowledgeCaches();
       if (data.task_id) {
         openTaskLogStream("create", data.task_id, `Create ${kbName}`);
@@ -411,8 +489,22 @@ export default function KnowledgePage() {
 
       setNewKbName("");
       setNewKbFiles([]);
+      setNewKbSubject("");
+      setNewKbGrade("");
+      setNewKbCurriculum("");
+      setNewKbLearningObjectives("");
+      setNewKbOwner("");
+      setNewKbSharingStatus("private");
       if (createFileRef.current) createFileRef.current.value = "";
       await loadAll();
+
+      if (metadataSyncError) {
+        setCreateProcess((prev) => ({
+          ...prev,
+          error: metadataSyncError,
+          label: prev.label || `Create ${kbName}`,
+        }));
+      }
     } catch (error) {
       setCreateProcess((prev) => ({
         ...prev,
@@ -490,6 +582,55 @@ export default function KnowledgePage() {
     await fetch(apiUrl(`/api/v1/knowledge/${kbName}`), { method: "DELETE" });
     invalidateKnowledgeCaches();
     await loadAll();
+  };
+
+  const startEditKnowledgePack = (kb: KnowledgeBase) => {
+    setEditingKbName(kb.name);
+    setEditKbError(null);
+    setEditKbSubject(kb.metadata?.subject ?? "");
+    setEditKbGrade(kb.metadata?.grade ?? "");
+    setEditKbCurriculum(kb.metadata?.curriculum ?? "");
+    setEditKbLearningObjectives(formatLearningObjectives(kb.metadata?.learning_objectives));
+    setEditKbOwner(kb.metadata?.owner ?? "");
+    const sharingStatus = kb.metadata?.sharing_status;
+    if (sharingStatus === "private" || sharingStatus === "team" || sharingStatus === "public") {
+      setEditKbSharingStatus(sharingStatus);
+    } else {
+      setEditKbSharingStatus("private");
+    }
+  };
+
+  const cancelEditKnowledgePack = () => {
+    setEditingKbName(null);
+    setEditKbError(null);
+    setSavingKbMetadata(false);
+  };
+
+  const saveKnowledgePackMetadata = async () => {
+    if (!editingKbName) return;
+
+    const learningObjectives = parseLearningObjectives(editKbLearningObjectives);
+    const payload: TeacherPackMetadata = {
+      subject: editKbSubject.trim() || null,
+      grade: editKbGrade.trim() || null,
+      curriculum: editKbCurriculum.trim() || null,
+      learning_objectives: learningObjectives.length ? learningObjectives : null,
+      owner: editKbOwner.trim() || null,
+      sharing_status: editKbSharingStatus,
+    };
+
+    setSavingKbMetadata(true);
+    setEditKbError(null);
+    try {
+      await updateKnowledgeBaseConfig(editingKbName, payload);
+      invalidateKnowledgeCaches();
+      await loadAll();
+      setEditingKbName(null);
+    } catch (error) {
+      setEditKbError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setSavingKbMetadata(false);
+    }
   };
 
   const createNotebook = async () => {
@@ -653,6 +794,56 @@ export default function KnowledgePage() {
                     placeholder={t("Knowledge base name")}
                     className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
                   />
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <input
+                      value={newKbSubject}
+                      onChange={(event) => setNewKbSubject(event.target.value)}
+                      placeholder={t("Subject")}
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                    />
+                    <input
+                      value={newKbGrade}
+                      onChange={(event) => setNewKbGrade(event.target.value)}
+                      placeholder={t("Grade")}
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                    />
+                  </div>
+
+                  <input
+                    value={newKbCurriculum}
+                    onChange={(event) => setNewKbCurriculum(event.target.value)}
+                    placeholder={t("Curriculum")}
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                  />
+
+                  <textarea
+                    value={newKbLearningObjectives}
+                    onChange={(event) => setNewKbLearningObjectives(event.target.value)}
+                    placeholder={t("Learning objectives (one per line)")}
+                    rows={4}
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                  />
+
+                  <div className="grid gap-3 md:grid-cols-[1fr_180px]">
+                    <input
+                      value={newKbOwner}
+                      onChange={(event) => setNewKbOwner(event.target.value)}
+                      placeholder={t("Owner")}
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                    />
+                    <select
+                      value={newKbSharingStatus}
+                      onChange={(event) =>
+                        setNewKbSharingStatus(event.target.value as "private" | "team" | "public")
+                      }
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none"
+                    >
+                      <option value="private">{t("Private")}</option>
+                      <option value="team">{t("Team")}</option>
+                      <option value="public">{t("Public")}</option>
+                    </select>
+                  </div>
 
                   <select
                     value={selectedProvider}
@@ -914,9 +1105,49 @@ export default function KnowledgePage() {
                               </span>
                             )}
                           </div>
+                          {kb.metadata && (
+                            <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-[var(--muted-foreground)]">
+                              {kb.metadata.subject && (
+                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
+                                  {t("Subject")}: {kb.metadata.subject}
+                                </span>
+                              )}
+                              {kb.metadata.grade && (
+                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
+                                  {t("Grade")}: {kb.metadata.grade}
+                                </span>
+                              )}
+                              {kb.metadata.curriculum && (
+                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
+                                  {t("Curriculum")}: {kb.metadata.curriculum}
+                                </span>
+                              )}
+                              {kb.metadata.owner && (
+                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
+                                  {t("Owner")}: {kb.metadata.owner}
+                                </span>
+                              )}
+                              {kb.metadata.sharing_status && (
+                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
+                                  {t("Sharing")}: {kb.metadata.sharing_status}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {kb.metadata?.learning_objectives?.length ? (
+                            <div className="mt-2 text-[11px] text-[var(--muted-foreground)]">
+                              {t("Learning objectives")}: {kb.metadata.learning_objectives.join(", ")}
+                            </div>
+                          ) : null}
                         </div>
 
                         <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => startEditKnowledgePack(kb)}
+                            className="rounded-md border border-[var(--border)] px-2.5 py-1 text-[12px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+                          >
+                            {t("Edit pack")}
+                          </button>
                           {!kb.is_default && (
                             <button
                               onClick={() => setDefaultKnowledgeBase(kb.name)}
@@ -947,6 +1178,93 @@ export default function KnowledgePage() {
                               />
                             </div>
                           )}
+                        </div>
+                      )}
+
+                      {editingKbName === kb.name && (
+                        <div className="mt-3 space-y-3 rounded-lg border border-[var(--border)] bg-[var(--card)] p-3">
+                          <div className="text-[12px] font-medium text-[var(--foreground)]">
+                            {t("Edit Knowledge Pack Metadata")}
+                          </div>
+
+                          <div className="grid gap-2 md:grid-cols-2">
+                            <input
+                              value={editKbSubject}
+                              onChange={(event) => setEditKbSubject(event.target.value)}
+                              placeholder={t("Subject")}
+                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                            />
+                            <input
+                              value={editKbGrade}
+                              onChange={(event) => setEditKbGrade(event.target.value)}
+                              placeholder={t("Grade")}
+                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                            />
+                          </div>
+
+                          <input
+                            value={editKbCurriculum}
+                            onChange={(event) => setEditKbCurriculum(event.target.value)}
+                            placeholder={t("Curriculum")}
+                            className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                          />
+
+                          <textarea
+                            value={editKbLearningObjectives}
+                            onChange={(event) => setEditKbLearningObjectives(event.target.value)}
+                            placeholder={t("Learning objectives (one per line)")}
+                            rows={4}
+                            className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                          />
+
+                          <div className="grid gap-2 md:grid-cols-[1fr_180px]">
+                            <input
+                              value={editKbOwner}
+                              onChange={(event) => setEditKbOwner(event.target.value)}
+                              placeholder={t("Owner")}
+                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                            />
+                            <select
+                              value={editKbSharingStatus}
+                              onChange={(event) =>
+                                setEditKbSharingStatus(event.target.value as "private" | "team" | "public")
+                              }
+                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none"
+                            >
+                              <option value="private">{t("Private")}</option>
+                              <option value="team">{t("Team")}</option>
+                              <option value="public">{t("Public")}</option>
+                            </select>
+                          </div>
+
+                          {editKbError && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                              {editKbError}
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={saveKnowledgePackMetadata}
+                              disabled={savingKbMetadata}
+                              className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--primary-foreground)] transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              {savingKbMetadata ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <PenLine size={14} />
+                              )}
+                              {t("Save metadata")}
+                            </button>
+
+                            <button
+                              onClick={cancelEditKnowledgePack}
+                              disabled={savingKbMetadata}
+                              className="rounded-lg border border-[var(--border)] px-3.5 py-1.5 text-[13px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              {t("Cancel")}
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>

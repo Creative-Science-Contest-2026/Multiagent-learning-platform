@@ -50,6 +50,7 @@ router = APIRouter()
 # Constants for byte conversions
 BYTES_PER_GB = 1024**3
 BYTES_PER_MB = 1024**2
+ALLOWED_SHARING_STATUSES = {"private", "team", "public"}
 
 
 def format_bytes_human_readable(size_bytes: int) -> str:
@@ -82,6 +83,7 @@ class KnowledgeBaseInfo(BaseModel):
     statistics: dict
     status: str | None = None
     progress: dict | None = None
+    metadata: dict | None = None
 
 
 class LinkFolderRequest(BaseModel):
@@ -188,6 +190,66 @@ def _validate_registered_provider(raw_provider: str | None) -> str:
         )
 
     return normalize_provider_name(candidate)
+
+
+def _normalize_teacher_pack_config(config: dict) -> dict:
+    normalized = dict(config)
+
+    text_fields = ("subject", "grade", "curriculum", "owner")
+    for field in text_fields:
+        if field not in normalized:
+            continue
+        value = normalized[field]
+        if value is None:
+            continue
+        if not isinstance(value, str):
+            raise HTTPException(status_code=400, detail=f"'{field}' must be a string")
+        value = value.strip()
+        normalized[field] = value or None
+
+    if "learning_objectives" in normalized:
+        objectives = normalized["learning_objectives"]
+        if objectives is None:
+            pass
+        elif isinstance(objectives, str):
+            cleaned = [item.strip() for item in objectives.splitlines() if item.strip()]
+            normalized["learning_objectives"] = cleaned or None
+        elif isinstance(objectives, list):
+            if not all(isinstance(item, str) for item in objectives):
+                raise HTTPException(
+                    status_code=400,
+                    detail="'learning_objectives' must be a list of strings",
+                )
+            cleaned = [item.strip() for item in objectives if item.strip()]
+            normalized["learning_objectives"] = cleaned or None
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="'learning_objectives' must be a string or list of strings",
+            )
+
+    if "sharing_status" in normalized:
+        raw_status = normalized["sharing_status"]
+        if raw_status is None:
+            pass
+        elif not isinstance(raw_status, str):
+            raise HTTPException(status_code=400, detail="'sharing_status' must be a string")
+        else:
+            sharing_status = raw_status.strip().lower()
+            if not sharing_status:
+                normalized["sharing_status"] = None
+            elif sharing_status not in ALLOWED_SHARING_STATUSES:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        "'sharing_status' must be one of "
+                        f"{sorted(ALLOWED_SHARING_STATUSES)}"
+                    ),
+                )
+            else:
+                normalized["sharing_status"] = sharing_status
+
+    return normalized
 
 
 def _load_kb_entry_or_404(manager: KnowledgeBaseManager, kb_name: str) -> dict:
@@ -455,11 +517,15 @@ async def update_kb_config(kb_name: str, config: dict):
     try:
         from deeptutor.services.config import get_kb_config_service
 
-        if "rag_provider" in config:
-            config["rag_provider"] = _validate_registered_provider(config.get("rag_provider"))
+        normalized_config = _normalize_teacher_pack_config(config)
+
+        if "rag_provider" in normalized_config:
+            normalized_config["rag_provider"] = _validate_registered_provider(
+                normalized_config.get("rag_provider")
+            )
 
         service = get_kb_config_service()
-        service.set_kb_config(kb_name, config)
+        service.set_kb_config(kb_name, normalized_config)
         return {"status": "success", "kb_name": kb_name, "config": service.get_kb_config(kb_name)}
     except HTTPException:
         raise
@@ -540,6 +606,7 @@ async def list_knowledge_bases():
                         statistics=info.get("statistics", {}),
                         status=info.get("status"),
                         progress=info.get("progress"),
+                        metadata=info.get("metadata"),
                     )
                 )
             except Exception as e:
@@ -562,6 +629,7 @@ async def list_knowledge_bases():
                                 },
                                 status="unknown",
                                 progress=None,
+                                metadata=None,
                             )
                         )
                 except Exception as fallback_err:
