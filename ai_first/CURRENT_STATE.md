@@ -61,14 +61,16 @@ Do not revert unrelated changes.
 
 - Pod A task packet: `docs/superpowers/tasks/2026-04-13-teacher-knowledge-pack-pod-a.md`
 - Pod B task packet: `docs/superpowers/tasks/2026-04-13-assessment-student-workspace-pod-b.md`
+- Teacher Dashboard task packet: `docs/superpowers/tasks/2026-04-19-teacher-dashboard-pod-a.md`
 - Pod A GitHub issue: `#2`
 - Pod B GitHub issue: `#3`
+- Teacher Dashboard GitHub issue: `#9`
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Pod B Assessment Builder and Student Tutor Workspace MVP is in progress on `pod-b/assessment-student-workspace-mvp`. The branch reuses only audited Pod B-owned/shared-contract changes from the preserved dirty worktree. Pod A Teacher Knowledge Pack MVP merged via PR `#6`.
+Pod B Assessment Builder and Student Tutor Workspace MVP merged via PR `#8`. The current next task is Pod A: Teacher Dashboard MVP from `docs/superpowers/tasks/2026-04-19-teacher-dashboard-pod-a.md`, mirrored by GitHub issue `#9`.
 
 ## Autonomous Merge Policy
 
