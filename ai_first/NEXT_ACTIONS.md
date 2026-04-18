@@ -6,11 +6,12 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Finish and publish Pod A: Teacher Knowledge Pack MVP from `pod-a/teacher-knowledge-pack-mvp-clean`.
-2. Fix any Pod A CI, test, or review blockers before starting the next feature.
-3. After Pod A merges, start Pod B: Assessment Builder and Student Tutor Workspace MVP from `docs/superpowers/tasks/2026-04-13-assessment-student-workspace-pod-b.md`.
-4. Keep GitHub issues `#2` and `#3` aligned with the task packets and implementation PRs.
-5. Preserve the original dirty `pod-a/teacher-knowledge-pack-mvp` worktree until its Pod B/unrelated changes are intentionally handled.
+1. Start Pod B: Assessment Builder and Student Tutor Workspace MVP from `docs/superpowers/tasks/2026-04-13-assessment-student-workspace-pod-b.md`.
+2. Reuse only relevant Pod B-owned changes from the preserved dirty `pod-a/teacher-knowledge-pack-mvp` worktree after auditing them against the Pod B task packet.
+3. Open a Pod B PR linked to GitHub issue `#3` with a PR architecture note and Mermaid diagram.
+4. Fix any Pod B CI, test, or review blockers before starting the next feature.
+5. Keep GitHub issues `#2` and `#3` aligned with the task packets and implementation PRs.
+6. Preserve unrelated dirty files until they are intentionally handled.
 
 ## After Milestone 0
 
