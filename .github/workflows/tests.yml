@@ -90,7 +90,7 @@ jobs:
         run: git diff --check
 
       - name: Validate docs markers
-        run: rg -n "Mermaid|PR Architecture Note|Main System Map" docs/superpowers/pr-notes ai_first docs/contest
+        run: grep -R -nE "Mermaid|PR Architecture Note|Main System Map" docs/superpowers/pr-notes ai_first docs/contest
 
   summary:
     name: Summary
