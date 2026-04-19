@@ -7,22 +7,21 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#21`, which added the compact execution queue status board.
+- Latest merged PR before the current active branch: `#23`, which added the demo-readiness smoke lane packet and runbook.
 - Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
 
 ## Active queue
 
-- Open issue: `#22 docs: add demo readiness smoke lane packet`
-- Active task packet: `docs/superpowers/tasks/2026-04-19-demo-readiness-smoke.md`
-- Expected branch: `docs/demo-readiness-smoke`
+- No active issue is queued right now.
+- The latest completed lane is `docs/superpowers/tasks/2026-04-19-demo-readiness-smoke.md`.
 
 ## Next recommended task
 
-Land the docs-first smoke lane packet and use its runbook to validate the contest MVP path before opening new runtime or product work.
+Demo-readiness smoke passed against the current local MVP data. Derive the next short task from the contest MVP goal and create a new task packet before opening new runtime or product work.
 
 ## AI-owned blockers
 
-- None currently. If CI, merge, or review blocks the active PR, fixing that blocker becomes the next task.
+- None currently. The local smoke lane passed with demo-safe data, backend startup, frontend production build, Knowledge Pack metadata, assessment session evidence, tutor session evidence, and dashboard activity.
 
 ## Human-review blockers
 
