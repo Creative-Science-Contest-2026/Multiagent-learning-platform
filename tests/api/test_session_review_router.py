@@ -61,4 +61,3 @@ async def test_get_assessment_review_returns_structured_score(
     assert payload["summary"]["incorrect_count"] == 1
     assert payload["summary"]["score_percent"] == 50
     assert payload["results"][0]["question_id"] == "q1"
-
