@@ -1,12 +1,12 @@
 # Feature Pod Task: Contest Demo Data Reset
 
 Owner: Documentation / Workflow AI worker
-Branch: `docs/contest-demo-data-reset`
-GitHub Issue: `#29`
+Branch: `docs/contest-demo-data-reset-run`
+GitHub Issue: `#31`
 
 ## Goal
 
-Add a compact task packet for making the contest demo dataset reproducible so AI workers can rebuild the demo-safe state instead of depending on whatever local data already exists.
+Implement the contest demo data reset lane so AI workers can rebuild or verify the demo-safe state instead of depending on whatever local data already exists.
 
 ## User-visible outcome
 
@@ -14,8 +14,12 @@ A human or AI worker can tell what demo-safe data must exist for the contest MVP
 
 ## Owned files/modules
 
+- `docs/contest/DEMO_DATA_RESET.md`
+- `docs/contest/README.md`
+- `docs/contest/SMOKE_RUNBOOK.md`
+- `docs/contest/VALIDATION_REPORT.md`
 - `docs/superpowers/tasks/2026-04-19-contest-demo-data-reset.md`
-- `docs/superpowers/pr-notes/contest-demo-data-reset-packet.md`
+- `docs/superpowers/pr-notes/contest-demo-data-reset-run.md`
 - `ai_first/EXECUTION_QUEUE.md`
 - `ai_first/CURRENT_STATE.md`
 - `ai_first/NEXT_ACTIONS.md`
@@ -37,7 +41,7 @@ A human or AI worker can tell what demo-safe data must exist for the contest MVP
 
 ## Demo reset contract
 
-The packet must define:
+The reset runbook must define:
 
 1. the minimum demo-safe Knowledge Pack and session state required for the contest MVP path;
 2. which parts of that state should later be reset by script or seed workflow;
@@ -48,9 +52,9 @@ The lane must reuse the current contest evidence bundle, smoke runbook, and AI-f
 
 ## Acceptance criteria
 
-- There is one explicit task packet for contest demo data reset.
-- The packet points to the existing contest demo flow and smoke/evidence docs.
-- The queue and status mirrors point to demo data reset as the next short task.
+- There is one explicit contest demo data reset runbook.
+- The runbook points to the existing contest demo flow and smoke/evidence docs.
+- The queue and status mirrors point to demo data reset execution and the next post-merge action.
 - The change stays docs/workflow-only.
 
 ## Required validation
@@ -60,8 +64,8 @@ The lane must reuse the current contest evidence bundle, smoke runbook, and AI-f
 
 ## Manual verification
 
-- Open the packet and confirm a new AI worker can tell why reproducible demo data is the next lane.
-- Confirm the packet does not create a second evidence, smoke, or queue system.
+- Open the runbook and confirm a new AI worker can tell how to rebuild or verify demo-safe data before smoke.
+- Confirm the runbook does not create a second evidence, smoke, or queue system.
 
 ## PR architecture note
 
@@ -72,4 +76,4 @@ The lane must reuse the current contest evidence bundle, smoke runbook, and AI-f
 
 - Keep this lane docs/workflow-only.
 - Reuse `docs/contest/` and `ai_first/EXECUTION_QUEUE.md`.
-- Target a future implementation lane that makes demo-safe state reproducible before another smoke/evidence cycle depends on it.
+- A future runtime lane may add a script or seed command after this runbook is proven useful.

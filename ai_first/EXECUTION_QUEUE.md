@@ -7,19 +7,19 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#28`, which refreshed the contest evidence workflow.
+- Latest merged PR before the current active branch: `#30`, which queued the contest demo data reset lane.
 - Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
 - Smoke-backed evidence refresh rules now live in `docs/contest/` on `main`.
 
 ## Active queue
 
-- Open issue: `#29 docs: add contest demo data reset packet`
+- Open issue: `#31 docs: implement contest demo data reset runbook`
 - Active task packet: `docs/superpowers/tasks/2026-04-19-contest-demo-data-reset.md`
-- Expected branch: `docs/contest-demo-data-reset`
+- Expected branch: `docs/contest-demo-data-reset-run`
 
 ## Next recommended task
 
-Land the contest demo data reset packet, then use it to make the MVP demo-safe state reproducible before the next smoke/evidence cycle.
+Land the contest demo data reset runbook, then use `docs/contest/DEMO_DATA_RESET.md` before the next smoke/evidence cycle whenever local demo state may be stale.
 
 ## AI-owned blockers
 

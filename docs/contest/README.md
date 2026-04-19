@@ -12,6 +12,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md): required screenshots, optional video, and pass/fail evidence fields.
 - [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md): local validation commands, results, limitations, and remaining capture work.
 - [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md): smoke lane used to verify the MVP path before any evidence refresh.
+- [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md): demo-safe data inventory and reset runbook before smoke/evidence refresh.
 
 ## Current Status
 
@@ -22,7 +23,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Evidence Refresh Rules
 
-Run [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) first, then refresh evidence using these rules:
+Run [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) first when local demo data may be stale, then run [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md), then refresh evidence using these rules:
 
 - Auto-refresh evidence: smoke-backed command results, API reachability checks, and the evidence status table in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
 - Human-triggered refresh: screenshots and any optional video, because they require an interactive capture step.
@@ -56,13 +57,15 @@ Run [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) first, then refresh evidence using 
 ```mermaid
 flowchart LR
   Goal["Contest MVP Story"]
+  Reset["DEMO_DATA_RESET.md"]
   Smoke["SMOKE_RUNBOOK.md"]
   Demo["DEMO_SCRIPT.md"]
   Checklist["EVIDENCE_CHECKLIST.md"]
   Validation["VALIDATION_REPORT.md"]
   Reviewer["Reviewer"]
 
-  Goal --> Smoke
+  Goal --> Reset
+  Reset --> Smoke
   Smoke --> Validation
   Validation --> Checklist
   Goal --> Demo

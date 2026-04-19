@@ -58,6 +58,8 @@ The latest smoke-backed evidence refresh used local demo data only:
   - `contest-assessment-demo`
   - `contest-tutor-demo`
 
+Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
+
 The first attempt to run `python3 -m deeptutor.api.run_server` failed because `python3` resolved to a different virtual environment without `uvicorn`. The backend was then run successfully with the repository-local `.venv/bin/python`.
 
 ## Smoke-backed Verification Record
@@ -96,9 +98,10 @@ Complete this section when the local app is running.
 ## Next Evidence Actions
 
 1. After each successful smoke run, update the evidence freshness table before changing screenshot status.
-2. Mark screenshots `Stale` or `Blocked` in `EVIDENCE_CHECKLIST.md` only when the smoke result or UI change requires it.
-3. Capture and link an external video only if the final submission requires video.
-4. Re-run docs validation after evidence docs change:
+2. Run `DEMO_DATA_RESET.md` first when demo-safe Knowledge Pack or session data may be stale.
+3. Mark screenshots `Stale` or `Blocked` in `EVIDENCE_CHECKLIST.md` only when the smoke result or UI change requires it.
+4. Capture and link an external video only if the final submission requires video.
+5. Re-run docs validation after evidence docs change:
 
 ```bash
 rg -n "evidence refresh|smoke|validation|screenshot|video|Current|Stale|Blocked" docs/contest docs/superpowers/tasks docs/superpowers/pr-notes ai_first
