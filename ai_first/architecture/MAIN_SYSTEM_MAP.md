@@ -41,6 +41,8 @@ flowchart TD
   Marketplace --> MarketplaceAPI["/api/v1/marketplace"]
   Marketplace --> MarketplaceUI["/marketplace"]
   Marketplace --> MarketplaceFilters["Search/Subject/Owner Filters"]
+  Marketplace --> MarketplaceImport["POST /api/v1/marketplace/import/{pack_name}"]
+  MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported"]
   
   Product --> AssessmentBuilder["Assessment Builder"]
   AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
@@ -55,8 +57,10 @@ flowchart TD
   AssessmentReview --> ReviewAPI["/api/v1/sessions/{session_id}/assessment-review"]
   AssessmentReview --> ProgressIndicator["ProgressIndicator Component"]
   AssessmentReview --> LearningJourney["LearningJourneySummary Component"]
+  AssessmentReview --> AssessErrorBoundary["Route Error Boundary: /dashboard/assessments/error.tsx"]
   ProgressIndicator --> ScoreViz["Score Progress Bar + Recommendations"]
   LearningJourney --> TopicBadges["Mastered/Recommended Topics"]
+  Marketplace --> MarketErrorBoundary["Route Error Boundary: /marketplace/error.tsx"]
 
   Project --> Localization["Internationalization (i18n)"]
   Localization --> UITranslations["UI Translations"]
@@ -97,6 +101,8 @@ flowchart TD
   PRs --> PRNotes["docs/superpowers/pr-notes"]
   PRs --> CI
   PRs --> Reviews
+  API --> APISecurity["API Security Middleware"]
+  APISecurity --> RateLimit["Rate limiting + 429 Retry-After"]
   MergeGates --> PRs
   MergeGates --> CI
   MergeGates --> Reviews
