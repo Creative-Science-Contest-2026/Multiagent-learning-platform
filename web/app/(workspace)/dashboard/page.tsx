@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Activity, BookOpen, CheckCircle2, Loader2, PenLine, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -135,20 +136,41 @@ export default function DashboardPage() {
             </div>
             <div className="overflow-hidden rounded-lg border border-[var(--border)]">
               {(overview?.recent_activity ?? []).length > 0 ? (
-                overview?.recent_activity.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="border-b border-[var(--border)] bg-[var(--card)] px-4 py-3 last:border-b-0"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <div className="text-[14px] font-medium text-[var(--foreground)]">
-                          {activity.title || t("Untitled session")}
-                        </div>
+                overview?.recent_activity.map((activity) => {
+                  const reviewHref =
+                    activity.type === "assessment" && activity.review_ref
+                      ? `/${activity.review_ref}`
+                      : null;
+                  return (
+                    <div
+                      key={activity.id}
+                      className="border-b border-[var(--border)] bg-[var(--card)] px-4 py-3 last:border-b-0"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          {reviewHref ? (
+                            <Link
+                              href={reviewHref}
+                              className="text-[14px] font-medium text-[var(--foreground)] underline-offset-4 hover:underline"
+                            >
+                              {activity.title || t("Untitled session")}
+                            </Link>
+                          ) : (
+                            <div className="text-[14px] font-medium text-[var(--foreground)]">
+                              {activity.title || t("Untitled session")}
+                            </div>
+                          )}
                         <div className="mt-1 text-[12px] text-[var(--muted-foreground)]">
                           {t(activityLabel(activity))} - {activity.status} -{" "}
                           {formatTime(activity.timestamp)}
                         </div>
+                        {activity.assessment_summary && (
+                          <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
+                            {t("Score")}: {activity.assessment_summary.score_percent}% -{" "}
+                            {activity.assessment_summary.correct_count}/
+                            {activity.assessment_summary.total_questions}
+                          </div>
+                        )}
                       </div>
                       {activity.knowledge_bases.length > 0 && (
                         <div className="flex flex-wrap gap-1">
@@ -163,13 +185,14 @@ export default function DashboardPage() {
                         </div>
                       )}
                     </div>
-                    {activity.summary && (
-                      <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-[var(--muted-foreground)]">
-                        {activity.summary}
-                      </p>
-                    )}
-                  </div>
-                ))
+                      {activity.summary && (
+                        <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-[var(--muted-foreground)]">
+                          {activity.summary}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })
               ) : (
                 <div className="bg-[var(--card)] px-4 py-10 text-center text-[13px] text-[var(--muted-foreground)]">
                   {loading
