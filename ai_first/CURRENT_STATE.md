@@ -28,11 +28,11 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Current branch for this docs update: `docs/execution-queue-status-board`
+- Current branch for this docs update: `docs/demo-readiness-smoke`
 - Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
 - PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
 - Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and runtime/backend/frontend/docs CI are merged.
-- Current purpose: use a compact execution queue/status board under `ai_first/` so humans and AI workers can inspect latest merges, active queue, and next work from one short document.
+- Current purpose: establish the demo-readiness smoke lane so humans and AI workers can verify the contest MVP path and turn failures into the next task.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -60,15 +60,15 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-19-execution-queue-status-board.md`
-- Current open GitHub issue: `#19`
-- Recently completed merged work: Knowledge Pack (`#6`), Assessment + Student Tutor (`#8`), Teacher Dashboard (`#11`), contest evidence (`#13`, `#14`, `#15`), and CI (`#17`, `#18`)
+- Current open task packet: `docs/superpowers/tasks/2026-04-19-demo-readiness-smoke.md`
+- Current open GitHub issue: `#22`
+- Recently completed merged work: Knowledge Pack (`#6`), Assessment + Student Tutor (`#8`), Teacher Dashboard (`#11`), contest evidence (`#13`, `#14`, `#15`), CI (`#17`, `#18`), and execution queue status board (`#21`)
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Use `ai_first/EXECUTION_QUEUE.md` as the shortest read path before choosing the next feature or workflow packet. If the active queue becomes empty after issue `#19` is closed, create or update the next task packet before implementation starts.
+Land the smoke lane packet and runbook from issue `#22`, then execute that smoke path before choosing the next feature or workflow packet.
 
 ## Autonomous Merge Policy
 

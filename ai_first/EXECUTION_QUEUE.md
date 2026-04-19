@@ -7,19 +7,18 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#20`, which synced queue state after the CI merge.
+- Latest merged PR before the current active branch: `#21`, which added the compact execution queue status board.
 - Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
 
 ## Active queue
 
-- Open issue: `#19 docs: add execution queue and status board packet`
-- Active task packet: `docs/superpowers/tasks/2026-04-19-execution-queue-status-board.md`
-- Expected branch: `docs/execution-queue-status-board`
+- Open issue: `#22 docs: add demo readiness smoke lane packet`
+- Active task packet: `docs/superpowers/tasks/2026-04-19-demo-readiness-smoke.md`
+- Expected branch: `docs/demo-readiness-smoke`
 
 ## Next recommended task
 
-Implement the status board packet by keeping this file short, current, and linked from the AI-first entry points.  
-Do not start a new runtime or product feature until this queue/reporting step lands.
+Land the docs-first smoke lane packet and use its runbook to validate the contest MVP path before opening new runtime or product work.
 
 ## AI-owned blockers
 
