@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#36`, which added the scripted contest demo data reset utility.
+- Latest merged PR before the current active branch: `#38`, which queued the scripted-reset smoke execution lane.
 - Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
 - Smoke-backed evidence refresh rules and the local demo reset command now live in `docs/contest/` on `main`.
 
@@ -19,11 +19,11 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Next recommended task
 
-Run the contest smoke lane after executing `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001`, then refresh evidence docs or create a bug task from the first hard failure.
+Merge the scripted-reset smoke execution result when checks pass. After merge, derive the next short contest task from the MVP goal, likely final submission packaging or optional demo video capture.
 
 ## AI-owned blockers
 
-- None currently. The local smoke lane passed with demo-safe data, backend startup, frontend production build, Knowledge Pack metadata, assessment session evidence, tutor session evidence, and dashboard activity.
+- None currently. The scripted-reset smoke lane passed with demo-safe reset output, backend startup through the CLI server path, frontend production build, Knowledge Pack metadata, assessment session evidence, tutor session evidence, and dashboard activity.
 
 ## Human-review blockers
 

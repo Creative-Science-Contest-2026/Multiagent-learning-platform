@@ -24,13 +24,14 @@ Refresh these automatically after every successful smoke pass.
 
 | Command | Refresh mode | Status | Source |
 | --- | --- | --- | --- |
-| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed in the 2026-04-19 smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed in the 2026-04-19 smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed in the 2026-04-19 smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed in the 2026-04-19 smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed in the 2026-04-19 smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed in the 2026-04-19 smoke run; see `VALIDATION_REPORT.md`. |
-| `cd web && NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run build` | Auto after smoke | Current | Passed in the 2026-04-19 smoke run with the existing lockfile warning. |
+| `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
+| `cd web && npm run build` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing lockfile warning. |
 
 ## Optional Video
 

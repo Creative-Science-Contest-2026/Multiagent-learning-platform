@@ -14,8 +14,8 @@ Latest smoke-backed refresh: 2026-04-19
 
 | Evidence group | Refresh mode | Status | Latest source |
 | --- | --- | --- | --- |
-| Backend and API reachability | Auto after smoke | Current | Smoke run recorded in PR `#24` and `ai_first/daily/2026-04-19.md`. |
-| Frontend production build | Auto after smoke | Current | `NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run build` passed during the 2026-04-19 smoke run. |
+| Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-19.md`. |
+| Frontend production build | Auto after smoke | Current | `npm run build` passed with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` during the scripted-reset smoke run. |
 | Screenshot bundle | Human capture after smoke when the UI changes | Current | Existing contest screenshots still match the smoke-verified MVP path. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
@@ -30,13 +30,14 @@ Use these status values consistently:
 
 | Area | Command | Result |
 | --- | --- | --- |
-| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed in the 2026-04-19 smoke run. |
-| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed in the 2026-04-19 smoke run; `contest-demo-quadratics` was present with teacher metadata. |
-| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed in the 2026-04-19 smoke run. |
-| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed in the 2026-04-19 smoke run. |
-| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed in the 2026-04-19 smoke run. |
-| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed in the 2026-04-19 smoke run. |
-| Frontend production build | `cd web && NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run build` | Passed in the 2026-04-19 smoke run with the existing lockfile warning. |
+| Scripted demo reset | `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Passed in the 2026-04-19 scripted-reset smoke run; it reported `contest-demo-quadratics`, `contest-assessment-demo`, and `contest-tutor-demo`. |
+| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed in the 2026-04-19 scripted-reset smoke run. |
+| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed in the 2026-04-19 scripted-reset smoke run; `contest-demo-quadratics` was present with teacher metadata. |
+| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed in the 2026-04-19 scripted-reset smoke run with one assessment and one tutoring session. |
+| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed in the 2026-04-19 scripted-reset smoke run with assessment and tutor activity grounded in `contest-demo-quadratics`. |
+| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed in the 2026-04-19 scripted-reset smoke run. |
+| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed in the 2026-04-19 scripted-reset smoke run. |
+| Frontend production build | `cd web && npm run build` | Passed in the 2026-04-19 scripted-reset smoke run with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing multiple-lockfile warning. |
 
 ## Current Known Limitations
 
@@ -51,8 +52,9 @@ Use these status values consistently:
 
 The latest smoke-backed evidence refresh used local demo data only:
 
-- Backend: `.venv/bin/python -m deeptutor.api.run_server`
-- Frontend validation: `NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run build`
+- Reset: `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001`
+- Backend: `.venv/bin/python -m deeptutor_cli.main serve --host 127.0.0.1 --port 8001`
+- Frontend validation: `npm run build` in `web/` with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local`
 - Knowledge Pack: `contest-demo-quadratics`
 - Demo sessions:
   - `contest-assessment-demo`
@@ -66,16 +68,19 @@ The local reset command is:
 python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
 ```
 
-The first attempt to run `python3 -m deeptutor.api.run_server` failed because `python3` resolved to a different virtual environment without `uvicorn`. The backend was then run successfully with the repository-local `.venv/bin/python`.
+The first backend attempt with `.venv/bin/python -m deeptutor.api.run_server` failed before binding because the reload configuration passed absolute `reload_excludes` paths to the installed `uvicorn`, which rejects non-relative glob patterns. The smoke run used the existing CLI server path with reload disabled instead.
+
+The first frontend build attempt failed in sandbox because Next.js could not fetch Google Fonts. Re-running the same build with network permission passed. The build still emits the existing multiple-lockfile warning.
 
 ## Smoke-backed Verification Record
 
-The 2026-04-19 smoke run verified the full MVP path in order:
+The 2026-04-19 scripted-reset smoke run verified the full MVP path in order:
 
-1. backend started successfully with the repository-local virtual environment;
-2. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
-3. the frontend production build passed against `http://localhost:8001`;
-4. the existing screenshot bundle still matched the smoke-verified flow, so screenshot status remains `Current` instead of requiring immediate recapture.
+1. scripted reset recreated the demo-safe Knowledge Pack and assessment/tutor sessions;
+2. backend started successfully with the repository-local virtual environment through the CLI server path;
+3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
+4. the frontend production build passed against `http://localhost:8001`;
+5. the existing screenshot bundle still matched the smoke-verified flow, so screenshot status remains `Current` instead of requiring immediate recapture.
 
 ## Manual Verification Template
 
@@ -100,6 +105,8 @@ Complete this section when the local app is running.
 - Demo-readiness smoke packet: PR `#23`.
 - Demo-readiness smoke execution result: PR `#24`.
 - Contest evidence refresh packet: PR `#27`.
+- Scripted demo reset utility: PR `#36`.
+- Contest smoke scripted reset packet: PR `#38`.
 
 ## Next Evidence Actions
 
