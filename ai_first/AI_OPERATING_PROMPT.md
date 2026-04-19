@@ -42,6 +42,8 @@ Before edits:
 
 - Never push directly to `main`.
 - Use a focused branch.
+- Open every PR in review mode: create as Draft first, then move to Ready for review after self-review.
+- Do not merge any PR unless all required CI checks are green.
 - Respect `Owned files/modules` and `Do-not-touch files/modules`.
 - For bootstrap tasks before task packets exist, use the current plan task's `Files:` section as the owned-file contract.
 - Do not revert user or other-agent changes.
@@ -65,8 +67,10 @@ Before edits:
 
 After opening or updating a PR, classify it before handing off:
 
-- Docs, task, and workflow PRs may be auto-merged when the PR is mergeable, non-draft, and has no blocking review or unresolved required discussion.
-- Runtime and product PRs may be auto-merged only when relevant tests or required checks pass and there is no blocking review.
+- Every PR must start as Draft and only move to Ready for review after local validation and checklist completion.
+- No PR may be merged unless all required CI checks have passed.
+- Docs, task, and workflow PRs may be auto-merged only when the PR is mergeable, non-draft, CI is green, and there is no blocking review or unresolved required discussion.
+- Runtime and product PRs may be auto-merged only when relevant tests and required checks pass, CI is green, and there is no blocking review.
 - If CI fails, fixing CI is the next task. Do not start a new feature until the failing PR is fixed or explicitly deferred.
 - If review blocks the PR, address the review before merging or continuing.
 - After a successful merge, sync from `main`, update the daily log and compact status mirrors when useful, then select the next task.
@@ -94,8 +98,10 @@ Before handing off:
 2. Record tests and failures.
 3. Update `ai_first/daily/YYYY-MM-DD.md`.
 4. Update this file if status, workflow, or next actions changed.
-5. Check whether the PR is eligible for autonomous merge under the merge policy.
-6. Add handoff notes with changed files, risks, merge status, and the next recommended read path.
+5. Confirm the PR is Ready for review (not Draft) before requesting merge.
+6. Confirm all required CI checks are green before merge.
+7. Check whether the PR is eligible for autonomous merge under the merge policy.
+8. Add handoff notes with changed files, risks, merge status, and the next recommended read path.
 ## Task Tracking System
 
 The project uses a structured task registry to track MVP gaps, priorities, and progress:
@@ -155,8 +161,6 @@ When starting a new feature or fix:
 - Every PR updates corresponding task status in JSON
 - Daily logs reference task IDs for tracking progress
 - Architecture changes trigger MAIN_SYSTEM_MAP.md updates per the task scope
-
-@@## Next actions
 
 ## Next actions
 
