@@ -23,7 +23,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Base project: HKUDS/DeepTutor under Apache 2.0
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
-- Latest product status: Knowledge Pack, assessment generation, student tutoring context, Teacher Dashboard, and contest screenshot evidence are merged. Next operating improvement: add reliable backend/frontend CI before broader runtime auto-merge.
+- Latest product status: Knowledge Pack, assessment generation, student tutoring context, Teacher Dashboard, contest screenshot evidence, and backend/frontend/docs CI checks are implemented. Next operating improvement: keep CI green and use those checks as the runtime auto-merge gate.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -100,7 +100,7 @@ Before handing off:
 1. Keep this file as the single entry point for future AI workers.
 2. Use `ai_first/USAGE_GUIDE.md` as the human-friendly quick start.
 3. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
-4. Finish and merge the CI task packet, then implement reliable backend/frontend/docs CI before starting another product feature.
+4. Keep backend/frontend/docs CI green; if any required check fails, fixing that failure is the next task before starting another product feature.
 5. Keep `docs/superpowers/tasks/` populated with current Feature Pod task packets before implementation starts.
 6. Mirror only the minimal status needed into `ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md`.
 7. Use the approved docs/AI-first operating layer to drive feature pods, PRs, autonomous completion, and evidence.

@@ -28,11 +28,11 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Current branch for this docs update: `docs/post-pr4-next-actions`
+- Current branch for this workflow update: `fix/ci-backend-frontend-checks`
 - Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
 - PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
 - Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard MVPs are merged.
-- Current purpose: create the `docs/contest/` evidence bundle so a reviewer can follow and verify the MVP story.
+- Current purpose: keep the contest MVP merge-gated by reliable backend, frontend, and docs CI checks.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -73,7 +73,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-CI task packet is being prepared on `docs/ci-task-packet`, mirrored by GitHub issue `#16`. After this docs PR merges, implement `docs/superpowers/tasks/2026-04-19-ci-backend-frontend.md`.
+Open and merge the CI implementation PR for `fix/ci-backend-frontend-checks`, then treat any failing required check as the highest-priority blocker before starting another feature.
 
 ## Autonomous Merge Policy
 

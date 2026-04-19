@@ -7,15 +7,16 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 ## Immediate
 
 1. Merge the docs-only CI task packet PR when eligible.
-2. Implement reliable backend, frontend, and docs CI checks from `docs/superpowers/tasks/2026-04-19-ci-backend-frontend.md`.
-3. Keep GitHub issues `#2`, `#3`, `#9`, `#12`, and `#16` linked to their implementation PRs.
-4. Preserve unrelated dirty files until they are intentionally handled.
+2. Open and merge the CI implementation PR from `fix/ci-backend-frontend-checks`.
+3. If any required backend, frontend, or docs check fails, fix that CI failure before starting another feature.
+4. Keep GitHub issues `#2`, `#3`, `#9`, `#12`, and `#16` linked to their implementation PRs.
+5. Preserve unrelated dirty files until they are intentionally handled.
 
 ## After Milestone 0
 
 1. Keep the main system map updated when shared contracts change.
 2. Keep `ai_first/AI_FIRST_ROADMAP.md` current when the autonomous operating loop changes.
-3. Implement reliable backend and frontend CI checks before allowing broader runtime auto-merge.
+3. Keep reliable backend, frontend, and docs CI checks as the gate before broader runtime auto-merge.
 
 ## Human Review Needed
 
