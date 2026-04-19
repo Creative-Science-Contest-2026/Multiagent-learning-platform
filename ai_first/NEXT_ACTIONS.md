@@ -7,10 +7,10 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 ## Immediate
 
 1. Keep `ai_first/EXECUTION_QUEUE.md` current after merges and blocker changes.
-2. Run the contest smoke lane from issue `#37` after executing the scripted demo reset command.
-3. Refresh `docs/contest/VALIDATION_REPORT.md` and related evidence docs only after smoke passes.
-4. If smoke fails, create or update the next focused product/runtime bug task from the first hard failure.
-5. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
+2. Merge the scripted-reset smoke execution result from issue `#37` when checks pass.
+3. After merge, derive the next short contest task from the MVP goal, likely final submission packaging or optional demo video capture.
+4. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
+5. If a future smoke fails, create or update the next focused product/runtime bug task from the first hard failure.
 6. Keep open issues aligned with active task packets and unfinished work only.
 7. Preserve unrelated dirty files until they are intentionally handled.
 

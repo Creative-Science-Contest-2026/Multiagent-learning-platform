@@ -80,3 +80,5 @@ The smoke execution worker must:
 
 - The immediate next worker should implement this packet, not invent another queue lane.
 - If local dependencies or environment setup block smoke, record the blocker clearly and leave evidence docs unchanged.
+- Execution result: passed on 2026-04-19 with scripted reset, backend CLI server path, smoke API endpoints, and frontend production build.
+- The backend `deeptutor.api.run_server` path still has a reload/absolute-pattern incompatibility with the installed `uvicorn`; smoke used `deeptutor_cli.main serve` with reload disabled.
