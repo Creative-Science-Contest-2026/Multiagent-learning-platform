@@ -22,9 +22,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 3,
+      "count": 4,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
+        "T010_ASSESSMENT_FEEDBACK_DETAILS",
         "T022_ERROR_BOUNDARY_HANDLING",
         "T028_API_RATE_LIMITING"
       ]
@@ -36,7 +37,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 24,
+      "count": 23,
       "tasks": []
     }
   },
@@ -74,8 +75,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["Assessment Generation API"],
-      "status": "not-started",
-      "notes": "Need ML/heuristic analysis of question performance by topic, difficulty, and learning standard"
+      "status": "in-progress",
+      "notes": "Implemented dashboard assessment-analysis endpoint with heuristic topic breakdown and recommendations, wired into assessment review UI and added API test coverage. Pending runtime validation in env with pytest installed."
     },
     {
       "id": "T011_KB_CONTEXT_BADGES",

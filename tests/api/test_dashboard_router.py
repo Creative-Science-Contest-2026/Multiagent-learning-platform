@@ -143,3 +143,38 @@ async def test_dashboard_overview_includes_assessment_summary(
     assert assessment_row["review_ref"] == "dashboard/assessments/quiz-session"
     assert assessment_row["assessment_summary"]["score_percent"] == 100
     assert assessment_row["assessment_summary"]["total_questions"] == 1
+
+
+@pytest.mark.asyncio
+async def test_dashboard_assessment_analysis_returns_topic_breakdown(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="analysis-session",
+        capability="deep_question",
+        message="Generate a quiz on algebra",
+        knowledge_bases=["algebra-pack"],
+    )
+    await store.add_message(
+        "analysis-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve algebra equation x + 2 = 5 -> Answered: 3 (Correct)\n"
+        "2. [q2] Q: Solve algebra equation 2x = 10 -> Answered: 3 (Incorrect, correct: 5)\n"
+        "Score: 1/2 (50%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/assessment-analysis/analysis-session")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["session_id"] == "analysis-session"
+    assert payload["summary"]["score_percent"] == 50
+    assert len(payload["performance_by_topic"]) >= 1
+    assert "recommendations" in payload
+    assert len(payload["recommendations"]) >= 1

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { AssessmentAnalysis } from "@/lib/dashboard-api";
 
 export interface ProgressIndicatorProps {
   totalQuestions: number;
@@ -10,6 +11,7 @@ export interface ProgressIndicatorProps {
   incorrectCount: number;
   scorePercent: number;
   knowledgeBases: string[];
+  analysis?: AssessmentAnalysis | null;
 }
 
 export function ProgressIndicator({
@@ -18,6 +20,7 @@ export function ProgressIndicator({
   incorrectCount,
   scorePercent,
   knowledgeBases,
+  analysis,
 }: ProgressIndicatorProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -141,6 +144,31 @@ export function ProgressIndicator({
 
       {expanded && (
         <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 space-y-3">
+          {analysis && analysis.performance_by_topic.length > 0 && (
+            <div className="rounded-md border border-[var(--border)] p-3">
+              <p className="text-[12px] font-semibold text-[var(--foreground)] mb-2">
+                {t("Performance by topic")}
+              </p>
+              <div className="space-y-2">
+                {analysis.performance_by_topic.slice(0, 4).map((topic) => (
+                  <div key={topic.topic} className="rounded-md bg-[var(--muted)] px-3 py-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[12px] font-medium text-[var(--foreground)]">
+                        {topic.topic}
+                      </span>
+                      <span className="text-[11px] text-[var(--muted-foreground)]">
+                        {topic.accuracy_percent}%
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
+                      {t("Correct")}: {topic.correct_count} / {topic.total_questions}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {scorePercent < 75 && (
             <div className="p-3 rounded-md bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800">
               <p className="text-[12px] font-medium text-yellow-900 dark:text-yellow-300">
@@ -195,6 +223,9 @@ export function ProgressIndicator({
               <li>{t("Review your incorrect answers")}</li>
               <li>{t("Study related concepts in the knowledge bases")}</li>
               <li>{t("Take another assessment to track improvement")}</li>
+              {analysis?.recommendations?.slice(0, 2).map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
         </div>

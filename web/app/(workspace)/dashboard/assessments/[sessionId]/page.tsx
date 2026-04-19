@@ -5,7 +5,12 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowLeft, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { getAssessmentReview, type AssessmentReview } from "@/lib/dashboard-api";
+import {
+  getAssessmentAnalysis,
+  getAssessmentReview,
+  type AssessmentAnalysis,
+  type AssessmentReview,
+} from "@/lib/dashboard-api";
 import { ProgressIndicator } from "@/components/assessment/ProgressIndicator";
 import { LearningJourneySummary } from "@/components/assessment/LearningJourneySummary";
 
@@ -24,16 +29,18 @@ export default function AssessmentReviewPage() {
   const { t } = useTranslation();
   const { sessionId } = useParams<{ sessionId: string }>();
   const [review, setReview] = useState<AssessmentReview | null>(null);
+  const [analysis, setAnalysis] = useState<AssessmentAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    getAssessmentReview(sessionId)
-      .then((data) => {
+    Promise.all([getAssessmentReview(sessionId), getAssessmentAnalysis(sessionId)])
+      .then(([reviewData, analysisData]) => {
         if (!cancelled) {
-          setReview(data);
+          setReview(reviewData);
+          setAnalysis(analysisData);
           setError(null);
         }
       })
@@ -118,6 +125,7 @@ export default function AssessmentReviewPage() {
           incorrectCount={review.summary.incorrect_count}
           scorePercent={review.summary.score_percent}
           knowledgeBases={review.knowledge_bases}
+          analysis={analysis}
         />
 
         <LearningJourneySummary
