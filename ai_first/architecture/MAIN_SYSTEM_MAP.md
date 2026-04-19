@@ -42,6 +42,9 @@ flowchart TD
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
   Product --> TeacherDashboard["Teacher Dashboard"]
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
+  TeacherDashboard --> AssessmentReview["Assessment Review Drill-down"]
+  AssessmentReview --> ReviewRoute["/dashboard/assessments/[sessionId]"]
+  AssessmentReview --> ReviewAPI["/api/v1/sessions/{session_id}/assessment-review"]
 
   Project --> Data["Data Layer"]
   Data --> SQLite["data/user/chat_history.db"]

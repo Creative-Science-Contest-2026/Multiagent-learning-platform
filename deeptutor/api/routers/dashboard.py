@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
-from deeptutor.services.session import get_sqlite_session_store
+from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
 
 router = APIRouter()
 
@@ -27,7 +27,10 @@ def _session_knowledge_bases(session: dict[str, Any]) -> list[str]:
     return [str(kb).strip() for kb in raw_kbs if str(kb).strip()]
 
 
-def _activity_from_session(session: dict[str, Any]) -> dict[str, Any]:
+def _activity_from_session(
+    session: dict[str, Any],
+    assessment_review: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     capability = str(session.get("capability") or "chat")
     knowledge_bases = _session_knowledge_bases(session)
     return {
@@ -42,7 +45,23 @@ def _activity_from_session(session: dict[str, Any]) -> dict[str, Any]:
         "status": session.get("status", "idle"),
         "active_turn_id": session.get("active_turn_id"),
         "knowledge_bases": knowledge_bases,
+        "assessment_summary": assessment_review["summary"] if assessment_review else None,
+        "review_ref": (
+            f"dashboard/assessments/{session.get('session_id')}" if assessment_review else None
+        ),
     }
+
+
+async def _activity_with_review(
+    store,
+    session: dict[str, Any],
+) -> dict[str, Any]:
+    capability = str(session.get("capability") or "chat")
+    if capability != "deep_question":
+        return _activity_from_session(session)
+    detail = await store.get_session_with_messages(str(session.get("session_id") or session.get("id")))
+    review = extract_assessment_review(detail) if detail else None
+    return _activity_from_session(session, review)
 
 
 @router.get("/recent")
@@ -52,7 +71,7 @@ async def get_recent_activities(limit: int = 50, type: str | None = None):
     activities: list[dict[str, Any]] = []
 
     for session in sessions:
-        activity = _activity_from_session(session)
+        activity = await _activity_with_review(store, session)
         if type is not None and activity["type"] != type:
             continue
         activities.append(activity)
@@ -64,7 +83,7 @@ async def get_recent_activities(limit: int = 50, type: str | None = None):
 async def get_dashboard_overview(limit: int = 50):
     store = get_sqlite_session_store()
     sessions = await store.list_sessions(limit=limit, offset=0)
-    activities = [_activity_from_session(session) for session in sessions]
+    activities = [await _activity_with_review(store, session) for session in sessions]
 
     knowledge_pack_counts: dict[str, int] = {}
     status_counts: dict[str, int] = {}
@@ -102,6 +121,7 @@ async def get_activity_entry(entry_id: str):
         raise HTTPException(status_code=404, detail="Entry not found")
 
     capability = str(session.get("capability") or "chat")
+    review = extract_assessment_review(session) if capability == "deep_question" else None
     return {
         "id": session.get("session_id"),
         "type": _activity_type(capability),
@@ -109,6 +129,7 @@ async def get_activity_entry(entry_id: str):
         "title": session.get("title"),
         "timestamp": session.get("updated_at", session.get("created_at")),
         "knowledge_bases": _session_knowledge_bases(session),
+        "assessment_summary": review["summary"] if review else None,
         "content": {
             "messages": session.get("messages", []),
             "active_turns": session.get("active_turns", []),

@@ -110,3 +110,36 @@ async def test_dashboard_recent_filters_assessment_activity(
     assert len(payload) == 1
     assert payload[0]["id"] == "quiz-session"
     assert payload[0]["type"] == "assessment"
+
+
+@pytest.mark.asyncio
+async def test_dashboard_overview_includes_assessment_summary(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="quiz-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.add_message(
+        "quiz-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: 1+1 -> Answered: 2 (Correct)\n"
+        "Score: 1/1 (100%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/overview")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assessment_row = payload["recent_activity"][0]
+    assert assessment_row["review_ref"] == "dashboard/assessments/quiz-session"
+    assert assessment_row["assessment_summary"]["score_percent"] == 100
+    assert assessment_row["assessment_summary"]["total_questions"] == 1
