@@ -28,11 +28,11 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Current branch for this docs update: `docs/evidence-refresh-run`
+- Current branch for this docs update: `docs/demo-data-reset-packet`
 - Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
 - PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
 - Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and runtime/backend/frontend/docs CI are merged.
-- Current purpose: execute the contest evidence refresh lane so `docs/contest/` stays aligned with the smoke-backed MVP path.
+- Current purpose: queue the next short docs/workflow lane so contest demo data becomes reproducible instead of remaining an implicit local prerequisite.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -60,16 +60,16 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-19-contest-evidence-refresh.md`
-- Current open GitHub issue: none currently. Issue `#26` was closed after PR `#27` merged the packet.
+- Current open task packet: `docs/superpowers/tasks/2026-04-19-contest-demo-data-reset.md`
+- Current open GitHub issue: `#29`
 - Latest completed smoke run result: backend online, frontend build passed, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
-- Recently completed merged work: Knowledge Pack (`#6`), Assessment + Student Tutor (`#8`), Teacher Dashboard (`#11`), contest evidence (`#13`, `#14`, `#15`), CI (`#17`, `#18`), execution queue status board (`#21`), smoke lane packet (`#23`), smoke execution result (`#24`), and contest evidence refresh packet (`#27`)
+- Recently completed merged work: Knowledge Pack (`#6`), Assessment + Student Tutor (`#8`), Teacher Dashboard (`#11`), contest evidence (`#13`, `#14`, `#15`), CI (`#17`, `#18`), execution queue status board (`#21`), smoke lane packet (`#23`), smoke execution result (`#24`), contest evidence refresh packet (`#27`), and contest evidence refresh execution (`#28`)
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Merge the contest evidence refresh execution docs lane, then derive the next short task packet from the MVP goal.
+Land the contest demo data reset packet from issue `#29`, then use that packet to make demo-safe state reproducible.
 
 ## Autonomous Merge Policy
 
