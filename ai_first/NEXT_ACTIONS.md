@@ -7,10 +7,11 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 ## Immediate
 
 1. Keep `ai_first/EXECUTION_QUEUE.md` current after merges and blocker changes.
-2. Land the contest evidence refresh packet from issue `#26`.
-3. Use that packet to keep `docs/contest/` aligned with smoke-backed validation.
-4. Keep open issues aligned with active task packets and unfinished work only.
-5. Preserve unrelated dirty files until they are intentionally handled.
+2. Merge the contest evidence refresh execution lane.
+3. Derive the next short task packet from the MVP goal once the queue is empty again.
+4. Keep `docs/contest/` aligned with smoke-backed validation after each successful smoke run.
+5. Keep open issues aligned with active task packets and unfinished work only.
+6. Preserve unrelated dirty files until they are intentionally handled.
 
 ## After Milestone 0
 

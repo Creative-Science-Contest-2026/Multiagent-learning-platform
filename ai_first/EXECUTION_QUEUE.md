@@ -7,18 +7,19 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#24`, which recorded the first smoke execution result.
+- Latest merged PR before the current active branch: `#27`, which queued the contest evidence refresh packet.
 - Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
+- Smoke-backed evidence refresh rules now live in `docs/contest/` on the current branch and are waiting to merge.
 
 ## Active queue
 
-- Open issue: `#26 docs: add contest evidence refresh packet`
+- Open issue: none currently.
 - Active task packet: `docs/superpowers/tasks/2026-04-19-contest-evidence-refresh.md`
-- Expected branch: `docs/contest-evidence-refresh`
+- Expected branch: `docs/evidence-refresh-run`
 
 ## Next recommended task
 
-Land the contest evidence refresh packet, then use it to keep the evidence bundle aligned with smoke-backed MVP validation.
+Merge the contest evidence refresh execution lane, then derive the next short task packet from the MVP goal.
 
 ## AI-owned blockers
 
@@ -32,5 +33,5 @@ Land the contest evidence refresh packet, then use it to keep the evidence bundl
 
 1. `ai_first/AI_OPERATING_PROMPT.md`
 2. `ai_first/EXECUTION_QUEUE.md`
-3. Task packet for the active issue
+3. Task packet for the active branch
 4. `ai_first/CURRENT_STATE.md` only if more context is needed
