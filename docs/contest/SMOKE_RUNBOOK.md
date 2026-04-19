@@ -4,6 +4,8 @@ This runbook verifies the contest MVP path in the same order as the demo story:
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
 
+If local demo data may be stale, missing, or private, run `DEMO_DATA_RESET.md` before starting this smoke lane.
+
 Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTION_QUEUE.md` and `ai_first/daily/YYYY-MM-DD.md`.
 
 ## Stage 1: Backend
@@ -47,3 +49,4 @@ Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTIO
 - If all stages pass: refresh any affected contest evidence docs, then move to the next queued task.
 - If a product/runtime stage fails: create or update a follow-up task packet before starting broad new work.
 - If an environment or credential blocker prevents completion: record the blocker clearly and do not report smoke as passing.
+- If demo data is missing: use `DEMO_DATA_RESET.md`, then restart the smoke lane from Stage 1.
