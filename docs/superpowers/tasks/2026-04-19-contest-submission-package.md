@@ -88,3 +88,4 @@ The package must link, not duplicate, the current authoritative materials:
 - Keep this package short and link-heavy.
 - Do not recapture screenshots or video in this task unless the package reveals a clear gap.
 - If optional video becomes required, create a separate focused capture task.
+- Execution result: package created at `docs/contest/SUBMISSION_PACKAGE.md`; remaining items are human review of IP commitment, final wording, and optional video requirement.

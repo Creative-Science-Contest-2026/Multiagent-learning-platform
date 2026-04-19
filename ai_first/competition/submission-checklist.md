@@ -2,19 +2,20 @@
 
 ## Product
 
-- [ ] Stable local demo runs.
-- [ ] Teacher Knowledge Pack flow works.
-- [ ] Assessment generation flow works.
-- [ ] Student Tutor flow works.
-- [ ] Teacher Dashboard flow works.
+- [x] Stable local demo runs.
+- [x] Teacher Knowledge Pack flow works.
+- [x] Assessment generation flow works.
+- [x] Student Tutor flow works.
+- [x] Teacher Dashboard flow works.
 
 ## Evidence
 
-- [ ] Demo script complete.
-- [ ] Screenshots captured.
-- [ ] Demo video recorded.
-- [ ] Technical runbook complete.
-- [ ] Architecture map up to date.
+- [x] Demo script complete.
+- [x] Screenshots captured.
+- [ ] Demo video recorded. Deferred unless final submission requires video.
+- [x] Technical runbook complete.
+- [x] Architecture map up to date.
+- [x] Contest submission package drafted.
 
 ## Legal and attribution
 
@@ -27,6 +28,6 @@
 ## Submission
 
 - [ ] Product description drafted.
-- [ ] Technical requirements drafted.
+- [x] Technical requirements drafted.
 - [ ] IP commitment reviewed.
 - [ ] Final package reviewed by humans.
