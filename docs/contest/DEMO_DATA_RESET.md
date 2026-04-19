@@ -4,7 +4,7 @@ Use this runbook before a smoke run or evidence refresh when the local demo stat
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
 
-This is a docs/workflow runbook. It does not add a seed script yet. If a future lane adds automation, keep this file as the human-readable contract.
+This runbook is backed by a local demo-safe reset utility. It writes only local demo data under the selected repository root.
 
 ## Demo-Safe State Inventory
 
@@ -31,7 +31,25 @@ Use the safest available mode for the environment.
 | --- | --- | --- |
 | Manual UI reset | Available | You are preparing an interactive demo and can use the web app. |
 | Manual API/database reset | Allowed only for local demo data | You need to recreate demo-safe sessions before smoke. |
-| Scripted seed/reset | Future lane | The manual process is proven and should be automated. |
+| Scripted seed/reset | Available | You need a repeatable local reset before smoke or evidence refresh. |
+
+## Scripted Local Reset
+
+Run this from the repository root:
+
+```bash
+python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
+```
+
+The command:
+
+- validates that `--api-base` is local;
+- creates or updates Knowledge Pack `contest-demo-quadratics`;
+- creates or replaces sessions `contest-assessment-demo` and `contest-tutor-demo`;
+- prints the ids and local paths it touched;
+- can be run repeatedly without duplicating demo sessions.
+
+Generated local `data/` changes are not committed.
 
 ## Manual UI Reset
 
@@ -61,9 +79,9 @@ Use this only for local demo data that can be safely recreated.
 
 This repository intentionally does not commit local `data/` changes as evidence.
 
-## Future Script Contract
+## Script Contract
 
-If this lane is automated later, the script should:
+The reset script must:
 
 - create or update only demo-safe records;
 - be idempotent;
@@ -72,10 +90,10 @@ If this lane is automated later, the script should:
 - refuse to run against production or unknown environments;
 - leave screenshots and optional video as manual refresh steps.
 
-Recommended future location:
+Current location:
 
 - runbook stays here: `docs/contest/DEMO_DATA_RESET.md`;
-- script, if added later: `scripts/contest/reset_demo_data.py` or another explicit contest/demo path.
+- script: `scripts/contest/reset_demo_data.py`.
 
 ## Verification Checklist
 

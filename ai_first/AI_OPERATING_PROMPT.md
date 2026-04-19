@@ -25,7 +25,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
 - Latest product status: Knowledge Pack, assessment generation, student tutoring context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI are merged into `main`.
-- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, the demo-readiness smoke lane has passed against the current local demo dataset, and `docs/contest/` carries the smoke-backed evidence refresh workflow. The active short task is to queue a scripted local demo data reset utility so smoke/evidence refresh can rebuild demo-safe state without manual local data setup.
+- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, the demo-readiness smoke lane has passed against the current local demo dataset, and `docs/contest/` carries the smoke-backed evidence refresh workflow. The active short task is to land a scripted local demo data reset utility so smoke/evidence refresh can rebuild demo-safe state without manual local data setup.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence

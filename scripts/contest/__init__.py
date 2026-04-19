@@ -1,0 +1,1 @@
+"""Contest demo helper scripts."""
