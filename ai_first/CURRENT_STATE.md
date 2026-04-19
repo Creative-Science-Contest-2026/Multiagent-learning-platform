@@ -28,11 +28,11 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Current branch for this docs update: `docs/scripted-demo-data-reset`
+- Current branch for this docs update: `docs/contest-smoke-scripted-reset-packet`
 - Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
 - PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
 - Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and runtime/backend/frontend/docs CI are merged.
-- Current purpose: implement a scripted local contest demo data reset utility.
+- Current purpose: queue the next smoke execution lane using the scripted local contest demo data reset utility.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -60,8 +60,8 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-19-scripted-demo-data-reset.md`
-- Current open GitHub issue: `#35`
+- Current open task packet: `docs/superpowers/tasks/2026-04-19-contest-smoke-scripted-reset.md`
+- Current open GitHub issue: `#37`
 - Latest completed smoke run result: backend online, frontend build passed, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
 - Recently completed merged work: Knowledge Pack (`#6`), Assessment + Student Tutor (`#8`), Teacher Dashboard (`#11`), contest evidence (`#13`, `#14`, `#15`), CI (`#17`, `#18`), execution queue status board (`#21`), smoke lane packet (`#23`), smoke execution result (`#24`), contest evidence refresh packet (`#27`), and contest evidence refresh execution (`#28`)
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
@@ -69,7 +69,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Land the scripted demo data reset utility from issue `#35`, then use it before smoke/evidence refresh when local demo state may be stale.
+Run the contest smoke lane after executing the scripted demo reset utility, then refresh evidence docs or create the next bug/task from the first hard failure.
 
 ## Autonomous Merge Policy
 
