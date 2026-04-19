@@ -7,11 +7,12 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 ## Immediate
 
 1. Keep `ai_first/EXECUTION_QUEUE.md` current after merges and blocker changes.
-2. Land the contest demo data reset runbook from issue `#31`.
-3. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
-4. Keep `docs/contest/` aligned with smoke-backed validation after each successful smoke run.
-5. Keep open issues aligned with active task packets and unfinished work only.
-6. Preserve unrelated dirty files until they are intentionally handled.
+2. Land the scripted demo data reset utility packet from issue `#33`.
+3. Implement the local idempotent reset utility from that packet.
+4. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
+5. Keep `docs/contest/` aligned with smoke-backed validation after each successful smoke run.
+6. Keep open issues aligned with active task packets and unfinished work only.
+7. Preserve unrelated dirty files until they are intentionally handled.
 
 ## After Milestone 0
 
