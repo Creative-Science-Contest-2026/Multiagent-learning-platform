@@ -22,9 +22,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 2,
+      "count": 3,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
+        "T022_ERROR_BOUNDARY_HANDLING",
         "T028_API_RATE_LIMITING"
       ]
     },
@@ -35,7 +36,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 25,
+      "count": 24,
       "tasks": []
     }
   },
@@ -278,8 +279,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["React"],
-      "status": "not-started",
-      "notes": "Catch and display user-friendly error messages instead of blank screens"
+      "status": "in-progress",
+      "notes": "Route-level error boundaries added for marketplace and assessment pages. Pending extension to additional high-traffic routes and UX copy parity across locales."
     },
     {
       "id": "T023_MARKETPLACE_CACHE_OPTIMIZATION",
