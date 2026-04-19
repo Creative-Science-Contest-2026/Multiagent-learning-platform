@@ -11,17 +11,33 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md): step-by-step demo path for a reviewer or presenter.
 - [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md): required screenshots, optional video, and pass/fail evidence fields.
 - [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md): local validation commands, results, limitations, and remaining capture work.
+- [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md): smoke lane used to verify the MVP path before any evidence refresh.
 
 ## Current Status
 
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
-- Local command validation is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
+- The first smoke-backed MVP verification passed on 2026-04-19 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
 - Screenshot evidence is captured in [`screenshots/`](./screenshots/).
 - Video capture is optional and deferred to avoid storing large media in the repository.
+
+## Evidence Refresh Rules
+
+Run [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) first, then refresh evidence using these rules:
+
+- Auto-refresh evidence: smoke-backed command results, API reachability checks, and the evidence status table in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
+- Human-triggered refresh: screenshots and any optional video, because they require an interactive capture step.
+- Status vocabulary:
+  - `Current`: evidence still matches the latest successful smoke run.
+  - `Stale`: the MVP path changed after the last capture or validation.
+  - `Blocked`: the evidence could not be refreshed because smoke failed or the environment was unavailable.
+- Source of truth for freshness:
+  - [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) records the latest smoke-backed evidence status.
+  - [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md) records which artifacts are current versus still awaiting manual recapture.
 
 ## Update Rules
 
 - Update this folder whenever the demo flow, API behavior, or UI route changes.
+- After every successful smoke pass, update the evidence status in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) before starting another docs or demo lane.
 - Keep evidence free of secrets, private data, local credentials, and real student information.
 - Store large videos outside the repository and link them from the checklist or validation report.
 
@@ -40,13 +56,16 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ```mermaid
 flowchart LR
   Goal["Contest MVP Story"]
+  Smoke["SMOKE_RUNBOOK.md"]
   Demo["DEMO_SCRIPT.md"]
   Checklist["EVIDENCE_CHECKLIST.md"]
   Validation["VALIDATION_REPORT.md"]
   Reviewer["Reviewer"]
 
+  Goal --> Smoke
+  Smoke --> Validation
+  Validation --> Checklist
   Goal --> Demo
   Demo --> Checklist
-  Checklist --> Validation
   Validation --> Reviewer
 ```

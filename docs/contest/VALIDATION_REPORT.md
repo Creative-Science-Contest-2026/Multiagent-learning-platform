@@ -8,39 +8,66 @@ This report covers the current contest MVP path:
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
 
+## Evidence Freshness Status
+
+Latest smoke-backed refresh: 2026-04-19
+
+| Evidence group | Refresh mode | Status | Latest source |
+| --- | --- | --- | --- |
+| Backend and API reachability | Auto after smoke | Current | Smoke run recorded in PR `#24` and `ai_first/daily/2026-04-19.md`. |
+| Frontend production build | Auto after smoke | Current | `NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run build` passed during the 2026-04-19 smoke run. |
+| Screenshot bundle | Human capture after smoke when the UI changes | Current | Existing contest screenshots still match the smoke-verified MVP path. |
+| Optional video | Human capture only | Deferred | No external video is required yet. |
+
+Use these status values consistently:
+
+- `Current`: still matches the latest successful smoke run.
+- `Stale`: the MVP path changed after the last successful capture or validation.
+- `Blocked`: refresh could not complete because smoke failed or the environment was unavailable.
+- `Deferred`: intentionally skipped because the artifact is optional.
+
 ## Local Validation Summary
 
 | Area | Command | Result |
 | --- | --- | --- |
-| Knowledge Pack API | `pytest tests/api/test_knowledge_router.py -v` | Passed in PR `#6` validation: 11 passed. |
-| Knowledge Pack metadata | `pytest tests/knowledge -v` | Passed in PR `#6` validation: 3 passed. |
-| Assessment API | `pytest tests/api/test_question_router.py -v` | Passed in PR `#8` validation: 1 passed. |
-| Student tutor runtime contract | `pytest tests/api/test_unified_ws_turn_runtime.py -v` | Passed in PR `#8` validation: 6 passed. |
-| Teacher Dashboard API | `pytest tests/api/test_dashboard_router.py -v` | Passed in PR `#11` validation: 2 passed. |
-| Session persistence regression | `pytest tests/services/session -v` | Passed in PR `#11` validation: 2 passed. |
-| Backend syntax/import sweep | `python3 -m compileall deeptutor` | Passed in PR `#6`, `#8`, and `#11` validation. |
-| Frontend production build | `cd web && npm run build` | Passed in PR `#6`, `#8`, and `#11` validation. |
+| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed in the 2026-04-19 smoke run. |
+| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed in the 2026-04-19 smoke run; `contest-demo-quadratics` was present with teacher metadata. |
+| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed in the 2026-04-19 smoke run. |
+| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed in the 2026-04-19 smoke run. |
+| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed in the 2026-04-19 smoke run. |
+| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed in the 2026-04-19 smoke run. |
+| Frontend production build | `cd web && NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run build` | Passed in the 2026-04-19 smoke run with the existing lockfile warning. |
 
 ## Current Known Limitations
 
 - Screenshot evidence is captured under `docs/contest/screenshots/`.
 - Video evidence is deferred unless the final contest submission requires it.
 - The frontend build emits a Next.js warning about multiple lockfiles and inferred workspace root. The build still completes successfully.
+- Screenshot freshness still requires a human capture step when the UI meaningfully changes.
 - Provider-backed AI quality depends on configured model credentials. If credentials are unavailable during a demo, use the command validation and recorded UI flow as fallback evidence.
 - This report uses demo-safe descriptions only. Do not add real student data.
 
 ## Local Demo Run
 
-The screenshot capture used local demo data only:
+The latest smoke-backed evidence refresh used local demo data only:
 
 - Backend: `.venv/bin/python -m deeptutor.api.run_server`
-- Frontend: `NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run dev`
+- Frontend validation: `NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run build`
 - Knowledge Pack: `contest-demo-quadratics`
 - Demo sessions:
   - `contest-assessment-demo`
   - `contest-tutor-demo`
 
 The first attempt to run `python3 -m deeptutor.api.run_server` failed because `python3` resolved to a different virtual environment without `uvicorn`. The backend was then run successfully with the repository-local `.venv/bin/python`.
+
+## Smoke-backed Verification Record
+
+The 2026-04-19 smoke run verified the full MVP path in order:
+
+1. backend started successfully with the repository-local virtual environment;
+2. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
+3. the frontend production build passed against `http://localhost:8001`;
+4. the existing screenshot bundle still matched the smoke-verified flow, so screenshot status remains `Current` instead of requiring immediate recapture.
 
 ## Manual Verification Template
 
@@ -61,14 +88,19 @@ Complete this section when the local app is running.
 - Assessment and Student Tutor Workspace MVP: PR `#8`.
 - Teacher Dashboard MVP: PR `#11`.
 - Contest evidence packet: PR `#13`.
+- Screenshot capture refresh: PR `#15`.
+- Demo-readiness smoke packet: PR `#23`.
+- Demo-readiness smoke execution result: PR `#24`.
+- Contest evidence refresh packet: PR `#27`.
 
 ## Next Evidence Actions
 
-1. Use these screenshots for the current repo evidence review.
-2. Capture and link an external video only if the final submission requires video.
-3. Re-run docs validation after evidence docs change:
+1. After each successful smoke run, update the evidence freshness table before changing screenshot status.
+2. Mark screenshots `Stale` or `Blocked` in `EVIDENCE_CHECKLIST.md` only when the smoke result or UI change requires it.
+3. Capture and link an external video only if the final submission requires video.
+4. Re-run docs validation after evidence docs change:
 
 ```bash
-rg -n "Knowledge Pack|assessment|Tutor|Dashboard|Mermaid|validation|screenshot|video" docs/contest docs/superpowers/pr-notes
+rg -n "evidence refresh|smoke|validation|screenshot|video|Current|Stale|Blocked" docs/contest docs/superpowers/tasks docs/superpowers/pr-notes ai_first
 git diff --check
 ```
