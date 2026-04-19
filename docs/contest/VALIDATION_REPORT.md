@@ -60,6 +60,12 @@ The latest smoke-backed evidence refresh used local demo data only:
 
 Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
 
+The local reset command is:
+
+```bash
+python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
+```
+
 The first attempt to run `python3 -m deeptutor.api.run_server` failed because `python3` resolved to a different virtual environment without `uvicorn`. The backend was then run successfully with the repository-local `.venv/bin/python`.
 
 ## Smoke-backed Verification Record

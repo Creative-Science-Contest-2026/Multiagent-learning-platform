@@ -4,7 +4,11 @@ This runbook verifies the contest MVP path in the same order as the demo story:
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
 
-If local demo data may be stale, missing, or private, run `DEMO_DATA_RESET.md` before starting this smoke lane.
+If local demo data may be stale, missing, or private, run `DEMO_DATA_RESET.md` before starting this smoke lane. The scripted local reset command is:
+
+```bash
+python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
+```
 
 Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTION_QUEUE.md` and `ai_first/daily/YYYY-MM-DD.md`.
 

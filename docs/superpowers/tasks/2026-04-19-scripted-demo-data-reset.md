@@ -2,7 +2,7 @@
 
 Owner: Documentation / Workflow AI worker
 Branch: `docs/scripted-demo-data-reset`
-GitHub Issue: `#33`
+GitHub Issue: `#35`
 
 ## Goal
 
@@ -20,6 +20,7 @@ A human or AI worker can run one explicit local command to recreate the demo-saf
 - `docs/contest/SMOKE_RUNBOOK.md`
 - `docs/contest/VALIDATION_REPORT.md`
 - `docs/superpowers/pr-notes/scripted-demo-data-reset.md`
+- `docs/superpowers/pr-notes/scripted-demo-data-reset-packet.md`
 - `docs/superpowers/tasks/2026-04-19-scripted-demo-data-reset.md`
 - `ai_first/EXECUTION_QUEUE.md`
 - `ai_first/CURRENT_STATE.md`
@@ -67,13 +68,13 @@ The utility should follow the manual contract in `docs/contest/DEMO_DATA_RESET.m
 
 ## Required validation
 
-- Relevant utility tests added by the implementation
+- `pytest tests/scripts/test_reset_demo_data.py -v`
 - `rg -n "demo data|reset|seed|smoke|Knowledge Pack|contest|Mermaid" scripts tests docs/contest docs/superpowers/tasks docs/superpowers/pr-notes ai_first`
 - `git diff --check`
 
 If implementation touches Python code, also run:
 
-- `python -m compileall scripts deeptutor`
+- `python3 -m compileall scripts deeptutor`
 
 ## Manual verification
 
