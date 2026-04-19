@@ -22,10 +22,11 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 4,
+      "count": 5,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
+        "T011_KB_CONTEXT_BADGES",
         "T022_ERROR_BOUNDARY_HANDLING",
         "T028_API_RATE_LIMITING"
       ]
@@ -37,7 +38,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 23,
+      "count": 22,
       "tasks": []
     }
   },
@@ -92,8 +93,8 @@
       "complexity": "Medium",
       "estimated_hours": 2,
       "dependencies": ["Chat Context System"],
-      "status": "not-started",
-      "notes": "Extract KB context from UnifiedContext and display with visual styling"
+      "status": "in-progress",
+      "notes": "KB context badges added to chat message rendering based on request snapshot knowledgeBases for both user prompts and paired assistant responses. Pending UX review in runtime session."
     },
     {
       "id": "T012_TEACHER_PACK_SHARING_UI",
