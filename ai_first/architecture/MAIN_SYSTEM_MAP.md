@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-19
+Last updated: 2026-04-20
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -36,15 +36,37 @@ flowchart TD
   Product --> TeacherWorkspace["Teacher Workspace"]
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
+  
+  Product --> Marketplace["Knowledge Pack Marketplace"]
+  Marketplace --> MarketplaceAPI["/api/v1/marketplace"]
+  Marketplace --> MarketplaceUI["/marketplace"]
+  Marketplace --> MarketplaceFilters["Search/Subject/Owner Filters"]
+  
   Product --> AssessmentBuilder["Assessment Builder"]
   AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
+  
   Product --> StudentTutor["Student Tutor Workspace"]
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
+  
   Product --> TeacherDashboard["Teacher Dashboard"]
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
   TeacherDashboard --> AssessmentReview["Assessment Review Drill-down"]
   AssessmentReview --> ReviewRoute["/dashboard/assessments/[sessionId]"]
   AssessmentReview --> ReviewAPI["/api/v1/sessions/{session_id}/assessment-review"]
+  AssessmentReview --> ProgressIndicator["ProgressIndicator Component"]
+  AssessmentReview --> LearningJourney["LearningJourneySummary Component"]
+  ProgressIndicator --> ScoreViz["Score Progress Bar + Recommendations"]
+  LearningJourney --> TopicBadges["Mastered/Recommended Topics"]
+
+  Project --> Localization["Internationalization (i18n)"]
+  Localization --> UITranslations["UI Translations"]
+  UITranslations --> EnglishUI["web/locales/en/"]
+  UITranslations --> ChineseUI["web/locales/zh/"]
+  UITranslations --> VietnameseUI["web/locales/vi/"]
+  Localization --> PromptSystem["Prompt Localization"]
+  PromptSystem --> PromptManager["PromptManager (unified)"]
+  PromptManager --> VietnameseFallback["vi → en fallback chain"]
+  Localization --> LanguageSettings["Settings: en/zh/vi"]
 
   Project --> Data["Data Layer"]
   Data --> SQLite["data/user/chat_history.db"]
