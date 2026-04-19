@@ -180,12 +180,13 @@ def parse_language(language: Any) -> str:
     Supported language representations:
     - English: "en", "english", "English"
     - Chinese: "zh", "chinese", "Chinese"
+    - Vietnamese: "vi", "vietnamese", "Vietnamese"
 
     Args:
-        language: Language configuration value (can be "zh"/"en"/"Chinese"/"English" etc.)
+        language: Language configuration value (can be "zh"/"en"/"vi"/"Chinese"/"English"/"Vietnamese" etc.)
 
     Returns:
-        Standardized language code: 'zh' or 'en', defaults to 'zh'
+        Standardized language code: 'zh' or 'en' or 'vi', defaults to 'zh'
     """
     if not language:
         return "zh"
@@ -196,6 +197,8 @@ def parse_language(language: Any) -> str:
             return "en"
         if lang_lower in ["zh", "chinese", "cn"]:
             return "zh"
+        if lang_lower in ["vi", "vietnamese"]:
+            return "vi"
 
     return "zh"  # Default Chinese
 

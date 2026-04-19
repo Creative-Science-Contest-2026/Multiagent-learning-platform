@@ -20,6 +20,10 @@ _GUIDELINE_HEADER = {
         "**根据当前子目标和已收集的证据，自主决定使用哪个工具**。"
         "请综合考虑所有可用选项："
     ),
+    "vi": (
+        "**Tự động quyết định công cụ nào để sử dụng** dựa trên mục tiêu phụ hiện tại "
+        "và bằng chứng được thu thập. Hãy xem xét tất cả các tùy chọn có sẵn:"
+    ),
 }
 
 _PHASE_LABELS = {
@@ -37,6 +41,13 @@ _PHASE_LABELS = {
         "verification": "阶段 4：验证核查",
         "other": "其他工具",
     },
+    "vi": {
+        "exploration": "Giai đoạn 1: Khám phá",
+        "expansion": "Giai đoạn 2: Mở rộng",
+        "synthesis": "Giai đoạn 3: Tổng hợp",
+        "verification": "Giai đoạn 4: Xác minh",
+        "other": "Công cụ khác",
+    },
 }
 
 _PHASE_ORDER = ["exploration", "expansion", "synthesis", "verification", "other"]
@@ -48,6 +59,8 @@ def _normalize_language(language: str) -> str:
         return "zh"
     if normalized.startswith("en"):
         return "en"
+    if normalized.startswith("vi"):
+        return "vi"
     return normalized
 
 

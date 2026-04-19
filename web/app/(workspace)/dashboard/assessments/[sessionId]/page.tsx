@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getAssessmentReview, type AssessmentReview } from "@/lib/dashboard-api";
+import { ProgressIndicator } from "@/components/assessment/ProgressIndicator";
+import { LearningJourneySummary } from "@/components/assessment/LearningJourneySummary";
 
 function formatTime(value: number): string {
   if (!value) return "";
@@ -110,32 +112,32 @@ export default function AssessmentReviewPage() {
           )}
         </header>
 
-        <section className="grid gap-3 md:grid-cols-4">
-          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
-            <p className="text-[12px] text-[var(--muted-foreground)]">{t("Score")}</p>
-            <p className="mt-2 text-[28px] font-semibold text-[var(--foreground)]">
-              {review.summary.score_percent}%
-            </p>
-          </div>
-          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
-            <p className="text-[12px] text-[var(--muted-foreground)]">{t("Correct")}</p>
-            <p className="mt-2 text-[28px] font-semibold text-emerald-600">
-              {review.summary.correct_count}
-            </p>
-          </div>
-          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
-            <p className="text-[12px] text-[var(--muted-foreground)]">{t("Incorrect")}</p>
-            <p className="mt-2 text-[28px] font-semibold text-red-600">
-              {review.summary.incorrect_count}
-            </p>
-          </div>
-          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
-            <p className="text-[12px] text-[var(--muted-foreground)]">{t("Questions")}</p>
-            <p className="mt-2 text-[28px] font-semibold text-[var(--foreground)]">
-              {review.summary.total_questions}
-            </p>
-          </div>
-        </section>
+        <ProgressIndicator
+          totalQuestions={review.summary.total_questions}
+          correctCount={review.summary.correct_count}
+          incorrectCount={review.summary.incorrect_count}
+          scorePercent={review.summary.score_percent}
+          knowledgeBases={review.knowledge_bases}
+        />
+
+        <LearningJourneySummary
+          timestamp={review.timestamp}
+          estimatedTimeSpent={review.summary.estimated_time_spent}
+          masteredTopics={
+            review.summary.score_percent >= 75
+              ? review.knowledge_bases
+              : undefined
+          }
+          nextTopics={
+            review.summary.score_percent < 90 && review.knowledge_bases.length > 0
+              ? review.knowledge_bases
+              : undefined
+          }
+        />
+
+        <h2 className="mt-8 text-[18px] font-semibold text-[var(--foreground)]">
+          {t("Question-by-Question Breakdown")}
+        </h2>
 
         <section className="space-y-4">
           {review.results.length > 0 ? (

@@ -368,7 +368,7 @@ function SettingsPageContent() {
 
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [language, setLanguage] = useState<"en" | "zh">("en");
+  const [language, setLanguage] = useState<"en" | "zh" | "vi">("en");
   const [catalog, setCatalog] = useState<Catalog>(defaultCatalog());
   const [draft, setDraft] = useState<Catalog>(defaultCatalog());
   const [activeService, setActiveService] = useState<ServiceName>("llm");
@@ -880,7 +880,7 @@ function SettingsPageContent() {
           <div className="flex items-center gap-2">
             <span className="text-[12px] text-[var(--muted-foreground)]">{t("Language")}</span>
             <div className="flex gap-0.5 rounded-lg bg-[var(--muted)] p-0.5">
-              {(["en", "zh"] as const).map((v) => (
+              {(["en", "zh", "vi"] as const).map((v) => (
                 <button
                   key={v}
                   onClick={() => updateLanguage(v)}
@@ -890,7 +890,7 @@ function SettingsPageContent() {
                       : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                   }`}
                 >
-                  {v === "en" ? "English" : "中文"}
+                  {v === "en" ? "English" : v === "zh" ? "中文" : "Tiếng Việt"}
                 </button>
               ))}
             </div>
