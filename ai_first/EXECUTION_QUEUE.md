@@ -7,19 +7,19 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#38`, which queued the scripted-reset smoke execution lane.
+- Latest merged PR before the current active branch: `#40`, which recorded the scripted-reset smoke execution result.
 - Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
-- Smoke-backed evidence refresh rules and the local demo reset command now live in `docs/contest/` on `main`.
+- Smoke-backed evidence refresh rules, the local demo reset command, and the scripted-reset smoke result now live in `docs/contest/` on `main`.
 
 ## Active queue
 
-- Open issue: `#37 docs: run contest smoke with scripted demo reset`
-- Active task packet: `docs/superpowers/tasks/2026-04-19-contest-smoke-scripted-reset.md`
-- Expected branch: `docs/contest-smoke-scripted-reset`
+- Open issue: `#41 docs: prepare contest submission package`
+- Active task packet: `docs/superpowers/tasks/2026-04-19-contest-submission-package.md`
+- Expected branch: `docs/contest-submission-package`
 
 ## Next recommended task
 
-Merge the scripted-reset smoke execution result when checks pass. After merge, derive the next short contest task from the MVP goal, likely final submission packaging or optional demo video capture.
+Create the contest submission package that links the pitch, demo story, evidence checklist, validation report, screenshots, smoke notes, known limitations, and final submission checklist.
 
 ## AI-owned blockers
 
