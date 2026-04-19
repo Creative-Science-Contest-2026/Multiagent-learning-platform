@@ -69,3 +69,41 @@ export async function getMarketplacePack(packName: string): Promise<MarketplaceP
 
   return response.json();
 }
+
+
+export interface ImportPackResult {
+  success: boolean;
+  message: string;
+  pack: {
+    name: string;
+    subject?: string;
+    grade?: string;
+    owner?: string;
+    import_date: string;
+    session_count?: number;
+  };
+}
+
+export async function importMarketplacePack(
+  packName: string,
+): Promise<ImportPackResult> {
+  const response = await fetch(
+    apiUrl(`/api/v1/marketplace/import/${encodeURIComponent(packName)}`),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    try {
+      const error = JSON.parse(errorBody);
+      throw new Error(error.detail || `Failed to import pack: ${response.status}`);
+    } catch {
+      throw new Error(`Failed to import pack: ${response.status} ${response.statusText}`);
+    }
+  }
+
+  return response.json();
+}

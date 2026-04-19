@@ -22,8 +22,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "T009_MARKETPLACE_IMPORT_IMPLEMENTATION"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -32,7 +34,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 27,
+      "count": 26,
       "tasks": []
     }
   },
@@ -52,8 +54,8 @@
       "complexity": "High",
       "estimated_hours": 4,
       "dependencies": ["Knowledge Pack Manager API"],
-      "status": "not-started",
-      "notes": "Need to copy pack metadata, documents, and configuration to user's knowledge_bases directory"
+      "status": "in-progress",
+      "notes": "Backend import endpoint and frontend API wiring are implemented; copy flow now creates imported KB clone and registers it in kb_config. Pending full integration verification in environment with pytest installed."
     },
     {
       "id": "T010_ASSESSMENT_FEEDBACK_DETAILS",
