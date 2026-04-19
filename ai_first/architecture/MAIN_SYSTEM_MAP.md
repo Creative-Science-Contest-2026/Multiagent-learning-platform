@@ -49,6 +49,8 @@ flowchart TD
   
   Product --> StudentTutor["Student Tutor Workspace"]
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
+  StudentTutor --> TutorKBBadges["KB Context Badges in Chat Messages"]
+  TutorKBBadges --> SnapshotKBs["Message requestSnapshot.knowledgeBases"]
   
   Product --> TeacherDashboard["Teacher Dashboard"]
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
