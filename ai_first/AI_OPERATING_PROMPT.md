@@ -96,6 +96,67 @@ Before handing off:
 4. Update this file if status, workflow, or next actions changed.
 5. Check whether the PR is eligible for autonomous merge under the merge policy.
 6. Add handoff notes with changed files, risks, merge status, and the next recommended read path.
+## Task Tracking System
+
+The project uses a structured task registry to track MVP gaps, priorities, and progress:
+
+### Key Files
+
+- `ai_first/TASK_REGISTRY.json` - Authoritative task list with metadata, priorities, and dependencies
+- `ai_first/MVP_GAP_ANALYSIS.md` - Detailed audit report with issue descriptions, risk assessment, and roadmap
+
+### Task Status Workflow
+
+Tasks flow through states:
+- **not-started**: Issue identified, not yet assigned
+- **in-progress**: Active work, updated daily
+- **completed**: Merged to main or stable branch
+
+### Task Priority Levels
+
+- **P1 Critical**: Blockers for contest submission, MVP incomplete
+- **P2-P3 High**: Essential for MVP, fix next
+- **P4-P10 Medium**: Important UX/features, schedule for later
+- **P11-P27 Low**: Nice-to-have, polish items
+
+### Workflow: MVP Gap Analysis to Execution
+
+1. **Discovery**: Read `ai_first/MVP_GAP_ANALYSIS.md` for complete audit
+2. **Selection**: Choose next task from Phase 1 (critical path) in JSON registry
+3. **Planning**: Create or update task packet in `docs/superpowers/tasks/`
+4. **Execution**: Follow Execution Contract rules above
+5. **Tracking**: Update `TASK_REGISTRY.json` status field as work progresses
+6. **Mirror**: Keep GitHub issues in sync with `TASK_REGISTRY.json` status
+
+### AI Worker Quick Start
+
+When starting a new feature or fix:
+1. Check `ai_first/TASK_REGISTRY.json` for matching task ID
+2. Note the priority, effort estimate, and file scope
+3. Read the related section in `ai_first/MVP_GAP_ANALYSIS.md`
+4. Create feature branch: `pod-a/<task-name>`, `pod-b/<task-name>`, or `fix/<task-name>`
+5. Create GitHub issue using template from JSON `github_issues_template` section
+6. Link PR to issue
+7. Update JSON status → "in-progress" when starting
+8. Update JSON status → "completed" when merged to main
+
+### Critical P1 Tasks (Block before contest submission)
+
+| Task ID | Title | Blocker | Phase |
+|---------|-------|---------|-------|
+| T009 | Marketplace Import | Fake placeholder only | 1 |
+| T010 | Assessment Feedback | Minimal recommendations | 1 |
+| T018 | Vietnamese Prompts | English-only LLM responses | 1 |
+| T028 | Rate Limiting | API abuse risk | 1 |
+
+### Integration with Existing Rules
+
+- Task packets created from TASK_REGISTRY inherit `Files:` field as owned-file contract
+- Every PR updates corresponding task status in JSON
+- Daily logs reference task IDs for tracking progress
+- Architecture changes trigger MAIN_SYSTEM_MAP.md updates per the task scope
+
+@@## Next actions
 
 ## Next actions
 

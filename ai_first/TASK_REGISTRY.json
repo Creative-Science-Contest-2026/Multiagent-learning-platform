@@ -1,0 +1,599 @@
+{
+  "metadata": {
+    "last_updated": "2026-04-20T10:00:00Z",
+    "project": "Multiagent Learning Platform - VnExpress Contest MVP",
+    "status": "Active Development",
+    "total_tasks": 35
+  },
+  "task_categories": {
+    "completed": {
+      "description": "Features fully implemented and merged to main",
+      "count": 8,
+      "tasks": [
+        "T001_MARKETPLACE_API_LIST",
+        "T002_MARKETPLACE_API_DETAIL",
+        "T003_MARKETPLACE_UI_BROWSE",
+        "T004_PROGRESS_INDICATOR_COMPONENT",
+        "T005_LEARNING_JOURNEY_COMPONENT",
+        "T006_ASSESSMENT_REVIEW_INTEGRATION",
+        "T007_VIETNAMESE_UI_TRANSLATION",
+        "T008_VIETNAMESE_BACKEND_SUPPORT"
+      ]
+    },
+    "in_progress": {
+      "description": "Features partially implemented, need completion",
+      "count": 0,
+      "tasks": []
+    },
+    "blocked": {
+      "description": "Tasks blocked by dependencies",
+      "count": 0,
+      "tasks": []
+    },
+    "pending": {
+      "description": "Tasks not started, ordered by priority",
+      "count": 27,
+      "tasks": []
+    }
+  },
+  "tasks": [
+    {
+      "id": "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
+      "category": "Critical",
+      "priority": 1,
+      "title": "Implement Marketplace Pack Import",
+      "description": "Replace placeholder import logic with actual pack copying to user workspace. Currently shows success but doesn't import.",
+      "scope": {
+        "frontend": "web/app/(utility)/marketplace/page.tsx - handleImportPack function",
+        "backend": "deeptutor/api/routers/marketplace.py - new endpoint /import/{pack_name}",
+        "api_client": "web/lib/marketplace-api.ts - add importMarketplacePack function"
+      },
+      "affected_features": ["Marketplace Browse & Import"],
+      "complexity": "High",
+      "estimated_hours": 4,
+      "dependencies": ["Knowledge Pack Manager API"],
+      "status": "not-started",
+      "notes": "Need to copy pack metadata, documents, and configuration to user's knowledge_bases directory"
+    },
+    {
+      "id": "T010_ASSESSMENT_FEEDBACK_DETAILS",
+      "category": "Critical",
+      "priority": 2,
+      "title": "Enhance Assessment Feedback with Analysis",
+      "description": "Add detailed analysis breakdown, performance by topic, and learning recommendations in assessment review",
+      "scope": {
+        "frontend": "web/components/assessment/ProgressIndicator.tsx - expand recommendations",
+        "backend": "deeptutor/api/routers/dashboard.py - add assessment analytics endpoint",
+        "database": "Extend assessment_results schema with analysis data"
+      },
+      "affected_features": ["Student Learning Experience", "Assessment Review"],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": ["Assessment Generation API"],
+      "status": "not-started",
+      "notes": "Need ML/heuristic analysis of question performance by topic, difficulty, and learning standard"
+    },
+    {
+      "id": "T011_KB_CONTEXT_BADGES",
+      "category": "Critical",
+      "priority": 3,
+      "title": "Add KB Context Badges to Tutoring Session",
+      "description": "Display active knowledge base context during tutoring to help students understand learning sources",
+      "scope": {
+        "frontend": "web/components/chat/ChatComposer.tsx, ChatMessageList.tsx",
+        "display": "Show KB badges near tutor messages or in session header"
+      },
+      "affected_features": ["Student Tutor Workspace"],
+      "complexity": "Medium",
+      "estimated_hours": 2,
+      "dependencies": ["Chat Context System"],
+      "status": "not-started",
+      "notes": "Extract KB context from UnifiedContext and display with visual styling"
+    },
+    {
+      "id": "T012_TEACHER_PACK_SHARING_UI",
+      "category": "High",
+      "priority": 4,
+      "title": "Teacher Knowledge Pack Sharing UI",
+      "description": "Add UI for teachers to mark packs as public/team/private and configure sharing settings",
+      "scope": {
+        "frontend": "web/app/(workspace)/knowledge - add sharing settings panel",
+        "backend": "deeptutor/api/routers/knowledge.py - extend update endpoint with sharing_status"
+      },
+      "affected_features": ["Knowledge Pack Management"],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": ["Knowledge Manager API"],
+      "status": "not-started",
+      "notes": "Update metadata sharing_status, owner, and access control rules"
+    },
+    {
+      "id": "T013_MARKETPLACE_PACK_PREVIEW",
+      "category": "High",
+      "priority": 5,
+      "title": "Marketplace Pack Preview Modal",
+      "description": "Show detailed preview of pack contents before import: documents, assessment samples, learning objectives",
+      "scope": {
+        "frontend": "web/app/(utility)/marketplace/page.tsx - add modal component",
+        "api": "GET /api/v1/marketplace/{pack_name}/preview"
+      },
+      "affected_features": ["Marketplace Browse"],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": ["Marketplace API"],
+      "status": "not-started",
+      "notes": "Show first 3 questions, objectives, document count, and metadata preview"
+    },
+    {
+      "id": "T014_STUDENT_PROGRESS_DASHBOARD",
+      "category": "High",
+      "priority": 6,
+      "title": "Student Progress Tracking Dashboard",
+      "description": "Add student-view dashboard showing progress across all assessments, trending topics, and mastery levels",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard/student - new page",
+        "backend": "deeptutor/api/routers/dashboard.py - GET /student-progress endpoint"
+      },
+      "affected_features": ["Student Dashboard"],
+      "complexity": "High",
+      "estimated_hours": 5,
+      "dependencies": ["Assessment Analytics"],
+      "status": "not-started",
+      "notes": "Show progress over time, topic mastery chart, recent assessments, learning streak"
+    },
+    {
+      "id": "T015_ASSESSMENT_RECOMMENDATIONS",
+      "category": "High",
+      "priority": 7,
+      "title": "AI-Powered Assessment Recommendations",
+      "description": "Generate personalized next assessment recommendations based on student performance and learning gaps",
+      "scope": {
+        "backend": "deeptutor/services/assessment - new recommendation service",
+        "api": "POST /api/v1/assessment/recommend"
+      },
+      "affected_features": ["Student Learning Experience"],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": ["LLM Service", "Assessment Analytics"],
+      "status": "not-started",
+      "notes": "Analyze performance data and suggest next topics to study or practice"
+    },
+    {
+      "id": "T016_MARKETPLACE_RATINGS",
+      "category": "Medium",
+      "priority": 8,
+      "title": "Add Pack Ratings & Reviews System",
+      "description": "Allow teachers/students to rate and review knowledge packs in marketplace",
+      "scope": {
+        "frontend": "web/app/(utility)/marketplace - add rating UI",
+        "backend": "deeptutor/api/routers/marketplace.py - new endpoints for ratings",
+        "database": "Add marketplace_ratings table"
+      },
+      "affected_features": ["Marketplace"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["Database Schema"],
+      "status": "not-started",
+      "notes": "5-star rating system with optional comments, show average rating in pack cards"
+    },
+    {
+      "id": "T017_ASSESSMENT_HISTORY_FILTERING",
+      "category": "Medium",
+      "priority": 9,
+      "title": "Assessment History Filtering & Search",
+      "description": "Add filters and search to teacher dashboard assessment history by date, KB, student, score range",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard - add filter panel",
+        "api": "GET /api/v1/dashboard/sessions with query filters"
+      },
+      "affected_features": ["Teacher Dashboard"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["Dashboard API"],
+      "status": "not-started",
+      "notes": "Reuse existing session query parameters, add UI for common filters"
+    },
+    {
+      "id": "T018_VIETNAMESE_PROMPT_VARIANTS",
+      "category": "High",
+      "priority": 10,
+      "title": "Vietnamese LLM Prompt Variants",
+      "description": "Add Vietnamese language variants for all LLM prompts in agents (solve, question, research, co_writer)",
+      "scope": {
+        "backend": "deeptutor/agents/*/prompts/vi/ - create Vietnamese YAML files",
+        "system": "deeptutor/services/prompt/manager.py - already supports vi fallback chain"
+      },
+      "affected_features": ["Vietnamese i18n", "All AI Agents"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["i18n System"],
+      "status": "not-started",
+      "notes": "Translate prompt templates for solve, question generation, research, co-writing agents"
+    },
+    {
+      "id": "T019_MARKETPLACE_SORTING",
+      "category": "Medium",
+      "priority": 11,
+      "title": "Add Marketplace Pack Sorting Options",
+      "description": "Add sort options: popularity (downloads), recent, rating, most_objectives",
+      "scope": {
+        "frontend": "web/app/(utility)/marketplace - add sort dropdown",
+        "api": "GET /api/v1/marketplace/list - add sort_by parameter"
+      },
+      "affected_features": ["Marketplace Browse"],
+      "complexity": "Low",
+      "estimated_hours": 1.5,
+      "dependencies": ["Marketplace API"],
+      "status": "not-started",
+      "notes": "Implement server-side sorting, maintain download_count and rating metadata"
+    },
+    {
+      "id": "T020_ASSESSMENT_EXPORT_PDF",
+      "category": "Medium",
+      "priority": 12,
+      "title": "Assessment Results Export to PDF",
+      "description": "Allow students/teachers to export assessment results and feedback as PDF report",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard/assessments - add Export PDF button",
+        "backend": "deeptutor/api/routers/dashboard.py - new endpoint /sessions/{id}/export-pdf"
+      },
+      "affected_features": ["Assessment Review"],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": ["PDF Generation Library"],
+      "status": "not-started",
+      "notes": "Include score, questions, explanations, and recommendations in PDF"
+    },
+    {
+      "id": "T021_SESSION_REPLAY",
+      "category": "Medium",
+      "priority": 13,
+      "title": "Tutoring Session Replay Feature",
+      "description": "Show timeline/replay of chat conversation in session review, useful for teacher analysis",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard - session replay component",
+        "display": "Timeline view of user messages and tutor responses with timestamps"
+      },
+      "affected_features": ["Teacher Dashboard"],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": ["Session Storage"],
+      "status": "not-started",
+      "notes": "Reconstruct conversation flow, show KB context at each turn"
+    },
+    {
+      "id": "T022_ERROR_BOUNDARY_HANDLING",
+      "category": "High",
+      "priority": 14,
+      "title": "Improve Error Boundaries & Recovery",
+      "description": "Add React error boundaries to marketplace and assessment components with graceful fallbacks",
+      "scope": {
+        "frontend": "web/components/ErrorBoundary.tsx - extend",
+        "pages": "marketplace, assessment review, dashboard"
+      },
+      "affected_features": ["App Stability"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["React"],
+      "status": "not-started",
+      "notes": "Catch and display user-friendly error messages instead of blank screens"
+    },
+    {
+      "id": "T023_MARKETPLACE_CACHE_OPTIMIZATION",
+      "category": "Medium",
+      "priority": 15,
+      "title": "Marketplace List Caching & Pagination Optimization",
+      "description": "Implement client-side caching and lazy loading for marketplace packs to improve UX",
+      "scope": {
+        "frontend": "web/lib/marketplace-api.ts - add caching layer",
+        "hooks": "useMarketplacePacks custom hook with stale-while-revalidate"
+      },
+      "affected_features": ["Marketplace Performance"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["SWR or React Query"],
+      "status": "not-started",
+      "notes": "Cache pack list for 5 minutes, refresh on user action"
+    },
+    {
+      "id": "T024_TEACHER_INVITATION_SYSTEM",
+      "category": "Medium",
+      "priority": 16,
+      "title": "Teacher Team Invitation & Sharing",
+      "description": "Allow teachers to invite colleagues and create team knowledge pack sharing groups",
+      "scope": {
+        "backend": "deeptutor/api/routers - new /teams endpoint",
+        "frontend": "web/app/(workspace) - team management UI"
+      },
+      "affected_features": ["Knowledge Pack Sharing", "Collaboration"],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": ["User Management", "Access Control"],
+      "status": "not-started",
+      "notes": "Implement team creation, invitations via email/link, access control"
+    },
+    {
+      "id": "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
+      "category": "Medium",
+      "priority": 17,
+      "title": "Assessment Difficulty Adaptive Adjustment",
+      "description": "Adjust question difficulty based on student performance during assessment",
+      "scope": {
+        "backend": "deeptutor/agents/question - add difficulty tracking",
+        "api": "Store difficulty ratings and adjust next question"
+      },
+      "affected_features": ["Question Generation"],
+      "complexity": "High",
+      "estimated_hours": 5,
+      "dependencies": ["Question Analytics"],
+      "status": "not-started",
+      "notes": "Implement CAT-style difficulty adjustment, track performance per difficulty level"
+    },
+    {
+      "id": "T026_MOBILE_RESPONSIVE_MARKETPLACE",
+      "category": "Low",
+      "priority": 18,
+      "title": "Mobile-First Marketplace Responsive Design",
+      "description": "Optimize marketplace pack cards and filters for mobile/tablet viewports",
+      "scope": {
+        "frontend": "web/app/(utility)/marketplace - responsive Tailwind adjustments"
+      },
+      "affected_features": ["Marketplace UX"],
+      "complexity": "Low",
+      "estimated_hours": 1,
+      "dependencies": ["Tailwind CSS"],
+      "status": "not-started",
+      "notes": "Test on phone/tablet, fix filter layout, ensure pagination works on small screens"
+    },
+    {
+      "id": "T027_ANALYTICS_DASHBOARD",
+      "category": "Medium",
+      "priority": 19,
+      "title": "Teacher Analytics Dashboard",
+      "description": "Add comprehensive analytics for teachers: student engagement, assessment trends, common difficulties",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard - analytics tab",
+        "backend": "deeptutor/api/routers/dashboard.py - analytics endpoints"
+      },
+      "affected_features": ["Teacher Dashboard"],
+      "complexity": "High",
+      "estimated_hours": 8,
+      "dependencies": ["Analytics Service"],
+      "status": "not-started",
+      "notes": "Charts: student participation over time, question difficulty heatmap, performance distribution"
+    },
+    {
+      "id": "T028_API_RATE_LIMITING",
+      "category": "High",
+      "priority": 20,
+      "title": "API Rate Limiting & Throttling",
+      "description": "Implement rate limiting for marketplace and assessment endpoints to prevent abuse",
+      "scope": {
+        "backend": "deeptutor/api/main.py - add rate limit middleware",
+        "config": "Configure limits per endpoint"
+      },
+      "affected_features": ["API Security"],
+      "complexity": "Medium",
+      "estimated_hours": 2,
+      "dependencies": ["FastAPI Middleware"],
+      "status": "not-started",
+      "notes": "Use sliding window or token bucket algorithm, return 429 Too Many Requests"
+    },
+    {
+      "id": "T029_MARKETPLACE_SEARCH_FULLTEXT",
+      "category": "Medium",
+      "priority": 21,
+      "title": "Full-Text Search for Marketplace Packs",
+      "description": "Implement full-text search across pack name, description, objectives, and content",
+      "scope": {
+        "backend": "deeptutor/api/routers/marketplace.py - full-text search logic",
+        "database": "Add full-text search index if using database"
+      },
+      "affected_features": ["Marketplace Browse"],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": ["Search Service"],
+      "status": "not-started",
+      "notes": "Search in pack metadata and first 3 questions/objectives, case-insensitive match"
+    },
+    {
+      "id": "T030_ASSESSMENT_TIME_TRACKING",
+      "category": "Medium",
+      "priority": 22,
+      "title": "Assessment Time Tracking & Analytics",
+      "description": "Track time spent per question and show time-based analytics in results",
+      "scope": {
+        "backend": "deeptutor/api/routers/question - track time per question",
+        "storage": "Store question_duration in assessment_results"
+      },
+      "affected_features": ["Assessment Review"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["Assessment Schema"],
+      "status": "not-started",
+      "notes": "Display average time per question, identify rush vs. careful answering patterns"
+    },
+    {
+      "id": "T031_TUTOR_FOLLOW_UP_PROMPTS",
+      "category": "Medium",
+      "priority": 23,
+      "title": "Smart Tutor Follow-Up Questions",
+      "description": "Tutor suggests follow-up questions based on student's answer quality to deepen understanding",
+      "scope": {
+        "backend": "deeptutor/agents/tutorbot - add follow-up generation",
+        "api": "Extend tutor response with suggested questions"
+      },
+      "affected_features": ["Student Tutoring"],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": ["LLM Service", "Tutor Agent"],
+      "status": "not-started",
+      "notes": "Generate 1-3 follow-up questions when student answer indicates misunderstanding"
+    },
+    {
+      "id": "T032_KNOWLEDGE_PACK_VERSIONING",
+      "category": "Low",
+      "priority": 24,
+      "title": "Knowledge Pack Versioning System",
+      "description": "Support multiple versions of knowledge packs with change tracking",
+      "scope": {
+        "backend": "deeptutor/knowledge - add versioning support",
+        "database": "Track version history and changelog"
+      },
+      "affected_features": ["Knowledge Pack Management"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["Database Schema"],
+      "status": "not-started",
+      "notes": "Allow teachers to update packs while preserving old versions for existing assessments"
+    },
+    {
+      "id": "T033_LEARNING_PATH_SEQUENCING",
+      "category": "Low",
+      "priority": 25,
+      "title": "Suggested Learning Path Sequencing",
+      "description": "Generate recommended sequence of topics based on prerequisites and learning objectives",
+      "scope": {
+        "backend": "deeptutor/services - new learning_path service",
+        "api": "GET /api/v1/learning-paths/{pack_id}"
+      },
+      "affected_features": ["Student Learning Experience"],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": ["Knowledge Graph", "Prerequisite Metadata"],
+      "status": "not-started",
+      "notes": "Extract prerequisites from pack metadata, generate optimal learning sequence"
+    },
+    {
+      "id": "T034_BATCH_ASSESSMENT_IMPORT",
+      "category": "Low",
+      "priority": 26,
+      "title": "Batch Import Multiple Packs",
+      "description": "Allow teachers to select and import multiple packs at once",
+      "scope": {
+        "frontend": "web/app/(utility)/marketplace - add multi-select mode",
+        "api": "POST /api/v1/marketplace/import-batch"
+      },
+      "affected_features": ["Marketplace"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["Import Implementation"],
+      "status": "not-started",
+      "notes": "Add checkbox to pack cards, show selected count, batch import button"
+    },
+    {
+      "id": "T035_OFFLINE_MODE_SUPPORT",
+      "category": "Low",
+      "priority": 27,
+      "title": "Offline Mode for Downloaded Packs",
+      "description": "Cache downloaded packs and enable offline assessment taking",
+      "scope": {
+        "frontend": "Service Worker for offline caching",
+        "storage": "Local IndexedDB for pack content"
+      },
+      "affected_features": ["Marketplace", "Assessment"],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": ["Service Worker", "IndexedDB"],
+      "status": "not-started",
+      "notes": "Sync when online, allow working offline for imported packs"
+    }
+  ],
+  "github_issues_template": {
+    "marketplace_import": {
+      "title": "[MVP] Implement Marketplace Pack Import Functionality",
+      "body": "**Priority:** Critical (P1)\\n\\n**Description:**\\nReplace placeholder import logic in Marketplace page. Currently shows success message but doesn't actually copy pack to user workspace.\\n\\n**Acceptance Criteria:**\\n- [ ] Import button triggers actual pack copying\\n- [ ] Pack metadata, documents, and config copied to knowledge_bases\\n- [ ] Success/error feedback shown to user\\n- [ ] Imported pack appears in user's Knowledge Pack list\\n\\n**Implementation:**\\n- Backend: Add POST /api/v1/marketplace/import/{pack_name} endpoint\\n- Frontend: Update handleImportPack function\\n- API Client: Add importMarketplacePack function",
+      "labels": ["marketplace", "mvp", "critical", "backend", "frontend"],
+      "assignee": "auto",
+      "milestone": "MVP Feature Pack 3 Extended"
+    },
+    "assessment_feedback": {
+      "title": "[MVP] Enhance Assessment Review with Detailed Feedback",
+      "body": "**Priority:** Critical (P2)\\n\\n**Description:**\\nAdd detailed analysis breakdown, topic-based performance, and personalized learning recommendations to assessment review page.\\n\\n**Acceptance Criteria:**\\n- [ ] Show performance breakdown by topic\\n- [ ] Display learning recommendations based on incorrect answers\\n- [ ] Add topic mastery visualization\\n- [ ] Suggest next learning steps\\n\\n**Implementation:**\\n- Backend: Create /api/v1/dashboard/assessment-analysis endpoint\\n- Frontend: Extend ProgressIndicator component with analysis section",
+      "labels": ["assessment", "mvp", "critical", "backend", "frontend"],
+      "assignee": "auto",
+      "milestone": "MVP Feature Pack 3 Extended"
+    },
+    "kb_context_badges": {
+      "title": "[MVP] Add KB Context Display in Tutoring Session",
+      "body": "**Priority:** High (P3)\\n\\n**Description:**\\nDisplay active knowledge base context badges in student tutoring session to show learning sources.\\n\\n**Acceptance Criteria:**\\n- [ ] KB badges shown in chat interface\\n- [ ] Clear indication of which pack question comes from\\n- [ ] Consistent styling with rest of UI\\n\\n**Implementation:**\\n- Extract KB context from UnifiedContext\\n- Add visual badges to ChatMessageList",
+      "labels": ["ux", "mvp", "frontend"],
+      "assignee": "auto",
+      "milestone": "MVP Feature Pack 3 Extended"
+    },
+    "vietnamese_prompts": {
+      "title": "[MVP] Add Vietnamese Language Prompts",
+      "body": "**Priority:** High (P10)\\n\\n**Description:**\\nCreate Vietnamese language variants for all LLM prompts to complete i18n support.\\n\\n**Acceptance Criteria:**\\n- [ ] Vietnamese prompts for solve agent\\n- [ ] Vietnamese prompts for question generation\\n- [ ] Vietnamese prompts for tutoring\\n- [ ] Fallback chain works (vi -> en)\\n\\n**Implementation:**\\n- Create deeptutor/agents/*/prompts/vi/ directories\\n- Translate prompt YAML files",
+      "labels": ["i18n", "mvp", "backend"],
+      "assignee": "auto",
+      "milestone": "MVP Feature Pack 3 Extended"
+    }
+  },
+  "risk_mitigation": {
+    "performance_risks": [
+      {
+        "risk": "Marketplace queries become slow with many packs",
+        "mitigation": "Implement database indexing on sharing_status, subject, owner; add pagination",
+        "related_task": "T019, T023"
+      },
+      {
+        "risk": "Large pack imports cause UI freeze",
+        "mitigation": "Implement background import worker with progress notification",
+        "related_task": "T009"
+      }
+    ],
+    "ux_risks": [
+      {
+        "risk": "Users don't understand KB context in tutoring",
+        "mitigation": "Add T011 KB context badges and help tooltip",
+        "related_task": "T011"
+      },
+      {
+        "risk": "Marketplace filters overwhelming on mobile",
+        "mitigation": "Implement collapsible filter panel for mobile, T026",
+        "related_task": "T026"
+      }
+    ],
+    "technical_risks": [
+      {
+        "risk": "API rate limiting not implemented, abuse possible",
+        "mitigation": "Implement T028 rate limiting immediately after initial MVP",
+        "related_task": "T028"
+      },
+      {
+        "risk": "Error handling gaps cause blank pages",
+        "mitigation": "Add error boundaries and user-friendly error messages, T022",
+        "related_task": "T022"
+      }
+    ]
+  },
+  "dependency_graph": {
+    "T009": ["Knowledge Manager API exists"],
+    "T010": ["Assessment Generation API", "Question Analytics"],
+    "T011": ["Chat Context System"],
+    "T012": ["Knowledge Manager API"],
+    "T013": ["Marketplace API", "T009"],
+    "T015": ["T010", "LLM Service"],
+    "T024": ["User Management", "Access Control"],
+    "T027": ["Analytics Service"],
+    "T033": ["Knowledge Graph", "Prerequisite Metadata"],
+    "T035": ["T009 (batch import)", "Service Worker"]
+  },
+  "milestones": {
+    "MVP_PHASE_1": {
+      "title": "Critical Path Tasks (Next 2 weeks)",
+      "tasks": ["T009", "T010", "T011", "T012", "T018", "T022"],
+      "target_date": "2026-05-04"
+    },
+    "MVP_PHASE_2": {
+      "title": "High Priority Features (Weeks 3-4)",
+      "tasks": ["T013", "T014", "T015", "T016", "T017", "T019", "T020", "T021", "T023", "T028"],
+      "target_date": "2026-05-18"
+    },
+    "MVP_PHASE_3": {
+      "title": "Medium Priority & Polish (Weeks 5+)",
+      "tasks": ["T024", "T025", "T026", "T027", "T029", "T030", "T031", "T032", "T033", "T034", "T035"],
+      "target_date": "2026-06-01"
+    }
+  }
+}
