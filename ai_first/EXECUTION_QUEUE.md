@@ -7,17 +7,18 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#23`, which added the demo-readiness smoke lane packet and runbook.
+- Latest merged PR before the current active branch: `#24`, which recorded the first smoke execution result.
 - Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
 
 ## Active queue
 
-- No active issue is queued right now.
-- The latest completed lane is `docs/superpowers/tasks/2026-04-19-demo-readiness-smoke.md`.
+- Open issue: `#26 docs: add contest evidence refresh packet`
+- Active task packet: `docs/superpowers/tasks/2026-04-19-contest-evidence-refresh.md`
+- Expected branch: `docs/contest-evidence-refresh`
 
 ## Next recommended task
 
-Demo-readiness smoke passed against the current local MVP data. Derive the next short task from the contest MVP goal and create a new task packet before opening new runtime or product work.
+Land the contest evidence refresh packet, then use it to keep the evidence bundle aligned with smoke-backed MVP validation.
 
 ## AI-owned blockers
 
