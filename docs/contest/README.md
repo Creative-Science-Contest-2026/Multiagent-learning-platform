@@ -8,6 +8,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Evidence Files
 
+- [`SUBMISSION_PACKAGE.md`](./SUBMISSION_PACKAGE.md): compact final review path for contest submission.
 - [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md): step-by-step demo path for a reviewer or presenter.
 - [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md): required screenshots, optional video, and pass/fail evidence fields.
 - [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md): local validation commands, results, limitations, and remaining capture work.
@@ -17,7 +18,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ## Current Status
 
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
-- The first smoke-backed MVP verification passed on 2026-04-19 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
+- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-19 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
 - Screenshot evidence is captured in [`screenshots/`](./screenshots/).
 - Video capture is optional and deferred to avoid storing large media in the repository.
 

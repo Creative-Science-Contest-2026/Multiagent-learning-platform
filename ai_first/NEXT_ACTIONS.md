@@ -7,9 +7,9 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 ## Immediate
 
 1. Keep `ai_first/EXECUTION_QUEUE.md` current after merges and blocker changes.
-2. Create the contest submission package from issue `#41`.
-3. Link the pitch, demo story, evidence checklist, validation report, screenshots, smoke notes, known limitations, and final submission checklist from one short read path.
-4. Review whether optional video capture is required after the package exists.
+2. Merge the contest submission package from issue `#41` when checks pass.
+3. Review IP commitment, final product description wording, and optional video requirements.
+4. If optional video is required, create a separate focused video capture task.
 5. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
 6. If a future smoke fails, create or update the next focused product/runtime bug task from the first hard failure.
 6. Keep open issues aligned with active task packets and unfinished work only.

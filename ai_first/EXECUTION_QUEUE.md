@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#40`, which recorded the scripted-reset smoke execution result.
+- Latest merged PR before the current active branch: `#42`, which queued the contest submission package lane.
 - Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
 - Smoke-backed evidence refresh rules, the local demo reset command, and the scripted-reset smoke result now live in `docs/contest/` on `main`.
 
@@ -19,7 +19,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Next recommended task
 
-Create the contest submission package that links the pitch, demo story, evidence checklist, validation report, screenshots, smoke notes, known limitations, and final submission checklist.
+Merge the contest submission package when checks pass. After merge, the remaining near-term work is human review of IP commitment, final product description wording, and whether optional video is required.
 
 ## AI-owned blockers
 
