@@ -16,6 +16,7 @@ import {
   PenLine,
   Plus,
   Settings,
+  Store,
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -36,6 +37,7 @@ const PRIMARY_NAV: NavEntry[] = [
   { href: "/guide", label: "Guided Learning", icon: GraduationCap },
   { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
   { href: "/knowledge", label: "Knowledge", icon: BookOpen },
+  { href: "/marketplace", label: "Marketplace", icon: Store },
   { href: "/memory", label: "Memory", icon: Brain },
 ];
 
