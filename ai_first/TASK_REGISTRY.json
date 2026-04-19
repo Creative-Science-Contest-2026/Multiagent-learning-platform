@@ -22,9 +22,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
+      "count": 2,
       "tasks": [
-        "T009_MARKETPLACE_IMPORT_IMPLEMENTATION"
+        "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
+        "T028_API_RATE_LIMITING"
       ]
     },
     "blocked": {
@@ -34,7 +35,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 26,
+      "count": 25,
       "tasks": []
     }
   },
@@ -378,8 +379,8 @@
       "complexity": "Medium",
       "estimated_hours": 2,
       "dependencies": ["FastAPI Middleware"],
-      "status": "not-started",
-      "notes": "Use sliding window or token bucket algorithm, return 429 Too Many Requests"
+      "status": "in-progress",
+      "notes": "In-memory sliding-window middleware added in deeptutor/api/main.py with per-prefix route limits and 429 responses including Retry-After header. Pending production load tuning and persistence strategy."
     },
     {
       "id": "T029_MARKETPLACE_SEARCH_FULLTEXT",
