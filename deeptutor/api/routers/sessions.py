@@ -7,7 +7,7 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException, Query
 
-from deeptutor.services.session import get_sqlite_session_store
+from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
 
 router = APIRouter()
 
@@ -63,6 +63,18 @@ async def get_session(session_id: str):
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
+
+
+@router.get("/{session_id}/assessment-review")
+async def get_assessment_review(session_id: str):
+    store = get_sqlite_session_store()
+    session = await store.get_session_with_messages(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    review = extract_assessment_review(session)
+    if review is None:
+        raise HTTPException(status_code=404, detail="Assessment review not found")
+    return review
 
 
 @router.patch("/{session_id}")

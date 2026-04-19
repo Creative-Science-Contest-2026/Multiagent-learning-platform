@@ -20,6 +20,7 @@ Usage:
         # ... implement other abstract methods
 """
 
+from .assessment_review import extract_assessment_review
 from .base_session_manager import BaseSessionManager
 from .sqlite_store import SQLiteSessionStore, get_sqlite_session_store
 from .turn_runtime import TurnRuntimeManager, get_turn_runtime_manager
@@ -28,6 +29,7 @@ __all__ = [
     "BaseSessionManager",
     "SQLiteSessionStore",
     "TurnRuntimeManager",
+    "extract_assessment_review",
     "get_sqlite_session_store",
     "get_turn_runtime_manager",
 ]
