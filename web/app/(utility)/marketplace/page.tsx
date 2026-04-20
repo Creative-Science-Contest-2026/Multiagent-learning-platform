@@ -2,13 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { BookOpen, Download, Filter, Loader2, Search } from "lucide-react";
+import { BookOpen, Download, Eye, Filter, Loader2, Search, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
+  getMarketplacePackPreview,
   listMarketplacePacks,
   importMarketplacePack,
   type MarketplaceListResponse,
   type MarketplacePack,
+  type MarketplacePackPreview,
 } from "@/lib/marketplace-api";
 
 export default function MarketplacePage() {
@@ -31,6 +33,9 @@ export default function MarketplacePage() {
   // Import state
   const [importing, setImporting] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewPack, setPreviewPack] = useState<MarketplacePackPreview | null>(null);
 
   const loadPacks = useCallback(async () => {
     setLoading(true);
@@ -68,6 +73,21 @@ export default function MarketplacePage() {
       setError(err instanceof Error ? err.message : "Failed to import pack");
     } finally {
       setImporting(null);
+    }
+  };
+
+  const handlePreviewPack = async (packName: string) => {
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    setPreviewPack(null);
+    try {
+      const preview = await getMarketplacePackPreview(packName);
+      setPreviewPack(preview);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load pack preview");
+      setPreviewOpen(false);
+    } finally {
+      setPreviewLoading(false);
     }
   };
 
@@ -266,26 +286,34 @@ export default function MarketplacePage() {
                     </div>
                   )}
 
-                  {/* Import Button */}
-                  <button
-                    onClick={() => handleImportPack(pack.name)}
-                    disabled={importing === pack.name || importSuccess === pack.name}
-                    className="flex items-center justify-center gap-2 rounded-md bg-[var(--primary)] px-3 py-2 text-[12px] font-medium text-[var(--primary-foreground)] transition-opacity hover:opacity-90 disabled:opacity-50"
-                  >
-                    {importing === pack.name ? (
-                      <>
-                        <Loader2 size={13} className="animate-spin" />
-                        {t("Importing")}
-                      </>
-                    ) : importSuccess === pack.name ? (
-                      <>{t("Imported!")}</>
-                    ) : (
-                      <>
-                        <Download size={13} />
-                        {t("Import")}
-                      </>
-                    )}
-                  </button>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <button
+                      onClick={() => handlePreviewPack(pack.name)}
+                      className="flex items-center justify-center gap-2 rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+                    >
+                      <Eye size={13} />
+                      {t("Preview")}
+                    </button>
+                    <button
+                      onClick={() => handleImportPack(pack.name)}
+                      disabled={importing === pack.name || importSuccess === pack.name}
+                      className="flex items-center justify-center gap-2 rounded-md bg-[var(--primary)] px-3 py-2 text-[12px] font-medium text-[var(--primary-foreground)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                    >
+                      {importing === pack.name ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin" />
+                          {t("Importing")}
+                        </>
+                      ) : importSuccess === pack.name ? (
+                        <>{t("Imported!")}</>
+                      ) : (
+                        <>
+                          <Download size={13} />
+                          {t("Import")}
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -316,6 +344,111 @@ export default function MarketplacePage() {
           </div>
         )}
       </div>
+
+      {previewOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-[640px] rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-4">
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+                  {t("Pack Preview")}
+                </p>
+                <h2 className="mt-1 text-[18px] font-semibold text-[var(--foreground)]">
+                  {previewPack?.name || t("Loading preview")}
+                </h2>
+              </div>
+              <button
+                onClick={() => {
+                  setPreviewOpen(false);
+                  setPreviewPack(null);
+                }}
+                className="rounded-md p-2 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-4 px-5 py-4">
+              {previewLoading ? (
+                <div className="flex items-center justify-center py-12 text-[13px] text-[var(--muted-foreground)]">
+                  <Loader2 size={16} className="mr-2 animate-spin" />
+                  {t("Loading preview")}
+                </div>
+              ) : previewPack ? (
+                <>
+                  {previewPack.description && (
+                    <p className="text-[13px] leading-6 text-[var(--muted-foreground)]">
+                      {previewPack.description}
+                    </p>
+                  )}
+
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <div className="rounded-lg bg-[var(--background)] p-3">
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                        {t("Sharing")}
+                      </p>
+                      <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                        {previewPack.sharing_status || t("Unknown")}
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-[var(--background)] p-3">
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                        {t("Documents")}
+                      </p>
+                      <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                        {previewPack.document_count}
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-[var(--background)] p-3">
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                        {t("Sessions")}
+                      </p>
+                      <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                        {previewPack.session_count || 0}
+                      </p>
+                    </div>
+                  </div>
+
+                  {previewPack.learning_objectives && previewPack.learning_objectives.length > 0 && (
+                    <div>
+                      <p className="text-[12px] font-semibold text-[var(--foreground)]">
+                        {t("Learning Objectives")}
+                      </p>
+                      <ul className="mt-2 list-inside list-disc space-y-1 text-[13px] text-[var(--muted-foreground)]">
+                        {previewPack.learning_objectives.map((objective) => (
+                          <li key={objective}>{objective}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-[12px] font-semibold text-[var(--foreground)]">
+                      {t("Sample Documents")}
+                    </p>
+                    {previewPack.sample_documents.length > 0 ? (
+                      <ul className="mt-2 space-y-2">
+                        {previewPack.sample_documents.map((document) => (
+                          <li
+                            key={document}
+                            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)]"
+                          >
+                            {document}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mt-2 text-[13px] text-[var(--muted-foreground)]">
+                        {t("No preview documents available")}
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

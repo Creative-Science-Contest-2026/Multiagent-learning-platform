@@ -46,6 +46,26 @@ def _list_marketplace_candidates() -> list[dict]:
     return items
 
 
+def _get_marketplace_match(pack_name: str) -> dict:
+    match = next((kb for kb in _list_marketplace_candidates() if kb.get("name") == pack_name), None)
+    if not match:
+        raise HTTPException(status_code=404, detail=f"Knowledge pack '{pack_name}' not found")
+    return match
+
+
+def _preview_document_summary(pack_dir: Path) -> tuple[int, list[str]]:
+    raw_dir = pack_dir / "raw"
+    if not raw_dir.exists() or not raw_dir.is_dir():
+        return 0, []
+
+    documents = sorted(
+        path.relative_to(raw_dir).as_posix()
+        for path in raw_dir.rglob("*")
+        if path.is_file()
+    )
+    return len(documents), documents[:3]
+
+
 @router.get("/list")
 async def list_marketplace_packs(
     sharing_status: str | None = Query(None, description="Filter by sharing_status: public, team, or None for all"),
@@ -99,10 +119,7 @@ async def list_marketplace_packs(
 async def get_marketplace_pack(pack_name: str):
     """Get detailed information about a specific marketplace pack."""
     try:
-        match = next((kb for kb in _list_marketplace_candidates() if kb.get("name") == pack_name), None)
-
-        if not match:
-            raise HTTPException(status_code=404, detail=f"Knowledge pack '{pack_name}' not found")
+        match = _get_marketplace_match(pack_name)
 
         return {
             "name": match.get("name"),
@@ -117,6 +134,38 @@ async def get_marketplace_pack(pack_name: str):
             "statistics": match.get("statistics", {}),
         }
     
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/{pack_name}/preview")
+async def preview_marketplace_pack(pack_name: str):
+    """Return a compact preview payload for a marketplace knowledge pack."""
+    try:
+        manager = get_kb_manager()
+        match = _get_marketplace_match(pack_name)
+        pack_dir = manager.base_dir / pack_name
+        if not pack_dir.exists() or not pack_dir.is_dir():
+            raise HTTPException(status_code=404, detail=f"Knowledge pack directory '{pack_name}' not found")
+
+        source_cfg = manager.config.get("knowledge_bases", {}).get(pack_name, {})
+        document_count, sample_documents = _preview_document_summary(pack_dir)
+
+        return {
+            "name": match.get("name"),
+            "description": source_cfg.get("description"),
+            "subject": match.get("subject"),
+            "grade": match.get("grade"),
+            "curriculum": match.get("curriculum"),
+            "learning_objectives": match.get("learning_objectives", []),
+            "owner": match.get("owner"),
+            "sharing_status": match.get("sharing_status"),
+            "session_count": match.get("session_count", 0),
+            "document_count": document_count,
+            "sample_documents": sample_documents,
+        }
     except HTTPException:
         raise
     except Exception as e:
