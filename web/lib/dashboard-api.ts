@@ -164,3 +164,15 @@ export async function getStudentProgress(limit = 50): Promise<StudentProgressOve
   });
   return expectJson<StudentProgressOverview>(response);
 }
+
+export async function downloadAssessmentExportPdf(sessionId: string): Promise<Blob> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/assessment-export/${sessionId}`), {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
+  return response.blob();
+}

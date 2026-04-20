@@ -66,3 +66,8 @@ Add PDF export for assessment review results so teachers and students can downlo
 
 - `T019` merged to `main` through PR `#64`.
 - Start by inspecting the current assessment review page and dashboard router before choosing a PDF generation strategy.
+- Implemented backend PDF export using `fitz` and wired the assessment review page to download the generated file.
+- Validation:
+  - `python3 -m pytest tests/api/test_dashboard_router.py -q`
+  - `python3 -m py_compile deeptutor/api/routers/dashboard.py`
+  - `cd web && npm run build`

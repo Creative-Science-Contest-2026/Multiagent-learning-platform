@@ -3,6 +3,7 @@ from __future__ import annotations
 import sqlite3
 
 import pytest
+import fitz
 
 try:
     from fastapi import FastAPI
@@ -333,3 +334,43 @@ async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
     assert payload["totals"]["tutoring_sessions"] == 0
     assert payload["knowledge_packs"] == [{"name": "algebra-pack", "session_count": 1}]
     assert [row["id"] for row in payload["recent_activity"]] == ["algebra-high"]
+
+
+@pytest.mark.asyncio
+async def test_dashboard_assessment_export_returns_pdf_report(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="export-session",
+        capability="deep_question",
+        message="Generate a quiz on geometry",
+        knowledge_bases=["geometry-pack"],
+    )
+    await store.add_message(
+        "export-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: What is the sum of angles in a triangle? -> Answered: 180 degrees (Correct)\n"
+        "2. [q2] Q: How many sides does a pentagon have? -> Answered: 4 (Incorrect, correct: 5)\n"
+        "Score: 1/2 (50%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/assessment-export/export-session")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert "attachment;" in response.headers["content-disposition"]
+    assert response.content.startswith(b"%PDF")
+
+    pdf = fitz.open(stream=response.content, filetype="pdf")
+    text = "\n".join(page.get_text() for page in pdf)
+    assert "Generate a quiz on geometry" in text
+    assert "geometry-pack" in text
+    assert "What is the sum of angles in a triangle?" in text
+    assert "How many sides does a pentagon have?" in text
+    assert "Score: 50%" in text

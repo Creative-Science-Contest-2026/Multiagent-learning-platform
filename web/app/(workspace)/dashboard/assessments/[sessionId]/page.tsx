@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowLeft, CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Download, Loader2, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
+  downloadAssessmentExportPdf,
   getAssessmentAnalysis,
   getAssessmentReview,
   type AssessmentAnalysis,
@@ -32,6 +33,7 @@ export default function AssessmentReviewPage() {
   const [analysis, setAnalysis] = useState<AssessmentAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,6 +56,25 @@ export default function AssessmentReviewPage() {
       cancelled = true;
     };
   }, [sessionId]);
+
+  const handleExportPdf = async () => {
+    setExporting(true);
+    try {
+      const blob = await downloadAssessmentExportPdf(sessionId);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${sessionId}-assessment-report.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setExporting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -95,28 +116,40 @@ export default function AssessmentReviewPage() {
           {t("Back to Dashboard")}
         </Link>
 
-        <header>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-            {t("Assessment Review")}
-          </p>
-          <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
-            {review.title || t("Untitled assessment")}
-          </h1>
-          <p className="mt-2 text-[14px] text-[var(--muted-foreground)]">
-            {formatTime(review.timestamp)} - {review.status}
-          </p>
-          {review.knowledge_bases.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {review.knowledge_bases.map((kb) => (
-                <span
-                  key={kb}
-                  className="rounded-md bg-[var(--muted)] px-2 py-1 text-[12px] text-[var(--muted-foreground)]"
-                >
-                  {kb}
-                </span>
-              ))}
-            </div>
-          )}
+        <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+              {t("Assessment Review")}
+            </p>
+            <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
+              {review.title || t("Untitled assessment")}
+            </h1>
+            <p className="mt-2 text-[14px] text-[var(--muted-foreground)]">
+              {formatTime(review.timestamp)} - {review.status}
+            </p>
+            {review.knowledge_bases.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {review.knowledge_bases.map((kb) => (
+                  <span
+                    key={kb}
+                    className="rounded-md bg-[var(--muted)] px-2 py-1 text-[12px] text-[var(--muted-foreground)]"
+                  >
+                    {kb}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleExportPdf}
+            disabled={exporting}
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:opacity-50"
+          >
+            {exporting ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+            {exporting ? t("Exporting PDF...") : t("Export PDF")}
+          </button>
         </header>
 
         <ProgressIndicator

@@ -3,7 +3,8 @@
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+import fitz
+from fastapi import APIRouter, HTTPException, Response
 
 from deeptutor.services.assessment import build_assessment_analysis
 from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
@@ -168,6 +169,60 @@ def _matches_dashboard_filters(
             return False
 
     return True
+
+
+def _build_assessment_export_pdf(
+    review: dict[str, Any],
+    analysis: dict[str, Any],
+) -> bytes:
+    document = fitz.open()
+    page = document.new_page()
+
+    lines = [
+        "Assessment Report",
+        "",
+        f"Title: {review.get('title') or 'Untitled session'}",
+        f"Status: {review.get('status') or 'completed'}",
+        f"Score: {review.get('summary', {}).get('score_percent', 0)}%",
+        (
+            "Knowledge Packs: "
+            + ", ".join(review.get("knowledge_bases") or [])
+            if review.get("knowledge_bases")
+            else "Knowledge Packs: None"
+        ),
+        "",
+        "Recommendations:",
+    ]
+
+    recommendations = analysis.get("recommendations") or []
+    if recommendations:
+        lines.extend(f"- {item}" for item in recommendations)
+    else:
+        lines.append("- No recommendations recorded")
+
+    lines.extend(["", "Question Breakdown:"])
+    for index, result in enumerate(review.get("results") or [], start=1):
+        lines.extend(
+            [
+                f"{index}. {result.get('question') or ''}",
+                f"Student Answer: {result.get('user_answer') or '(blank)'}",
+                f"Correct Answer: {result.get('correct_answer') or '(not recorded)'}",
+                f"Result: {'Correct' if result.get('is_correct') else 'Incorrect'}",
+                "",
+            ]
+        )
+
+    y = 48
+    for line in lines:
+        if y > 780:
+            page = document.new_page()
+            y = 48
+        page.insert_text((48, y), line, fontsize=11)
+        y += 18
+
+    pdf_bytes = document.tobytes()
+    document.close()
+    return pdf_bytes
 
 
 @router.get("/recent")
@@ -356,3 +411,25 @@ async def get_assessment_analysis(session_id: str):
         raise HTTPException(status_code=404, detail="Assessment review data not found")
 
     return build_assessment_analysis(review)
+
+
+@router.get("/assessment-export/{session_id}")
+async def export_assessment_report(session_id: str):
+    store = get_sqlite_session_store()
+    session = await store.get_session_with_messages(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Assessment session not found")
+
+    review = extract_assessment_review(session)
+    if review is None:
+        raise HTTPException(status_code=404, detail="Assessment review data not found")
+
+    analysis = build_assessment_analysis(review)
+    pdf_bytes = _build_assessment_export_pdf(review, analysis)
+    filename = f"{session_id}-assessment-report.pdf"
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
