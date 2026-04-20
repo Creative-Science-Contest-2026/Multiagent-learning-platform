@@ -7,30 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#58 [MVP] Add Pack Ratings & Reviews System`
-- `#58` added lightweight marketplace ratings and review submission, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, and ratings, assessment insights, recommendation flow, KB context badges, student progress dashboard, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#60 [MVP] Assessment History Filtering & Search`
+- `#60` added API-backed teacher dashboard history filters, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, and ratings, assessment insights, recommendation flow, KB context badges, student progress dashboard, teacher dashboard filtering, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#59 [MVP] Assessment History Filtering & Search`
-- Active branch: `pod-a/t017-dashboard-filtering`
-- Active PR: `#60 [MVP] Assessment History Filtering & Search` (Draft)
-- Active task packet: `docs/superpowers/tasks/2026-04-21-T017-dashboard-filtering.md`
-- Focus set: `T017` (dashboard filtering)
+- Active issue: `#61 [MVP] Vietnamese LLM Prompt Variants`
+- Active branch: `pod-a/t018-vietnamese-prompts`
+- Active task packet: `docs/superpowers/tasks/2026-04-21-T018-vietnamese-prompts.md`
+- Focus set: `T018` (Vietnamese prompts)
 
 ## Next recommended task
 
-Monitor CI for `#60`, fix any failing checks on `pod-a/t017-dashboard-filtering`, then merge to `main` once all required checks are green.
+Implement `T018` on `pod-a/t018-vietnamese-prompts`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-21)
 
 **Queue Advance**:
-1. `#58` merged to `main` after all required CI checks passed
-2. Issue `#57` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T017 Assessment History Filtering & Search`
-4. Issue `#59` created and task packet added for the new execution lane
-5. Draft PR `#60` opened with validation complete and architecture note attached
+1. `#60` merged to `main` after all required CI checks passed
+2. Issue `#59` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T018 Vietnamese LLM Prompt Variants`
+4. Issue `#61` created and task packet added for the new execution lane
 
 ## AI-owned blockers
 
@@ -61,8 +59,8 @@ Monitor CI for `#60`, fix any failing checks on `pod-a/t017-dashboard-filtering`
 | T014: Student Progress Dashboard | Completed | 5 | NO | Done |
 | T015: Assessment Recommendations | Completed | 6 | NO | Done |
 | T016: Marketplace Ratings | Completed | 4 | NO | Done |
-| T017: Dashboard Filtering | In Progress | 2 | NO | Now |
-| T018: Vietnamese Prompts | Not Started | 4 | YES | Parallel |
+| T017: Dashboard Filtering | Completed | 2 | NO | Done |
+| T018: Vietnamese Prompts | In Progress | 4 | YES | Now |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 

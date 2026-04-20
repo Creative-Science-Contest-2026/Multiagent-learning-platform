@@ -196,8 +196,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["Dashboard API"],
-      "status": "in-progress",
-      "notes": "Issue #59 opened and task packet created at docs/superpowers/tasks/2026-04-21-T017-dashboard-filtering.md. Active branch: pod-a/t017-dashboard-filtering. Draft PR #60 is open with dashboard API tests and frontend build passing locally."
+      "status": "completed",
+      "notes": "Merged to main through PR #60. Teacher dashboard now supports API-backed activity filtering."
     },
     {
       "id": "T018_VIETNAMESE_PROMPT_VARIANTS",
@@ -213,8 +213,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["i18n System"],
-      "status": "not-started",
-      "notes": "Translate prompt templates for solve, question generation, research, co-writing agents"
+      "status": "in-progress",
+      "notes": "Issue #61 opened and task packet created at docs/superpowers/tasks/2026-04-21-T018-vietnamese-prompts.md. Active branch: pod-a/t018-vietnamese-prompts."
     },
     {
       "id": "T019_MARKETPLACE_SORTING",
