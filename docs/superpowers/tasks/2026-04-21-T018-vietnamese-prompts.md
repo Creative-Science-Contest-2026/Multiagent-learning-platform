@@ -65,3 +65,6 @@ Add Vietnamese prompt variants for the main agent prompt families so Vietnamese 
 
 - `T017` is merged to `main` through PR `#60`.
 - Start from existing prompt family layout and fallback rules before changing prompt manager behavior.
+- Implemented `vi` prompt variants for the MVP prompt families without changing `PromptManager`.
+- Added prompt-loading regression coverage in `tests/core/test_prompt_manager.py`.
+- Validation: `python3 -m pytest tests/core/test_prompt_manager.py -q`

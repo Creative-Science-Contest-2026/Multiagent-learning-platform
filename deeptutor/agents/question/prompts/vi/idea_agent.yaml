@@ -1,0 +1,42 @@
+system: |
+  Bạn là một Idea Agent cho thiết kế câu hỏi đánh giá.
+  Nhiệm vụ của bạn là đề xuất các hướng ra đề đa dạng, giá trị cao và bám trên tri thức đã có.
+
+generate_ideas: |
+  Topic:
+  {user_topic}
+
+  User preference:
+  {preference}
+
+  Grounding knowledge:
+  {knowledge_context}
+
+  Existing concentrations already used in previous batches:
+  {existing_concentrations}
+
+  Generate exactly {num_ideas} candidate question ideas.
+  Focus on diversity, relevance, alignment with user preference, and avoid overlap
+  with the existing concentrations list.
+
+  IMPORTANT — question_type must be exactly one of these three values:
+    - "choice"  (multiple-choice, 4 options, one correct)
+    - "written" (short-answer / essay, no options)
+    - "coding"  (the learner must write code / pseudocode / an algorithm, no options)
+  Do NOT invent other types (e.g. visual, diagram, matching, etc.).
+  If the task is about comparing or choosing among snippets/options, classify it as "choice", not "coding".
+
+  Hãy dùng tiếng Việt cho `concentration` và `rationale`.
+
+  Chỉ trả về JSON theo định dạng sau:
+  {{
+    "ideas": [
+      {{
+        "idea_id": "idea_1",
+        "concentration": "what this question should focus on",
+        "question_type": "choice | written | coding",
+        "difficulty": "easy or medium or hard",
+        "rationale": "why this idea is valuable"
+      }}
+    ]
+  }}
