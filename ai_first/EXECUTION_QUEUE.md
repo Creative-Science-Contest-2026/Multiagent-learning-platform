@@ -15,12 +15,13 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 - Active issue: `#55 [MVP] AI-Powered Assessment Recommendations`
 - Active branch: `pod-a/t015-assessment-recommendations`
+- Active PR: `#56 [MVP] AI-Powered Assessment Recommendations` (Draft)
 - Active task packet: `docs/superpowers/tasks/2026-04-21-T015-assessment-recommendations.md`
 - Focus set: `T015` (assessment recommendations)
 
 ## Next recommended task
 
-Implement `T015` on `pod-a/t015-assessment-recommendations`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Monitor CI for `#56`, fix any failing checks on `pod-a/t015-assessment-recommendations`, then merge to `main` once all required checks are green.
 
 ## Status Update (2026-04-21)
 
@@ -29,6 +30,7 @@ Implement `T015` on `pod-a/t015-assessment-recommendations`, then open a Draft P
 2. Issue `#53` auto-closed with the merge
 3. Next pending registry task selected in strict order: `T015 AI-Powered Assessment Recommendations`
 4. Issue `#55` created and task packet added for the new execution lane
+5. Draft PR `#56` opened with validation complete and architecture note attached
 
 ## AI-owned blockers
 
