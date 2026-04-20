@@ -70,3 +70,9 @@ Add marketplace sorting options so users can reorder packs by popularity, recenc
 
 - `T018` merged to `main` through PR `#62`.
 - Baseline worktree marketplace test currently errors at collection because this worktree lacks `data/user/settings/main.yaml`; treat that as environment setup debt, not a `T019` regression.
+- Worktree-local runtime settings were normalized with a local symlink so baseline tests and frontend build could run in this lane.
+- Implemented API-backed `sort_by` support and wired marketplace UI sorting to it.
+- Validation:
+  - `python3 -m pytest tests/api/test_marketplace_router.py -q`
+  - `python3 -m py_compile deeptutor/api/routers/marketplace.py`
+  - `cd web && npm run build`

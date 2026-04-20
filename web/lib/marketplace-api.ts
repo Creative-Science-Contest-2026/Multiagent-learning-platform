@@ -48,10 +48,17 @@ export interface MarketplaceListResponse {
   packs: MarketplacePack[];
 }
 
+export type MarketplaceSortBy =
+  | "popularity"
+  | "recent"
+  | "rating"
+  | "most_objectives";
+
 export async function listMarketplacePacks(
   sharingStatus?: string,
   subject?: string,
   owner?: string,
+  sortBy?: MarketplaceSortBy,
   limit = 50,
   offset = 0,
 ): Promise<MarketplaceListResponse> {
@@ -63,6 +70,7 @@ export async function listMarketplacePacks(
   if (sharingStatus) params.append("sharing_status", sharingStatus);
   if (subject) params.append("subject", subject);
   if (owner) params.append("owner", owner);
+  if (sortBy) params.append("sort_by", sortBy);
 
   const response = await fetch(apiUrl(`/api/v1/marketplace/list?${params}`), {
     cache: "no-store",

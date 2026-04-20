@@ -67,11 +67,56 @@ def _list_marketplace_candidates() -> list[dict]:
                     "session_count": info.get("statistics", {}).get("content_lists", 0),
                     "status": info.get("status", "ready"),
                     "statistics": info.get("statistics", {}),
+                    "created_at": source_cfg.get("created_at"),
+                    "updated_at": source_cfg.get("updated_at"),
                     "rating_summary": _rating_summary(source_cfg),
                 }
             )
         except Exception:
             continue
+
+    return items
+
+
+def _sort_marketplace_candidates(items: list[dict], sort_by: str | None) -> list[dict]:
+    if sort_by == "popularity":
+        return sorted(
+            items,
+            key=lambda kb: (
+                -(kb.get("rating_summary", {}).get("review_count") or 0),
+                -(kb.get("session_count") or 0),
+                str(kb.get("name") or ""),
+            ),
+        )
+
+    if sort_by == "rating":
+        return sorted(
+            items,
+            key=lambda kb: (
+                -(kb.get("rating_summary", {}).get("average_rating") or 0.0),
+                -(kb.get("rating_summary", {}).get("review_count") or 0),
+                str(kb.get("name") or ""),
+            ),
+        )
+
+    if sort_by == "most_objectives":
+        return sorted(
+            items,
+            key=lambda kb: (
+                -len(kb.get("learning_objectives") or []),
+                str(kb.get("name") or ""),
+            ),
+        )
+
+    if sort_by == "recent":
+        return sorted(
+            items,
+            key=lambda kb: (
+                str(kb.get("updated_at") or kb.get("created_at") or ""),
+                str(kb.get("name") or ""),
+            ),
+            reverse=True,
+        )
 
     return items
 
@@ -101,6 +146,10 @@ async def list_marketplace_packs(
     sharing_status: str | None = Query(None, description="Filter by sharing_status: public, team, or None for all"),
     subject: str | None = Query(None, description="Filter by subject"),
     owner: str | None = Query(None, description="Filter by owner"),
+    sort_by: str | None = Query(
+        None,
+        description="Sort packs by popularity, recent, rating, or most_objectives",
+    ),
     limit: int = Query(50, ge=1, le=500),
     offset: int = Query(0, ge=0),
 ):
@@ -130,6 +179,8 @@ async def list_marketplace_packs(
                 for kb in all_kbs
                 if (kb.get("owner") or "").lower() == needle
             ]
+
+        all_kbs = _sort_marketplace_candidates(all_kbs, sort_by)
 
         total = len(all_kbs)
         packs = all_kbs[offset : offset + limit]
