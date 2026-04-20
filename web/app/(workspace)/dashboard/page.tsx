@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, BookOpen, CheckCircle2, Loader2, PenLine, Users } from "lucide-react";
+import { Activity, ArrowRight, BookOpen, CheckCircle2, Loader2, PenLine, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   getDashboardOverview,
@@ -84,16 +84,25 @@ export default function DashboardPage() {
   return (
     <main className="h-full overflow-y-auto bg-[var(--background)]">
       <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-6 px-6 py-8">
-        <header>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-            {t("Teacher Dashboard")}
-          </p>
-          <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
-            {t("Class activity")}
-          </h1>
-          <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-[var(--muted-foreground)]">
-            {t("Review recent assessments, tutoring sessions, and Knowledge Pack usage.")}
-          </p>
+        <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+              {t("Teacher Dashboard")}
+            </p>
+            <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
+              {t("Class activity")}
+            </h1>
+            <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-[var(--muted-foreground)]">
+              {t("Review recent assessments, tutoring sessions, and Knowledge Pack usage.")}
+            </p>
+          </div>
+          <Link
+            href="/dashboard/student"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[13px] font-medium text-[var(--foreground)] transition hover:border-[var(--foreground)]"
+          >
+            {t("Open student progress")}
+            <ArrowRight size={15} />
+          </Link>
         </header>
 
         {error && (
@@ -142,12 +151,12 @@ export default function DashboardPage() {
                       ? `/${activity.review_ref}`
                       : null;
                   return (
-                    <div
+                    <article
                       key={activity.id}
                       className="border-b border-[var(--border)] bg-[var(--card)] px-4 py-3 last:border-b-0"
                     >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div>
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
                           {reviewHref ? (
                             <Link
                               href={reviewHref}
@@ -160,37 +169,37 @@ export default function DashboardPage() {
                               {activity.title || t("Untitled session")}
                             </div>
                           )}
-                        <div className="mt-1 text-[12px] text-[var(--muted-foreground)]">
-                          {t(activityLabel(activity))} - {activity.status} -{" "}
-                          {formatTime(activity.timestamp)}
+                          <div className="mt-1 text-[12px] text-[var(--muted-foreground)]">
+                            {t(activityLabel(activity))} - {activity.status} -{" "}
+                            {formatTime(activity.timestamp)}
+                          </div>
+                          {activity.assessment_summary && (
+                            <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
+                              {t("Score")}: {activity.assessment_summary.score_percent}% -{" "}
+                              {activity.assessment_summary.correct_count}/
+                              {activity.assessment_summary.total_questions}
+                            </div>
+                          )}
+                          {activity.summary && (
+                            <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-[var(--muted-foreground)]">
+                              {activity.summary}
+                            </p>
+                          )}
                         </div>
-                        {activity.assessment_summary && (
-                          <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
-                            {t("Score")}: {activity.assessment_summary.score_percent}% -{" "}
-                            {activity.assessment_summary.correct_count}/
-                            {activity.assessment_summary.total_questions}
+                        {activity.knowledge_bases.length > 0 && (
+                          <div className="flex flex-wrap justify-end gap-1">
+                            {activity.knowledge_bases.map((kb) => (
+                              <span
+                                key={`${activity.id}-${kb}`}
+                                className="rounded-md bg-[var(--muted)] px-2 py-1 text-[11px] text-[var(--muted-foreground)]"
+                              >
+                                {kb}
+                              </span>
+                            ))}
                           </div>
                         )}
                       </div>
-                      {activity.knowledge_bases.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
-                          {activity.knowledge_bases.map((kb) => (
-                            <span
-                              key={`${activity.id}-${kb}`}
-                              className="rounded-md bg-[var(--muted)] px-2 py-1 text-[11px] text-[var(--muted-foreground)]"
-                            >
-                              {kb}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                      {activity.summary && (
-                        <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-[var(--muted-foreground)]">
-                          {activity.summary}
-                        </p>
-                      )}
-                    </div>
+                    </article>
                   );
                 })
               ) : (

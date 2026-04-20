@@ -67,3 +67,13 @@ Add a student-facing dashboard view that shows progress across assessments, rece
 
 - `T009`, `T010`, `T011`, `T013`, `T022`, and `T028` are now merged and should be treated as completed.
 - Start from existing dashboard session summaries and assessment review data; do not invent a second analytics model unless forced by missing fields.
+- Implemented on branch `pod-a/t014-student-progress-dashboard` with:
+  - `GET /api/v1/dashboard/student-progress`
+  - `web/app/(workspace)/dashboard/student/page.tsx`
+  - direct teacher-dashboard link into the student progress view
+- Validation completed:
+  - `python3 -m pytest tests/api/test_dashboard_router.py -q`
+  - `python3 -m py_compile deeptutor/api/routers/dashboard.py`
+  - `cd web && npm run build`
+- PR note prepared:
+  - `docs/superpowers/pr-notes/2026-04-21-student-progress-dashboard.md`

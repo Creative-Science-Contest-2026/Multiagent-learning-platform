@@ -1,5 +1,6 @@
 """Dashboard API backed by the unified SQLite session store."""
 
+from datetime import datetime, timezone
 import re
 from typing import Any
 
@@ -108,6 +109,15 @@ def _activity_type(capability: str) -> str:
     return capability.replace("deep_", "")
 
 
+def _timestamp_to_day(value: float | int | None) -> int | None:
+    if not value:
+        return None
+    timestamp = float(value)
+    if timestamp > 10_000_000_000:
+        timestamp /= 1000
+    return datetime.fromtimestamp(timestamp, tz=timezone.utc).date().toordinal()
+
+
 def _session_knowledge_bases(session: dict[str, Any]) -> list[str]:
     preferences = session.get("preferences")
     if not isinstance(preferences, dict):
@@ -153,6 +163,66 @@ async def _activity_with_review(
     detail = await store.get_session_with_messages(str(session.get("session_id") or session.get("id")))
     review = extract_assessment_review(detail) if detail else None
     return _activity_from_session(session, review)
+
+
+def _summarize_topic_mastery(
+    assessment_rows: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    topic_totals: dict[str, dict[str, int]] = {}
+
+    for activity in assessment_rows:
+        for row in _build_assessment_analysis(
+            {
+                "session_id": activity.get("session_id"),
+                "summary": activity.get("summary") or {},
+                "results": activity.get("assessment_results") or [],
+            }
+        )["performance_by_topic"]:
+            bucket = topic_totals.setdefault(
+                row["topic"],
+                {"topic": row["topic"], "total_questions": 0, "correct_count": 0, "incorrect_count": 0},
+            )
+            bucket["total_questions"] += row["total_questions"]
+            bucket["correct_count"] += row["correct_count"]
+            bucket["incorrect_count"] += row["incorrect_count"]
+
+    topic_rows = []
+    for row in topic_totals.values():
+        total = row["total_questions"]
+        row["accuracy_percent"] = round((row["correct_count"] / total) * 100) if total else 0
+        topic_rows.append(row)
+
+    focus_topics = sorted(
+        [row for row in topic_rows if row["incorrect_count"] > 0],
+        key=lambda row: (-row["incorrect_count"], row["accuracy_percent"], row["topic"]),
+    )[:5]
+    mastered_topics = sorted(
+        [row for row in topic_rows if row["accuracy_percent"] >= 80],
+        key=lambda row: (-row["accuracy_percent"], row["topic"]),
+    )[:5]
+    return focus_topics, mastered_topics
+
+
+def _learning_streak_days(activities: list[dict[str, Any]]) -> int:
+    days = []
+    seen_days: set[int] = set()
+    for activity in sorted(activities, key=lambda row: row.get("timestamp", 0), reverse=True):
+        day = _timestamp_to_day(activity.get("timestamp"))
+        if day is None or day in seen_days:
+            continue
+        seen_days.add(day)
+        days.append(day)
+
+    if not days:
+        return 0
+
+    streak = 1
+    for previous, current in zip(days, days[1:]):
+        if previous - current == 1:
+            streak += 1
+            continue
+        break
+    return streak
 
 
 @router.get("/recent")
@@ -201,6 +271,77 @@ async def get_dashboard_overview(limit: int = 50):
             )
         ],
         "recent_activity": activities[:limit],
+    }
+
+
+@router.get("/student-progress")
+async def get_student_progress(limit: int = 50):
+    store = get_sqlite_session_store()
+    sessions = await store.list_sessions(limit=limit, offset=0)
+    activities = [await _activity_with_review(store, session) for session in sessions]
+
+    assessment_rows = [
+        {
+            "session_id": activity["id"],
+            "title": activity["title"],
+            "timestamp": activity["timestamp"],
+            "knowledge_bases": activity["knowledge_bases"],
+            "summary": activity["assessment_summary"],
+            "review_ref": activity["review_ref"],
+            "assessment_results": activity.get("assessment_summary") and (
+                extract_assessment_review(await store.get_session_with_messages(activity["id"])) or {}
+            ).get("results", []),
+        }
+        for activity in activities
+        if activity["type"] == "assessment" and activity.get("assessment_summary")
+    ]
+
+    focus_topics, mastered_topics = _summarize_topic_mastery(assessment_rows)
+    unique_knowledge_packs = sorted(
+        {
+            kb_name
+            for activity in activities
+            for kb_name in activity.get("knowledge_bases", [])
+        }
+    )
+    average_score_percent = round(
+        sum(int(row["summary"]["score_percent"]) for row in assessment_rows) / len(assessment_rows)
+    ) if assessment_rows else 0
+
+    score_trend = [
+        {
+            "session_id": row["session_id"],
+            "score_percent": int(row["summary"]["score_percent"]),
+            "timestamp": row["timestamp"],
+        }
+        for row in sorted(assessment_rows, key=lambda row: row["timestamp"])
+    ]
+    recent_assessments = [
+        {
+            "session_id": row["session_id"],
+            "title": row["title"],
+            "timestamp": row["timestamp"],
+            "score_percent": int(row["summary"]["score_percent"]),
+            "correct_count": int(row["summary"]["correct_count"]),
+            "total_questions": int(row["summary"]["total_questions"]),
+            "knowledge_bases": row["knowledge_bases"],
+            "review_ref": row["review_ref"],
+        }
+        for row in sorted(assessment_rows, key=lambda row: row["timestamp"], reverse=True)[:5]
+    ]
+
+    return {
+        "totals": {
+            "assessments_completed": len(assessment_rows),
+            "tutoring_sessions": sum(1 for activity in activities if activity["type"] == "tutoring"),
+            "knowledge_packs_used": len(unique_knowledge_packs),
+            "average_score_percent": average_score_percent,
+            "streak_days": _learning_streak_days(activities),
+        },
+        "focus_topics": focus_topics,
+        "mastered_topics": mastered_topics,
+        "score_trend": score_trend,
+        "recent_assessments": recent_assessments,
     }
 
 

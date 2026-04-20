@@ -56,7 +56,12 @@ flowchart TD
   
   Product --> TeacherDashboard["Teacher Dashboard"]
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
+  TeacherDashboard --> StudentDashboard["Student Progress Dashboard"]
   TeacherDashboard --> AssessmentReview["Assessment Review Drill-down"]
+  StudentDashboard --> StudentRoute["/dashboard/student"]
+  StudentDashboard --> StudentProgressAPI["GET /api/v1/dashboard/student-progress"]
+  StudentDashboard --> TrendCards["Streak + average score + recent assessments"]
+  StudentDashboard --> TopicSignals["Focus topics + mastered topics"]
   AssessmentReview --> ReviewRoute["/dashboard/assessments/[sessionId]"]
   AssessmentReview --> ReviewAPI["/api/v1/sessions/{session_id}/assessment-review"]
   AssessmentReview --> ProgressIndicator["ProgressIndicator Component"]

@@ -75,6 +75,45 @@ export interface DashboardOverview {
   recent_activity: DashboardActivity[];
 }
 
+export interface StudentProgressTopic {
+  topic: string;
+  total_questions: number;
+  correct_count: number;
+  incorrect_count: number;
+  accuracy_percent: number;
+}
+
+export interface StudentProgressAssessment {
+  session_id: string;
+  title: string;
+  timestamp: number;
+  score_percent: number;
+  correct_count: number;
+  total_questions: number;
+  knowledge_bases: string[];
+  review_ref?: string | null;
+}
+
+export interface StudentProgressPoint {
+  session_id: string;
+  score_percent: number;
+  timestamp: number;
+}
+
+export interface StudentProgressOverview {
+  totals: {
+    assessments_completed: number;
+    tutoring_sessions: number;
+    knowledge_packs_used: number;
+    average_score_percent: number;
+    streak_days: number;
+  };
+  focus_topics: StudentProgressTopic[];
+  mastered_topics: StudentProgressTopic[];
+  score_trend: StudentProgressPoint[];
+  recent_assessments: StudentProgressAssessment[];
+}
+
 async function expectJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
@@ -101,4 +140,11 @@ export async function getAssessmentAnalysis(sessionId: string): Promise<Assessme
     cache: "no-store",
   });
   return expectJson<AssessmentAnalysis>(response);
+}
+
+export async function getStudentProgress(limit = 50): Promise<StudentProgressOverview> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/student-progress?limit=${limit}`), {
+    cache: "no-store",
+  });
+  return expectJson<StudentProgressOverview>(response);
 }
