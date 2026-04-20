@@ -45,9 +45,10 @@ def _activity_from_session(
 ) -> dict[str, Any]:
     capability = str(session.get("capability") or "chat")
     knowledge_bases = _session_knowledge_bases(session)
+    activity_type = _activity_type(capability)
     return {
         "id": session.get("session_id"),
-        "type": _activity_type(capability),
+        "type": activity_type,
         "capability": capability,
         "title": session.get("title", "Untitled"),
         "timestamp": session.get("updated_at", session.get("created_at", 0)),
@@ -60,6 +61,9 @@ def _activity_from_session(
         "assessment_summary": assessment_review["summary"] if assessment_review else None,
         "review_ref": (
             f"dashboard/assessments/{session.get('session_id')}" if assessment_review else None
+        ),
+        "replay_ref": (
+            f"dashboard/sessions/{session.get('session_id')}" if activity_type == "tutoring" else None
         ),
     }
 

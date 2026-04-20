@@ -65,3 +65,9 @@ Add a replay view for tutoring sessions so teachers can review conversation flow
 
 - `T020` merged to `main` through PR `#66`.
 - Start by inspecting current dashboard activity detail/session APIs before deciding whether replay needs a new route or only frontend rendering work.
+- Reused the existing dashboard activity detail endpoint instead of adding a new replay API.
+- Added tutoring `replay_ref` to dashboard activity payloads and a new replay page route under `/dashboard/sessions/[sessionId]`.
+- Validation:
+  - `python3 -m pytest tests/api/test_dashboard_router.py -q`
+  - `python3 -m py_compile deeptutor/api/routers/dashboard.py`
+  - `cd web && npm run build`
