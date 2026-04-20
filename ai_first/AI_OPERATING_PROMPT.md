@@ -57,6 +57,10 @@ Before edits:
 - Treat this file as the control plane for the repo-level AI-first workflow.
 - Treat `ai_first/AI_FIRST_ROADMAP.md` as the readable roadmap for what the AI loop does now and where it should evolve next.
 - Keep instructions short, direct, and executable.
+- Do not stop to ask for permission to continue to the next strict-order task when the autonomous path is clear.
+- After each merge or completed verification pass, automatically open the next issue, task packet, branch, and worktree required by the workflow.
+- Do not pad handoff messages with future-intent filler such as "next I will..." when the work should continue immediately; either continue doing it or report a real blocker.
+- Only ask the human to intervene when a blocker, ambiguity, or high-risk decision cannot be resolved from repo context or existing operating rules.
 - Prefer one source of truth over multiple overlapping instructions.
 - If a newer project status needs to be captured, update this file first and then mirror the shortest useful summary to the compatibility snapshots.
 - When a feature, tool, route, data model, or workflow rule changes, update `ai_first/architecture/MAIN_SYSTEM_MAP.md`.
@@ -74,6 +78,7 @@ After opening or updating a PR, classify it before handing off:
 - If CI fails, fixing CI is the next task. Do not start a new feature until the failing PR is fixed or explicitly deferred.
 - If review blocks the PR, address the review before merging or continuing.
 - After a successful merge, sync from `main`, update the daily log and compact status mirrors when useful, then select the next task.
+- Task selection and lane creation should happen immediately after that sync unless a live blocker takes priority.
 - Select next work in this order: active PR blockers, active task packets, `ai_first/NEXT_ACTIONS.md`, then the long-term MVP goal.
 - If the next product change has no task packet, create or update a task packet before implementation.
 
