@@ -236,8 +236,8 @@
       "complexity": "Low",
       "estimated_hours": 1.5,
       "dependencies": ["Marketplace API"],
-      "status": "in-progress",
-      "notes": "Issue #63 opened and task packet created at docs/superpowers/tasks/2026-04-21-T019-marketplace-sorting.md. Active branch: pod-a/t019-marketplace-sorting."
+      "status": "completed",
+      "notes": "Merged to main through PR #64. Marketplace now supports API-backed sorting by popularity, recency, rating, and objective count."
     },
     {
       "id": "T020_ASSESSMENT_EXPORT_PDF",
@@ -253,8 +253,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["PDF Generation Library"],
-      "status": "not-started",
-      "notes": "Include score, questions, explanations, and recommendations in PDF"
+      "status": "in-progress",
+      "notes": "Issue #65 opened and task packet created at docs/superpowers/tasks/2026-04-21-T020-assessment-export-pdf.md. Active branch: pod-a/t020-assessment-export-pdf."
     },
     {
       "id": "T021_SESSION_REPLAY",
