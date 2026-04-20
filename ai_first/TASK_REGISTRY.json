@@ -161,8 +161,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["LLM Service", "Assessment Analytics"],
-      "status": "in-progress",
-      "notes": "Issue #55 opened and task packet created at docs/superpowers/tasks/2026-04-21-T015-assessment-recommendations.md. Active branch: pod-a/t015-assessment-recommendations. Draft PR #56 is open with targeted API tests and compile checks passing locally."
+      "status": "completed",
+      "notes": "Merged to main through PR #56. Assessment recommendation API now exposes POST /api/v1/assessment/recommend with deterministic next-topic suggestions."
     },
     {
       "id": "T016_MARKETPLACE_RATINGS",
@@ -179,8 +179,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["Database Schema"],
-      "status": "not-started",
-      "notes": "5-star rating system with optional comments, show average rating in pack cards"
+      "status": "in-progress",
+      "notes": "Issue #57 opened and task packet created at docs/superpowers/tasks/2026-04-21-T016-marketplace-ratings.md. Active branch: pod-a/t016-marketplace-ratings."
     },
     {
       "id": "T017_ASSESSMENT_HISTORY_FILTERING",

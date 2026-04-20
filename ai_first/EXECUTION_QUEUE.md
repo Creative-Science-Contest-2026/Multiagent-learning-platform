@@ -7,30 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#54 [MVP] Student Progress Tracking Dashboard`
-- `#54` added `/dashboard/student` and `GET /api/v1/dashboard/student-progress`, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import and preview, assessment insights, KB context badges, student progress dashboard, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#56 [MVP] AI-Powered Assessment Recommendations`
+- `#56` added `POST /api/v1/assessment/recommend`, shared assessment analysis helpers, and deterministic next-assessment recommendation flow, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import and preview, assessment insights, recommendation flow, KB context badges, student progress dashboard, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#55 [MVP] AI-Powered Assessment Recommendations`
-- Active branch: `pod-a/t015-assessment-recommendations`
-- Active PR: `#56 [MVP] AI-Powered Assessment Recommendations` (Draft)
-- Active task packet: `docs/superpowers/tasks/2026-04-21-T015-assessment-recommendations.md`
-- Focus set: `T015` (assessment recommendations)
+- Active issue: `#57 [MVP] Add Pack Ratings & Reviews System`
+- Active branch: `pod-a/t016-marketplace-ratings`
+- Active task packet: `docs/superpowers/tasks/2026-04-21-T016-marketplace-ratings.md`
+- Focus set: `T016` (marketplace ratings)
 
 ## Next recommended task
 
-Monitor CI for `#56`, fix any failing checks on `pod-a/t015-assessment-recommendations`, then merge to `main` once all required checks are green.
+Implement `T016` on `pod-a/t016-marketplace-ratings`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-21)
 
 **Queue Advance**:
-1. `#54` merged to `main` after all required CI checks passed
-2. Issue `#53` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T015 AI-Powered Assessment Recommendations`
-4. Issue `#55` created and task packet added for the new execution lane
-5. Draft PR `#56` opened with validation complete and architecture note attached
+1. `#56` merged to `main` after all required CI checks passed
+2. Issue `#55` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T016 Add Pack Ratings & Reviews System`
+4. Issue `#57` created and task packet added for the new execution lane
 
 ## AI-owned blockers
 
@@ -59,7 +57,8 @@ Monitor CI for `#56`, fix any failing checks on `pod-a/t015-assessment-recommend
 | T012: Teacher Sharing UI | Completed | 3 | NO | Verified |
 | T013: Marketplace Preview | Completed | 3 | NO | Done |
 | T014: Student Progress Dashboard | Completed | 5 | NO | Done |
-| T015: Assessment Recommendations | In Progress | 6 | NO | Now |
+| T015: Assessment Recommendations | Completed | 6 | NO | Done |
+| T016: Marketplace Ratings | In Progress | 4 | NO | Now |
 | T018: Vietnamese Prompts | Not Started | 4 | YES | Parallel |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
