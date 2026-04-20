@@ -41,6 +41,8 @@ flowchart TD
   Marketplace --> MarketplaceAPI["/api/v1/marketplace"]
   Marketplace --> MarketplaceUI["/marketplace"]
   Marketplace --> MarketplaceFilters["Search/Subject/Owner Filters"]
+  Marketplace --> MarketplacePreview["GET /api/v1/marketplace/{pack_name}/preview"]
+  MarketplacePreview --> PreviewModal["Preview modal: metadata + sample documents"]
   Marketplace --> MarketplaceImport["POST /api/v1/marketplace/import/{pack_name}"]
   MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported"]
   

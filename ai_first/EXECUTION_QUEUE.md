@@ -7,42 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR before the current active branch: `#42`, which queued the contest submission package lane.
-- Core MVP path is already in `main`: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, contest evidence screenshots, and backend/frontend/docs CI.
-- Smoke-backed evidence refresh rules, the local demo reset command, and the scripted-reset smoke result now live in `docs/contest/` on `main`.
+- Latest merged PR: `#44 feat: complete autopilot batch for marketplace import, API throttling, route resilience, assessment insights, and KB context badges`
+- Follow-up fix PRs `#48` and `#49` were merged first, then folded into `#44`, and all required CI checks passed before merge.
+- Core MVP path in `main` now includes marketplace import, assessment insights, KB context badges, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active PR (Draft): `#44 feat: complete autopilot batch for marketplace import, API throttling, route resilience, assessment insights, and KB context badges`
-- PR URL: `https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/pull/44`
-- Active branch: `pod-a/marketplace-pack-import`
-- Active task packet: `docs/superpowers/tasks/2026-04-20-T011-kb-context-badges.md`
-- Focus set: `T009`, `T010`, `T011`, `T022`, `T028` (implemented and pushed; waiting CI/review gate)
+- Active issue: `#51 [MVP] Marketplace Pack Preview Modal`
+- Active branch: `pod-a/t013-marketplace-pack-preview`
+- Active task packet: `docs/superpowers/tasks/2026-04-20-T013-marketplace-pack-preview.md`
+- Focus set: `T013` (preview modal for marketplace packs)
 
 ## Next recommended task
 
-Keep PR `#44` in Draft until CI checks are green and self-review is complete, then move to Ready for review. After merge, proceed to the next pending item from `ai_first/TASK_REGISTRY.json` in strict sequence.
+Implement `T013` on `pod-a/t013-marketplace-pack-preview`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-20)
 
-**MVP Audit Execution Progress**:
-1. **T009: Marketplace Import** - Implemented real import flow with KB clone + registry update
-2. **T010: Assessment Feedback Details** - Added topic-level assessment analytics API + UI integration
-3. **T011: KB Context Badges** - Added request-snapshot KB chips in user and paired assistant chat blocks
-4. **T022: Error Boundaries** - Added route-level fallbacks for marketplace + assessment routes
-5. **T028: Rate Limiting** - Added API middleware with 429 + Retry-After
-
-**Current Gate**:
-- PR is opened in Draft mode and pushed to origin.
-- Merge is blocked until required CI checks pass and review gate is cleared.
-
-## Active queue
-
-**UPDATED**: Active execution is now on PR `#44` for the autopilot technical batch.
-
-- Previous: MVP audit and policy hardening committed
-- Current: T009/T010/T011/T022/T028 implemented on `pod-a/marketplace-pack-import`
-- Next after merge: Continue with next pending backlog task by registry order
+**Queue Advance**:
+1. `#44` merged to `main` after `Backend`, `Frontend`, `Docs`, and `Summary` checks passed
+2. `T012` was verified as already implemented on `main` and reclassified to completed
+3. Next pending registry task selected in strict order: `T013 Marketplace Pack Preview Modal`
+4. Issue `#51` created and task packet added for the new execution lane
 
 ## AI-owned blockers
 
@@ -65,11 +51,13 @@ Keep PR `#44` in Draft until CI checks are green and self-review is complete, th
 
 | Task | Status | Hours | Blocker | Start |
 |------|--------|-------|---------|-------|
-| T009: Marketplace Import | In Progress (PR #44) | 4 | YES | Done |
-| T010: Assessment Feedback | In Progress (PR #44) | 6 | YES | Done |
-| T011: KB Context Badges | In Progress (PR #44) | 2 | NO | Done |
+| T009: Marketplace Import | Completed | 4 | YES | Done |
+| T010: Assessment Feedback | Completed | 6 | YES | Done |
+| T011: KB Context Badges | Completed | 2 | NO | Done |
+| T012: Teacher Sharing UI | Completed | 3 | NO | Verified |
+| T013: Marketplace Preview | In Progress | 3 | NO | Now |
 | T018: Vietnamese Prompts | Not Started | 4 | YES | Parallel |
-| T022: Error Boundaries | In Progress (PR #44) | 2 | NO | Done |
-| T028: Rate Limiting | In Progress (PR #44) | 2 | YES | Done |
+| T022: Error Boundaries | Completed | 2 | NO | Done |
+| T028: Rate Limiting | Completed | 2 | YES | Done |
 
 **Resources**: See `ai_first/TASK_REGISTRY.json` (full task list with effort estimates) and `ai_first/MVP_GAP_ANALYSIS.md` (detailed audit with risk assessment).

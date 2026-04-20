@@ -110,8 +110,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Knowledge Manager API"],
-      "status": "not-started",
-      "notes": "Update metadata sharing_status, owner, and access control rules"
+      "status": "completed",
+      "notes": "Verified on 2026-04-20 as already implemented on main. Evidence: tests/api/test_knowledge_router.py passed (11 tests) and web/app/(utility)/knowledge/page.tsx builds successfully with the teacher metadata/sharing edit flow already present."
     },
     {
       "id": "T013_MARKETPLACE_PACK_PREVIEW",
@@ -127,8 +127,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Marketplace API"],
-      "status": "not-started",
-      "notes": "Show first 3 questions, objectives, document count, and metadata preview"
+      "status": "in-progress",
+      "notes": "Issue #51 opened and task packet created at docs/superpowers/tasks/2026-04-20-T013-marketplace-pack-preview.md. Next step: implement a compact preview endpoint and marketplace modal flow."
     },
     {
       "id": "T014_STUDENT_PROGRESS_DASHBOARD",

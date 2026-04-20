@@ -21,6 +21,12 @@ export interface MarketplacePack {
   status?: string;
 }
 
+export interface MarketplacePackPreview extends MarketplacePack {
+  description?: string | null;
+  document_count: number;
+  sample_documents: string[];
+}
+
 export interface MarketplaceListResponse {
   total: number;
   offset: number;
@@ -65,6 +71,23 @@ export async function getMarketplacePack(packName: string): Promise<MarketplaceP
 
   if (!response.ok) {
     throw new Error(`Failed to fetch marketplace pack: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function getMarketplacePackPreview(
+  packName: string,
+): Promise<MarketplacePackPreview> {
+  const response = await fetch(
+    apiUrl(`/api/v1/marketplace/${encodeURIComponent(packName)}/preview`),
+    {
+      cache: "no-store",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch marketplace preview: ${response.status}`);
   }
 
   return response.json();
