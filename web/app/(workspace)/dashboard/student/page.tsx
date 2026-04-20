@@ -1,0 +1,315 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, ArrowRight, BookOpen, Flame, LineChart, Loader2, Target } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import {
+  getStudentProgress,
+  type StudentProgressAssessment,
+  type StudentProgressOverview,
+  type StudentProgressTopic,
+} from "@/lib/dashboard-api";
+
+function formatTime(value: number): string {
+  if (!value) return "";
+  const timestamp = value < 10_000_000_000 ? value * 1000 : value;
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(timestamp));
+}
+
+function scoreTone(value: number): string {
+  if (value >= 85) return "text-emerald-600";
+  if (value >= 70) return "text-amber-600";
+  return "text-rose-600";
+}
+
+function TopicList({
+  title,
+  icon: Icon,
+  rows,
+  emptyLabel,
+}: {
+  title: string;
+  icon: typeof Target;
+  rows: StudentProgressTopic[];
+  emptyLabel: string;
+}) {
+  return (
+    <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5">
+      <div className="flex items-center gap-2">
+        <Icon size={16} className="text-[var(--muted-foreground)]" />
+        <h2 className="text-[16px] font-semibold text-[var(--foreground)]">{title}</h2>
+      </div>
+      {rows.length > 0 ? (
+        <div className="mt-4 space-y-3">
+          {rows.map((row) => (
+            <div
+              key={row.topic}
+              className="rounded-2xl bg-[var(--muted)]/60 px-4 py-3"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[13px] font-medium text-[var(--foreground)]">{row.topic}</span>
+                <span className={`text-[13px] font-semibold ${scoreTone(row.accuracy_percent)}`}>
+                  {row.accuracy_percent}%
+                </span>
+              </div>
+              <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
+                {row.correct_count}/{row.total_questions} correct
+                {row.incorrect_count > 0 ? ` • ${row.incorrect_count} to revisit` : ""}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-4 rounded-2xl bg-[var(--muted)]/50 px-4 py-6 text-center text-[13px] text-[var(--muted-foreground)]">
+          {emptyLabel}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function AssessmentList({
+  rows,
+  emptyLabel,
+  t,
+}: {
+  rows: StudentProgressAssessment[];
+  emptyLabel: string;
+  t: (value: string) => string;
+}) {
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-[28px] border border-dashed border-[var(--border)] bg-[var(--card)] px-5 py-8 text-center text-[13px] text-[var(--muted-foreground)]">
+        {emptyLabel}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {rows.map((row) => {
+        const href = row.review_ref ? `/${row.review_ref}` : null;
+        return (
+          <article
+            key={row.session_id}
+            className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] px-5 py-4"
+          >
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="min-w-0">
+                {href ? (
+                  <Link
+                    href={href}
+                    className="text-[15px] font-semibold text-[var(--foreground)] underline-offset-4 hover:underline"
+                  >
+                    {row.title || t("Untitled assessment")}
+                  </Link>
+                ) : (
+                  <div className="text-[15px] font-semibold text-[var(--foreground)]">
+                    {row.title || t("Untitled assessment")}
+                  </div>
+                )}
+                <div className="mt-1 text-[12px] text-[var(--muted-foreground)]">
+                  {formatTime(row.timestamp)}
+                </div>
+                {row.knowledge_bases.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {row.knowledge_bases.map((kb) => (
+                      <span
+                        key={`${row.session_id}-${kb}`}
+                        className="rounded-full bg-[var(--muted)] px-2.5 py-1 text-[11px] text-[var(--muted-foreground)]"
+                      >
+                        {kb}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="rounded-2xl bg-[var(--muted)]/70 px-4 py-3 text-right">
+                <div className={`text-[24px] font-semibold ${scoreTone(row.score_percent)}`}>
+                  {row.score_percent}%
+                </div>
+                <div className="text-[12px] text-[var(--muted-foreground)]">
+                  {row.correct_count}/{row.total_questions} {t("correct")}
+                </div>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function StudentDashboardPage() {
+  const { t } = useTranslation();
+  const [overview, setOverview] = useState<StudentProgressOverview | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getStudentProgress()
+      .then((data) => {
+        if (!cancelled) {
+          setOverview(data);
+          setError(null);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const totals = overview?.totals;
+  const statCards = useMemo(
+    () => [
+      {
+        label: t("Learning streak"),
+        value: totals?.streak_days ?? 0,
+        suffix: t("days"),
+        icon: Flame,
+      },
+      {
+        label: t("Average score"),
+        value: totals?.average_score_percent ?? 0,
+        suffix: "%",
+        icon: LineChart,
+      },
+      {
+        label: t("Assessments"),
+        value: totals?.assessments_completed ?? 0,
+        suffix: "",
+        icon: ArrowRight,
+      },
+      {
+        label: t("Knowledge Packs"),
+        value: totals?.knowledge_packs_used ?? 0,
+        suffix: "",
+        icon: BookOpen,
+      },
+    ],
+    [t, totals],
+  );
+
+  return (
+    <main className="min-h-full bg-[radial-gradient(circle_at_top_left,_rgba(247,208,96,0.18),_transparent_32%),linear-gradient(180deg,_var(--background),_color-mix(in_oklab,_var(--background)_78%,_white))]">
+      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-6 py-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 text-[13px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          >
+            <ArrowLeft size={15} />
+            {t("Back to teacher dashboard")}
+          </Link>
+          <span className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-[12px] font-medium text-[var(--muted-foreground)]">
+            {t("Student Dashboard")}
+          </span>
+        </div>
+
+        <section className="rounded-[32px] border border-[var(--border)] bg-[var(--card)]/90 px-6 py-6 shadow-sm">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+            {t("Learning progress")}
+          </p>
+          <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h1 className="text-[30px] font-semibold tracking-tight text-[var(--foreground)]">
+                {t("See the full learning arc, not just the latest quiz")}
+              </h1>
+              <p className="mt-2 max-w-[720px] text-[14px] leading-6 text-[var(--muted-foreground)]">
+                {t("Track recent assessments, revisit weak topics, and spot where the student is building confidence.")}
+              </p>
+            </div>
+            {loading && (
+              <div className="inline-flex items-center gap-2 text-[13px] text-[var(--muted-foreground)]">
+                <Loader2 size={14} className="animate-spin" />
+                {t("Loading progress")}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {error && (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+            {t("Failed to load student progress")}: {error}
+          </div>
+        )}
+
+        <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {statCards.map((card) => (
+            <div
+              key={card.label}
+              className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] px-5 py-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[12px] font-medium text-[var(--muted-foreground)]">
+                  {card.label}
+                </span>
+                <card.icon size={16} className="text-[var(--muted-foreground)]" />
+              </div>
+              <div className="mt-4 flex items-end gap-2">
+                <span className="text-[30px] font-semibold text-[var(--foreground)]">
+                  {loading ? "-" : card.value}
+                </span>
+                {card.suffix && (
+                  <span className="pb-1 text-[13px] text-[var(--muted-foreground)]">
+                    {card.suffix}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <section className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-[18px] font-semibold text-[var(--foreground)]">
+                {t("Recent assessments")}
+              </h2>
+              {overview?.score_trend && overview.score_trend.length > 1 && (
+                <span className="text-[12px] text-[var(--muted-foreground)]">
+                  {t("Trend")}: {overview.score_trend[0].score_percent}% {"->"}{" "}
+                  {overview.score_trend[overview.score_trend.length - 1].score_percent}%
+                </span>
+              )}
+            </div>
+            <AssessmentList
+              rows={overview?.recent_assessments ?? []}
+              emptyLabel={t("No assessments yet. Generate a quiz to begin tracking progress.")}
+              t={t}
+            />
+          </div>
+
+          <div className="space-y-6">
+            <TopicList
+              title={t("Focus next")}
+              icon={Target}
+              rows={overview?.focus_topics ?? []}
+              emptyLabel={t("No weak topics detected yet.")}
+            />
+            <TopicList
+              title={t("Mastered topics")}
+              icon={LineChart}
+              rows={overview?.mastered_topics ?? []}
+              emptyLabel={t("Mastered topics will appear after completed assessments.")}
+            />
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}

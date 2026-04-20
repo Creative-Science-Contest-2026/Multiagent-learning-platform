@@ -1,34 +1,36 @@
 # Execution Queue
 
-Last updated: 2026-04-20
+Last updated: 2026-04-21
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#44 feat: complete autopilot batch for marketplace import, API throttling, route resilience, assessment insights, and KB context badges`
-- Follow-up fix PRs `#48` and `#49` were merged first, then folded into `#44`, and all required CI checks passed before merge.
-- Core MVP path in `main` now includes marketplace import, assessment insights, KB context badges, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#52 feat: add marketplace pack preview`
+- `#52` added compact preview-before-import flow for marketplace packs and passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import and preview, assessment insights, KB context badges, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#51 [MVP] Marketplace Pack Preview Modal`
-- Active branch: `pod-a/t013-marketplace-pack-preview`
-- Active task packet: `docs/superpowers/tasks/2026-04-20-T013-marketplace-pack-preview.md`
-- Focus set: `T013` (preview modal for marketplace packs)
+- Active issue: `#53 [MVP] Student Progress Tracking Dashboard`
+- Active branch: `pod-a/t014-student-progress-dashboard`
+- Active PR: `#54 [MVP] Student Progress Tracking Dashboard` (Draft)
+- Active task packet: `docs/superpowers/tasks/2026-04-20-T014-student-progress-dashboard.md`
+- Focus set: `T014` (student-facing progress dashboard)
 
 ## Next recommended task
 
-Implement `T013` on `pod-a/t013-marketplace-pack-preview`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Monitor CI for `#54`, fix any failing checks on `pod-a/t014-student-progress-dashboard`, then merge to `main` once all required checks are green.
 
-## Status Update (2026-04-20)
+## Status Update (2026-04-21)
 
 **Queue Advance**:
-1. `#44` merged to `main` after `Backend`, `Frontend`, `Docs`, and `Summary` checks passed
-2. `T012` was verified as already implemented on `main` and reclassified to completed
-3. Next pending registry task selected in strict order: `T013 Marketplace Pack Preview Modal`
-4. Issue `#51` created and task packet added for the new execution lane
+1. `#52` merged to `main` after all required CI checks passed
+2. Completed registry tasks were reconciled to match what is already merged on `main`
+3. Next pending registry task selected in strict order: `T014 Student Progress Tracking Dashboard`
+4. Issue `#53` created and task packet added for the new execution lane
+5. Draft PR `#54` opened with validation complete and architecture note attached
 
 ## AI-owned blockers
 
@@ -55,7 +57,8 @@ Implement `T013` on `pod-a/t013-marketplace-pack-preview`, then open a Draft PR 
 | T010: Assessment Feedback | Completed | 6 | YES | Done |
 | T011: KB Context Badges | Completed | 2 | NO | Done |
 | T012: Teacher Sharing UI | Completed | 3 | NO | Verified |
-| T013: Marketplace Preview | In Progress | 3 | NO | Now |
+| T013: Marketplace Preview | Completed | 3 | NO | Done |
+| T014: Student Progress Dashboard | In Progress | 5 | NO | Now |
 | T018: Vietnamese Prompts | Not Started | 4 | YES | Parallel |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
