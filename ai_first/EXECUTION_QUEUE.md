@@ -15,12 +15,13 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 - Active issue: `#57 [MVP] Add Pack Ratings & Reviews System`
 - Active branch: `pod-a/t016-marketplace-ratings`
+- Active PR: `#58 [MVP] Add Pack Ratings & Reviews System` (Draft)
 - Active task packet: `docs/superpowers/tasks/2026-04-21-T016-marketplace-ratings.md`
 - Focus set: `T016` (marketplace ratings)
 
 ## Next recommended task
 
-Implement `T016` on `pod-a/t016-marketplace-ratings`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Monitor CI for `#58`, fix any failing checks on `pod-a/t016-marketplace-ratings`, then merge to `main` once all required checks are green.
 
 ## Status Update (2026-04-21)
 
@@ -29,6 +30,7 @@ Implement `T016` on `pod-a/t016-marketplace-ratings`, then open a Draft PR with 
 2. Issue `#55` auto-closed with the merge
 3. Next pending registry task selected in strict order: `T016 Add Pack Ratings & Reviews System`
 4. Issue `#57` created and task packet added for the new execution lane
+5. Draft PR `#58` opened with validation complete and architecture note attached
 
 ## AI-owned blockers
 

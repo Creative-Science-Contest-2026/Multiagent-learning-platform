@@ -180,7 +180,7 @@
       "estimated_hours": 4,
       "dependencies": ["Database Schema"],
       "status": "in-progress",
-      "notes": "Issue #57 opened and task packet created at docs/superpowers/tasks/2026-04-21-T016-marketplace-ratings.md. Active branch: pod-a/t016-marketplace-ratings."
+      "notes": "Issue #57 opened and task packet created at docs/superpowers/tasks/2026-04-21-T016-marketplace-ratings.md. Active branch: pod-a/t016-marketplace-ratings. Draft PR #58 is open with backend tests and frontend build passing locally."
     },
     {
       "id": "T017_ASSESSMENT_HISTORY_FILTERING",
