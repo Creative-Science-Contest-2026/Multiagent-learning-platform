@@ -273,3 +273,63 @@ async def test_student_progress_summarizes_scores_topics_and_streak(
         "assessment-recent",
         "assessment-older",
     ]
+
+
+@pytest.mark.asyncio
+async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="algebra-high",
+        capability="deep_question",
+        message="Generate an algebra assessment",
+        knowledge_bases=["algebra-pack"],
+    )
+    await store.add_message(
+        "algebra-high",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve algebra equation x + 2 = 5 -> Answered: 3 (Correct)\n"
+        "Score: 1/1 (100%)",
+        capability="deep_question",
+    )
+
+    await _seed_session(
+        store,
+        session_id="fractions-low",
+        capability="deep_question",
+        message="Generate a fractions assessment",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.add_message(
+        "fractions-low",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    await _seed_session(
+        store,
+        session_id="tutor-fractions",
+        capability="chat",
+        message="Tutor the student on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get(
+            "/api/v1/dashboard/overview?type=assessment&knowledge_base=algebra-pack&search=algebra&min_score=80"
+        )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["totals"]["total_sessions"] == 1
+    assert payload["totals"]["assessments"] == 1
+    assert payload["totals"]["tutoring_sessions"] == 0
+    assert payload["knowledge_packs"] == [{"name": "algebra-pack", "session_count": 1}]
+    assert [row["id"] for row in payload["recent_activity"]] == ["algebra-high"]

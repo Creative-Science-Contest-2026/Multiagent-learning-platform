@@ -75,6 +75,13 @@ export interface DashboardOverview {
   recent_activity: DashboardActivity[];
 }
 
+export interface DashboardOverviewFilters {
+  type?: string;
+  knowledge_base?: string;
+  search?: string;
+  min_score?: number;
+}
+
 export interface StudentProgressTopic {
   topic: string;
   total_questions: number;
@@ -121,8 +128,17 @@ async function expectJson<T>(response: Response): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export async function getDashboardOverview(limit = 50): Promise<DashboardOverview> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/overview?limit=${limit}`), {
+export async function getDashboardOverview(
+  limit = 50,
+  filters: DashboardOverviewFilters = {},
+): Promise<DashboardOverview> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (filters.type) params.set("type", filters.type);
+  if (filters.knowledge_base) params.set("knowledge_base", filters.knowledge_base);
+  if (filters.search) params.set("search", filters.search);
+  if (typeof filters.min_score === "number") params.set("min_score", String(filters.min_score));
+
+  const response = await fetch(apiUrl(`/api/v1/dashboard/overview?${params.toString()}`), {
     cache: "no-store",
   });
   return expectJson<DashboardOverview>(response);

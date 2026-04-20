@@ -67,3 +67,13 @@ Add filter and search controls to the teacher dashboard so recent assessment his
 
 - `T016` is merged to `main` through PR `#58`.
 - Start from the existing dashboard overview/history flow before adding new analytics or separate listing endpoints.
+- Implemented on branch `pod-a/t017-dashboard-filtering` with:
+  - dashboard overview filter params
+  - teacher dashboard filter panel
+  - filtered empty state behavior
+- Validation completed:
+  - `python3 -m pytest tests/api/test_dashboard_router.py -q`
+  - `python3 -m py_compile deeptutor/api/routers/dashboard.py`
+  - `cd web && npm run build`
+- PR note prepared:
+  - `docs/superpowers/pr-notes/2026-04-21-dashboard-filtering.md`

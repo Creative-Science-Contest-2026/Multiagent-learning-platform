@@ -62,6 +62,7 @@ flowchart TD
   
   Product --> TeacherDashboard["Teacher Dashboard"]
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
+  DashboardSummary --> DashboardFilters["History filters: type + KB + search + min score"]
   TeacherDashboard --> StudentDashboard["Student Progress Dashboard"]
   TeacherDashboard --> AssessmentReview["Assessment Review Drill-down"]
   StudentDashboard --> StudentRoute["/dashboard/student"]
