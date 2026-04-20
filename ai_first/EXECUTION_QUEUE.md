@@ -1,6 +1,6 @@
 # Execution Queue
 
-Last updated: 2026-04-19
+Last updated: 2026-04-20
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
@@ -13,13 +13,36 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- Open issue: `#41 docs: prepare contest submission package`
-- Active task packet: `docs/superpowers/tasks/2026-04-19-contest-submission-package.md`
-- Expected branch: `docs/contest-submission-package`
+- Active PR (Draft): `#44 feat: complete autopilot batch for marketplace import, API throttling, route resilience, assessment insights, and KB context badges`
+- PR URL: `https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/pull/44`
+- Active branch: `pod-a/marketplace-pack-import`
+- Active task packet: `docs/superpowers/tasks/2026-04-20-T011-kb-context-badges.md`
+- Focus set: `T009`, `T010`, `T011`, `T022`, `T028` (implemented and pushed; waiting CI/review gate)
 
 ## Next recommended task
 
-Merge the contest submission package when checks pass. After merge, the remaining near-term work is human review of IP commitment, final product description wording, and whether optional video is required.
+Keep PR `#44` in Draft until CI checks are green and self-review is complete, then move to Ready for review. After merge, proceed to the next pending item from `ai_first/TASK_REGISTRY.json` in strict sequence.
+
+## Status Update (2026-04-20)
+
+**MVP Audit Execution Progress**:
+1. **T009: Marketplace Import** - Implemented real import flow with KB clone + registry update
+2. **T010: Assessment Feedback Details** - Added topic-level assessment analytics API + UI integration
+3. **T011: KB Context Badges** - Added request-snapshot KB chips in user and paired assistant chat blocks
+4. **T022: Error Boundaries** - Added route-level fallbacks for marketplace + assessment routes
+5. **T028: Rate Limiting** - Added API middleware with 429 + Retry-After
+
+**Current Gate**:
+- PR is opened in Draft mode and pushed to origin.
+- Merge is blocked until required CI checks pass and review gate is cleared.
+
+## Active queue
+
+**UPDATED**: Active execution is now on PR `#44` for the autopilot technical batch.
+
+- Previous: MVP audit and policy hardening committed
+- Current: T009/T010/T011/T022/T028 implemented on `pod-a/marketplace-pack-import`
+- Next after merge: Continue with next pending backlog task by registry order
 
 ## AI-owned blockers
 
@@ -35,3 +58,18 @@ Merge the contest submission package when checks pass. After merge, the remainin
 2. `ai_first/EXECUTION_QUEUE.md`
 3. Task packet for the active branch
 4. `ai_first/CURRENT_STATE.md` only if more context is needed
+
+---
+
+## Critical Path Phase 1 (Next 2 Weeks)
+
+| Task | Status | Hours | Blocker | Start |
+|------|--------|-------|---------|-------|
+| T009: Marketplace Import | In Progress (PR #44) | 4 | YES | Done |
+| T010: Assessment Feedback | In Progress (PR #44) | 6 | YES | Done |
+| T011: KB Context Badges | In Progress (PR #44) | 2 | NO | Done |
+| T018: Vietnamese Prompts | Not Started | 4 | YES | Parallel |
+| T022: Error Boundaries | In Progress (PR #44) | 2 | NO | Done |
+| T028: Rate Limiting | In Progress (PR #44) | 2 | YES | Done |
+
+**Resources**: See `ai_first/TASK_REGISTRY.json` (full task list with effort estimates) and `ai_first/MVP_GAP_ANALYSIS.md` (detailed audit with risk assessment).

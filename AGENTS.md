@@ -16,6 +16,8 @@ While working:
 
 - Do not push directly to `main`.
 - Work on a branch named `pod-a/<feature>`, `pod-b/<feature>`, `docs/<topic>`, or `fix/<topic>`.
+- Open PRs in review mode (create as Draft first, then move to Ready for review after self-review).
+- Merge is allowed only when all required CI checks have passed.
 - Do not modify files outside the assigned task scope unless the task packet is updated first.
 - Preserve Apache 2.0 license and upstream HKUDS/DeepTutor credit.
 - If adding, removing, or materially changing a feature, update `ai_first/architecture/MAIN_SYSTEM_MAP.md`.

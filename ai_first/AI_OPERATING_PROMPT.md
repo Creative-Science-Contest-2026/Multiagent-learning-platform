@@ -42,6 +42,8 @@ Before edits:
 
 - Never push directly to `main`.
 - Use a focused branch.
+- Open every PR in review mode: create as Draft first, then move to Ready for review after self-review.
+- Do not merge any PR unless all required CI checks are green.
 - Respect `Owned files/modules` and `Do-not-touch files/modules`.
 - For bootstrap tasks before task packets exist, use the current plan task's `Files:` section as the owned-file contract.
 - Do not revert user or other-agent changes.
@@ -65,8 +67,10 @@ Before edits:
 
 After opening or updating a PR, classify it before handing off:
 
-- Docs, task, and workflow PRs may be auto-merged when the PR is mergeable, non-draft, and has no blocking review or unresolved required discussion.
-- Runtime and product PRs may be auto-merged only when relevant tests or required checks pass and there is no blocking review.
+- Every PR must start as Draft and only move to Ready for review after local validation and checklist completion.
+- No PR may be merged unless all required CI checks have passed.
+- Docs, task, and workflow PRs may be auto-merged only when the PR is mergeable, non-draft, CI is green, and there is no blocking review or unresolved required discussion.
+- Runtime and product PRs may be auto-merged only when relevant tests and required checks pass, CI is green, and there is no blocking review.
 - If CI fails, fixing CI is the next task. Do not start a new feature until the failing PR is fixed or explicitly deferred.
 - If review blocks the PR, address the review before merging or continuing.
 - After a successful merge, sync from `main`, update the daily log and compact status mirrors when useful, then select the next task.
@@ -94,8 +98,69 @@ Before handing off:
 2. Record tests and failures.
 3. Update `ai_first/daily/YYYY-MM-DD.md`.
 4. Update this file if status, workflow, or next actions changed.
-5. Check whether the PR is eligible for autonomous merge under the merge policy.
-6. Add handoff notes with changed files, risks, merge status, and the next recommended read path.
+5. Confirm the PR is Ready for review (not Draft) before requesting merge.
+6. Confirm all required CI checks are green before merge.
+7. Check whether the PR is eligible for autonomous merge under the merge policy.
+8. Add handoff notes with changed files, risks, merge status, and the next recommended read path.
+## Task Tracking System
+
+The project uses a structured task registry to track MVP gaps, priorities, and progress:
+
+### Key Files
+
+- `ai_first/TASK_REGISTRY.json` - Authoritative task list with metadata, priorities, and dependencies
+- `ai_first/MVP_GAP_ANALYSIS.md` - Detailed audit report with issue descriptions, risk assessment, and roadmap
+
+### Task Status Workflow
+
+Tasks flow through states:
+- **not-started**: Issue identified, not yet assigned
+- **in-progress**: Active work, updated daily
+- **completed**: Merged to main or stable branch
+
+### Task Priority Levels
+
+- **P1 Critical**: Blockers for contest submission, MVP incomplete
+- **P2-P3 High**: Essential for MVP, fix next
+- **P4-P10 Medium**: Important UX/features, schedule for later
+- **P11-P27 Low**: Nice-to-have, polish items
+
+### Workflow: MVP Gap Analysis to Execution
+
+1. **Discovery**: Read `ai_first/MVP_GAP_ANALYSIS.md` for complete audit
+2. **Selection**: Choose next task from Phase 1 (critical path) in JSON registry
+3. **Planning**: Create or update task packet in `docs/superpowers/tasks/`
+4. **Execution**: Follow Execution Contract rules above
+5. **Tracking**: Update `TASK_REGISTRY.json` status field as work progresses
+6. **Mirror**: Keep GitHub issues in sync with `TASK_REGISTRY.json` status
+
+### AI Worker Quick Start
+
+When starting a new feature or fix:
+1. Check `ai_first/TASK_REGISTRY.json` for matching task ID
+2. Note the priority, effort estimate, and file scope
+3. Read the related section in `ai_first/MVP_GAP_ANALYSIS.md`
+4. Create feature branch: `pod-a/<task-name>`, `pod-b/<task-name>`, or `fix/<task-name>`
+5. Create GitHub issue using template from JSON `github_issues_template` section
+6. Link PR to issue
+7. Update JSON status → "in-progress" when starting
+8. Update JSON status → "completed" when merged to main
+
+### Critical P1 Tasks (Block before contest submission)
+
+| Task ID | Title | Blocker | Phase |
+|---------|-------|---------|-------|
+| T009 | Marketplace Import | Fake placeholder only | 1 |
+| T010 | Assessment Feedback | Minimal recommendations | 1 |
+| T018 | Vietnamese Prompts | English-only LLM responses | 1 |
+| T028 | Rate Limiting | API abuse risk | 1 |
+
+### Integration with Existing Rules
+
+- Task packets created from TASK_REGISTRY inherit `Files:` field as owned-file contract
+- Every PR updates corresponding task status in JSON
+- Daily logs reference task IDs for tracking progress
+- Architecture changes trigger MAIN_SYSTEM_MAP.md updates per the task scope
 
 ## Next actions
 

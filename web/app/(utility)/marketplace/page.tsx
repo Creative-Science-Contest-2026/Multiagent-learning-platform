@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { BookOpen, Download, Filter, Loader2, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   listMarketplacePacks,
+  importMarketplacePack,
   type MarketplaceListResponse,
   type MarketplacePack,
 } from "@/lib/marketplace-api";
-import { updateKnowledgeBaseConfig } from "@/lib/knowledge-api";
 
 export default function MarketplacePage() {
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ export default function MarketplacePage() {
   const [importing, setImporting] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState<string | null>(null);
 
-  const loadPacks = async () => {
+  const loadPacks = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -51,20 +51,19 @@ export default function MarketplacePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterOwner, filterSubject, limit, offset, sharingStatus]);
 
   useEffect(() => {
     loadPacks();
-  }, [offset, sharingStatus, filterSubject, filterOwner]);
+  }, [loadPacks]);
 
   const handleImportPack = async (packName: string) => {
     setImporting(packName);
     try {
-      // Placeholder: In a real scenario, this would copy the pack to the user's workspace
-      // For now, we just show a success message
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await importMarketplacePack(packName);
       setImportSuccess(packName);
       setTimeout(() => setImportSuccess(null), 3000);
+      await loadPacks();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to import pack");
     } finally {

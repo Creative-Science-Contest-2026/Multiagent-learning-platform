@@ -5,6 +5,7 @@ export interface AssessmentSummary {
   correct_count: number;
   incorrect_count: number;
   score_percent: number;
+  estimated_time_spent?: number;
 }
 
 export interface AssessmentReviewResult {
@@ -23,6 +24,23 @@ export interface AssessmentReview {
   knowledge_bases: string[];
   summary: AssessmentSummary;
   results: AssessmentReviewResult[];
+}
+
+export interface TopicPerformance {
+  topic: string;
+  total_questions: number;
+  correct_count: number;
+  incorrect_count: number;
+  accuracy_percent: number;
+}
+
+export interface AssessmentAnalysis {
+  session_id: string;
+  summary: AssessmentSummary;
+  performance_by_topic: TopicPerformance[];
+  weak_topics: string[];
+  strong_topics: string[];
+  recommendations: string[];
 }
 
 export interface DashboardActivity {
@@ -76,4 +94,11 @@ export async function getAssessmentReview(sessionId: string): Promise<Assessment
     cache: "no-store",
   });
   return expectJson<AssessmentReview>(response);
+}
+
+export async function getAssessmentAnalysis(sessionId: string): Promise<AssessmentAnalysis> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/assessment-analysis/${sessionId}`), {
+    cache: "no-store",
+  });
+  return expectJson<AssessmentAnalysis>(response);
 }

@@ -58,6 +58,29 @@ interface NotebookReferenceGroup {
   count: number;
 }
 
+function KnowledgeBaseChips({
+  knowledgeBases,
+  align = "left",
+}: {
+  knowledgeBases: string[];
+  align?: "left" | "right";
+}) {
+  if (!knowledgeBases.length) return null;
+  return (
+    <div className={`mb-2 flex flex-wrap gap-1.5 ${align === "right" ? "justify-end" : "justify-start"}`}>
+      {knowledgeBases.map((kb) => (
+        <span
+          key={kb}
+          className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--background)]/60 px-2 py-1 text-[11px] font-medium text-[var(--muted-foreground)]"
+        >
+          <BookOpen size={11} strokeWidth={1.8} />
+          {kb}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function getModeBadgeLabel(capability?: string | null) {
   if (!capability || capability === "chat") return "Chat";
   if (capability === "deep_solve") return "Deep Solve";
@@ -347,6 +370,10 @@ export function ChatMessageList({
                   </div>
                 )}
                 <div className="rounded-2xl bg-[var(--secondary)] px-4 py-2.5 text-[14px] leading-relaxed text-[var(--foreground)] shadow-sm">
+                  <KnowledgeBaseChips
+                    knowledgeBases={msg.requestSnapshot?.knowledgeBases ?? []}
+                    align="right"
+                  />
                   {(() => {
                     const snap = msg.requestSnapshot;
                     const hasNotebook = Boolean(snap?.notebookReferences?.length);
@@ -426,6 +453,9 @@ export function ChatMessageList({
 
         return (
           <div key={`${msg.role}-${i}`} className="w-full">
+            <KnowledgeBaseChips
+              knowledgeBases={pairedUserMessage?.requestSnapshot?.knowledgeBases ?? []}
+            />
             <AssistantMessage
               msg={msg}
               isStreaming={isStreaming && i === messages.length - 1}

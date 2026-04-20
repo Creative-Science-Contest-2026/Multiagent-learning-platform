@@ -1,10 +1,14 @@
 import logging
+from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from pathlib import Path
+from time import monotonic
 
 from fastapi import FastAPI
 from fastapi import HTTPException
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from deeptutor.logging import get_logger
@@ -148,6 +152,57 @@ app = FastAPI(
 
 # Log only non-200 requests (uvicorn access_log is disabled in run_server.py)
 _access_logger = logging.getLogger("uvicorn.access")
+
+
+_RATE_LIMIT_RULES: tuple[tuple[str, int, int], ...] = (
+    ("/api/v1/marketplace/import", 20, 60),
+    ("/api/v1/question", 40, 60),
+    ("/api/v1/solve", 30, 60),
+    ("/api/v1", 120, 60),
+)
+_rate_limit_store: dict[str, deque[float]] = defaultdict(deque)
+
+
+def _resolve_rate_limit(path: str) -> tuple[str, int, int]:
+    for prefix, limit, window_seconds in _RATE_LIMIT_RULES:
+        if path.startswith(prefix):
+            return prefix, limit, window_seconds
+    return "/api/v1", 120, 60
+
+
+def _build_rate_limit_bucket_key(client_ip: str, path: str) -> str:
+    policy_prefix, _, _ = _resolve_rate_limit(path)
+    return f"{client_ip}:{policy_prefix}"
+
+
+@app.middleware("http")
+async def api_rate_limit(request: Request, call_next):
+    path = request.url.path
+
+    # Apply rate limits only to API HTTP routes.
+    if not path.startswith("/api/"):
+        return await call_next(request)
+
+    _, limit, window_seconds = _resolve_rate_limit(path)
+    client_ip = request.client.host if request.client else "unknown"
+    key = _build_rate_limit_bucket_key(client_ip, path)
+
+    now = monotonic()
+    events = _rate_limit_store[key]
+    cutoff = now - window_seconds
+    while events and events[0] < cutoff:
+        events.popleft()
+
+    if len(events) >= limit:
+        retry_after = max(1, int(window_seconds - (now - events[0])))
+        return JSONResponse(
+            status_code=429,
+            content={"detail": "Too Many Requests"},
+            headers={"Retry-After": str(retry_after)},
+        )
+
+    events.append(now)
+    return await call_next(request)
 
 
 @app.middleware("http")
