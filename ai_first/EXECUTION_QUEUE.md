@@ -1,6 +1,6 @@
 # Execution Queue
 
-Last updated: 2026-04-20
+Last updated: 2026-04-21
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
@@ -15,20 +15,22 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 - Active issue: `#53 [MVP] Student Progress Tracking Dashboard`
 - Active branch: `pod-a/t014-student-progress-dashboard`
+- Active PR: `#54 [MVP] Student Progress Tracking Dashboard` (Draft)
 - Active task packet: `docs/superpowers/tasks/2026-04-20-T014-student-progress-dashboard.md`
 - Focus set: `T014` (student-facing progress dashboard)
 
 ## Next recommended task
 
-Implement `T014` on `pod-a/t014-student-progress-dashboard`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Monitor CI for `#54`, fix any failing checks on `pod-a/t014-student-progress-dashboard`, then merge to `main` once all required checks are green.
 
-## Status Update (2026-04-20)
+## Status Update (2026-04-21)
 
 **Queue Advance**:
 1. `#52` merged to `main` after all required CI checks passed
 2. Completed registry tasks were reconciled to match what is already merged on `main`
 3. Next pending registry task selected in strict order: `T014 Student Progress Tracking Dashboard`
 4. Issue `#53` created and task packet added for the new execution lane
+5. Draft PR `#54` opened with validation complete and architecture note attached
 
 ## AI-owned blockers
 

@@ -145,7 +145,7 @@
       "estimated_hours": 5,
       "dependencies": ["Assessment Analytics"],
       "status": "in-progress",
-      "notes": "Issue #53 opened and task packet created at docs/superpowers/tasks/2026-04-20-T014-student-progress-dashboard.md. Active branch: pod-a/t014-student-progress-dashboard."
+      "notes": "Issue #53 opened and task packet created at docs/superpowers/tasks/2026-04-20-T014-student-progress-dashboard.md. Active branch: pod-a/t014-student-progress-dashboard. Draft PR #54 is open with backend tests and frontend build passing locally."
     },
     {
       "id": "T015_ASSESSMENT_RECOMMENDATIONS",
