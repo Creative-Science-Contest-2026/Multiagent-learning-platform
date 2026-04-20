@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 8,
+      "count": 18,
       "tasks": [
         "T001_MARKETPLACE_API_LIST",
         "T002_MARKETPLACE_API_DETAIL",
@@ -17,18 +17,24 @@
         "T005_LEARNING_JOURNEY_COMPONENT",
         "T006_ASSESSMENT_REVIEW_INTEGRATION",
         "T007_VIETNAMESE_UI_TRANSLATION",
-        "T008_VIETNAMESE_BACKEND_SUPPORT"
+        "T008_VIETNAMESE_BACKEND_SUPPORT",
+        "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
+        "T010_ASSESSMENT_FEEDBACK_DETAILS",
+        "T011_KB_CONTEXT_BADGES",
+        "T012_TEACHER_PACK_SHARING_UI",
+        "T013_MARKETPLACE_PACK_PREVIEW",
+        "T014_STUDENT_PROGRESS_DASHBOARD",
+        "T015_ASSESSMENT_RECOMMENDATIONS",
+        "T016_MARKETPLACE_RATINGS",
+        "T017_ASSESSMENT_HISTORY_FILTERING",
+        "T018_VIETNAMESE_PROMPT_VARIANTS"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 5,
+      "count": 1,
       "tasks": [
-        "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
-        "T010_ASSESSMENT_FEEDBACK_DETAILS",
-        "T011_KB_CONTEXT_BADGES",
-        "T022_ERROR_BOUNDARY_HANDLING",
-        "T028_API_RATE_LIMITING"
+        "T019_MARKETPLACE_SORTING"
       ]
     },
     "blocked": {
@@ -38,7 +44,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 22,
+      "count": 16,
       "tasks": []
     }
   },
@@ -213,8 +219,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["i18n System"],
-      "status": "in-progress",
-      "notes": "Issue #61 opened and task packet created at docs/superpowers/tasks/2026-04-21-T018-vietnamese-prompts.md. Active branch: pod-a/t018-vietnamese-prompts."
+      "status": "completed",
+      "notes": "Merged to main through PR #62. Added Vietnamese prompt variants for the MVP prompt families and prompt-manager regression coverage."
     },
     {
       "id": "T019_MARKETPLACE_SORTING",
@@ -230,8 +236,8 @@
       "complexity": "Low",
       "estimated_hours": 1.5,
       "dependencies": ["Marketplace API"],
-      "status": "not-started",
-      "notes": "Implement server-side sorting, maintain download_count and rating metadata"
+      "status": "in-progress",
+      "notes": "Issue #63 opened and task packet created at docs/superpowers/tasks/2026-04-21-T019-marketplace-sorting.md. Active branch: pod-a/t019-marketplace-sorting."
     },
     {
       "id": "T020_ASSESSMENT_EXPORT_PDF",
