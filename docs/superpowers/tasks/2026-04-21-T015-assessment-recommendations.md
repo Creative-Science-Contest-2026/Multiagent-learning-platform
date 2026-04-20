@@ -67,3 +67,12 @@ Generate the next recommended assessment focus for a student based on recent ass
 
 - `T014` is merged to `main` through PR `#54`.
 - Start from the existing dashboard assessment analysis and review parsing before introducing any new recommendation logic.
+- Implemented on branch `pod-a/t015-assessment-recommendations` with:
+  - `POST /api/v1/assessment/recommend`
+  - shared analysis helper in `deeptutor/services/assessment/analysis.py`
+  - deterministic recommendation engine in `deeptutor/services/assessment/recommendation_engine.py`
+- Validation completed:
+  - `python3 -m pytest tests/api/test_dashboard_router.py tests/api/test_assessment_router.py -q`
+  - `python3 -m py_compile deeptutor/api/routers/assessment.py deeptutor/api/routers/dashboard.py deeptutor/api/main.py deeptutor/services/assessment/analysis.py deeptutor/services/assessment/recommendation_engine.py`
+- PR note prepared:
+  - `docs/superpowers/pr-notes/2026-04-21-assessment-recommendations.md`
