@@ -48,6 +48,9 @@ flowchart TD
   
   Product --> AssessmentBuilder["Assessment Builder"]
   AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
+  AssessmentBuilder --> AssessmentRecommendAPI["POST /api/v1/assessment/recommend"]
+  AssessmentRecommendAPI --> RecommendEngine["Assessment Recommendation Engine"]
+  RecommendEngine --> AssessmentSignals["Weak topics + score trend + KB context"]
   
   Product --> StudentTutor["Student Tutor Workspace"]
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]

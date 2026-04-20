@@ -7,30 +7,30 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#52 feat: add marketplace pack preview`
-- `#52` added compact preview-before-import flow for marketplace packs and passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import and preview, assessment insights, KB context badges, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#54 [MVP] Student Progress Tracking Dashboard`
+- `#54` added `/dashboard/student` and `GET /api/v1/dashboard/student-progress`, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import and preview, assessment insights, KB context badges, student progress dashboard, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#53 [MVP] Student Progress Tracking Dashboard`
-- Active branch: `pod-a/t014-student-progress-dashboard`
-- Active PR: `#54 [MVP] Student Progress Tracking Dashboard` (Draft)
-- Active task packet: `docs/superpowers/tasks/2026-04-20-T014-student-progress-dashboard.md`
-- Focus set: `T014` (student-facing progress dashboard)
+- Active issue: `#55 [MVP] AI-Powered Assessment Recommendations`
+- Active branch: `pod-a/t015-assessment-recommendations`
+- Active PR: `#56 [MVP] AI-Powered Assessment Recommendations` (Draft)
+- Active task packet: `docs/superpowers/tasks/2026-04-21-T015-assessment-recommendations.md`
+- Focus set: `T015` (assessment recommendations)
 
 ## Next recommended task
 
-Monitor CI for `#54`, fix any failing checks on `pod-a/t014-student-progress-dashboard`, then merge to `main` once all required checks are green.
+Monitor CI for `#56`, fix any failing checks on `pod-a/t015-assessment-recommendations`, then merge to `main` once all required checks are green.
 
 ## Status Update (2026-04-21)
 
 **Queue Advance**:
-1. `#52` merged to `main` after all required CI checks passed
-2. Completed registry tasks were reconciled to match what is already merged on `main`
-3. Next pending registry task selected in strict order: `T014 Student Progress Tracking Dashboard`
-4. Issue `#53` created and task packet added for the new execution lane
-5. Draft PR `#54` opened with validation complete and architecture note attached
+1. `#54` merged to `main` after all required CI checks passed
+2. Issue `#53` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T015 AI-Powered Assessment Recommendations`
+4. Issue `#55` created and task packet added for the new execution lane
+5. Draft PR `#56` opened with validation complete and architecture note attached
 
 ## AI-owned blockers
 
@@ -58,7 +58,8 @@ Monitor CI for `#54`, fix any failing checks on `pod-a/t014-student-progress-das
 | T011: KB Context Badges | Completed | 2 | NO | Done |
 | T012: Teacher Sharing UI | Completed | 3 | NO | Verified |
 | T013: Marketplace Preview | Completed | 3 | NO | Done |
-| T014: Student Progress Dashboard | In Progress | 5 | NO | Now |
+| T014: Student Progress Dashboard | Completed | 5 | NO | Done |
+| T015: Assessment Recommendations | In Progress | 6 | NO | Now |
 | T018: Vietnamese Prompts | Not Started | 4 | YES | Parallel |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
