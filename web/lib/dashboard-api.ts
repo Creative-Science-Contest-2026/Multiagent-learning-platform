@@ -5,6 +5,7 @@ export interface AssessmentSummary {
   correct_count: number;
   incorrect_count: number;
   score_percent: number;
+  estimated_time_spent?: number;
 }
 
 export interface AssessmentReviewResult {

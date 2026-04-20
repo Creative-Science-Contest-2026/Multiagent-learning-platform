@@ -23,7 +23,7 @@ import {
 
 import { useTranslation } from "react-i18next";
 
-import { writeStoredLanguage } from "@/context/AppShellContext";
+import { writeStoredLanguage, type AppLanguage } from "@/context/AppShellContext";
 import { apiUrl } from "@/lib/api";
 import { setTheme as applyThemePreference } from "@/lib/theme";
 
@@ -67,7 +67,7 @@ type Catalog = {
 
 type UiSettings = {
   theme: "light" | "dark";
-  language: "en" | "zh";
+  language: AppLanguage;
 };
 
 type ProviderOption = { value: string; label: string; base_url?: string };
@@ -368,7 +368,7 @@ function SettingsPageContent() {
 
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [language, setLanguage] = useState<"en" | "zh" | "vi">("en");
+  const [language, setLanguage] = useState<AppLanguage>("en");
   const [catalog, setCatalog] = useState<Catalog>(defaultCatalog());
   const [draft, setDraft] = useState<Catalog>(defaultCatalog());
   const [activeService, setActiveService] = useState<ServiceName>("llm");
@@ -460,7 +460,7 @@ function SettingsPageContent() {
 
   // -- UI preference helpers ----------------------------------------------
 
-  const persistUi = async (nextTheme: "light" | "dark", nextLanguage: "en" | "zh") => {
+  const persistUi = async (nextTheme: "light" | "dark", nextLanguage: AppLanguage) => {
     await fetch(apiUrl("/api/v1/settings/ui"), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -474,7 +474,7 @@ function SettingsPageContent() {
     await persistUi(nextTheme, language);
   };
 
-  const updateLanguage = async (nextLanguage: "en" | "zh") => {
+  const updateLanguage = async (nextLanguage: AppLanguage) => {
     setLanguage(nextLanguage);
     writeStoredLanguage(nextLanguage);
     await persistUi(theme, nextLanguage);
