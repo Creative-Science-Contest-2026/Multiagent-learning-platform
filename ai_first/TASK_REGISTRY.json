@@ -179,8 +179,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["Database Schema"],
-      "status": "in-progress",
-      "notes": "Issue #57 opened and task packet created at docs/superpowers/tasks/2026-04-21-T016-marketplace-ratings.md. Active branch: pod-a/t016-marketplace-ratings. Draft PR #58 is open with backend tests and frontend build passing locally."
+      "status": "completed",
+      "notes": "Merged to main through PR #58. Marketplace now supports lightweight ratings and review submission."
     },
     {
       "id": "T017_ASSESSMENT_HISTORY_FILTERING",
@@ -196,8 +196,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["Dashboard API"],
-      "status": "not-started",
-      "notes": "Reuse existing session query parameters, add UI for common filters"
+      "status": "in-progress",
+      "notes": "Issue #59 opened and task packet created at docs/superpowers/tasks/2026-04-21-T017-dashboard-filtering.md. Active branch: pod-a/t017-dashboard-filtering."
     },
     {
       "id": "T018_VIETNAMESE_PROMPT_VARIANTS",
