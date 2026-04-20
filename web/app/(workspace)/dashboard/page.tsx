@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, ArrowRight, BookOpen, CheckCircle2, Loader2, PenLine, Users } from "lucide-react";
+import { Activity, ArrowRight, BookOpen, CheckCircle2, Filter, Loader2, PenLine, Search, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   getDashboardOverview,
   type DashboardActivity,
   type DashboardOverview,
+  type DashboardOverviewFilters,
 } from "@/lib/dashboard-api";
 
 function formatTime(value: number): string {
@@ -32,11 +33,25 @@ export default function DashboardPage() {
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activityType, setActivityType] = useState("");
+  const [knowledgeBase, setKnowledgeBase] = useState("");
+  const [minScore, setMinScore] = useState("");
+
+  const filters = useMemo<DashboardOverviewFilters>(
+    () => ({
+      type: activityType || undefined,
+      knowledge_base: knowledgeBase || undefined,
+      search: searchTerm.trim() || undefined,
+      min_score: minScore ? Number(minScore) : undefined,
+    }),
+    [activityType, knowledgeBase, minScore, searchTerm],
+  );
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    getDashboardOverview()
+    getDashboardOverview(50, filters)
       .then((data) => {
         if (!cancelled) {
           setOverview(data);
@@ -52,7 +67,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [filters]);
 
   const totals = overview?.totals;
   const cards = useMemo(
@@ -80,6 +95,7 @@ export default function DashboardPage() {
     ],
     [t, totals],
   );
+  const activeFilterCount = [searchTerm, activityType, knowledgeBase, minScore].filter(Boolean).length;
 
   return (
     <main className="h-full overflow-y-auto bg-[var(--background)]">
@@ -104,6 +120,88 @@ export default function DashboardPage() {
             <ArrowRight size={15} />
           </Link>
         </header>
+
+        <section className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-[var(--muted-foreground)]">
+              <Filter size={14} />
+              {t("History filters")}
+            </div>
+            {activeFilterCount > 0 && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setActivityType("");
+                  setKnowledgeBase("");
+                  setMinScore("");
+                }}
+                className="text-[12px] text-[var(--muted-foreground)] underline-offset-4 hover:text-[var(--foreground)] hover:underline"
+              >
+                {t("Clear filters")}
+              </button>
+            )}
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <label className="block">
+              <span className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
+                {t("Search")}
+              </span>
+              <div className="flex items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2">
+                <Search size={14} className="text-[var(--muted-foreground)]" />
+                <input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={t("Search title, summary, KB")}
+                  className="w-full bg-transparent text-[13px] outline-none"
+                />
+              </div>
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
+                {t("Activity type")}
+              </span>
+              <select
+                value={activityType}
+                onChange={(e) => setActivityType(e.target.value)}
+                className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px]"
+              >
+                <option value="">{t("All activity")}</option>
+                <option value="assessment">{t("Assessment")}</option>
+                <option value="tutoring">{t("Tutoring")}</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
+                {t("Knowledge Pack")}
+              </span>
+              <input
+                value={knowledgeBase}
+                onChange={(e) => setKnowledgeBase(e.target.value)}
+                placeholder={t("e.g. algebra-pack")}
+                className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px]"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
+                {t("Minimum score")}
+              </span>
+              <select
+                value={minScore}
+                onChange={(e) => setMinScore(e.target.value)}
+                className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px]"
+              >
+                <option value="">{t("Any score")}</option>
+                <option value="50">50%+</option>
+                <option value="70">70%+</option>
+                <option value="80">80%+</option>
+                <option value="90">90%+</option>
+              </select>
+            </label>
+          </div>
+        </section>
 
         {error && (
           <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
@@ -206,7 +304,9 @@ export default function DashboardPage() {
                 <div className="bg-[var(--card)] px-4 py-10 text-center text-[13px] text-[var(--muted-foreground)]">
                   {loading
                     ? t("Loading activity...")
-                    : t("No learning activity yet. Generate an assessment or start a tutoring chat.")}
+                    : activeFilterCount > 0
+                      ? t("No activity matches the current filters.")
+                      : t("No learning activity yet. Generate an assessment or start a tutoring chat.")}
                 </div>
               )}
             </div>
@@ -237,7 +337,9 @@ export default function DashboardPage() {
                 ))
               ) : (
                 <div className="px-4 py-8 text-center text-[13px] text-[var(--muted-foreground)]">
-                  {t("Knowledge Pack activity will appear here.")}
+                  {activeFilterCount > 0
+                    ? t("No Knowledge Pack activity matches the current filters.")
+                    : t("Knowledge Pack activity will appear here.")}
                 </div>
               )}
             </div>

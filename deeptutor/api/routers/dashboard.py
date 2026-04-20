@@ -135,15 +135,62 @@ def _learning_streak_days(activities: list[dict[str, Any]]) -> int:
     return streak
 
 
+def _matches_dashboard_filters(
+    activity: dict[str, Any],
+    *,
+    type: str | None = None,
+    knowledge_base: str | None = None,
+    search: str | None = None,
+    min_score: int | None = None,
+) -> bool:
+    if type is not None and activity.get("type") != type:
+        return False
+
+    if knowledge_base is not None:
+        available = [str(kb).lower() for kb in activity.get("knowledge_bases", [])]
+        if knowledge_base.lower() not in available:
+            return False
+
+    if search:
+        haystack = " ".join(
+            [
+                str(activity.get("title") or ""),
+                str(activity.get("summary") or ""),
+                " ".join(str(kb) for kb in activity.get("knowledge_bases", [])),
+            ]
+        ).lower()
+        if search.lower() not in haystack:
+            return False
+
+    if min_score is not None:
+        summary = activity.get("assessment_summary")
+        if not summary or int(summary.get("score_percent", 0)) < min_score:
+            return False
+
+    return True
+
+
 @router.get("/recent")
-async def get_recent_activities(limit: int = 50, type: str | None = None):
+async def get_recent_activities(
+    limit: int = 50,
+    type: str | None = None,
+    knowledge_base: str | None = None,
+    search: str | None = None,
+    min_score: int | None = None,
+):
     store = get_sqlite_session_store()
     sessions = await store.list_sessions(limit=limit, offset=0)
     activities: list[dict[str, Any]] = []
 
     for session in sessions:
         activity = await _activity_with_review(store, session)
-        if type is not None and activity["type"] != type:
+        if not _matches_dashboard_filters(
+            activity,
+            type=type,
+            knowledge_base=knowledge_base,
+            search=search,
+            min_score=min_score,
+        ):
             continue
         activities.append(activity)
 
@@ -151,10 +198,26 @@ async def get_recent_activities(limit: int = 50, type: str | None = None):
 
 
 @router.get("/overview")
-async def get_dashboard_overview(limit: int = 50):
+async def get_dashboard_overview(
+    limit: int = 50,
+    type: str | None = None,
+    knowledge_base: str | None = None,
+    search: str | None = None,
+    min_score: int | None = None,
+):
     store = get_sqlite_session_store()
     sessions = await store.list_sessions(limit=limit, offset=0)
-    activities = [await _activity_with_review(store, session) for session in sessions]
+    activities = [
+        activity
+        for session in sessions
+        if _matches_dashboard_filters(
+            activity := await _activity_with_review(store, session),
+            type=type,
+            knowledge_base=knowledge_base,
+            search=search,
+            min_score=min_score,
+        )
+    ]
 
     knowledge_pack_counts: dict[str, int] = {}
     status_counts: dict[str, int] = {}
