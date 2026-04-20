@@ -144,8 +144,8 @@
       "complexity": "High",
       "estimated_hours": 5,
       "dependencies": ["Assessment Analytics"],
-      "status": "in-progress",
-      "notes": "Issue #53 opened and task packet created at docs/superpowers/tasks/2026-04-20-T014-student-progress-dashboard.md. Active branch: pod-a/t014-student-progress-dashboard. Draft PR #54 is open with backend tests and frontend build passing locally."
+      "status": "completed",
+      "notes": "Merged to main through PR #54. Student dashboard now exposes /dashboard/student and GET /api/v1/dashboard/student-progress."
     },
     {
       "id": "T015_ASSESSMENT_RECOMMENDATIONS",
@@ -161,8 +161,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["LLM Service", "Assessment Analytics"],
-      "status": "not-started",
-      "notes": "Analyze performance data and suggest next topics to study or practice"
+      "status": "in-progress",
+      "notes": "Issue #55 opened and task packet created at docs/superpowers/tasks/2026-04-21-T015-assessment-recommendations.md. Active branch: pod-a/t015-assessment-recommendations."
     },
     {
       "id": "T016_MARKETPLACE_RATINGS",
