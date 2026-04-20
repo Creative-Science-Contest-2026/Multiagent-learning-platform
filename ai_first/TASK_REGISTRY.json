@@ -58,8 +58,8 @@
       "complexity": "High",
       "estimated_hours": 4,
       "dependencies": ["Knowledge Pack Manager API"],
-      "status": "in-progress",
-      "notes": "Backend import endpoint and frontend API wiring are implemented; copy flow now creates imported KB clone and registers it in kb_config. Pending full integration verification in environment with pytest installed."
+      "status": "completed",
+      "notes": "Merged to main through PR #44 with follow-up fixes #48 and #49. Import flow clones marketplace packs into imported KBs and registers them in kb_config."
     },
     {
       "id": "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -76,8 +76,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["Assessment Generation API"],
-      "status": "in-progress",
-      "notes": "Implemented dashboard assessment-analysis endpoint with heuristic topic breakdown and recommendations, wired into assessment review UI and added API test coverage. Pending runtime validation in env with pytest installed."
+      "status": "completed",
+      "notes": "Merged to main through PR #44. Assessment review now includes backend analysis, topic signals, and richer frontend progress summaries."
     },
     {
       "id": "T011_KB_CONTEXT_BADGES",
@@ -93,8 +93,8 @@
       "complexity": "Medium",
       "estimated_hours": 2,
       "dependencies": ["Chat Context System"],
-      "status": "in-progress",
-      "notes": "KB context badges added to chat message rendering based on request snapshot knowledgeBases for both user prompts and paired assistant responses. Pending UX review in runtime session."
+      "status": "completed",
+      "notes": "Merged to main through PR #44. KB context badges render in chat from request snapshot knowledgeBases."
     },
     {
       "id": "T012_TEACHER_PACK_SHARING_UI",
@@ -127,8 +127,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Marketplace API"],
-      "status": "in-progress",
-      "notes": "Issue #51 opened and task packet created at docs/superpowers/tasks/2026-04-20-T013-marketplace-pack-preview.md. Next step: implement a compact preview endpoint and marketplace modal flow."
+      "status": "completed",
+      "notes": "Merged to main through PR #52. Marketplace now supports compact preview before import."
     },
     {
       "id": "T014_STUDENT_PROGRESS_DASHBOARD",
@@ -144,8 +144,8 @@
       "complexity": "High",
       "estimated_hours": 5,
       "dependencies": ["Assessment Analytics"],
-      "status": "not-started",
-      "notes": "Show progress over time, topic mastery chart, recent assessments, learning streak"
+      "status": "in-progress",
+      "notes": "Issue #53 opened and task packet created at docs/superpowers/tasks/2026-04-20-T014-student-progress-dashboard.md. Active branch: pod-a/t014-student-progress-dashboard."
     },
     {
       "id": "T015_ASSESSMENT_RECOMMENDATIONS",
@@ -281,8 +281,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["React"],
-      "status": "in-progress",
-      "notes": "Route-level error boundaries added for marketplace and assessment pages. Pending extension to additional high-traffic routes and UX copy parity across locales."
+      "status": "completed",
+      "notes": "Merged to main through PR #44. Marketplace and assessment review routes now have explicit error boundaries."
     },
     {
       "id": "T023_MARKETPLACE_CACHE_OPTIMIZATION",
@@ -382,8 +382,8 @@
       "complexity": "Medium",
       "estimated_hours": 2,
       "dependencies": ["FastAPI Middleware"],
-      "status": "in-progress",
-      "notes": "In-memory sliding-window middleware added in deeptutor/api/main.py with per-prefix route limits and 429 responses including Retry-After header. Pending production load tuning and persistence strategy."
+      "status": "completed",
+      "notes": "Merged to main through PR #44 and follow-up PR #49. API middleware now enforces per-policy rate limits with isolated buckets."
     },
     {
       "id": "T029_MARKETPLACE_SEARCH_FULLTEXT",
