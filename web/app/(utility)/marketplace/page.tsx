@@ -1,17 +1,27 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
-import { BookOpen, Download, Eye, Filter, Loader2, Search, X } from "lucide-react";
+import { BookOpen, Download, Eye, Filter, Loader2, Star, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   getMarketplacePackPreview,
   listMarketplacePacks,
   importMarketplacePack,
+  submitMarketplaceReview,
   type MarketplaceListResponse,
   type MarketplacePack,
   type MarketplacePackPreview,
 } from "@/lib/marketplace-api";
+
+function renderStars(value: number) {
+  return Array.from({ length: 5 }, (_, index) => (
+    <Star
+      key={index}
+      size={13}
+      className={index < Math.round(value) ? "fill-amber-400 text-amber-400" : "text-slate-300"}
+    />
+  ));
+}
 
 export default function MarketplacePage() {
   const { t } = useTranslation();
@@ -36,6 +46,10 @@ export default function MarketplacePage() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewPack, setPreviewPack] = useState<MarketplacePackPreview | null>(null);
+  const [reviewerName, setReviewerName] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const loadPacks = useCallback(async () => {
     setLoading(true);
@@ -88,6 +102,35 @@ export default function MarketplacePage() {
       setPreviewOpen(false);
     } finally {
       setPreviewLoading(false);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!previewPack) return;
+    setSubmittingReview(true);
+    try {
+      const result = await submitMarketplaceReview(previewPack.name, {
+        reviewer: reviewerName.trim() || "Anonymous",
+        rating: reviewRating,
+        comment: reviewComment.trim() || undefined,
+      });
+      setPreviewPack((current) =>
+        current
+          ? {
+              ...current,
+              rating_summary: result.rating_summary,
+              recent_reviews: [result.review, ...current.recent_reviews].slice(0, 5),
+            }
+          : current,
+      );
+      setReviewerName("");
+      setReviewRating(5);
+      setReviewComment("");
+      await loadPacks();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit review");
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -263,6 +306,16 @@ export default function MarketplacePage() {
                     <p className="text-[12px] text-[var(--muted-foreground)]">
                       <span className="font-medium">{t("Sessions")}:</span> {pack.session_count || 0}
                     </p>
+                    <div className="flex items-center gap-2 text-[12px] text-[var(--muted-foreground)]">
+                      <div className="flex items-center gap-0.5">
+                        {renderStars(pack.rating_summary?.average_rating || 0)}
+                      </div>
+                      <span>
+                        {pack.rating_summary?.review_count
+                          ? `${pack.rating_summary.average_rating.toFixed(1)} • ${pack.rating_summary.review_count} ${t("reviews")}`
+                          : t("Unrated")}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Learning Objectives */}
@@ -407,6 +460,21 @@ export default function MarketplacePage() {
                         {previewPack.session_count || 0}
                       </p>
                     </div>
+                    <div className="rounded-lg bg-[var(--background)] p-3 md:col-span-3">
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                        {t("Rating")}
+                      </p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex items-center gap-0.5">
+                          {renderStars(previewPack.rating_summary?.average_rating || 0)}
+                        </div>
+                        <p className="text-[13px] font-medium text-[var(--foreground)]">
+                          {previewPack.rating_summary?.review_count
+                            ? `${previewPack.rating_summary.average_rating.toFixed(1)} • ${previewPack.rating_summary.review_count} ${t("reviews")}`
+                            : t("No reviews yet")}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
                   {previewPack.learning_objectives && previewPack.learning_objectives.length > 0 && (
@@ -442,6 +510,92 @@ export default function MarketplacePage() {
                         {t("No preview documents available")}
                       </p>
                     )}
+                  </div>
+
+                  <div className="grid gap-4 rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                    <div>
+                      <p className="text-[12px] font-semibold text-[var(--foreground)]">
+                        {t("Ratings & Reviews")}
+                      </p>
+                      {previewPack.recent_reviews.length > 0 ? (
+                        <div className="mt-3 space-y-2">
+                          {previewPack.recent_reviews.map((review) => (
+                            <div
+                              key={`${review.reviewer}-${review.created_at}`}
+                              className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-3"
+                            >
+                              <div className="flex items-center justify-between gap-3">
+                                <span className="text-[13px] font-medium text-[var(--foreground)]">
+                                  {review.reviewer}
+                                </span>
+                                <div className="flex items-center gap-0.5">
+                                  {renderStars(review.rating)}
+                                </div>
+                              </div>
+                              {review.comment && (
+                                <p className="mt-2 text-[13px] leading-6 text-[var(--muted-foreground)]">
+                                  {review.comment}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="mt-2 text-[13px] text-[var(--muted-foreground)]">
+                          {t("No reviews yet. Be the first to rate this pack.")}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="grid gap-3 rounded-lg border border-dashed border-[var(--border)] bg-[var(--card)] p-3">
+                      <p className="text-[12px] font-semibold text-[var(--foreground)]">
+                        {t("Add your review")}
+                      </p>
+                      <input
+                        type="text"
+                        placeholder={t("Your name")}
+                        value={reviewerName}
+                        onChange={(e) => setReviewerName(e.target.value)}
+                        className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px]"
+                      />
+                      <div>
+                        <label className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
+                          {t("Rating")}
+                        </label>
+                        <select
+                          value={reviewRating}
+                          onChange={(e) => setReviewRating(Number(e.target.value))}
+                          className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px]"
+                        >
+                          {[5, 4, 3, 2, 1].map((value) => (
+                            <option key={value} value={value}>
+                              {value} / 5
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <textarea
+                        placeholder={t("What worked well about this pack?")}
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        rows={3}
+                        className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px]"
+                      />
+                      <button
+                        onClick={handleSubmitReview}
+                        disabled={submittingReview || !previewPack}
+                        className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--primary)] px-3 py-2 text-[12px] font-medium text-[var(--primary-foreground)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                      >
+                        {submittingReview ? (
+                          <>
+                            <Loader2 size={13} className="animate-spin" />
+                            {t("Saving review")}
+                          </>
+                        ) : (
+                          t("Submit review")
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </>
               ) : null}

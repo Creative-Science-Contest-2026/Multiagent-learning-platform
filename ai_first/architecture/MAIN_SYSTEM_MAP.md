@@ -43,7 +43,10 @@ flowchart TD
   Marketplace --> MarketplaceFilters["Search/Subject/Owner Filters"]
   Marketplace --> MarketplacePreview["GET /api/v1/marketplace/{pack_name}/preview"]
   MarketplacePreview --> PreviewModal["Preview modal: metadata + sample documents"]
+  MarketplacePreview --> PackRatings["Average rating + recent reviews"]
   Marketplace --> MarketplaceImport["POST /api/v1/marketplace/import/{pack_name}"]
+  Marketplace --> MarketplaceReviewAPI["POST /api/v1/marketplace/{pack_name}/reviews"]
+  MarketplaceReviewAPI --> ReviewStorage["KB config: marketplace_reviews metadata"]
   MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported"]
   
   Product --> AssessmentBuilder["Assessment Builder"]
