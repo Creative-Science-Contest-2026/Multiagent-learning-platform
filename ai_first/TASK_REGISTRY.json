@@ -197,7 +197,7 @@
       "estimated_hours": 2,
       "dependencies": ["Dashboard API"],
       "status": "in-progress",
-      "notes": "Issue #59 opened and task packet created at docs/superpowers/tasks/2026-04-21-T017-dashboard-filtering.md. Active branch: pod-a/t017-dashboard-filtering."
+      "notes": "Issue #59 opened and task packet created at docs/superpowers/tasks/2026-04-21-T017-dashboard-filtering.md. Active branch: pod-a/t017-dashboard-filtering. Draft PR #60 is open with dashboard API tests and frontend build passing locally."
     },
     {
       "id": "T018_VIETNAMESE_PROMPT_VARIANTS",

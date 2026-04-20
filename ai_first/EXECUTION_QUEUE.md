@@ -15,12 +15,13 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 - Active issue: `#59 [MVP] Assessment History Filtering & Search`
 - Active branch: `pod-a/t017-dashboard-filtering`
+- Active PR: `#60 [MVP] Assessment History Filtering & Search` (Draft)
 - Active task packet: `docs/superpowers/tasks/2026-04-21-T017-dashboard-filtering.md`
 - Focus set: `T017` (dashboard filtering)
 
 ## Next recommended task
 
-Implement `T017` on `pod-a/t017-dashboard-filtering`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Monitor CI for `#60`, fix any failing checks on `pod-a/t017-dashboard-filtering`, then merge to `main` once all required checks are green.
 
 ## Status Update (2026-04-21)
 
@@ -29,6 +30,7 @@ Implement `T017` on `pod-a/t017-dashboard-filtering`, then open a Draft PR with 
 2. Issue `#57` auto-closed with the merge
 3. Next pending registry task selected in strict order: `T017 Assessment History Filtering & Search`
 4. Issue `#59` created and task packet added for the new execution lane
+5. Draft PR `#60` opened with validation complete and architecture note attached
 
 ## AI-owned blockers
 
