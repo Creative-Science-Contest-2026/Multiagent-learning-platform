@@ -160,3 +160,52 @@ def test_marketplace_review_submission_updates_pack_summary(monkeypatch, tmp_pat
     preview_payload = preview_response.json()
     assert preview_payload["rating_summary"] == {"average_rating": 4.5, "review_count": 2}
     assert preview_payload["recent_reviews"][0]["comment"] == "Great question progression."
+
+
+def test_marketplace_list_supports_sorting_modes(monkeypatch, tmp_path: Path) -> None:
+    client = _build_app(monkeypatch, tmp_path)
+
+    second_pack = tmp_path / "second-pack"
+    (second_pack / "raw").mkdir(parents=True)
+    (second_pack / "rag_storage").mkdir(parents=True)
+    (second_pack / "raw" / "lesson-a.md").write_text("Lesson A", encoding="utf-8")
+
+    manager = marketplace.get_kb_manager()
+    manager.config["knowledge_bases"]["second-pack"] = {
+        "path": "second-pack",
+        "description": "Second pack",
+        "sharing_status": "public",
+        "subject": "Science",
+        "grade": "7",
+        "curriculum": "National",
+        "learning_objectives": ["Cells"],
+        "owner": "Teacher Z",
+        "marketplace_reviews": [
+            {
+                "reviewer": "Teacher D",
+                "rating": 5,
+                "comment": "Excellent structure.",
+                "created_at": "2026-04-20T10:00:00",
+            },
+            {
+                "reviewer": "Teacher E",
+                "rating": 5,
+                "comment": "High quality examples.",
+                "created_at": "2026-04-20T11:00:00",
+            },
+        ],
+        "created_at": "2026-04-21T00:00:00",
+        "updated_at": "2026-04-21T00:00:00",
+    }
+
+    popularity = client.get("/api/v1/marketplace/list?sort_by=popularity").json()["packs"]
+    assert [pack["name"] for pack in popularity] == ["second-pack", "shared-pack"]
+
+    rating = client.get("/api/v1/marketplace/list?sort_by=rating").json()["packs"]
+    assert [pack["name"] for pack in rating] == ["second-pack", "shared-pack"]
+
+    most_objectives = client.get("/api/v1/marketplace/list?sort_by=most_objectives").json()["packs"]
+    assert [pack["name"] for pack in most_objectives] == ["shared-pack", "second-pack"]
+
+    recent = client.get("/api/v1/marketplace/list?sort_by=recent").json()["packs"]
+    assert [pack["name"] for pack in recent] == ["second-pack", "shared-pack"]

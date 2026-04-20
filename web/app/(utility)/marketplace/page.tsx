@@ -11,6 +11,7 @@ import {
   type MarketplaceListResponse,
   type MarketplacePack,
   type MarketplacePackPreview,
+  type MarketplaceSortBy,
 } from "@/lib/marketplace-api";
 
 function renderStars(value: number) {
@@ -34,6 +35,7 @@ export default function MarketplacePage() {
   const [filterSubject, setFilterSubject] = useState("");
   const [filterOwner, setFilterOwner] = useState("");
   const [sharingStatus, setSharingStatus] = useState<"public" | "team" | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<MarketplaceSortBy>("popularity");
 
   // Pagination
   const [offset, setOffset] = useState(0);
@@ -55,13 +57,14 @@ export default function MarketplacePage() {
     setLoading(true);
     setError(null);
     try {
-      const response: MarketplaceListResponse = await listMarketplacePacks(
-        sharingStatus,
-        filterSubject || undefined,
-        filterOwner || undefined,
-        limit,
-        offset,
-      );
+        const response: MarketplaceListResponse = await listMarketplacePacks(
+          sharingStatus,
+          filterSubject || undefined,
+          filterOwner || undefined,
+          sortBy,
+          limit,
+          offset,
+        );
       setPacks(response.packs);
       setTotal(response.total);
     } catch (err) {
@@ -70,7 +73,7 @@ export default function MarketplacePage() {
     } finally {
       setLoading(false);
     }
-  }, [filterOwner, filterSubject, limit, offset, sharingStatus]);
+  }, [filterOwner, filterSubject, limit, offset, sharingStatus, sortBy]);
 
   useEffect(() => {
     loadPacks();
@@ -167,7 +170,7 @@ export default function MarketplacePage() {
             {t("Filters")}
           </div>
 
-          <div className="grid gap-3 md:grid-cols-4">
+          <div className="grid gap-3 md:grid-cols-5">
             <div>
               <label className="block text-[12px] font-medium text-[var(--foreground)] mb-1">
                 {t("Search")}
@@ -223,6 +226,22 @@ export default function MarketplacePage() {
                 <option value="">{t("All")}</option>
                 <option value="public">{t("Public")}</option>
                 <option value="team">{t("Team")}</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
+                {t("Sort By")}
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as MarketplaceSortBy)}
+                className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px]"
+              >
+                <option value="popularity">{t("Popularity")}</option>
+                <option value="recent">{t("Most Recent")}</option>
+                <option value="rating">{t("Top Rated")}</option>
+                <option value="most_objectives">{t("Most Objectives")}</option>
               </select>
             </div>
           </div>
