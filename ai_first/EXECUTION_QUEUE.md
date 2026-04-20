@@ -13,21 +13,22 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- Active issue: `#50 [MVP] Teacher Knowledge Pack Sharing UI`
-- Active branch: `pod-a/t012-pack-sharing-ui`
-- Active task packet: `docs/superpowers/tasks/2026-04-20-T012-teacher-pack-sharing-ui.md`
-- Focus set: `T012` (teacher-facing sharing controls for knowledge packs)
+- Active issue: `#51 [MVP] Marketplace Pack Preview Modal`
+- Active branch: `pod-a/t013-marketplace-pack-preview`
+- Active task packet: `docs/superpowers/tasks/2026-04-20-T013-marketplace-pack-preview.md`
+- Focus set: `T013` (preview modal for marketplace packs)
 
 ## Next recommended task
 
-Implement `T012` on `pod-a/t012-pack-sharing-ui`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Implement `T013` on `pod-a/t013-marketplace-pack-preview`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-20)
 
 **Queue Advance**:
 1. `#44` merged to `main` after `Backend`, `Frontend`, `Docs`, and `Summary` checks passed
-2. Next pending registry task selected in strict order: `T012 Teacher Knowledge Pack Sharing UI`
-3. Issue `#50` created and task packet added for the new execution lane
+2. `T012` was verified as already implemented on `main` and reclassified to completed
+3. Next pending registry task selected in strict order: `T013 Marketplace Pack Preview Modal`
+4. Issue `#51` created and task packet added for the new execution lane
 
 ## AI-owned blockers
 
@@ -53,7 +54,8 @@ Implement `T012` on `pod-a/t012-pack-sharing-ui`, then open a Draft PR with a Me
 | T009: Marketplace Import | Completed | 4 | YES | Done |
 | T010: Assessment Feedback | Completed | 6 | YES | Done |
 | T011: KB Context Badges | Completed | 2 | NO | Done |
-| T012: Teacher Sharing UI | In Progress | 3 | NO | Now |
+| T012: Teacher Sharing UI | Completed | 3 | NO | Verified |
+| T013: Marketplace Preview | In Progress | 3 | NO | Now |
 | T018: Vietnamese Prompts | Not Started | 4 | YES | Parallel |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
