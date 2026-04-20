@@ -181,6 +181,32 @@ class TestPromptManagerLanguages:
         prompts = pm.load_prompts("guide", "chat_agent", "zh")
         assert isinstance(prompts, dict)
 
+    @pytest.mark.parametrize(
+        ("module_name", "agent_name", "section", "field", "expected_snippet"),
+        [
+            ("chat", "chat_agent", "system", None, "bạn là deeptutor"),
+            ("solve", "solver_agent", "system", None, "tác nhân giải bài"),
+            ("question", "generator", "system", None, "bạn là generator"),
+            ("guide", "chat_agent", "system", None, "trợ lý học tập ai"),
+            ("co_writer", "edit_agent", "system", None, "biên tập viên"),
+            ("research", "research_agent", "system", "role", "chuyên gia chiến lược nghiên cứu"),
+        ],
+    )
+    def test_vietnamese_prompts_preferred_when_available(
+        self,
+        module_name,
+        agent_name,
+        section,
+        field,
+        expected_snippet,
+    ):
+        """Vietnamese prompt variants should load directly instead of falling back."""
+        pm = get_prompt_manager()
+        prompts = pm.load_prompts(module_name, agent_name, "vi")
+
+        value = pm.get_prompt(prompts, section, field).lower()
+        assert expected_snippet in value
+
     def test_invalid_language_falls_back(self):
         """Test that invalid language code falls back gracefully."""
         pm = get_prompt_manager()
