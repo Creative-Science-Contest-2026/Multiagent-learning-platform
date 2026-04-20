@@ -110,8 +110,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Knowledge Manager API"],
-      "status": "not-started",
-      "notes": "Update metadata sharing_status, owner, and access control rules"
+      "status": "in-progress",
+      "notes": "Issue #50 opened and task packet created at docs/superpowers/tasks/2026-04-20-T012-teacher-pack-sharing-ui.md. Active branch: pod-a/t012-pack-sharing-ui. Next step: implement teacher-facing sharing controls in the knowledge page using the existing knowledge config update path."
     },
     {
       "id": "T013_MARKETPLACE_PACK_PREVIEW",
