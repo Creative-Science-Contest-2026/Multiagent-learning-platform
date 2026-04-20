@@ -163,11 +163,16 @@ _RATE_LIMIT_RULES: tuple[tuple[str, int, int], ...] = (
 _rate_limit_store: dict[str, deque[float]] = defaultdict(deque)
 
 
-def _resolve_rate_limit(path: str) -> tuple[int, int]:
+def _resolve_rate_limit(path: str) -> tuple[str, int, int]:
     for prefix, limit, window_seconds in _RATE_LIMIT_RULES:
         if path.startswith(prefix):
-            return limit, window_seconds
-    return 120, 60
+            return prefix, limit, window_seconds
+    return "/api/v1", 120, 60
+
+
+def _build_rate_limit_bucket_key(client_ip: str, path: str) -> str:
+    policy_prefix, _, _ = _resolve_rate_limit(path)
+    return f"{client_ip}:{policy_prefix}"
 
 
 @app.middleware("http")
@@ -178,10 +183,9 @@ async def api_rate_limit(request: Request, call_next):
     if not path.startswith("/api/"):
         return await call_next(request)
 
-    limit, window_seconds = _resolve_rate_limit(path)
+    _, limit, window_seconds = _resolve_rate_limit(path)
     client_ip = request.client.host if request.client else "unknown"
-    path_bucket = "/".join(path.strip("/").split("/")[:3])
-    key = f"{client_ip}:{path_bucket}"
+    key = _build_rate_limit_bucket_key(client_ip, path)
 
     now = monotonic()
     events = _rate_limit_store[key]
