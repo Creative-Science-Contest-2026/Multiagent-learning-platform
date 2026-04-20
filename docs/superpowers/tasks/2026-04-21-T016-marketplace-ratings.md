@@ -67,3 +67,13 @@ Allow users to rate marketplace knowledge packs and leave short review comments 
 
 - `T015` is merged to `main` through PR `#56`.
 - Start from the existing marketplace list/preview/import flow before adding new storage or UI state.
+- Implemented on branch `pod-a/t016-marketplace-ratings` with:
+  - `POST /api/v1/marketplace/{pack_name}/reviews`
+  - rating summary in marketplace list/preview payloads
+  - marketplace review display and submission flow in preview modal
+- Validation completed:
+  - `python3 -m pytest tests/api/test_marketplace_router.py -q`
+  - `python3 -m py_compile deeptutor/api/routers/marketplace.py`
+  - `cd web && npm run build`
+- PR note prepared:
+  - `docs/superpowers/pr-notes/2026-04-21-marketplace-ratings.md`

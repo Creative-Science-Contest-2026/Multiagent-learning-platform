@@ -9,6 +9,18 @@ export interface MarketplacePackMetadata {
   sharing_status?: "private" | "team" | "public" | null;
 }
 
+export interface MarketplaceRatingSummary {
+  average_rating: number;
+  review_count: number;
+}
+
+export interface MarketplaceReview {
+  reviewer: string;
+  rating: number;
+  comment?: string | null;
+  created_at: string;
+}
+
 export interface MarketplacePack {
   name: string;
   subject?: string | null;
@@ -19,12 +31,14 @@ export interface MarketplacePack {
   sharing_status?: "public" | "team" | null;
   session_count?: number;
   status?: string;
+  rating_summary?: MarketplaceRatingSummary;
 }
 
 export interface MarketplacePackPreview extends MarketplacePack {
   description?: string | null;
   document_count: number;
   sample_documents: string[];
+  recent_reviews: MarketplaceReview[];
 }
 
 export interface MarketplaceListResponse {
@@ -107,6 +121,18 @@ export interface ImportPackResult {
   };
 }
 
+export interface SubmitMarketplaceReviewRequest {
+  reviewer: string;
+  rating: number;
+  comment?: string;
+}
+
+export interface SubmitMarketplaceReviewResult {
+  success: boolean;
+  review: MarketplaceReview;
+  rating_summary: MarketplaceRatingSummary;
+}
+
 export async function importMarketplacePack(
   packName: string,
 ): Promise<ImportPackResult> {
@@ -125,6 +151,32 @@ export async function importMarketplacePack(
       throw new Error(error.detail || `Failed to import pack: ${response.status}`);
     } catch {
       throw new Error(`Failed to import pack: ${response.status} ${response.statusText}`);
+    }
+  }
+
+  return response.json();
+}
+
+export async function submitMarketplaceReview(
+  packName: string,
+  payload: SubmitMarketplaceReviewRequest,
+): Promise<SubmitMarketplaceReviewResult> {
+  const response = await fetch(
+    apiUrl(`/api/v1/marketplace/${encodeURIComponent(packName)}/reviews`),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    try {
+      const error = JSON.parse(errorBody);
+      throw new Error(error.detail || `Failed to submit review: ${response.status}`);
+    } catch {
+      throw new Error(`Failed to submit review: ${response.status} ${response.statusText}`);
     }
   }
 

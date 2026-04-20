@@ -22,6 +22,14 @@ class _FakeKBManager:
                     "curriculum": "National",
                     "learning_objectives": ["Linear equations", "Word problems"],
                     "owner": "Teacher A",
+                    "marketplace_reviews": [
+                        {
+                            "reviewer": "Teacher B",
+                            "rating": 4,
+                            "comment": "Useful pacing for revision week.",
+                            "created_at": "2026-04-18T10:00:00",
+                        }
+                    ],
                     "created_at": "2026-04-20T00:00:00",
                     "updated_at": "2026-04-20T00:00:00",
                 },
@@ -119,3 +127,36 @@ def test_marketplace_preview_returns_compact_pack_summary(monkeypatch, tmp_path:
     assert payload["document_count"] == 4
     assert payload["sample_documents"] == ["lesson-1.md", "lesson-2.md", "lesson-3.md"]
     assert payload["learning_objectives"] == ["Linear equations", "Word problems"]
+    assert payload["rating_summary"] == {"average_rating": 4.0, "review_count": 1}
+    assert payload["recent_reviews"][0]["comment"] == "Useful pacing for revision week."
+
+
+def test_marketplace_list_includes_rating_summary(monkeypatch, tmp_path: Path) -> None:
+    client = _build_app(monkeypatch, tmp_path)
+
+    response = client.get("/api/v1/marketplace/list")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["packs"][0]["rating_summary"] == {"average_rating": 4.0, "review_count": 1}
+
+
+def test_marketplace_review_submission_updates_pack_summary(monkeypatch, tmp_path: Path) -> None:
+    client = _build_app(monkeypatch, tmp_path)
+
+    response = client.post(
+        "/api/v1/marketplace/shared-pack/reviews",
+        json={"reviewer": "Teacher C", "rating": 5, "comment": "Great question progression."},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["rating_summary"] == {"average_rating": 4.5, "review_count": 2}
+    assert payload["review"]["reviewer"] == "Teacher C"
+    assert payload["review"]["rating"] == 5
+
+    preview_response = client.get("/api/v1/marketplace/shared-pack/preview")
+    preview_payload = preview_response.json()
+    assert preview_payload["rating_summary"] == {"average_rating": 4.5, "review_count": 2}
+    assert preview_payload["recent_reviews"][0]["comment"] == "Great question progression."

@@ -3,12 +3,40 @@
 from datetime import datetime
 from pathlib import Path
 import shutil
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, Field
 
 from deeptutor.api.routers.knowledge import get_kb_manager
 
 router = APIRouter()
+
+
+class MarketplaceReviewRequest(BaseModel):
+    reviewer: str = Field(min_length=1, max_length=80)
+    rating: int = Field(ge=1, le=5)
+    comment: str | None = Field(default=None, max_length=400)
+
+
+def _pack_reviews(source_cfg: dict[str, Any]) -> list[dict[str, Any]]:
+    raw_reviews = source_cfg.get("marketplace_reviews", [])
+    if not isinstance(raw_reviews, list):
+        return []
+    reviews = [review for review in raw_reviews if isinstance(review, dict)]
+    return sorted(
+        reviews,
+        key=lambda review: str(review.get("created_at") or ""),
+        reverse=True,
+    )
+
+
+def _rating_summary(source_cfg: dict[str, Any]) -> dict[str, float | int]:
+    reviews = _pack_reviews(source_cfg)
+    if not reviews:
+        return {"average_rating": 0.0, "review_count": 0}
+    average = round(sum(int(review.get("rating") or 0) for review in reviews) / len(reviews), 1)
+    return {"average_rating": average, "review_count": len(reviews)}
 
 
 def _list_marketplace_candidates() -> list[dict]:
@@ -22,6 +50,7 @@ def _list_marketplace_candidates() -> list[dict]:
             info = manager.get_info(name)
             metadata = info.get("metadata") or {}
             sharing_status = metadata.get("sharing_status")
+            source_cfg = manager.config.get("knowledge_bases", {}).get(name, {})
 
             if sharing_status not in {"public", "team"}:
                 continue
@@ -38,6 +67,7 @@ def _list_marketplace_candidates() -> list[dict]:
                     "session_count": info.get("statistics", {}).get("content_lists", 0),
                     "status": info.get("status", "ready"),
                     "statistics": info.get("statistics", {}),
+                    "rating_summary": _rating_summary(source_cfg),
                 }
             )
         except Exception:
@@ -119,7 +149,9 @@ async def list_marketplace_packs(
 async def get_marketplace_pack(pack_name: str):
     """Get detailed information about a specific marketplace pack."""
     try:
+        manager = get_kb_manager()
         match = _get_marketplace_match(pack_name)
+        source_cfg = manager.config.get("knowledge_bases", {}).get(pack_name, {})
 
         return {
             "name": match.get("name"),
@@ -132,6 +164,8 @@ async def get_marketplace_pack(pack_name: str):
             "session_count": match.get("session_count", 0),
             "status": match.get("status", "ready"),
             "statistics": match.get("statistics", {}),
+            "rating_summary": _rating_summary(source_cfg),
+            "recent_reviews": _pack_reviews(source_cfg)[:5],
         }
     
     except HTTPException:
@@ -165,6 +199,41 @@ async def preview_marketplace_pack(pack_name: str):
             "session_count": match.get("session_count", 0),
             "document_count": document_count,
             "sample_documents": sample_documents,
+            "rating_summary": _rating_summary(source_cfg),
+            "recent_reviews": _pack_reviews(source_cfg)[:5],
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/{pack_name}/reviews")
+async def submit_marketplace_review(pack_name: str, payload: MarketplaceReviewRequest):
+    try:
+        manager = get_kb_manager()
+        _get_marketplace_match(pack_name)
+
+        source_cfg = manager.config.get("knowledge_bases", {}).get(pack_name)
+        if not isinstance(source_cfg, dict):
+            raise HTTPException(status_code=404, detail=f"Knowledge pack '{pack_name}' not found")
+
+        review = {
+            "reviewer": payload.reviewer.strip(),
+            "rating": payload.rating,
+            "comment": (payload.comment or "").strip(),
+            "created_at": datetime.utcnow().isoformat(),
+        }
+        reviews = _pack_reviews(source_cfg)
+        reviews.insert(0, review)
+        source_cfg["marketplace_reviews"] = reviews[:50]
+        source_cfg["updated_at"] = datetime.utcnow().isoformat()
+        manager._save_config()
+
+        return {
+            "success": True,
+            "review": review,
+            "rating_summary": _rating_summary(source_cfg),
         }
     except HTTPException:
         raise
