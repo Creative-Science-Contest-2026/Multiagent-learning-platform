@@ -260,30 +260,30 @@ export default function MarketplacePage() {
 
   return (
     <main className="h-full overflow-y-auto bg-[var(--background)]">
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-6 py-8">
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8">
         {/* Header */}
         <header>
           <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
             {t("Knowledge Marketplace")}
           </p>
-          <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
+          <h1 className="mt-2 text-[24px] font-semibold tracking-tight text-[var(--foreground)] sm:text-[28px]">
             {t("Discover & Import Knowledge Packs")}
           </h1>
-          <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-[var(--muted-foreground)]">
+          <p className="mt-2 max-w-[680px] text-[13px] leading-6 text-[var(--muted-foreground)] sm:text-[14px]">
             {t("Browse knowledge packs shared by other teachers and import them to your workspace.")}
           </p>
         </header>
 
         {/* Filters */}
-        <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+        <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 sm:p-5">
           <div className="mb-3 flex items-center gap-2 text-[13px] font-medium text-[var(--muted-foreground)]">
             <Filter size={14} />
             {t("Filters")}
           </div>
 
-          <div className="grid gap-3 md:grid-cols-5">
-            <div>
-              <label className="block text-[12px] font-medium text-[var(--foreground)] mb-1">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="sm:col-span-2 xl:col-span-1">
+              <label className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
                 {t("Search")}
               </label>
               <input
@@ -296,7 +296,7 @@ export default function MarketplacePage() {
             </div>
 
             <div>
-              <label className="block text-[12px] font-medium text-[var(--foreground)] mb-1">
+              <label className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
                 {t("Subject")}
               </label>
               <input
@@ -309,7 +309,7 @@ export default function MarketplacePage() {
             </div>
 
             <div>
-              <label className="block text-[12px] font-medium text-[var(--foreground)] mb-1">
+              <label className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
                 {t("Owner")}
               </label>
               <input
@@ -322,7 +322,7 @@ export default function MarketplacePage() {
             </div>
 
             <div>
-              <label className="block text-[12px] font-medium text-[var(--foreground)] mb-1">
+              <label className="mb-1 block text-[12px] font-medium text-[var(--foreground)]">
                 {t("Sharing Status")}
               </label>
               <select
@@ -367,11 +367,11 @@ export default function MarketplacePage() {
 
         {/* Packs Grid */}
         <div>
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-[13px] text-[var(--muted-foreground)]">
               {t("Showing")} {filteredPacks.length} {t("of")} {total} {t("packs")}
             </span>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               {refreshing && !loading && (
                 <span className="flex items-center gap-2 text-[12px] text-[var(--muted-foreground)]">
                   <Loader2 size={13} className="animate-spin" />
@@ -385,7 +385,7 @@ export default function MarketplacePage() {
                   void refreshCurrentQuery(true);
                 }}
                 disabled={refreshing || loading}
-                className="rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[12px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:opacity-50"
+                className="w-full rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[12px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:opacity-50 sm:w-auto"
               >
                 {t("Refresh")}
               </button>
@@ -407,16 +407,16 @@ export default function MarketplacePage() {
               </p>
             </div>
           ) : (
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {filteredPacks.map((pack) => (
                 <div
                   key={pack.name}
                   className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 transition-colors hover:border-[var(--foreground)]/30"
                 >
                   {/* Header */}
-                  <div className="mb-3 flex items-start justify-between">
+                  <div className="mb-3 flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <h3 className="text-[14px] font-semibold text-[var(--foreground)]">
+                      <h3 className="break-words text-[14px] font-semibold text-[var(--foreground)]">
                         {pack.name}
                       </h3>
                       <div className="mt-1 flex flex-wrap gap-1">
@@ -467,7 +467,7 @@ export default function MarketplacePage() {
                       <p className="text-[11px] font-medium text-[var(--muted-foreground)]">
                         {t("Learning Objectives")}:
                       </p>
-                      <ul className="mt-1 list-inside list-disc space-y-1">
+                      <ul className="mt-1 list-inside list-disc space-y-1 break-words">
                         {pack.learning_objectives.slice(0, 2).map((obj, idx) => (
                           <li key={idx} className="text-[11px] text-[var(--foreground)]">
                             {obj}
@@ -542,9 +542,9 @@ export default function MarketplacePage() {
       </div>
 
       {previewOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-[640px] rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 px-3 py-4 sm:items-center sm:px-4">
+          <div className="max-h-[calc(100vh-2rem)] w-full max-w-[640px] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-2xl">
+            <div className="flex items-start justify-between gap-3 border-b border-[var(--border)] px-4 py-4 sm:px-5">
               <div>
                 <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
                   {t("Pack Preview")}
@@ -564,7 +564,7 @@ export default function MarketplacePage() {
               </button>
             </div>
 
-            <div className="space-y-4 px-5 py-4">
+            <div className="max-h-[calc(100vh-8rem)] space-y-4 overflow-y-auto px-4 py-4 sm:px-5">
               {previewLoading ? (
                 <div className="flex items-center justify-center py-12 text-[13px] text-[var(--muted-foreground)]">
                   <Loader2 size={16} className="mr-2 animate-spin" />
@@ -578,7 +578,7 @@ export default function MarketplacePage() {
                     </p>
                   )}
 
-                  <div className="grid gap-3 md:grid-cols-3">
+                  <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                     <div className="rounded-lg bg-[var(--background)] p-3">
                       <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
                         {t("Sharing")}
@@ -603,7 +603,7 @@ export default function MarketplacePage() {
                         {previewPack.session_count || 0}
                       </p>
                     </div>
-                    <div className="rounded-lg bg-[var(--background)] p-3 md:col-span-3">
+                    <div className="rounded-lg bg-[var(--background)] p-3 sm:col-span-2 md:col-span-3">
                       <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
                         {t("Rating")}
                       </p>
@@ -667,7 +667,7 @@ export default function MarketplacePage() {
                               key={`${review.reviewer}-${review.created_at}`}
                               className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-3"
                             >
-                              <div className="flex items-center justify-between gap-3">
+                              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                 <span className="text-[13px] font-medium text-[var(--foreground)]">
                                   {review.reviewer}
                                 </span>
