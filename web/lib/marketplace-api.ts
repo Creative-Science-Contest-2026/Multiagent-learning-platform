@@ -54,6 +54,83 @@ export type MarketplaceSortBy =
   | "rating"
   | "most_objectives";
 
+export interface MarketplaceListFetchOptions {
+  forceRefresh?: boolean;
+}
+
+interface MarketplaceListCacheEntry {
+  data?: MarketplaceListResponse;
+  updatedAt: number;
+  promise?: Promise<MarketplaceListResponse>;
+}
+
+const MARKETPLACE_LIST_CACHE_TTL_MS = 5 * 60 * 1000;
+const marketplaceListCache = new Map<string, MarketplaceListCacheEntry>();
+
+function buildMarketplaceListCacheKey(
+  sharingStatus?: string,
+  subject?: string,
+  owner?: string,
+  sortBy?: MarketplaceSortBy,
+  limit = 50,
+  offset = 0,
+): string {
+  return JSON.stringify({
+    sharingStatus: sharingStatus || "",
+    subject: subject || "",
+    owner: owner || "",
+    sortBy: sortBy || "",
+    limit,
+    offset,
+  });
+}
+
+function isMarketplaceListCacheFresh(entry?: MarketplaceListCacheEntry): boolean {
+  return Boolean(entry?.data && Date.now() - entry.updatedAt < MARKETPLACE_LIST_CACHE_TTL_MS);
+}
+
+export function getCachedMarketplacePacks(
+  sharingStatus?: string,
+  subject?: string,
+  owner?: string,
+  sortBy?: MarketplaceSortBy,
+  limit = 50,
+  offset = 0,
+): MarketplaceListResponse | null {
+  const cacheKey = buildMarketplaceListCacheKey(
+    sharingStatus,
+    subject,
+    owner,
+    sortBy,
+    limit,
+    offset,
+  );
+  return marketplaceListCache.get(cacheKey)?.data ?? null;
+}
+
+export function isMarketplacePacksCacheStale(
+  sharingStatus?: string,
+  subject?: string,
+  owner?: string,
+  sortBy?: MarketplaceSortBy,
+  limit = 50,
+  offset = 0,
+): boolean {
+  const cacheKey = buildMarketplaceListCacheKey(
+    sharingStatus,
+    subject,
+    owner,
+    sortBy,
+    limit,
+    offset,
+  );
+  return !isMarketplaceListCacheFresh(marketplaceListCache.get(cacheKey));
+}
+
+export function invalidateMarketplaceListCache(): void {
+  marketplaceListCache.clear();
+}
+
 export async function listMarketplacePacks(
   sharingStatus?: string,
   subject?: string,
@@ -61,7 +138,27 @@ export async function listMarketplacePacks(
   sortBy?: MarketplaceSortBy,
   limit = 50,
   offset = 0,
+  options: MarketplaceListFetchOptions = {},
 ): Promise<MarketplaceListResponse> {
+  const cacheKey = buildMarketplaceListCacheKey(
+    sharingStatus,
+    subject,
+    owner,
+    sortBy,
+    limit,
+    offset,
+  );
+  const existingEntry = marketplaceListCache.get(cacheKey);
+
+  if (!options.forceRefresh) {
+    if (isMarketplaceListCacheFresh(existingEntry)) {
+      return existingEntry!.data!;
+    }
+    if (existingEntry?.promise) {
+      return existingEntry.promise;
+    }
+  }
+
   const params = new URLSearchParams({
     limit: limit.toString(),
     offset: offset.toString(),
@@ -72,15 +169,35 @@ export async function listMarketplacePacks(
   if (owner) params.append("owner", owner);
   if (sortBy) params.append("sort_by", sortBy);
 
-  const response = await fetch(apiUrl(`/api/v1/marketplace/list?${params}`), {
+  const request = fetch(apiUrl(`/api/v1/marketplace/list?${params}`), {
     cache: "no-store",
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error(`Failed to fetch marketplace packs: ${response.status}`);
+    }
+
+    const data = (await response.json()) as MarketplaceListResponse;
+    marketplaceListCache.set(cacheKey, {
+      data,
+      updatedAt: Date.now(),
+    });
+    return data;
+  }).catch((error) => {
+    if (existingEntry?.data) {
+      marketplaceListCache.set(cacheKey, existingEntry);
+    } else {
+      marketplaceListCache.delete(cacheKey);
+    }
+    throw error;
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch marketplace packs: ${response.status}`);
-  }
+  marketplaceListCache.set(cacheKey, {
+    data: existingEntry?.data,
+    updatedAt: existingEntry?.updatedAt ?? 0,
+    promise: request,
+  });
 
-  return response.json();
+  return request;
 }
 
 export async function getMarketplacePack(packName: string): Promise<MarketplacePack> {
@@ -162,7 +279,9 @@ export async function importMarketplacePack(
     }
   }
 
-  return response.json();
+  const result = await response.json();
+  invalidateMarketplaceListCache();
+  return result;
 }
 
 export async function submitMarketplaceReview(
@@ -188,5 +307,7 @@ export async function submitMarketplaceReview(
     }
   }
 
-  return response.json();
+  const result = await response.json();
+  invalidateMarketplaceListCache();
+  return result;
 }

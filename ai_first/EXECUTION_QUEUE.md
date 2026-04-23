@@ -1,34 +1,34 @@
 # Execution Queue
 
-Last updated: 2026-04-21
+Last updated: 2026-04-23
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#66 [MVP] T020 Assessment Results Export to PDF`
-- `#66` added assessment PDF export, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, assessment insights, PDF export, recommendation flow, KB context badges, student progress dashboard, teacher dashboard filtering, Vietnamese prompts, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#68 [MVP] T021 Tutoring Session Replay Feature`
+- `#68` added tutoring replay links and a teacher-facing session replay page, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, assessment insights, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, teacher dashboard filtering, Vietnamese prompts, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#67 [MVP] Tutoring Session Replay Feature`
-- Active branch: `pod-a/t021-session-replay`
-- Active task packet: `docs/superpowers/tasks/2026-04-21-T021-session-replay.md`
-- Focus set: `T021` (Session replay)
+- Active issue: `#69 [MVP] Marketplace List Caching & Pagination Optimization`
+- Active branch: `pod-a/t023-marketplace-cache-optimization`
+- Active task packet: `docs/superpowers/tasks/2026-04-23-T023-marketplace-cache-optimization.md`
+- Focus set: `T023` (Marketplace cache optimization)
 
 ## Next recommended task
 
-Implement `T021` on `pod-a/t021-session-replay`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Implement `T023` on `pod-a/t023-marketplace-cache-optimization`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-21)
 
 **Queue Advance**:
-1. `#66` merged to `main` after all required CI checks passed
-2. Issue `#65` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T021 Tutoring Session Replay Feature`
-4. Issue `#67` created and task packet added for the new execution lane
+1. `#68` merged to `main` after all required CI checks passed
+2. Issue `#67` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T023 Marketplace List Caching & Pagination Optimization`
+4. Issue `#69` created and task packet added for the new execution lane
 
 ## AI-owned blockers
 
@@ -63,7 +63,8 @@ Implement `T021` on `pod-a/t021-session-replay`, then open a Draft PR with a Mer
 | T018: Vietnamese Prompts | Completed | 4 | YES | Done |
 | T019: Marketplace Sorting | Completed | 1.5 | NO | Done |
 | T020: Assessment Export PDF | Completed | 3 | NO | Done |
-| T021: Session Replay | In Progress | 3 | NO | Now |
+| T021: Session Replay | Completed | 3 | NO | Done |
+| T023: Cache Optimization | In Progress | 2 | NO | Now |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 

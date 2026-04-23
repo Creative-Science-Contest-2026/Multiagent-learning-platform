@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-20T10:00:00Z",
+    "last_updated": "2026-04-23T14:30:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 35
@@ -8,16 +8,8 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 18,
+      "count": 15,
       "tasks": [
-        "T001_MARKETPLACE_API_LIST",
-        "T002_MARKETPLACE_API_DETAIL",
-        "T003_MARKETPLACE_UI_BROWSE",
-        "T004_PROGRESS_INDICATOR_COMPONENT",
-        "T005_LEARNING_JOURNEY_COMPONENT",
-        "T006_ASSESSMENT_REVIEW_INTEGRATION",
-        "T007_VIETNAMESE_UI_TRANSLATION",
-        "T008_VIETNAMESE_BACKEND_SUPPORT",
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
         "T011_KB_CONTEXT_BADGES",
@@ -27,14 +19,19 @@
         "T015_ASSESSMENT_RECOMMENDATIONS",
         "T016_MARKETPLACE_RATINGS",
         "T017_ASSESSMENT_HISTORY_FILTERING",
-        "T018_VIETNAMESE_PROMPT_VARIANTS"
+        "T018_VIETNAMESE_PROMPT_VARIANTS",
+        "T019_MARKETPLACE_SORTING",
+        "T020_ASSESSMENT_EXPORT_PDF",
+        "T021_SESSION_REPLAY",
+        "T022_ERROR_BOUNDARY_HANDLING",
+        "T028_API_RATE_LIMITING"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T019_MARKETPLACE_SORTING"
+        "T023_MARKETPLACE_CACHE_OPTIMIZATION"
       ]
     },
     "blocked": {
@@ -44,8 +41,20 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 16,
-      "tasks": []
+      "count": 11,
+      "tasks": [
+        "T024_TEACHER_INVITATION_SYSTEM",
+        "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
+        "T026_MOBILE_RESPONSIVE_MARKETPLACE",
+        "T027_ANALYTICS_DASHBOARD",
+        "T029_MARKETPLACE_SEARCH_FULLTEXT",
+        "T030_ASSESSMENT_TIME_TRACKING",
+        "T031_TUTOR_FOLLOW_UP_PROMPTS",
+        "T032_KNOWLEDGE_PACK_VERSIONING",
+        "T033_LEARNING_PATH_SEQUENCING",
+        "T034_BATCH_ASSESSMENT_IMPORT",
+        "T035_OFFLINE_MODE_SUPPORT"
+      ]
     }
   },
   "tasks": [
@@ -270,8 +279,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Session Storage"],
-      "status": "in-progress",
-      "notes": "Issue #67 opened and task packet created at docs/superpowers/tasks/2026-04-21-T021-session-replay.md. Active branch: pod-a/t021-session-replay."
+      "status": "completed",
+      "notes": "Merged to main through PR #68. Teacher dashboard now links tutoring activity to a replay timeline page backed by the existing dashboard detail endpoint."
     },
     {
       "id": "T022_ERROR_BOUNDARY_HANDLING",
@@ -304,8 +313,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["SWR or React Query"],
-      "status": "not-started",
-      "notes": "Cache pack list for 5 minutes, refresh on user action"
+      "status": "in-progress",
+      "notes": "Issue #69 opened and task packet created at docs/superpowers/tasks/2026-04-23-T023-marketplace-cache-optimization.md. Active branch: pod-a/t023-marketplace-cache-optimization."
     },
     {
       "id": "T024_TEACHER_INVITATION_SYSTEM",
