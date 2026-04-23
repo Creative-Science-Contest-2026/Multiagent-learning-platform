@@ -7,28 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#70 [MVP] T023 Marketplace List Caching & Pagination Optimization`
-- `#70` added marketplace list caching and progressive load-more browsing, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, assessment insights, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, teacher dashboard filtering, Vietnamese prompts, route error boundaries, and API rate limiting in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#72 [MVP] T024 Teacher Team Invitation & Sharing`
+- `#72` added collaborator and pending-invite metadata to the teacher knowledge-pack flow, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, assessment insights, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, teacher dashboard filtering, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#71 [MVP] Teacher Team Invitation & Sharing`
-- Active branch: `pod-a/t024-teacher-invitation-sharing`
-- Active task packet: `docs/superpowers/tasks/2026-04-23-T024-teacher-invitation-sharing.md`
-- Focus set: `T024` (Teacher invitation and sharing)
+- Active issue: `#73 [MVP] Assessment Difficulty Adaptive Adjustment`
+- Active branch: `pod-a/t025-adaptive-difficulty`
+- Active task packet: `docs/superpowers/tasks/2026-04-23-T025-adaptive-difficulty.md`
+- Focus set: `T025` (Adaptive difficulty)
 
 ## Next recommended task
 
-Implement `T024` on `pod-a/t024-teacher-invitation-sharing`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Implement `T025` on `pod-a/t025-adaptive-difficulty`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-21)
 
 **Queue Advance**:
-1. `#70` merged to `main` after all required CI checks passed
-2. Issue `#69` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T024 Teacher Team Invitation & Sharing`
-4. Issue `#71` created and task packet added for the new execution lane
+1. `#72` merged to `main` after all required CI checks passed
+2. Issue `#71` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T025 Assessment Difficulty Adaptive Adjustment`
+4. Issue `#73` created and task packet added for the new execution lane
 
 ## AI-owned blockers
 
@@ -65,7 +65,8 @@ Implement `T024` on `pod-a/t024-teacher-invitation-sharing`, then open a Draft P
 | T020: Assessment Export PDF | Completed | 3 | NO | Done |
 | T021: Session Replay | Completed | 3 | NO | Done |
 | T023: Cache Optimization | Completed | 2 | NO | Done |
-| T024: Team Sharing | In Progress | 6 | NO | Now |
+| T024: Team Sharing | Completed | 6 | NO | Done |
+| T025: Adaptive Difficulty | In Progress | 5 | NO | Now |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 

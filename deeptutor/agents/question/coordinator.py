@@ -13,6 +13,7 @@ from collections.abc import Callable
 from datetime import datetime
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 from deeptutor.agents.question.agents.generator import Generator
@@ -133,6 +134,12 @@ class AgentCoordinator:
             if normalized_question_type and normalized_question_type != "auto"
             else ""
         )
+        adaptive_difficulty = self._resolve_adaptive_difficulty(
+            requested_difficulty=normalized_difficulty,
+            history_context=history_context,
+        )
+        if adaptive_difficulty.get("selected") and not target_difficulty:
+            target_difficulty = str(adaptive_difficulty["selected"])
 
         batch_number = 0
         while len(templates) < requested:
@@ -218,7 +225,10 @@ class AgentCoordinator:
             requested=requested,
             templates=templates[:requested],
             qa_pairs=qa_pairs,
-            trace={"batches": batch_trace},
+            trace={
+                "batches": batch_trace,
+                "adaptive_difficulty": adaptive_difficulty,
+            },
         )
 
     async def generate_from_exam(
@@ -458,6 +468,49 @@ class AgentCoordinator:
         }
         self._persist_summary(summary)
         return summary
+
+    @staticmethod
+    def _resolve_adaptive_difficulty(
+        requested_difficulty: str,
+        history_context: str,
+    ) -> dict[str, Any]:
+        normalized_difficulty = str(requested_difficulty or "").strip().lower()
+        if normalized_difficulty and normalized_difficulty != "auto":
+            return {
+                "selected": normalized_difficulty,
+                "source": "request",
+            }
+
+        score_percent = AgentCoordinator._extract_recent_quiz_score_percent(history_context)
+        if score_percent is None:
+            return {
+                "selected": "medium",
+                "source": "default",
+            }
+        if score_percent >= 80:
+            selected = "hard"
+        elif score_percent < 50:
+            selected = "easy"
+        else:
+            selected = "medium"
+        return {
+            "selected": selected,
+            "source": "history_context",
+            "score_percent": score_percent,
+        }
+
+    @staticmethod
+    def _extract_recent_quiz_score_percent(history_context: str) -> int | None:
+        text = str(history_context or "").strip()
+        if not text:
+            return None
+        matches = re.findall(r"Score:\s*\d+\s*/\s*\d+\s*\((\d+)%\)", text)
+        if not matches:
+            return None
+        try:
+            return int(matches[-1])
+        except ValueError:
+            return None
 
     def _create_batch_dir(self, prefix: str) -> Path:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

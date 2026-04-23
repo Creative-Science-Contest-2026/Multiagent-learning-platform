@@ -347,8 +347,8 @@
       "complexity": "High",
       "estimated_hours": 5,
       "dependencies": ["Question Analytics"],
-      "status": "not-started",
-      "notes": "Implement CAT-style difficulty adjustment, track performance per difficulty level"
+      "status": "in-progress",
+      "notes": "Issue #73 opened and task packet created at docs/superpowers/tasks/2026-04-23-T025-adaptive-difficulty.md. Active branch: pod-a/t025-adaptive-difficulty. MVP slice: infer auto difficulty from recent quiz performance context before template generation."
     },
     {
       "id": "T026_MOBILE_RESPONSIVE_MARKETPLACE",

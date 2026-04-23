@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-20
+Last updated: 2026-04-23
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -51,9 +51,12 @@ flowchart TD
   
   Product --> AssessmentBuilder["Assessment Builder"]
   AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
+  AssessmentBuilder --> AdaptiveDifficulty["Adaptive Difficulty from Recent Quiz Performance"]
   AssessmentBuilder --> AssessmentRecommendAPI["POST /api/v1/assessment/recommend"]
   AssessmentRecommendAPI --> RecommendEngine["Assessment Recommendation Engine"]
   RecommendEngine --> AssessmentSignals["Weak topics + score trend + KB context"]
+  AdaptiveDifficulty --> QuizHistory["[Quiz Performance] session context"]
+  AdaptiveDifficulty --> DeepQuestion
   
   Product --> StudentTutor["Student Tutor Workspace"]
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
