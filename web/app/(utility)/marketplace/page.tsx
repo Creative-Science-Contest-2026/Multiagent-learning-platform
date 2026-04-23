@@ -1,14 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookOpen, Download, Eye, Filter, Loader2, Star, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
+  getCachedMarketplacePacks,
   getMarketplacePackPreview,
+  invalidateMarketplaceListCache,
+  isMarketplacePacksCacheStale,
   listMarketplacePacks,
   importMarketplacePack,
   submitMarketplaceReview,
-  type MarketplaceListResponse,
   type MarketplacePack,
   type MarketplacePackPreview,
   type MarketplaceSortBy,
@@ -28,6 +30,8 @@ export default function MarketplacePage() {
   const { t } = useTranslation();
   const [packs, setPacks] = useState<MarketplacePack[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Filters
@@ -38,7 +42,6 @@ export default function MarketplacePage() {
   const [sortBy, setSortBy] = useState<MarketplaceSortBy>("popularity");
 
   // Pagination
-  const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
   const limit = 20;
 
@@ -53,31 +56,139 @@ export default function MarketplacePage() {
   const [reviewComment, setReviewComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
 
-  const loadPacks = useCallback(async () => {
-    setLoading(true);
+  const subjectFilter = filterSubject.trim() || undefined;
+  const ownerFilter = filterOwner.trim() || undefined;
+
+  const queryState = useMemo(
+    () => ({
+      sharingStatus,
+      subjectFilter,
+      ownerFilter,
+      sortBy,
+      limit,
+    }),
+    [limit, ownerFilter, sharingStatus, sortBy, subjectFilter],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const cachedFirstPage = getCachedMarketplacePacks(
+      queryState.sharingStatus,
+      queryState.subjectFilter,
+      queryState.ownerFilter,
+      queryState.sortBy,
+      queryState.limit,
+      0,
+    );
+    const needsRefresh = isMarketplacePacksCacheStale(
+      queryState.sharingStatus,
+      queryState.subjectFilter,
+      queryState.ownerFilter,
+      queryState.sortBy,
+      queryState.limit,
+      0,
+    );
+
+    if (cachedFirstPage) {
+      setPacks(cachedFirstPage.packs);
+      setTotal(cachedFirstPage.total);
+      setLoading(false);
+      setRefreshing(needsRefresh);
+      setError(null);
+    } else {
+      setPacks([]);
+      setTotal(0);
+      setLoading(true);
+      setRefreshing(false);
+      setError(null);
+    }
+
+    if (!cachedFirstPage || needsRefresh) {
+      listMarketplacePacks(
+        queryState.sharingStatus,
+        queryState.subjectFilter,
+        queryState.ownerFilter,
+        queryState.sortBy,
+        queryState.limit,
+        0,
+        { forceRefresh: needsRefresh },
+      )
+        .then((response) => {
+          if (cancelled) return;
+          setPacks(response.packs);
+          setTotal(response.total);
+          setError(null);
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          setError(err instanceof Error ? err.message : "Failed to load marketplace");
+          if (!cachedFirstPage) {
+            setPacks([]);
+            setTotal(0);
+          }
+        })
+        .finally(() => {
+          if (cancelled) return;
+          setLoading(false);
+          setRefreshing(false);
+        });
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [queryState]);
+
+  const refreshCurrentQuery = async (forceRefresh = true) => {
+    setRefreshing(true);
     setError(null);
     try {
-        const response: MarketplaceListResponse = await listMarketplacePacks(
-          sharingStatus,
-          filterSubject || undefined,
-          filterOwner || undefined,
-          sortBy,
-          limit,
-          offset,
-        );
+      const response = await listMarketplacePacks(
+        queryState.sharingStatus,
+        queryState.subjectFilter,
+        queryState.ownerFilter,
+        queryState.sortBy,
+        queryState.limit,
+        0,
+        { forceRefresh },
+      );
       setPacks(response.packs);
       setTotal(response.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load marketplace");
-      setPacks([]);
     } finally {
+      setRefreshing(false);
       setLoading(false);
     }
-  }, [filterOwner, filterSubject, limit, offset, sharingStatus, sortBy]);
+  };
 
-  useEffect(() => {
-    loadPacks();
-  }, [loadPacks]);
+  const handleLoadMore = async () => {
+    if (loadingMore || packs.length >= total) return;
+    setLoadingMore(true);
+    setError(null);
+    try {
+      const response = await listMarketplacePacks(
+        queryState.sharingStatus,
+        queryState.subjectFilter,
+        queryState.ownerFilter,
+        queryState.sortBy,
+        queryState.limit,
+        packs.length,
+      );
+      setPacks((current) => [
+        ...current,
+        ...response.packs.filter(
+          (candidate) => !current.some((existing) => existing.name === candidate.name),
+        ),
+      ]);
+      setTotal(response.total);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load more packs");
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const handleImportPack = async (packName: string) => {
     setImporting(packName);
@@ -85,7 +196,7 @@ export default function MarketplacePage() {
       await importMarketplacePack(packName);
       setImportSuccess(packName);
       setTimeout(() => setImportSuccess(null), 3000);
-      await loadPacks();
+      await refreshCurrentQuery(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to import pack");
     } finally {
@@ -129,7 +240,7 @@ export default function MarketplacePage() {
       setReviewerName("");
       setReviewRating(5);
       setReviewComment("");
-      await loadPacks();
+      await refreshCurrentQuery(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to submit review");
     } finally {
@@ -260,12 +371,25 @@ export default function MarketplacePage() {
             <span className="text-[13px] text-[var(--muted-foreground)]">
               {t("Showing")} {filteredPacks.length} {t("of")} {total} {t("packs")}
             </span>
-            {loading && (
-              <span className="flex items-center gap-2 text-[12px] text-[var(--muted-foreground)]">
-                <Loader2 size={13} className="animate-spin" />
-                {t("Loading")}
-              </span>
-            )}
+            <div className="flex items-center gap-3">
+              {refreshing && !loading && (
+                <span className="flex items-center gap-2 text-[12px] text-[var(--muted-foreground)]">
+                  <Loader2 size={13} className="animate-spin" />
+                  {t("Refreshing")}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  invalidateMarketplaceListCache();
+                  void refreshCurrentQuery(true);
+                }}
+                disabled={refreshing || loading}
+                className="rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[12px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:opacity-50"
+              >
+                {t("Refresh")}
+              </button>
+            </div>
           </div>
 
           {loading ? (
@@ -393,25 +517,25 @@ export default function MarketplacePage() {
         </div>
 
         {/* Pagination */}
-        {total > limit && (
-          <div className="flex items-center justify-center gap-2">
+        {total > packs.length && (
+          <div className="flex flex-col items-center justify-center gap-3">
+            <p className="text-[12px] text-[var(--muted-foreground)]">
+              {packs.length} / {total} {t("packs loaded")}
+            </p>
             <button
-              onClick={() => setOffset(Math.max(0, offset - limit))}
-              disabled={offset === 0}
-              className="rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[12px] disabled:opacity-50"
+              type="button"
+              onClick={() => void handleLoadMore()}
+              disabled={loadingMore}
+              className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:opacity-50"
             >
-              {t("Previous")}
-            </button>
-            <span className="text-[12px] text-[var(--muted-foreground)]">
-              {t("Page")} {Math.floor(offset / limit) + 1} {t("of")}{" "}
-              {Math.ceil(total / limit)}
-            </span>
-            <button
-              onClick={() => setOffset(offset + limit)}
-              disabled={offset + limit >= total}
-              className="rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[12px] disabled:opacity-50"
-            >
-              {t("Next")}
+              {loadingMore ? (
+                <>
+                  <Loader2 size={13} className="animate-spin" />
+                  {t("Loading more")}
+                </>
+              ) : (
+                t("Load more")
+              )}
             </button>
           </div>
         )}
