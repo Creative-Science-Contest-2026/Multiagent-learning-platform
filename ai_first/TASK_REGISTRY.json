@@ -347,8 +347,8 @@
       "complexity": "High",
       "estimated_hours": 5,
       "dependencies": ["Question Analytics"],
-      "status": "in-progress",
-      "notes": "Issue #73 opened and task packet created at docs/superpowers/tasks/2026-04-23-T025-adaptive-difficulty.md. Active branch: pod-a/t025-adaptive-difficulty. MVP slice: infer auto difficulty from recent quiz performance context before template generation."
+      "status": "completed",
+      "notes": "Merged to main through PR #74. MVP slice implemented adaptive difficulty inference from recent quiz performance context before template generation."
     },
     {
       "id": "T026_MOBILE_RESPONSIVE_MARKETPLACE",
@@ -363,8 +363,8 @@
       "complexity": "Low",
       "estimated_hours": 1,
       "dependencies": ["Tailwind CSS"],
-      "status": "not-started",
-      "notes": "Test on phone/tablet, fix filter layout, ensure pagination works on small screens"
+      "status": "in-progress",
+      "notes": "Issue #75 opened and task packet created at docs/superpowers/tasks/2026-04-23-T026-marketplace-mobile.md. Active branch: pod-a/t026-marketplace-mobile."
     },
     {
       "id": "T027_ANALYTICS_DASHBOARD",
