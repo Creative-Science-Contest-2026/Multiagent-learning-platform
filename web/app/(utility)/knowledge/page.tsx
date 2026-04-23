@@ -136,7 +136,16 @@ const parseLearningObjectives = (value: string): string[] =>
     .map((item) => item.trim())
     .filter(Boolean);
 
+const parseMultilineList = (value: string): string[] =>
+  value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
 const formatLearningObjectives = (value?: string[] | null): string =>
+  Array.isArray(value) ? value.join("\n") : "";
+
+const formatMultilineList = (value?: string[] | null): string =>
   Array.isArray(value) ? value.join("\n") : "";
 
 const normalizeSharingStatus = (value: string): "private" | "team" | "public" | null => {
@@ -154,9 +163,13 @@ const buildTeacherPackMetadata = (input: {
   learningObjectives: string;
   owner: string;
   sharingStatus: string;
+  teamMembers: string;
+  pendingInvites: string;
 }): TeacherPackMetadata | null => {
   const metadata: TeacherPackMetadata = {};
   const learningObjectives = parseLearningObjectives(input.learningObjectives);
+  const teamMembers = parseMultilineList(input.teamMembers);
+  const pendingInvites = parseMultilineList(input.pendingInvites);
 
   if (input.subject.trim()) metadata.subject = input.subject.trim();
   if (input.grade.trim()) metadata.grade = input.grade.trim();
@@ -165,6 +178,10 @@ const buildTeacherPackMetadata = (input: {
   if (input.owner.trim()) metadata.owner = input.owner.trim();
   const sharingStatus = normalizeSharingStatus(input.sharingStatus);
   if (sharingStatus) metadata.sharing_status = sharingStatus;
+  if (sharingStatus === "team") {
+    if (teamMembers.length) metadata.team_members = teamMembers;
+    if (pendingInvites.length) metadata.pending_invites = pendingInvites;
+  }
 
   return Object.keys(metadata).length ? metadata : null;
 };
@@ -190,6 +207,8 @@ export default function KnowledgePage() {
   const [newKbLearningObjectives, setNewKbLearningObjectives] = useState("");
   const [newKbOwner, setNewKbOwner] = useState("");
   const [newKbSharingStatus, setNewKbSharingStatus] = useState<"private" | "team" | "public">("private");
+  const [newKbTeamMembers, setNewKbTeamMembers] = useState("");
+  const [newKbPendingInvites, setNewKbPendingInvites] = useState("");
   const [editingKbName, setEditingKbName] = useState<string | null>(null);
   const [editKbSubject, setEditKbSubject] = useState("");
   const [editKbGrade, setEditKbGrade] = useState("");
@@ -197,6 +216,8 @@ export default function KnowledgePage() {
   const [editKbLearningObjectives, setEditKbLearningObjectives] = useState("");
   const [editKbOwner, setEditKbOwner] = useState("");
   const [editKbSharingStatus, setEditKbSharingStatus] = useState<"private" | "team" | "public">("private");
+  const [editKbTeamMembers, setEditKbTeamMembers] = useState("");
+  const [editKbPendingInvites, setEditKbPendingInvites] = useState("");
   const [savingKbMetadata, setSavingKbMetadata] = useState(false);
   const [editKbError, setEditKbError] = useState<string | null>(null);
   const [uploadTarget, setUploadTarget] = useState("");
@@ -437,6 +458,8 @@ export default function KnowledgePage() {
       learningObjectives: newKbLearningObjectives,
       owner: newKbOwner,
       sharingStatus: newKbSharingStatus,
+      teamMembers: newKbTeamMembers,
+      pendingInvites: newKbPendingInvites,
     });
     setCreating(true);
     try {
@@ -495,6 +518,8 @@ export default function KnowledgePage() {
       setNewKbLearningObjectives("");
       setNewKbOwner("");
       setNewKbSharingStatus("private");
+      setNewKbTeamMembers("");
+      setNewKbPendingInvites("");
       if (createFileRef.current) createFileRef.current.value = "";
       await loadAll();
 
@@ -592,6 +617,8 @@ export default function KnowledgePage() {
     setEditKbCurriculum(kb.metadata?.curriculum ?? "");
     setEditKbLearningObjectives(formatLearningObjectives(kb.metadata?.learning_objectives));
     setEditKbOwner(kb.metadata?.owner ?? "");
+    setEditKbTeamMembers(formatMultilineList(kb.metadata?.team_members));
+    setEditKbPendingInvites(formatMultilineList(kb.metadata?.pending_invites));
     const sharingStatus = kb.metadata?.sharing_status;
     if (sharingStatus === "private" || sharingStatus === "team" || sharingStatus === "public") {
       setEditKbSharingStatus(sharingStatus);
@@ -610,6 +637,8 @@ export default function KnowledgePage() {
     if (!editingKbName) return;
 
     const learningObjectives = parseLearningObjectives(editKbLearningObjectives);
+    const teamMembers = parseMultilineList(editKbTeamMembers);
+    const pendingInvites = parseMultilineList(editKbPendingInvites);
     const payload: TeacherPackMetadata = {
       subject: editKbSubject.trim() || null,
       grade: editKbGrade.trim() || null,
@@ -617,6 +646,9 @@ export default function KnowledgePage() {
       learning_objectives: learningObjectives.length ? learningObjectives : null,
       owner: editKbOwner.trim() || null,
       sharing_status: editKbSharingStatus,
+      team_members: editKbSharingStatus === "team" && teamMembers.length ? teamMembers : null,
+      pending_invites:
+        editKbSharingStatus === "team" && pendingInvites.length ? pendingInvites : null,
     };
 
     setSavingKbMetadata(true);
@@ -844,6 +876,25 @@ export default function KnowledgePage() {
                       <option value="public">{t("Public")}</option>
                     </select>
                   </div>
+
+                  {newKbSharingStatus === "team" && (
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <textarea
+                        value={newKbTeamMembers}
+                        onChange={(event) => setNewKbTeamMembers(event.target.value)}
+                        placeholder={t("Team members (one per line)")}
+                        rows={4}
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                      />
+                      <textarea
+                        value={newKbPendingInvites}
+                        onChange={(event) => setNewKbPendingInvites(event.target.value)}
+                        placeholder={t("Invite emails (one per line)")}
+                        rows={4}
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                      />
+                    </div>
+                  )}
 
                   <select
                     value={selectedProvider}
@@ -1139,6 +1190,16 @@ export default function KnowledgePage() {
                               {t("Learning objectives")}: {kb.metadata.learning_objectives.join(", ")}
                             </div>
                           ) : null}
+                          {kb.metadata?.team_members?.length ? (
+                            <div className="mt-2 text-[11px] text-[var(--muted-foreground)]">
+                              {t("Team members")}: {kb.metadata.team_members.join(", ")}
+                            </div>
+                          ) : null}
+                          {kb.metadata?.pending_invites?.length ? (
+                            <div className="mt-1 text-[11px] text-[var(--muted-foreground)]">
+                              {t("Pending invites")}: {kb.metadata.pending_invites.join(", ")}
+                            </div>
+                          ) : null}
                         </div>
 
                         <div className="flex items-center gap-1.5">
@@ -1236,6 +1297,25 @@ export default function KnowledgePage() {
                               <option value="public">{t("Public")}</option>
                             </select>
                           </div>
+
+                          {editKbSharingStatus === "team" && (
+                            <div className="grid gap-2 md:grid-cols-2">
+                              <textarea
+                                value={editKbTeamMembers}
+                                onChange={(event) => setEditKbTeamMembers(event.target.value)}
+                                placeholder={t("Team members (one per line)")}
+                                rows={4}
+                                className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                              />
+                              <textarea
+                                value={editKbPendingInvites}
+                                onChange={(event) => setEditKbPendingInvites(event.target.value)}
+                                placeholder={t("Invite emails (one per line)")}
+                                rows={4}
+                                className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                              />
+                            </div>
+                          )}
 
                           {editKbError && (
                             <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">

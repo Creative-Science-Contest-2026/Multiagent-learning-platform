@@ -256,6 +256,8 @@ def test_update_config_persists_teacher_pack_metadata(monkeypatch, tmp_path: Pat
         "learning_objectives": ["Quadratic equations", "Graph reading"],
         "owner": "teacher-a",
         "sharing_status": "private",
+        "team_members": ["teacher-a", "teacher-b"],
+        "pending_invites": ["invite@example.com"],
     }
 
     monkeypatch.setattr(config_module, "get_kb_config_service", lambda: fake_service)
@@ -271,6 +273,8 @@ def test_update_config_persists_teacher_pack_metadata(monkeypatch, tmp_path: Pat
     assert body["config"]["learning_objectives"] == ["Quadratic equations", "Graph reading"]
     assert body["config"]["owner"] == "teacher-a"
     assert body["config"]["sharing_status"] == "private"
+    assert body["config"]["team_members"] == ["teacher-a", "teacher-b"]
+    assert body["config"]["pending_invites"] == ["invite@example.com"]
 
 
 def test_get_knowledge_base_details_exposes_teacher_pack_metadata(
@@ -296,6 +300,8 @@ def test_get_knowledge_base_details_exposes_teacher_pack_metadata(
                 "learning_objectives": ["Quadratic equations", "Graph reading"],
                 "owner": "teacher-a",
                 "sharing_status": "private",
+                "team_members": ["teacher-a", "teacher-b"],
+                "pending_invites": ["invite@example.com"],
                 "status": "ready",
             }
         }
@@ -315,6 +321,8 @@ def test_get_knowledge_base_details_exposes_teacher_pack_metadata(
     assert metadata["learning_objectives"] == ["Quadratic equations", "Graph reading"]
     assert metadata["owner"] == "teacher-a"
     assert metadata["sharing_status"] == "private"
+    assert metadata["team_members"] == ["teacher-a", "teacher-b"]
+    assert metadata["pending_invites"] == ["invite@example.com"]
 
 
 def test_list_knowledge_bases_includes_teacher_pack_metadata(monkeypatch, tmp_path: Path) -> None:
@@ -338,6 +346,8 @@ def test_list_knowledge_bases_includes_teacher_pack_metadata(monkeypatch, tmp_pa
                     "learning_objectives": ["Quadratic equations"],
                     "owner": "teacher-a",
                     "sharing_status": "private",
+                    "team_members": ["teacher-a", "teacher-b"],
+                    "pending_invites": ["invite@example.com"],
                 },
             }
 
@@ -353,6 +363,8 @@ def test_list_knowledge_bases_includes_teacher_pack_metadata(monkeypatch, tmp_pa
     assert payload[0]["metadata"]["subject"] == "Math"
     assert payload[0]["metadata"]["grade"] == "10"
     assert payload[0]["metadata"]["owner"] == "teacher-a"
+    assert payload[0]["metadata"]["team_members"] == ["teacher-a", "teacher-b"]
+    assert payload[0]["metadata"]["pending_invites"] == ["invite@example.com"]
 
 
 def test_update_config_rejects_invalid_sharing_status(monkeypatch, tmp_path: Path) -> None:
@@ -406,6 +418,8 @@ def test_update_config_normalizes_learning_objectives(monkeypatch, tmp_path: Pat
     payload = {
         "learning_objectives": ["  Quadratic equations  ", "", "  ", "Graph reading"],
         "owner": " teacher-a ",
+        "team_members": [" teacher-a ", " ", "teacher-b "],
+        "pending_invites": [" invite@example.com ", "", "reviewer@example.com "],
     }
 
     with TestClient(_build_app(knowledge_module)) as client:
@@ -415,3 +429,5 @@ def test_update_config_normalizes_learning_objectives(monkeypatch, tmp_path: Pat
     config = response.json()["config"]
     assert config["learning_objectives"] == ["Quadratic equations", "Graph reading"]
     assert config["owner"] == "teacher-a"
+    assert config["team_members"] == ["teacher-a", "teacher-b"]
+    assert config["pending_invites"] == ["invite@example.com", "reviewer@example.com"]

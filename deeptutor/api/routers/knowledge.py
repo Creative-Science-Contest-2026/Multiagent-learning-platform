@@ -51,6 +51,7 @@ router = APIRouter()
 BYTES_PER_GB = 1024**3
 BYTES_PER_MB = 1024**2
 ALLOWED_SHARING_STATUSES = {"private", "team", "public"}
+LIST_METADATA_FIELDS = {"learning_objectives", "team_members", "pending_invites"}
 
 
 def format_bytes_human_readable(size_bytes: int) -> str:
@@ -207,25 +208,28 @@ def _normalize_teacher_pack_config(config: dict) -> dict:
         value = value.strip()
         normalized[field] = value or None
 
-    if "learning_objectives" in normalized:
-        objectives = normalized["learning_objectives"]
-        if objectives is None:
-            pass
-        elif isinstance(objectives, str):
-            cleaned = [item.strip() for item in objectives.splitlines() if item.strip()]
-            normalized["learning_objectives"] = cleaned or None
-        elif isinstance(objectives, list):
-            if not all(isinstance(item, str) for item in objectives):
+    for field in LIST_METADATA_FIELDS:
+        if field not in normalized:
+            continue
+
+        values = normalized[field]
+        if values is None:
+            continue
+        if isinstance(values, str):
+            cleaned = [item.strip() for item in values.splitlines() if item.strip()]
+            normalized[field] = cleaned or None
+        elif isinstance(values, list):
+            if not all(isinstance(item, str) for item in values):
                 raise HTTPException(
                     status_code=400,
-                    detail="'learning_objectives' must be a list of strings",
+                    detail=f"'{field}' must be a list of strings",
                 )
-            cleaned = [item.strip() for item in objectives if item.strip()]
-            normalized["learning_objectives"] = cleaned or None
+            cleaned = [item.strip() for item in values if item.strip()]
+            normalized[field] = cleaned or None
         else:
             raise HTTPException(
                 status_code=400,
-                detail="'learning_objectives' must be a string or list of strings",
+                detail=f"'{field}' must be a string or list of strings",
             )
 
     if "sharing_status" in normalized:
