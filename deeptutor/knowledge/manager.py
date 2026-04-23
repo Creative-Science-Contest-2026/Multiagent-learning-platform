@@ -28,6 +28,8 @@ PACK_METADATA_FIELDS = (
     "learning_objectives",
     "owner",
     "sharing_status",
+    "team_members",
+    "pending_invites",
 )
 
 
@@ -36,6 +38,12 @@ def _normalize_teacher_pack_field(field: str, value):
         return None
 
     if field == "learning_objectives":
+        if isinstance(value, list):
+            cleaned = [item.strip() for item in value if isinstance(item, str) and item.strip()]
+            return cleaned or None
+        return None
+
+    if field in {"team_members", "pending_invites"}:
         if isinstance(value, list):
             cleaned = [item.strip() for item in value if isinstance(item, str) and item.strip()]
             return cleaned or None

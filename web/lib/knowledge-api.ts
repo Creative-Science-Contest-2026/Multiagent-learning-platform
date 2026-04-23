@@ -10,6 +10,8 @@ export interface TeacherPackMetadata {
   learning_objectives?: string[] | null;
   owner?: string | null;
   sharing_status?: "private" | "team" | "public" | null;
+  team_members?: string[] | null;
+  pending_invites?: string[] | null;
 }
 
 export interface KnowledgeBaseSummary {

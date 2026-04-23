@@ -313,8 +313,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["SWR or React Query"],
-      "status": "in-progress",
-      "notes": "Issue #69 opened and task packet created at docs/superpowers/tasks/2026-04-23-T023-marketplace-cache-optimization.md. Active branch: pod-a/t023-marketplace-cache-optimization."
+      "status": "completed",
+      "notes": "Merged to main through PR #70. Marketplace browsing now reuses cached list responses and progressive load-more pagination."
     },
     {
       "id": "T024_TEACHER_INVITATION_SYSTEM",
@@ -330,8 +330,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["User Management", "Access Control"],
-      "status": "not-started",
-      "notes": "Implement team creation, invitations via email/link, access control"
+      "status": "in-progress",
+      "notes": "Issue #71 opened and task packet created at docs/superpowers/tasks/2026-04-23-T024-teacher-invitation-sharing.md. Active branch: pod-a/t024-teacher-invitation-sharing."
     },
     {
       "id": "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
