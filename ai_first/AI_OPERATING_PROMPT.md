@@ -24,8 +24,8 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Base project: HKUDS/DeepTutor under Apache 2.0
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
-- Latest product status: Knowledge Pack, marketplace import, assessment generation and review insights, student tutoring context, KB context badges, Teacher Dashboard, Vietnamese MVP prompt variants, marketplace sorting, route error boundaries, API rate limiting, contest evidence screenshots, and backend/frontend/docs CI are merged into `main`.
-- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, the scripted-reset smoke lane has passed against the current local demo dataset, `docs/contest/` carries the latest smoke-backed evidence refresh record, marketplace sorting is now merged into `main` through PR `#64`, and the active short task is `T020 Assessment Results Export to PDF`.
+- Latest product status: Knowledge Pack, marketplace import, assessment generation and review insights, student tutoring context, KB context badges, Teacher Dashboard, Vietnamese MVP prompt variants, marketplace sorting, assessment PDF export, route error boundaries, API rate limiting, contest evidence screenshots, and backend/frontend/docs CI are merged into `main`.
+- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, the scripted-reset smoke lane has passed against the current local demo dataset, `docs/contest/` carries the latest smoke-backed evidence refresh record, assessment PDF export is now merged into `main` through PR `#66`, and the active short task is `T021 Tutoring Session Replay Feature`.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -57,6 +57,10 @@ Before edits:
 - Treat this file as the control plane for the repo-level AI-first workflow.
 - Treat `ai_first/AI_FIRST_ROADMAP.md` as the readable roadmap for what the AI loop does now and where it should evolve next.
 - Keep instructions short, direct, and executable.
+- Do not stop to ask for permission to continue to the next strict-order task when the autonomous path is clear.
+- After each merge or completed verification pass, automatically open the next issue, task packet, branch, and worktree required by the workflow.
+- Do not pad handoff messages with future-intent filler such as "next I will..." when the work should continue immediately; either continue doing it or report a real blocker.
+- Only ask the human to intervene when a blocker, ambiguity, or high-risk decision cannot be resolved from repo context or existing operating rules.
 - Prefer one source of truth over multiple overlapping instructions.
 - If a newer project status needs to be captured, update this file first and then mirror the shortest useful summary to the compatibility snapshots.
 - When a feature, tool, route, data model, or workflow rule changes, update `ai_first/architecture/MAIN_SYSTEM_MAP.md`.
@@ -74,6 +78,7 @@ After opening or updating a PR, classify it before handing off:
 - If CI fails, fixing CI is the next task. Do not start a new feature until the failing PR is fixed or explicitly deferred.
 - If review blocks the PR, address the review before merging or continuing.
 - After a successful merge, sync from `main`, update the daily log and compact status mirrors when useful, then select the next task.
+- Task selection and lane creation should happen immediately after that sync unless a live blocker takes priority.
 - Select next work in this order: active PR blockers, active task packets, `ai_first/NEXT_ACTIONS.md`, then the long-term MVP goal.
 - If the next product change has no task packet, create or update a task packet before implementation.
 
@@ -170,7 +175,7 @@ When starting a new feature or fix:
 4. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
 5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, blocker changes, and task selection.
 6. Keep GitHub issue state aligned with merged PRs so the queue mirrors real work, not historical leftovers.
-7. Continue from the next pending registry task in strict order after every successful merge or verification pass; current next task is `T020`.
+7. Continue from the next pending registry task in strict order after every successful merge or verification pass; current next task is `T021`.
 8. Keep the demo-readiness smoke lane current after meaningful merges and treat smoke failures as the next task.
 9. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when local demo state may be stale, missing, or private.
 10. Run the scripted reset command before the next smoke/evidence refresh so the merged utility is validated end to end.

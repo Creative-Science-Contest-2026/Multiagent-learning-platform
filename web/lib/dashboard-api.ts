@@ -57,6 +57,32 @@ export interface DashboardActivity {
   knowledge_bases: string[];
   assessment_summary?: AssessmentSummary | null;
   review_ref?: string | null;
+  replay_ref?: string | null;
+}
+
+export interface DashboardActivityDetailMessage {
+  id: number;
+  session_id: string;
+  role: string;
+  content: string;
+  capability: string;
+  created_at: number;
+}
+
+export interface DashboardActivityDetail {
+  id: string;
+  type: "assessment" | "tutoring" | string;
+  capability: string;
+  title: string;
+  timestamp: number;
+  knowledge_bases: string[];
+  assessment_summary?: AssessmentSummary | null;
+  content: {
+    messages: DashboardActivityDetailMessage[];
+    active_turns: Array<Record<string, unknown>>;
+    status: string;
+    summary: string;
+  };
 }
 
 export interface DashboardOverview {
@@ -175,4 +201,11 @@ export async function downloadAssessmentExportPdf(sessionId: string): Promise<Bl
   }
 
   return response.blob();
+}
+
+export async function getDashboardActivityDetail(entryId: string): Promise<DashboardActivityDetail> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/${entryId}`), {
+    cache: "no-store",
+  });
+  return expectJson<DashboardActivityDetail>(response);
 }

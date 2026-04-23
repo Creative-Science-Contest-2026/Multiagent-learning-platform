@@ -253,8 +253,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["PDF Generation Library"],
-      "status": "in-progress",
-      "notes": "Issue #65 opened and task packet created at docs/superpowers/tasks/2026-04-21-T020-assessment-export-pdf.md. Active branch: pod-a/t020-assessment-export-pdf."
+      "status": "completed",
+      "notes": "Merged to main through PR #66. Assessment review pages now support backend-generated PDF export."
     },
     {
       "id": "T021_SESSION_REPLAY",
@@ -270,8 +270,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Session Storage"],
-      "status": "not-started",
-      "notes": "Reconstruct conversation flow, show KB context at each turn"
+      "status": "in-progress",
+      "notes": "Issue #67 opened and task packet created at docs/superpowers/tasks/2026-04-21-T021-session-replay.md. Active branch: pod-a/t021-session-replay."
     },
     {
       "id": "T022_ERROR_BOUNDARY_HANDLING",

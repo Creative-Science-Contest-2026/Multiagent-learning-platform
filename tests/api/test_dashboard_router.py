@@ -337,6 +337,36 @@ async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_recent_tutoring_activity_includes_replay_ref(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="tutor-replay",
+        capability="chat",
+        message="Help me understand photosynthesis",
+        knowledge_bases=["biology-pack"],
+    )
+    await store.add_message(
+        "tutor-replay",
+        "assistant",
+        "Let's break photosynthesis into inputs, process, and outputs.",
+        capability="chat",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/overview")
+
+    assert response.status_code == 200
+    payload = response.json()
+    tutoring_row = next(row for row in payload["recent_activity"] if row["id"] == "tutor-replay")
+    assert tutoring_row["type"] == "tutoring"
+    assert tutoring_row["replay_ref"] == "dashboard/sessions/tutor-replay"
+
+
+@pytest.mark.asyncio
 async def test_dashboard_assessment_export_returns_pdf_report(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

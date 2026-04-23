@@ -244,10 +244,12 @@ export default function DashboardPage() {
             <div className="overflow-hidden rounded-lg border border-[var(--border)]">
               {(overview?.recent_activity ?? []).length > 0 ? (
                 overview?.recent_activity.map((activity) => {
-                  const reviewHref =
+                  const activityHref =
                     activity.type === "assessment" && activity.review_ref
                       ? `/${activity.review_ref}`
-                      : null;
+                      : activity.type === "tutoring" && activity.replay_ref
+                        ? `/${activity.replay_ref}`
+                        : null;
                   return (
                     <article
                       key={activity.id}
@@ -255,9 +257,9 @@ export default function DashboardPage() {
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="min-w-0 flex-1">
-                          {reviewHref ? (
+                          {activityHref ? (
                             <Link
-                              href={reviewHref}
+                              href={activityHref}
                               className="text-[14px] font-medium text-[var(--foreground)] underline-offset-4 hover:underline"
                             >
                               {activity.title || t("Untitled session")}
