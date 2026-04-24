@@ -16,7 +16,7 @@ Latest smoke-backed refresh: 2026-04-24
 | --- | --- | --- | --- |
 | Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-24.md`. |
 | Frontend production build | Auto after smoke | Current | `npm run build` passed on 2026-04-24 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` after installing worktree dependencies. |
-| Screenshot bundle | Human capture after smoke when the UI changes | Stale | Recent merged UI changes were smoke-validated on 2026-04-24, but no new human screenshot capture was performed in this lane. |
+| Screenshot bundle | Human capture after smoke when the UI changes | Current | Refreshed on 2026-04-24 in `T037` against the latest merged UI after the 2026-04-24 smoke baseline. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
 Use these status values consistently:
@@ -41,7 +41,7 @@ Use these status values consistently:
 
 ## Current Known Limitations
 
-- Screenshot evidence is captured under `docs/contest/screenshots/`, but the current bundle is stale until a new human capture refresh happens.
+- Screenshot evidence is captured under `docs/contest/screenshots/`, and the current bundle was refreshed on 2026-04-24 in `T037`.
 - Video evidence is deferred unless the final contest submission requires it.
 - The frontend build emits a Next.js warning about multiple lockfiles and inferred workspace root. The build still completes successfully.
 - Screenshot freshness still requires a human capture step when the UI meaningfully changes.
@@ -80,7 +80,7 @@ The 2026-04-24 scripted-reset smoke run verified the full MVP path in order:
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
 4. the frontend production build passed against `http://localhost:8001`;
-5. the existing screenshot bundle was not recaptured during this lane, so screenshot status is now `Stale` until a human refresh confirms the latest UI.
+5. the screenshot bundle was refreshed in `T037`, so screenshot status is back to `Current` for the latest merged UI.
 
 ## Manual Verification Template
 

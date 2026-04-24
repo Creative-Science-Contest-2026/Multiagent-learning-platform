@@ -8,15 +8,15 @@ Refresh these only when the UI changed or when the latest smoke-backed validatio
 
 | Area | Evidence | Refresh mode | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
-| Knowledge Pack | Metadata still visible after reload | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
-| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
-| Assessment | Generated questions visible | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
-| Assessment | Common-mistake or feedback guidance visible | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
-| Tutor Agent | Student asks a follow-up question | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
-| Tutor Agent | Tutor response with learning context | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
-| Dashboard | Summary cards visible | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
-| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Human capture | Stale | Existing capture is still linked, but recent merged UI changes were not followed by a new screenshot pass. |
+| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current Knowledge Pack edit surface. |
+| Knowledge Pack | Metadata still visible after reload | Human capture | Current | Refreshed on 2026-04-24 in `T037` after reload against the current Knowledge Pack UI. |
+| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the live assessment configuration flow. |
+| Assessment | Generated questions visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded contest assessment session. |
+| Assessment | Common-mistake or feedback guidance visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded contest assessment guidance view. |
+| Tutor Agent | Student asks a follow-up question | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded tutor replay session. |
+| Tutor Agent | Tutor response with learning context | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded tutor replay session. |
+| Dashboard | Summary cards visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current dashboard summary view. |
+| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current dashboard activity feed. |
 
 ## Required Command Evidence
 
@@ -59,6 +59,6 @@ Video status follows the same freshness states:
 | --- | --- | --- |
 | Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
 | Product commands have smoke-backed validation evidence | Passed | See `VALIDATION_REPORT.md`. |
-| Screenshots are captured and linked | Stale | Existing screenshot links remain available, but a fresh human capture is still required after recent UI merges. |
+| Screenshots are captured and linked | Passed | Screenshot bundle was refreshed on 2026-04-24 in `T037`. |
 | Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |
 | No secrets or private data in evidence | Passed | Screenshots use demo-safe Knowledge Pack and session data. |
