@@ -28,7 +28,7 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 
 ## Latest Validation
 
-The latest smoke-backed refresh passed on 2026-04-19 after running the scripted local reset. It verified:
+The latest smoke-backed refresh passed on 2026-04-24 after running the scripted local reset. It verified:
 
 - demo-safe Knowledge Pack `contest-demo-quadratics`;
 - assessment session `contest-assessment-demo`;
@@ -36,7 +36,7 @@ The latest smoke-backed refresh passed on 2026-04-19 after running the scripted 
 - dashboard overview and recent activity;
 - frontend production build with `NEXT_PUBLIC_API_BASE=http://localhost:8001`.
 
-Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The execution PR is `#40`.
+Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` for smoke-backed evidence and `#99` for the screenshot bundle.
 
 ## Human Review Checklist
 
@@ -55,7 +55,7 @@ Before final submission, a human should review:
 - Provider-backed AI quality depends on configured model credentials.
 - The backend `deeptutor.api.run_server` path has a reload/absolute-pattern incompatibility with the installed `uvicorn`; latest smoke used the CLI server path with reload disabled.
 - Frontend build may need network access to fetch Google Fonts.
-- Screenshots should be recaptured only if the UI meaningfully changes.
+- Screenshots are current as of the 2026-04-24 `T037` refresh and should be recaptured only if the UI meaningfully changes again.
 
 ## Review Flow
 
