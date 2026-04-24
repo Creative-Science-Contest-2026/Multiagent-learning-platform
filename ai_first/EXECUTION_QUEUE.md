@@ -7,28 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#96 [Docs] T036 Contest smoke and evidence refresh`
-- `#96` refreshed the command-backed contest smoke evidence on 2026-04-24 and correctly marked screenshot evidence as `Stale` pending a new capture pass.
+- Latest merged PR: `#99 [Docs] T037 Contest screenshot evidence refresh`
+- `#99` refreshed the linked contest screenshot bundle on 2026-04-24, so screenshot evidence is `Current` again on `main`.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active short task: `T037 Contest Screenshot Evidence Refresh`
-- Branch: `docs/t037-contest-screenshot-refresh`
-- Goal: refresh the linked screenshot bundle so contest screenshot evidence can move from `Stale` back to `Current`.
+- Active short task: `T038 Contest Submission Package Freshness Sync`
+- Branch: `docs/t038-submission-readiness-sync`
+- Goal: sync the contest-facing README and submission package with the latest 2026-04-24 smoke and screenshot evidence state.
 
 ## Next recommended task
 
-Publish the screenshot-refresh lane, then reassess whether any remaining contest evidence gaps or MVP/runtime gaps still need a new short task.
+Publish the submission-readiness sync lane, then reassess whether any remaining contest evidence gaps or MVP/runtime gaps still need a new short task.
 
 ## Status Update (2026-04-24)
 
 **Queue Advance**:
-1. `#96` merged to `main` after all required CI checks passed
-2. Issue `#95` was closed after the merge
-3. `T036 Contest Smoke and Evidence Refresh` is now complete on `main`
-4. Opened issue `#97` for `T037 Contest Screenshot Evidence Refresh`
-5. The next lane is screenshot recapture because screenshot evidence remains the explicit stale item
+1. `#99` merged to `main` after all required CI checks passed
+2. Issue `#97` auto-closed with the merge
+3. `T037 Contest Screenshot Evidence Refresh` is now complete on `main`
+4. Opened issue `#100` for `T038 Contest Submission Package Freshness Sync`
+5. The next lane syncs contest-facing entry docs that still point at the older 2026-04-19 evidence state
 
 ## AI-owned blockers
 
@@ -36,7 +36,7 @@ Publish the screenshot-refresh lane, then reassess whether any remaining contest
 
 ## Human-review blockers
 
-- Screenshot freshness is `Stale` until a fresh recapture refreshes the linked UI bundle. This is the active short-task target for `T037`.
+- None currently. Command evidence and screenshot evidence are both current on `main`; the remaining gap is submission-facing doc freshness.
 
 ## Read path
 

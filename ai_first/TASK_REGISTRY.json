@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "last_updated": "2026-04-24T18:10:00Z",
+    "last_updated": "2026-04-24T18:35:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 37
+    "total_tasks": 38
   },
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 28,
+      "count": 29,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -37,14 +37,15 @@
         "T033_LEARNING_PATH_SEQUENCING",
         "T034_BATCH_ASSESSMENT_IMPORT",
         "T035_OFFLINE_MODE_SUPPORT",
-        "T036_CONTEST_EVIDENCE_REFRESH"
+        "T036_CONTEST_EVIDENCE_REFRESH",
+        "T037_CONTEST_SCREENSHOT_REFRESH"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T037_CONTEST_SCREENSHOT_REFRESH"
+        "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC"
       ]
     },
     "blocked": {
@@ -552,8 +553,25 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["T036 merged to main", "Fresh screenshot capture path"],
+      "status": "completed",
+      "notes": "Merged to main through PR #99. Contest screenshot evidence was refreshed to current on 2026-04-24 and linked docs now point at the latest screenshot bundle."
+    },
+    {
+      "id": "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC",
+      "category": "Low",
+      "priority": 30,
+      "title": "Contest Submission Package Freshness Sync",
+      "description": "Sync the contest-facing README and submission package with the latest merged smoke and screenshot evidence state so submission entry docs no longer point at the older validation window.",
+      "scope": {
+        "docs": "docs/contest/README.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
+      },
+      "affected_features": ["Contest Evidence", "Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.5,
+      "dependencies": ["T037 merged to main"],
       "status": "in-progress",
-      "notes": "Issue #97 opened and task packet created at docs/superpowers/tasks/2026-04-24-T037-contest-screenshot-refresh.md. Active branch: docs/t037-contest-screenshot-refresh."
+      "notes": "Issue #100 opened for docs freshness sync. Active branch: docs/t038-submission-readiness-sync."
     }
   ],
   "github_issues_template": {
