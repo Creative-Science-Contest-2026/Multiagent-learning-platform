@@ -30,12 +30,54 @@ PACK_METADATA_FIELDS = (
     "sharing_status",
     "team_members",
     "pending_invites",
+    "current_version",
+    "version_history",
 )
 
 
 def _normalize_teacher_pack_field(field: str, value):
     if value is None:
         return None
+
+    if field == "current_version":
+        if isinstance(value, bool):
+            return None
+        try:
+            normalized = int(value)
+        except (TypeError, ValueError):
+            return None
+        return normalized if normalized > 0 else None
+
+    if field == "version_history":
+        if not isinstance(value, list):
+            return None
+        cleaned_history = []
+        for item in value:
+            if not isinstance(item, dict):
+                continue
+            try:
+                version = int(item.get("version"))
+            except (TypeError, ValueError):
+                continue
+            if version <= 0:
+                continue
+            updated_at = str(item.get("updated_at") or "").strip()
+            changed_fields = item.get("changed_fields")
+            if not isinstance(changed_fields, list):
+                continue
+            normalized_fields = [
+                entry.strip()
+                for entry in changed_fields
+                if isinstance(entry, str) and entry.strip()
+            ]
+            cleaned_entry = {
+                "version": version,
+                "changed_fields": normalized_fields,
+            }
+            if updated_at:
+                cleaned_entry["updated_at"] = updated_at
+            cleaned_history.append(cleaned_entry)
+        return cleaned_history or None
 
     if field == "learning_objectives":
         if isinstance(value, list):

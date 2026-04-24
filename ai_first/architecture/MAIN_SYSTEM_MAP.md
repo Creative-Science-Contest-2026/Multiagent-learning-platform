@@ -36,6 +36,7 @@ flowchart TD
   Product --> TeacherWorkspace["Teacher Workspace"]
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
+  KnowledgePack --> KPVersions["Versioned teacher-pack metadata: current_version + version_history"]
   
   Product --> Marketplace["Knowledge Pack Marketplace"]
   Marketplace --> MarketplaceAPI["/api/v1/marketplace"]

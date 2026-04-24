@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-24T15:46:00Z",
+    "last_updated": "2026-04-24T15:57:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 35
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 22,
+      "count": 23,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -31,14 +31,15 @@
         "T027_ANALYTICS_DASHBOARD",
         "T028_API_RATE_LIMITING",
         "T029_MARKETPLACE_SEARCH_FULLTEXT",
-        "T030_ASSESSMENT_TIME_TRACKING"
+        "T030_ASSESSMENT_TIME_TRACKING",
+        "T031_TUTOR_FOLLOW_UP_PROMPTS"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T031_TUTOR_FOLLOW_UP_PROMPTS"
+        "T032_KNOWLEDGE_PACK_VERSIONING"
       ]
     },
     "blocked": {
@@ -48,9 +49,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 4,
+      "count": 3,
       "tasks": [
-        "T032_KNOWLEDGE_PACK_VERSIONING",
         "T033_LEARNING_PATH_SEQUENCING",
         "T034_BATCH_ASSESSMENT_IMPORT",
         "T035_OFFLINE_MODE_SUPPORT"
@@ -448,8 +448,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["LLM Service", "Tutor Agent"],
-      "status": "in-progress",
-      "notes": "Issue #83 mirrors the active lane. Task packet created at docs/superpowers/tasks/2026-04-24-T031-tutor-follow-up-prompts.md. Active branch: pod-a/t031-tutor-follow-ups."
+      "status": "completed",
+      "notes": "Merged to main through PR #84. The tutoring chat pipeline can now emit a visible 'Follow-up questions:' section and parse the same section back into result.followup_questions metadata without changing the chat route."
     },
     {
       "id": "T032_KNOWLEDGE_PACK_VERSIONING",
@@ -465,8 +465,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["Database Schema"],
-      "status": "not-started",
-      "notes": "Allow teachers to update packs while preserving old versions for existing assessments"
+      "status": "in-progress",
+      "notes": "Issue #85 mirrors the active lane. Task packet created at docs/superpowers/tasks/2026-04-24-T032-knowledge-pack-versioning.md. Active branch: pod-a/t032-kb-versioning."
     },
     {
       "id": "T033_LEARNING_PATH_SEQUENCING",
