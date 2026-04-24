@@ -7,31 +7,32 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#109 [Docs] T042 Contest human review handoff`
-- `#109` added the final manual-review read path and moved the contest package into a waiting-on-human-review state.
+- Latest merged PR: `#111 [Docs] Post-T042 human review wait-state sync`
+- `#111` cleared the stale active queue and left the contest package in a clean waiting-on-human-review state.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- No active AI implementation task.
-- Current state: contest submission package is waiting on manual review and final sign-off.
+- Active short task: `T043 Optional Contest Video Capture Runbook`
+- Branch: `docs/t043-video-capture`
+- Goal: prepare the optional video storyboard/runbook so the team can record quickly if the final submission requires a video artifact.
 
 ## Next recommended task
 
-Wait for human review of the submission package. Only open another lane if humans want a final archival sync after submission, an optional video artifact, or wording changes to the contest materials.
+Publish the optional-video-support lane, then return the queue to waiting on human review unless the team decides to actually record the video.
 
 ## Status Update (2026-04-25)
 
 **Queue Advance**:
-1. `#109` merged to `main` after all required CI checks passed
-2. Issue `#108` auto-closed with the merge
-3. `T042 Contest Human Review Handoff` is now complete on `main`
-4. The repository now has a short manual-review path in `docs/contest/HUMAN_REVIEW_HANDOFF.md`
-5. The contest queue is paused pending human review, not further AI implementation
+1. `#111` merged to `main` after all required CI checks passed
+2. Issue `#110` auto-closed with the merge
+3. The control-plane is synchronized to the waiting-on-human-review state
+4. Issue `#112` is now open for the optional video runbook lane
+5. The next lane prepares a video artifact path without claiming the video has already been recorded
 
 ## AI-owned blockers
 
-- None currently. The contest submission package is now blocked only by human review actions, not by missing AI-authored docs.
+- None currently. This lane is optional support work only and does not unblock or replace the required human review decisions.
 
 ## Human-review blockers
 

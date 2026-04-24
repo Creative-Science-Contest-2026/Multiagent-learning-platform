@@ -43,6 +43,8 @@ Capture one short video, ideally under five minutes:
 4. Teacher Dashboard review.
 5. Validation report summary.
 
+If capture is required, use [`VIDEO_CAPTURE_RUNBOOK.md`](./VIDEO_CAPTURE_RUNBOOK.md) for the clip order, narration scope, and storage rules.
+
 Store large video files outside the repository and link them here:
 
 - Video link: Deferred. Screenshot evidence is complete; capture and link an external video only if the final contest submission requires it.
