@@ -7,6 +7,7 @@ import fitz
 from fastapi import APIRouter, HTTPException, Response
 
 from deeptutor.services.assessment import build_assessment_analysis
+from deeptutor.services.learning_path import build_suggested_learning_path
 from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
 
 router = APIRouter()
@@ -428,6 +429,11 @@ async def get_student_progress(limit: int = 50):
         }
         for row in sorted(assessment_rows, key=lambda row: row["timestamp"], reverse=True)[:5]
     ]
+    suggested_learning_path = build_suggested_learning_path(
+        focus_topics=focus_topics,
+        mastered_topics=mastered_topics,
+        knowledge_bases=unique_knowledge_packs,
+    )
 
     return {
         "totals": {
@@ -441,6 +447,7 @@ async def get_student_progress(limit: int = 50):
         "mastered_topics": mastered_topics,
         "score_trend": score_trend,
         "recent_assessments": recent_assessments,
+        "suggested_learning_path": suggested_learning_path,
     }
 
 

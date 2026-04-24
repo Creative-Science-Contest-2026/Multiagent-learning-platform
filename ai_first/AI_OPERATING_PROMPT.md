@@ -24,8 +24,8 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Base project: HKUDS/DeepTutor under Apache 2.0
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
-- Latest product status: Knowledge Pack, marketplace import, assessment generation and review insights, student tutoring context, KB context badges, Teacher Dashboard, Vietnamese MVP prompt variants, marketplace sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment adaptive difficulty, teacher analytics, assessment PDF export, tutoring session replay, route error boundaries, API rate limiting, teacher invitation metadata, assessment time tracking, tutor follow-up prompts, contest evidence screenshots, and backend/frontend/docs CI are merged into `main`.
-- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, the scripted-reset smoke lane has passed against the current local demo dataset, `docs/contest/` carries the latest smoke-backed evidence refresh record, `T031 Smart Tutor Follow-Up Questions` merged into `main` through PR `#84`, and the active short task is now `T032 Knowledge Pack Versioning System` on branch `pod-a/t032-kb-versioning` with issue `#85`.
+- Latest product status: Knowledge Pack, marketplace import, assessment generation and review insights, student tutoring context, KB context badges, Teacher Dashboard, Vietnamese MVP prompt variants, marketplace sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment adaptive difficulty, teacher analytics, assessment PDF export, tutoring session replay, route error boundaries, API rate limiting, teacher invitation metadata, assessment time tracking, tutor follow-up prompts, knowledge-pack version metadata, contest evidence screenshots, and backend/frontend/docs CI are merged into `main`.
+- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, the scripted-reset smoke lane has passed against the current local demo dataset, `docs/contest/` carries the latest smoke-backed evidence refresh record, `T032 Knowledge Pack Versioning System` merged into `main` through PR `#86`, and the active short task is now `T033 Suggested Learning Path Sequencing` on branch `pod-a/t033-learning-paths` with issue `#88`.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -175,7 +175,7 @@ When starting a new feature or fix:
 4. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
 5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, blocker changes, and task selection.
 6. Keep GitHub issue state aligned with merged PRs so the queue mirrors real work, not historical leftovers.
-7. Continue from the next pending registry task in strict order after every successful merge or verification pass; current active task is `T032` on `pod-a/t032-kb-versioning` and the next strict-order task after merge will be `T033`.
+7. Continue from the next pending registry task in strict order after every successful merge or verification pass; current active task is `T033` on `pod-a/t033-learning-paths` and the next strict-order task after merge will be `T034`.
 8. Keep the demo-readiness smoke lane current after meaningful merges and treat smoke failures as the next task.
 9. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when local demo state may be stale, missing, or private.
 10. Run the scripted reset command before the next smoke/evidence refresh so the merged utility is validated end to end.
