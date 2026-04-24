@@ -76,6 +76,7 @@ export interface QuizResultItem {
   user_answer: string;
   correct_answer: string;
   is_correct: boolean;
+  duration_seconds?: number;
 }
 
 async function expectJson<T>(response: Response): Promise<T> {

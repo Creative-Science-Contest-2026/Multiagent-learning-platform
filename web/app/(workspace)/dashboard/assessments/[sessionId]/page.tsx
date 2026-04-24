@@ -26,6 +26,15 @@ function formatTime(value: number): string {
   }).format(new Date(timestamp));
 }
 
+function formatDuration(seconds?: number | null): string {
+  if (!seconds || seconds <= 0) return "";
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  if (!remainingSeconds) return `${minutes}m`;
+  return `${minutes}m ${remainingSeconds}s`;
+}
+
 export default function AssessmentReviewPage() {
   const { t } = useTranslation();
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -176,6 +185,31 @@ export default function AssessmentReviewPage() {
           }
         />
 
+        {(review.summary.estimated_time_spent || review.summary.average_time_per_question) && (
+          <section className="grid gap-3 md:grid-cols-2">
+            {review.summary.estimated_time_spent ? (
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+                <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                  {t("Time spent")}
+                </p>
+                <p className="mt-2 text-[20px] font-semibold text-[var(--foreground)]">
+                  {formatDuration(review.summary.estimated_time_spent)}
+                </p>
+              </div>
+            ) : null}
+            {review.summary.average_time_per_question ? (
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+                <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                  {t("Average per question")}
+                </p>
+                <p className="mt-2 text-[20px] font-semibold text-[var(--foreground)]">
+                  {formatDuration(review.summary.average_time_per_question)}
+                </p>
+              </div>
+            ) : null}
+          </section>
+        )}
+
         <h2 className="mt-8 text-[18px] font-semibold text-[var(--foreground)]">
           {t("Question-by-Question Breakdown")}
         </h2>
@@ -215,6 +249,14 @@ export default function AssessmentReviewPage() {
                     </span>{" "}
                     {result.correct_answer || t("(not recorded)")}
                   </p>
+                  {result.duration_seconds ? (
+                    <p>
+                      <span className="font-medium text-[var(--foreground)]">
+                        {t("Response time")}:
+                      </span>{" "}
+                      {formatDuration(result.duration_seconds)}
+                    </p>
+                  ) : null}
                 </div>
               </article>
             ))

@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-23T14:30:00Z",
+    "last_updated": "2026-04-24T08:40:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 35
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 15,
+      "count": 21,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -24,14 +24,20 @@
         "T020_ASSESSMENT_EXPORT_PDF",
         "T021_SESSION_REPLAY",
         "T022_ERROR_BOUNDARY_HANDLING",
-        "T028_API_RATE_LIMITING"
+        "T023_MARKETPLACE_CACHE_OPTIMIZATION",
+        "T024_TEACHER_INVITATION_SYSTEM",
+        "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
+        "T026_MOBILE_RESPONSIVE_MARKETPLACE",
+        "T027_ANALYTICS_DASHBOARD",
+        "T028_API_RATE_LIMITING",
+        "T029_MARKETPLACE_SEARCH_FULLTEXT"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T023_MARKETPLACE_CACHE_OPTIMIZATION"
+        "T030_ASSESSMENT_TIME_TRACKING"
       ]
     },
     "blocked": {
@@ -41,14 +47,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 11,
+      "count": 5,
       "tasks": [
-        "T024_TEACHER_INVITATION_SYSTEM",
-        "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
-        "T026_MOBILE_RESPONSIVE_MARKETPLACE",
-        "T027_ANALYTICS_DASHBOARD",
-        "T029_MARKETPLACE_SEARCH_FULLTEXT",
-        "T030_ASSESSMENT_TIME_TRACKING",
         "T031_TUTOR_FOLLOW_UP_PROMPTS",
         "T032_KNOWLEDGE_PACK_VERSIONING",
         "T033_LEARNING_PATH_SEQUENCING",
@@ -414,8 +414,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Search Service"],
-      "status": "in-progress",
-      "notes": "Issue #79 opened and task packet created at docs/superpowers/tasks/2026-04-24-T029-marketplace-search.md. Active branch: pod-a/t029-marketplace-search."
+      "status": "completed",
+      "notes": "Merged to main through PR #80. Marketplace search now matches broader metadata/objective text and is wired through the list API."
     },
     {
       "id": "T030_ASSESSMENT_TIME_TRACKING",
@@ -431,8 +431,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["Assessment Schema"],
-      "status": "not-started",
-      "notes": "Display average time per question, identify rush vs. careful answering patterns"
+      "status": "in-progress",
+      "notes": "Issue #81 now mirrors the active lane. The branch records optional per-question duration_seconds in quiz results, parses timing from the existing [Quiz Performance] transcript, and surfaces total/average/per-question timing in assessment review without a new storage table."
     },
     {
       "id": "T031_TUTOR_FOLLOW_UP_PROMPTS",
