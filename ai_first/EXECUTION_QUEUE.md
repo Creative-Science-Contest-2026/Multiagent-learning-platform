@@ -13,29 +13,30 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- No strict-order registry task is currently active.
-- The last completed task was `T035 Offline Mode for Downloaded Packs`.
-- Next lane should be derived from smoke gaps, evidence freshness, or the MVP goal.
+- Active short task: `T036 Contest Smoke and Evidence Refresh`
+- Branch: `docs/t036-contest-evidence-refresh`
+- Goal: refresh smoke-backed contest validation evidence and mark screenshot freshness honestly after the recent merged UI changes.
 
 ## Next recommended task
 
-Run smoke/evidence freshness checks or derive the next short task from the MVP goal, then open a new task packet and focused branch before implementation.
+Finish `T036` by publishing the smoke/evidence refresh docs lane, then choose whether the next short task should be screenshot recapture or a new MVP/runtime slice.
 
 ## Status Update (2026-04-24)
 
 **Queue Advance**:
 1. `#93` merged to `main` after all required CI checks passed
 2. Issue `#92` auto-closed with the merge
-3. The strict-order registry queue is now empty
-4. Next work should be chosen from smoke gaps, evidence freshness, or newly created MVP tasks
+3. Derived docs short task `T036 Contest Smoke and Evidence Refresh`
+4. Opened issue `#95` and started branch `docs/t036-contest-evidence-refresh`
+5. Re-ran the scripted-reset smoke lane on 2026-04-24
 
 ## AI-owned blockers
 
-- None currently. The scripted-reset smoke lane passed with demo-safe reset output, backend startup through the CLI server path, frontend production build, Knowledge Pack metadata, assessment session evidence, tutor session evidence, and dashboard activity.
+- None currently. The scripted-reset smoke lane passed on 2026-04-24 with demo-safe reset output, backend startup through the CLI server path, frontend production build, Knowledge Pack metadata, assessment session evidence, tutor session evidence, and dashboard activity.
 
 ## Human-review blockers
 
-- None currently. Human review is still required for product direction changes, deployment or credential decisions, and any PR explicitly marked blocked.
+- Screenshot freshness is now `Stale` until a human recapture refreshes the linked UI bundle. This does not block command-backed smoke evidence, but it does block claiming the screenshot bundle is current.
 
 ## Read path
 
