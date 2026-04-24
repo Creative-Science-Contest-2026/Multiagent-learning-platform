@@ -1,5 +1,6 @@
 import { apiUrl } from "@/lib/api";
 import { invalidateClientCache, withClientCache } from "@/lib/client-cache";
+import { listOfflineImportedPacks } from "@/lib/offline-pack-cache";
 
 const KNOWLEDGE_CACHE_PREFIX = "knowledge:";
 
@@ -33,15 +34,24 @@ export async function listKnowledgeBases(options?: { force?: boolean }) {
   return withClientCache<KnowledgeBaseSummary[]>(
     `${KNOWLEDGE_CACHE_PREFIX}list`,
     async () => {
-      const response = await fetch(apiUrl("/api/v1/knowledge/list"), {
-        cache: "no-store",
-      });
-      const data = await response.json();
-      return Array.isArray(data)
-        ? data
-        : Array.isArray(data?.knowledge_bases)
-          ? data.knowledge_bases
-          : [];
+      try {
+        const response = await fetch(apiUrl("/api/v1/knowledge/list"), {
+          cache: "no-store",
+        });
+        const data = await response.json();
+        return Array.isArray(data)
+          ? data
+          : Array.isArray(data?.knowledge_bases)
+            ? data.knowledge_bases
+            : [];
+      } catch {
+        return listOfflineImportedPacks().map((pack) => ({
+          name: pack.name,
+          is_default: false,
+          status: "offline-cached",
+          metadata: pack.metadata ?? null,
+        }));
+      }
     },
     {
       force: options?.force,

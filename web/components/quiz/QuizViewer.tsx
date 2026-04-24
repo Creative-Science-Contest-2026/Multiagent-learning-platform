@@ -8,7 +8,7 @@ import QuestionFollowupPanel, {
   type FollowupThreadState,
 } from "@/components/quiz/QuestionFollowupPanel";
 import { buildQuizFollowupConfig, type QuizQuestion } from "@/lib/quiz-types";
-import { recordQuizResults } from "@/lib/session-api";
+import { flushQueuedQuizResults, recordQuizResults } from "@/lib/session-api";
 import { shouldAppendEventContent } from "@/lib/stream";
 import { type StartTurnMessage, type StreamEvent, UnifiedWSClient } from "@/lib/unified-ws";
 
@@ -84,6 +84,7 @@ export default function QuizViewer({
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [threads, setThreads] = useState<Record<string, FollowupThreadState>>({});
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saved" | "queued-offline" | "syncing">("idle");
   const lastReportedSignatureRef = useRef("");
   const threadsRef = useRef<Record<string, FollowupThreadState>>({});
   const threadRunnersRef = useRef<
@@ -309,13 +310,33 @@ export default function QuizViewer({
     const signature = JSON.stringify(submittedResults);
     if (!signature || signature === lastReportedSignatureRef.current) return;
     lastReportedSignatureRef.current = signature;
-    void recordQuizResults(sessionId, submittedResults).catch((error) => {
-      console.error("Failed to record quiz results:", error);
-      if (lastReportedSignatureRef.current === signature) {
-        lastReportedSignatureRef.current = "";
-      }
-    });
+    void recordQuizResults(sessionId, submittedResults)
+      .then((result) => {
+        setSaveStatus(result.queued_offline ? "queued-offline" : "saved");
+      })
+      .catch((error) => {
+        console.error("Failed to record quiz results:", error);
+        if (lastReportedSignatureRef.current === signature) {
+          lastReportedSignatureRef.current = "";
+        }
+      });
   }, [completedCount, sessionId, submittedResults, total]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleOnline = () => {
+      setSaveStatus((current) => (current === "queued-offline" ? "syncing" : current));
+      void flushQueuedQuizResults().then((count) => {
+        if (count > 0) {
+          setSaveStatus("saved");
+        } else {
+          setSaveStatus((current) => (current === "syncing" ? "queued-offline" : current));
+        }
+      });
+    };
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
+  }, []);
 
   const handleSubmit = () => {
     if (ans.submitted) return;
@@ -389,6 +410,15 @@ export default function QuizViewer({
         <span className="mr-2 text-[11px] font-semibold text-[var(--muted-foreground)]">
           {completedCount}/{total}
         </span>
+        {saveStatus !== "idle" && (
+          <span className="mr-2 rounded-full bg-[var(--muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--muted-foreground)]">
+            {saveStatus === "saved"
+              ? t("Results saved")
+              : saveStatus === "queued-offline"
+                ? t("Saved offline, syncing later")
+                : t("Syncing offline results")}
+          </span>
+        )}
         <div className="flex flex-wrap gap-1">
           {questions.map((question, questionIndex) => {
             const answer = answers[questionIndex];
