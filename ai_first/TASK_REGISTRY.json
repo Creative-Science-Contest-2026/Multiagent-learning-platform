@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-25T04:10:00Z",
+    "last_updated": "2026-04-25T04:30:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 43
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 34,
+      "count": 35,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -43,15 +43,14 @@
         "T039_SUBMISSION_CHECKLIST_ALIGNMENT",
         "T040_CONTEST_PRODUCT_DESCRIPTION",
         "T041_CONTEST_FORK_MODIFICATIONS_NOTE",
-        "T042_CONTEST_HUMAN_REVIEW_HANDOFF"
+        "T042_CONTEST_HUMAN_REVIEW_HANDOFF",
+        "T043_OPTIONAL_CONTEST_VIDEO_CAPTURE_RUNBOOK"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "T043_OPTIONAL_CONTEST_VIDEO_CAPTURE_RUNBOOK"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -660,8 +659,8 @@
       "complexity": "Low",
       "estimated_hours": 1.0,
       "dependencies": ["T042 merged to main", "docs/contest/DEMO_SCRIPT.md", "docs/contest/HUMAN_REVIEW_HANDOFF.md"],
-      "status": "in-progress",
-      "notes": "Issue #112 opened for optional contest video capture support. Active branch: docs/t043-video-capture."
+      "status": "completed",
+      "notes": "Merged to main through PR #113. Added docs/contest/VIDEO_CAPTURE_RUNBOOK.md and linked it into contest evidence/submission docs without marking video as captured."
     }
   ],
   "github_issues_template": {
