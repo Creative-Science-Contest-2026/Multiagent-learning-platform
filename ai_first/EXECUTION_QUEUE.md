@@ -7,32 +7,31 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#111 [Docs] Post-T042 human review wait-state sync`
-- `#111` cleared the stale active queue and left the contest package in a clean waiting-on-human-review state.
+- Latest merged PR: `#113 [Docs] T043 Optional contest video capture runbook`
+- `#113` added the optional video storyboard/runbook without changing the deferred status of the video artifact itself.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active short task: `T043 Optional Contest Video Capture Runbook`
-- Branch: `docs/t043-video-capture`
-- Goal: prepare the optional video storyboard/runbook so the team can record quickly if the final submission requires a video artifact.
+- No active AI implementation task.
+- Current state: contest submission package is waiting on manual review, with optional video support docs ready if the team decides to record.
 
 ## Next recommended task
 
-Publish the optional-video-support lane, then return the queue to waiting on human review unless the team decides to actually record the video.
+Wait for human review of the submission package. If the team decides a video is required, use `docs/contest/VIDEO_CAPTURE_RUNBOOK.md` to record it; otherwise no further AI lane is required.
 
 ## Status Update (2026-04-25)
 
 **Queue Advance**:
-1. `#111` merged to `main` after all required CI checks passed
-2. Issue `#110` auto-closed with the merge
-3. The control-plane is synchronized to the waiting-on-human-review state
-4. Issue `#112` is now open for the optional video runbook lane
-5. The next lane prepares a video artifact path without claiming the video has already been recorded
+1. `#113` merged to `main` after all required CI checks passed
+2. Issue `#112` auto-closed with the merge
+3. `T043 Optional Contest Video Capture Runbook` is now complete on `main`
+4. The repository now includes `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
+5. The contest queue is back to waiting on manual review unless the team chooses to record the optional video
 
 ## AI-owned blockers
 
-- None currently. This lane is optional support work only and does not unblock or replace the required human review decisions.
+- None currently. The contest submission package is now blocked only by human review actions and the optional choice of whether to record video.
 
 ## Human-review blockers
 
@@ -43,7 +42,7 @@ Publish the optional-video-support lane, then return the queue to waiting on hum
 1. `ai_first/AI_OPERATING_PROMPT.md`
 2. `ai_first/EXECUTION_QUEUE.md`
 3. `docs/contest/HUMAN_REVIEW_HANDOFF.md`
-4. `ai_first/CURRENT_STATE.md` only if more context is needed
+4. `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
 
 ---
 
