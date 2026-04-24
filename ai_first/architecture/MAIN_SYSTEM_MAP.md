@@ -46,9 +46,12 @@ flowchart TD
   MarketplacePreview --> PreviewModal["Preview modal: metadata + sample documents"]
   MarketplacePreview --> PackRatings["Average rating + recent reviews"]
   Marketplace --> MarketplaceImport["POST /api/v1/marketplace/import/{pack_name}"]
+  Marketplace --> MarketplaceBatchImport["POST /api/v1/marketplace/import-batch"]
   Marketplace --> MarketplaceReviewAPI["POST /api/v1/marketplace/{pack_name}/reviews"]
   MarketplaceReviewAPI --> ReviewStorage["KB config: marketplace_reviews metadata"]
   MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported"]
+  MarketplaceBatchImport --> BatchSelectUI["Multi-select cards + import selected action bar"]
+  MarketplaceBatchImport --> ImportedClone
   
   Product --> AssessmentBuilder["Assessment Builder"]
   AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
