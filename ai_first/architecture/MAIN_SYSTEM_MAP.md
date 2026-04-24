@@ -52,6 +52,7 @@ flowchart TD
   MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported"]
   MarketplaceBatchImport --> BatchSelectUI["Multi-select cards + import selected action bar"]
   MarketplaceBatchImport --> ImportedClone
+  ImportedClone --> OfflinePackManifest["Browser offline imported-pack manifest"]
   
   Product --> AssessmentBuilder["Assessment Builder"]
   AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
@@ -88,6 +89,7 @@ flowchart TD
   PathEngine --> ObjectiveInputs["Knowledge-pack learning_objectives metadata"]
   AssessmentReview --> ReviewRoute["/dashboard/assessments/[sessionId]"]
   AssessmentReview --> ReviewAPI["/api/v1/sessions/{session_id}/assessment-review"]
+  AssessmentReview --> OfflineQuizQueue["Browser offline quiz-result sync queue"]
   AssessmentReview --> ProgressIndicator["ProgressIndicator Component"]
   AssessmentReview --> LearningJourney["LearningJourneySummary Component"]
   AssessmentReview --> TimeMetrics["Timing metrics: total + average + per-question response time"]

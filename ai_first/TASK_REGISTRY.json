@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-24T16:28:00Z",
+    "last_updated": "2026-04-24T16:42:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 35
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 25,
+      "count": 26,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -34,14 +34,15 @@
         "T030_ASSESSMENT_TIME_TRACKING",
         "T031_TUTOR_FOLLOW_UP_PROMPTS",
         "T032_KNOWLEDGE_PACK_VERSIONING",
-        "T033_LEARNING_PATH_SEQUENCING"
+        "T033_LEARNING_PATH_SEQUENCING",
+        "T034_BATCH_ASSESSMENT_IMPORT"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T034_BATCH_ASSESSMENT_IMPORT"
+        "T035_OFFLINE_MODE_SUPPORT"
       ]
     },
     "blocked": {
@@ -51,10 +52,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 1,
-      "tasks": [
-        "T035_OFFLINE_MODE_SUPPORT"
-      ]
+      "count": 0,
+      "tasks": []
     }
   },
   "tasks": [
@@ -499,8 +498,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["Import Implementation"],
-      "status": "in-progress",
-      "notes": "Issue #90 mirrors the active lane. Task packet created at docs/superpowers/tasks/2026-04-24-T034-batch-import-multiple-packs.md. Active branch: pod-a/t034-batch-import."
+      "status": "completed",
+      "notes": "Merged to main through PR #91. Marketplace now supports batch import through a shared single-pack import helper plus multi-select UI."
     },
     {
       "id": "T035_OFFLINE_MODE_SUPPORT",
@@ -516,8 +515,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["Service Worker", "IndexedDB"],
-      "status": "not-started",
-      "notes": "Sync when online, allow working offline for imported packs"
+      "status": "in-progress",
+      "notes": "Issue #92 mirrors the active lane. Task packet created at docs/superpowers/tasks/2026-04-24-T035-offline-mode-support.md. Active branch: pod-a/t035-offline-mode."
     }
   ],
   "github_issues_template": {

@@ -1,4 +1,5 @@
 import { apiUrl } from "@/lib/api";
+import { cacheImportedPack } from "@/lib/offline-pack-cache";
 
 export interface MarketplacePackMetadata {
   subject?: string | null;
@@ -303,6 +304,16 @@ export async function importMarketplacePack(
   }
 
   const result = await response.json();
+  cacheImportedPack({
+    name: result.pack.name,
+    imported_at: result.pack.import_date,
+    metadata: {
+      subject: result.pack.subject ?? null,
+      grade: result.pack.grade ?? null,
+      owner: result.pack.owner ?? null,
+      sharing_status: "private",
+    },
+  });
   invalidateMarketplaceListCache();
   return result;
 }
@@ -330,6 +341,20 @@ export async function importMarketplacePacks(
   }
 
   const result = (await response.json()) as BatchImportPacksResult;
+  result.results
+    .filter((row) => row.success && row.pack)
+    .forEach((row) => {
+      cacheImportedPack({
+        name: row.pack!.name,
+        imported_at: row.pack!.import_date,
+        metadata: {
+          subject: row.pack!.subject ?? null,
+          grade: row.pack!.grade ?? null,
+          owner: row.pack!.owner ?? null,
+          sharing_status: "private",
+        },
+      });
+    });
   invalidateMarketplaceListCache();
   return result;
 }

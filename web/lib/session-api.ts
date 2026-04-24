@@ -1,6 +1,11 @@
 import type { StreamEvent } from "@/lib/unified-ws";
 import { apiUrl } from "@/lib/api";
 import { invalidateClientCache, withClientCache } from "@/lib/client-cache";
+import {
+  enqueueOfflineQuizResults,
+  getPendingOfflineQuizResults,
+  removePendingOfflineQuizResults,
+} from "@/lib/offline-quiz-sync";
 
 export interface SessionMessage {
   id: number;
@@ -79,6 +84,11 @@ export interface QuizResultItem {
   duration_seconds?: number;
 }
 
+export interface RecordQuizResultsStatus {
+  recorded: boolean;
+  queued_offline?: boolean;
+}
+
 async function expectJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
@@ -136,11 +146,47 @@ export async function deleteSession(sessionId: string): Promise<void> {
 export async function recordQuizResults(
   sessionId: string,
   answers: QuizResultItem[],
-): Promise<void> {
-  const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/quiz-results`), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ answers }),
-  });
-  await expectJson<{ recorded: boolean }>(response);
+): Promise<RecordQuizResultsStatus> {
+  try {
+    const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/quiz-results`), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers }),
+    });
+    await expectJson<{ recorded: boolean }>(response);
+    removePendingOfflineQuizResults(sessionId);
+    return { recorded: true };
+  } catch (error) {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      enqueueOfflineQuizResults({
+        sessionId,
+        answers,
+        savedAt: new Date().toISOString(),
+      });
+      return { recorded: false, queued_offline: true };
+    }
+    throw error;
+  }
+}
+
+export async function flushQueuedQuizResults(): Promise<number> {
+  const queued = getPendingOfflineQuizResults();
+  let flushed = 0;
+
+  for (const item of queued) {
+    try {
+      const response = await fetch(apiUrl(`/api/v1/sessions/${item.sessionId}/quiz-results`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: item.answers }),
+      });
+      await expectJson<{ recorded: boolean }>(response);
+      removePendingOfflineQuizResults(item.sessionId);
+      flushed += 1;
+    } catch {
+      continue;
+    }
+  }
+
+  return flushed;
 }
