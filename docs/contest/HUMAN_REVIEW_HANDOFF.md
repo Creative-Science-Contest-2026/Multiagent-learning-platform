@@ -37,7 +37,7 @@ Before submission, quickly verify:
 
 - screenshots are clear and contain no private data
 - `docs/contest/VALIDATION_REPORT.md` still matches the intended demo environment
-- optional video is either not required or has been recorded separately
+- optional video is either not required or has been recorded separately using `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
 
 ### 4. Final package sign-off
 
