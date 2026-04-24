@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "last_updated": "2026-04-24T16:42:00Z",
+    "last_updated": "2026-04-24T16:55:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 35
+    "total_tasks": 36
   },
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 26,
+      "count": 27,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -35,13 +35,16 @@
         "T031_TUTOR_FOLLOW_UP_PROMPTS",
         "T032_KNOWLEDGE_PACK_VERSIONING",
         "T033_LEARNING_PATH_SEQUENCING",
-        "T034_BATCH_ASSESSMENT_IMPORT"
+        "T034_BATCH_ASSESSMENT_IMPORT",
+        "T035_OFFLINE_MODE_SUPPORT"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "T036_CONTEST_EVIDENCE_REFRESH"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -515,6 +518,23 @@
       "dependencies": ["Service Worker", "IndexedDB"],
       "status": "completed",
       "notes": "Merged to main through PR #93. Imported packs now have a browser-local offline manifest fallback and loaded quiz results can queue sync until the browser reconnects."
+    },
+    {
+      "id": "T036_CONTEST_EVIDENCE_REFRESH",
+      "category": "Low",
+      "priority": 28,
+      "title": "Contest Smoke and Evidence Refresh",
+      "description": "Refresh the smoke-backed contest validation record, mark screenshot freshness honestly, and keep AI-first control-plane docs aligned with the derived evidence lane.",
+      "scope": {
+        "docs": "docs/contest/VALIDATION_REPORT.md, docs/contest/EVIDENCE_CHECKLIST.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
+      },
+      "affected_features": ["Contest Evidence", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["T035 merged to main", "scripts/contest/reset_demo_data.py"],
+      "status": "in-progress",
+      "notes": "Issue #95 opened and task packet created at docs/superpowers/tasks/2026-04-24-T036-contest-evidence-refresh.md. Active branch: docs/t036-contest-evidence-refresh."
     }
   ],
   "github_issues_template": {
@@ -610,7 +630,7 @@
     },
     "MVP_PHASE_3": {
       "title": "Medium Priority & Polish (Weeks 5+)",
-      "tasks": ["T024", "T025", "T026", "T027", "T029", "T030", "T031", "T032", "T033", "T034", "T035"],
+      "tasks": ["T024", "T025", "T026", "T027", "T029", "T030", "T031", "T032", "T033", "T034", "T035", "T036"],
       "target_date": "2026-06-01"
     }
   }
