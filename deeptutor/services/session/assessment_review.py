@@ -5,7 +5,7 @@ from typing import Any
 
 QUIZ_PREFIX = "[Quiz Performance]"
 QUESTION_RE = re.compile(
-    r"^\d+\.\s+(?:\[(?P<question_id>[^\]]*)\]\s+)?Q:\s+(?P<question>.+?)\s+->\s+Answered:\s+(?P<answer>.+?)\s+\((?P<status>Correct|Incorrect)(?:,\s+correct:\s+(?P<correct_answer>.+?))?\)$"
+    r"^\d+\.\s+(?:\[(?P<question_id>[^\]]*)\]\s+)?Q:\s+(?P<question>.+?)\s+->\s+Answered:\s+(?P<answer>.+?)\s+\((?P<status>Correct|Incorrect)(?:,\s+correct:\s+(?P<correct_answer>.+?))?(?:,\s+time:\s+(?P<duration_seconds>\d+)s)?\)$"
 )
 SCORE_RE = re.compile(r"^Score:\s+(?P<correct>\d+)/(?P<total>\d+)\s+\((?P<percent>\d+)%\)$")
 
@@ -56,6 +56,11 @@ def extract_assessment_review(session: dict[str, Any]) -> dict[str, Any] | None:
                 "user_answer": question_match.group("answer").strip(),
                 "correct_answer": (question_match.group("correct_answer") or "").strip(),
                 "is_correct": question_match.group("status") == "Correct",
+                "duration_seconds": (
+                    int(question_match.group("duration_seconds"))
+                    if question_match.group("duration_seconds")
+                    else None
+                ),
             }
         )
 
@@ -65,17 +70,24 @@ def extract_assessment_review(session: dict[str, Any]) -> dict[str, Any] | None:
         score_percent = round((correct_count / total_questions) * 100) if total_questions else 0
 
     incorrect_count = max(total_questions - correct_count, 0)
+    timed_results = [item["duration_seconds"] for item in results if item["duration_seconds"] is not None]
+    summary = {
+        "total_questions": total_questions,
+        "correct_count": correct_count,
+        "incorrect_count": incorrect_count,
+        "score_percent": score_percent,
+    }
+    if timed_results:
+        estimated_time_spent = sum(timed_results)
+        summary["estimated_time_spent"] = estimated_time_spent
+        summary["average_time_per_question"] = round(estimated_time_spent / len(timed_results))
+
     return {
         "session_id": session.get("session_id") or session.get("id"),
         "title": session.get("title") or "Untitled session",
         "timestamp": session.get("updated_at", session.get("created_at", 0)),
         "status": session.get("status", "idle"),
         "knowledge_bases": _session_knowledge_bases(session),
-        "summary": {
-            "total_questions": total_questions,
-            "correct_count": correct_count,
-            "incorrect_count": incorrect_count,
-            "score_percent": score_percent,
-        },
+        "summary": summary,
         "results": results,
     }

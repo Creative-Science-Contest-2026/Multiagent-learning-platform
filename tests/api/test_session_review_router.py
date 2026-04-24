@@ -61,3 +61,51 @@ async def test_get_assessment_review_returns_structured_score(
     assert payload["summary"]["incorrect_count"] == 1
     assert payload["summary"]["score_percent"] == 50
     assert payload["results"][0]["question_id"] == "q1"
+
+
+@pytest.mark.asyncio
+async def test_record_and_review_quiz_results_preserves_duration_metrics(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await store.create_session(session_id="quiz-duration-session")
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        record_response = client.post(
+            "/api/v1/sessions/quiz-duration-session/quiz-results",
+            json={
+                "answers": [
+                    {
+                        "question_id": "q1",
+                        "question": "2+2",
+                        "user_answer": "4",
+                        "correct_answer": "4",
+                        "is_correct": True,
+                        "duration_seconds": 35,
+                    },
+                    {
+                        "question_id": "q2",
+                        "question": "5-1",
+                        "user_answer": "3",
+                        "correct_answer": "4",
+                        "is_correct": False,
+                        "duration_seconds": 65,
+                    },
+                ]
+            },
+        )
+
+        review_response = client.get("/api/v1/sessions/quiz-duration-session/assessment-review")
+
+    assert record_response.status_code == 200
+    record_payload = record_response.json()
+    assert "time: 35s" in record_payload["content"]
+    assert "time: 65s" in record_payload["content"]
+
+    assert review_response.status_code == 200
+    review_payload = review_response.json()
+    assert review_payload["summary"]["estimated_time_spent"] == 100
+    assert review_payload["summary"]["average_time_per_question"] == 50
+    assert review_payload["results"][0]["duration_seconds"] == 35
+    assert review_payload["results"][1]["duration_seconds"] == 65

@@ -1,34 +1,36 @@
 # Execution Queue
 
-Last updated: 2026-04-23
+Last updated: 2026-04-24
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#78 [MVP] T027 Teacher Analytics Dashboard`
-- `#78` extended the teacher dashboard with engagement, assessment trend, and learning signal analytics, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, assessment insights, adaptive difficulty selection, teacher analytics, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#80 [MVP] T029 Marketplace Full-Text Search`
+- `#80` upgraded marketplace search to match broader metadata and objective text through the list API, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment insights, adaptive difficulty selection, teacher analytics, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#79 [MVP] Marketplace Full-Text Search`
-- Active branch: `pod-a/t029-marketplace-search`
-- Active task packet: `docs/superpowers/tasks/2026-04-24-T029-marketplace-search.md`
-- Focus set: `T029` (Marketplace search)
+- Active issue: `#81 [MVP] T030 Assessment Time Tracking & Analytics`
+- Active branch: `pod-a/t030-assessment-time`
+- Active task packet: `docs/superpowers/tasks/2026-04-24-T030-assessment-time.md`
+- Focus set: `T030` (Assessment time tracking)
 
 ## Next recommended task
 
-Implement `T029` on `pod-a/t029-marketplace-search`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Publish the completed `T030` implementation from `pod-a/t030-assessment-time` as a Draft PR, then monitor CI and merge before opening `T031`.
 
-## Status Update (2026-04-21)
+## Status Update (2026-04-24)
 
 **Queue Advance**:
-1. `#78` merged to `main` after all required CI checks passed
-2. Issue `#77` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T029 Marketplace Full-Text Search`
-4. Issue `#79` created and task packet added for the new execution lane
+1. `#80` merged to `main` after all required CI checks passed
+2. Issue `#79` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T030 Assessment Time Tracking & Analytics`
+4. Task packet and execution lane created immediately
+5. Issue `#81` now mirrors the active `T030` lane after the earlier transient GitHub CLI `503` issue cleared
+6. `T030` implementation and validation are complete locally; the lane is ready for commit/push/Draft PR
 
 ## AI-owned blockers
 
@@ -69,7 +71,8 @@ Implement `T029` on `pod-a/t029-marketplace-search`, then open a Draft PR with a
 | T025: Adaptive Difficulty | Completed | 5 | NO | Done |
 | T026: Marketplace Mobile | Completed | 1 | NO | Done |
 | T027: Analytics Dashboard | Completed | 8 | NO | Done |
-| T029: Marketplace Search | In Progress | 3 | NO | Now |
+| T029: Marketplace Search | Completed | 3 | NO | Done |
+| T030: Assessment Time | In Progress | 2 | NO | Now |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 

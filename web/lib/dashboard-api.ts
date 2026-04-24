@@ -6,6 +6,7 @@ export interface AssessmentSummary {
   incorrect_count: number;
   score_percent: number;
   estimated_time_spent?: number;
+  average_time_per_question?: number;
 }
 
 export interface AssessmentReviewResult {
@@ -14,6 +15,7 @@ export interface AssessmentReviewResult {
   user_answer: string;
   correct_answer: string;
   is_correct: boolean;
+  duration_seconds?: number | null;
 }
 
 export interface AssessmentReview {

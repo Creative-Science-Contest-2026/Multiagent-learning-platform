@@ -22,6 +22,7 @@ class QuizResultItem(BaseModel):
     user_answer: str = ""
     correct_answer: str = ""
     is_correct: bool
+    duration_seconds: int | None = Field(default=None, ge=0)
 
 
 class QuizResultsRequest(BaseModel):
@@ -37,11 +38,13 @@ def _format_quiz_results_message(answers: list[QuizResultItem]) -> str:
         question = item.question.strip().replace("\n", " ")
         user_answer = (item.user_answer or "").strip() or "(blank)"
         status = "Correct" if item.is_correct else "Incorrect"
-        suffix = f" ({status})"
+        details = [status]
         if not item.is_correct and (item.correct_answer or "").strip():
-            suffix = f" ({status}, correct: {(item.correct_answer or '').strip()})"
+            details.append(f"correct: {(item.correct_answer or '').strip()}")
+        if item.duration_seconds is not None:
+            details.append(f"time: {item.duration_seconds}s")
         qid = f"[{item.question_id}] " if item.question_id else ""
-        lines.append(f"{idx}. {qid}Q: {question} -> Answered: {user_answer}{suffix}")
+        lines.append(f"{idx}. {qid}Q: {question} -> Answered: {user_answer} ({', '.join(details)})")
     lines.append(f"Score: {correct}/{total} ({score_pct}%)")
     return "\n".join(lines)
 

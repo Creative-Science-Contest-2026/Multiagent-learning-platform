@@ -22,9 +22,13 @@ type AnswerState = {
   selected: string | null;
   typed: string;
   submitted: boolean;
+  startedAt: number;
+  durationSeconds?: number;
 };
 
-const EMPTY_ANSWER: AnswerState = { selected: null, typed: "", submitted: false };
+function createEmptyAnswerState(startedAt = Date.now()): AnswerState {
+  return { selected: null, typed: "", submitted: false, startedAt };
+}
 
 function createEmptyThreadState(): FollowupThreadState {
   return {
@@ -87,7 +91,7 @@ export default function QuizViewer({
   >(new Map());
 
   const q = questions[idx];
-  const ans = answers[idx] ?? EMPTY_ANSWER;
+  const ans = answers[idx] ?? createEmptyAnswerState();
   const total = questions.length;
   const navigationProgress = total > 0 ? ((idx + 1) / total) * 100 : 0;
   const questionKey = q ? getQuestionKey(q, idx) : "";
@@ -103,6 +107,14 @@ export default function QuizViewer({
     threadsRef.current = threads;
   }, [threads]);
 
+  useEffect(() => {
+    if (!q) return;
+    setAnswers((prev) => {
+      if (prev[idx]) return prev;
+      return { ...prev, [idx]: createEmptyAnswerState() };
+    });
+  }, [idx, q]);
+
   useEffect(
     () => () => {
       threadRunnersRef.current.forEach(({ client }) => client.disconnect());
@@ -115,7 +127,7 @@ export default function QuizViewer({
     (patch: Partial<AnswerState>) =>
       setAnswers((prev) => ({
         ...prev,
-        [idx]: { ...(prev[idx] ?? EMPTY_ANSWER), ...patch },
+        [idx]: { ...(prev[idx] ?? createEmptyAnswerState()), ...patch },
       })),
     [idx],
   );
@@ -285,6 +297,7 @@ export default function QuizViewer({
             user_answer: getUserAnswer(question, answer),
             correct_answer: question.correct_answer,
             is_correct: isAnswerCorrect(question, answer),
+            duration_seconds: answer.durationSeconds,
           },
         ];
       }),
@@ -306,11 +319,14 @@ export default function QuizViewer({
 
   const handleSubmit = () => {
     if (ans.submitted) return;
-    updateAnswer({ submitted: true });
+    const durationSeconds =
+      ans.durationSeconds ??
+      Math.max(1, Math.round((Date.now() - (ans.startedAt || Date.now())) / 1000));
+    updateAnswer({ submitted: true, durationSeconds });
   };
 
   const handleReset = () => {
-    updateAnswer({ selected: null, typed: "", submitted: false });
+    updateAnswer(createEmptyAnswerState());
   };
 
   const handleToggleFollowup = useCallback(() => {
@@ -335,7 +351,7 @@ export default function QuizViewer({
     const content = currentThread.input.trim();
     if (!content || currentThread.isStreaming) return;
 
-    const answer = answers[idx] ?? EMPTY_ANSWER;
+    const answer = answers[idx] ?? createEmptyAnswerState();
     const followupConfig = buildQuizFollowupConfig(
       q,
       getUserAnswer(q, answer),
