@@ -7,28 +7,27 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#107 [Docs] T041 Contest fork modifications note`
-- `#107` documented the contest-specific fork changes and closed the last obvious AI-doable submission checklist gap.
+- Latest merged PR: `#109 [Docs] T042 Contest human review handoff`
+- `#109` added the final manual-review read path and moved the contest package into a waiting-on-human-review state.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active short task: `T042 Contest Human Review Handoff`
-- Branch: `docs/t042-human-review-handoff`
-- Goal: package the remaining human-only submission work into one short handoff doc and land the queue in a clean waiting-on-human-review state.
+- No active AI implementation task.
+- Current state: contest submission package is waiting on manual review and final sign-off.
 
 ## Next recommended task
 
-Publish the human-review-handoff lane, then treat the contest submission queue as waiting on manual review rather than additional AI implementation.
+Wait for human review of the submission package. Only open another lane if humans want a final archival sync after submission, an optional video artifact, or wording changes to the contest materials.
 
 ## Status Update (2026-04-25)
 
 **Queue Advance**:
-1. `#107` merged to `main` after all required CI checks passed
-2. Issue `#106` auto-closed with the merge
-3. `T041 Contest Fork Modifications Note` is now complete on `main`
-4. Opened issue `#108` for `T042 Contest Human Review Handoff`
-5. The next lane packages the remaining manual submission work into a short reviewer handoff
+1. `#109` merged to `main` after all required CI checks passed
+2. Issue `#108` auto-closed with the merge
+3. `T042 Contest Human Review Handoff` is now complete on `main`
+4. The repository now has a short manual-review path in `docs/contest/HUMAN_REVIEW_HANDOFF.md`
+5. The contest queue is paused pending human review, not further AI implementation
 
 ## AI-owned blockers
 
@@ -36,13 +35,13 @@ Publish the human-review-handoff lane, then treat the contest submission queue a
 
 ## Human-review blockers
 
-- Human-only submission items still remain, including IP commitment review, optional video decision, and final package sign-off. `T042` exists to shorten that manual path, not to replace it.
+- Human-only submission items still remain, including IP commitment review, optional video decision, and final package sign-off.
 
 ## Read path
 
 1. `ai_first/AI_OPERATING_PROMPT.md`
 2. `ai_first/EXECUTION_QUEUE.md`
-3. Task packet for the active branch
+3. `docs/contest/HUMAN_REVIEW_HANDOFF.md`
 4. `ai_first/CURRENT_STATE.md` only if more context is needed
 
 ---
