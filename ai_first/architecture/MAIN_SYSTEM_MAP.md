@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-23
+Last updated: 2026-04-24
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -66,6 +66,10 @@ flowchart TD
   Product --> TeacherDashboard["Teacher Dashboard"]
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
   DashboardSummary --> DashboardFilters["History filters: type + KB + search + min score"]
+  DashboardSummary --> TeacherAnalytics["Teacher Analytics Signals"]
+  TeacherAnalytics --> EngagementSignals["Engagement: active days + streak + KB usage"]
+  TeacherAnalytics --> AssessmentTrend["Assessment trend: average + latest + delta"]
+  TeacherAnalytics --> DifficultySignals["Learning signals: focus topics + strong areas"]
   TeacherDashboard --> StudentDashboard["Student Progress Dashboard"]
   TeacherDashboard --> AssessmentReview["Assessment Review Drill-down"]
   StudentDashboard --> StudentRoute["/dashboard/student"]

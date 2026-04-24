@@ -98,6 +98,23 @@ export interface DashboardOverview {
     name: string;
     session_count: number;
   }>;
+  analytics: {
+    engagement: {
+      active_days: number;
+      streak_days: number;
+      knowledge_packs_used: number;
+    };
+    assessment_trend: {
+      assessments_completed: number;
+      average_score_percent: number;
+      latest_score_percent: number;
+      score_delta: number;
+    };
+    learning_signals: {
+      focus_topics: StudentProgressTopic[];
+      mastered_topics: StudentProgressTopic[];
+    };
+  };
   recent_activity: DashboardActivity[];
 }
 
