@@ -7,36 +7,36 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#105 [Docs] T040 Contest product description draft`
-- `#105` added the reusable contest product description draft and narrowed the remaining AI-doable submission gap to the fork-modifications note.
+- Latest merged PR: `#107 [Docs] T041 Contest fork modifications note`
+- `#107` documented the contest-specific fork changes and closed the last obvious AI-doable submission checklist gap.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active short task: `T041 Contest Fork Modifications Note`
-- Branch: `docs/t041-fork-modifications`
-- Goal: document how this fork extends HKUDS/DeepTutor for the contest MVP so the final AI-doable submission checklist item is backed by a repo note.
+- Active short task: `T042 Contest Human Review Handoff`
+- Branch: `docs/t042-human-review-handoff`
+- Goal: package the remaining human-only submission work into one short handoff doc and land the queue in a clean waiting-on-human-review state.
 
 ## Next recommended task
 
-Publish the fork-modifications lane, then confirm the remaining submission checklist items are human-owned only.
+Publish the human-review-handoff lane, then treat the contest submission queue as waiting on manual review rather than additional AI implementation.
 
 ## Status Update (2026-04-25)
 
 **Queue Advance**:
-1. `#105` merged to `main` after all required CI checks passed
-2. Issue `#104` auto-closed with the merge
-3. `T040 Contest Product Description Draft` is now complete on `main`
-4. Opened issue `#106` for `T041 Contest Fork Modifications Note`
-5. The next lane documents contest-specific fork changes so only human-review submission items remain unchecked
+1. `#107` merged to `main` after all required CI checks passed
+2. Issue `#106` auto-closed with the merge
+3. `T041 Contest Fork Modifications Note` is now complete on `main`
+4. Opened issue `#108` for `T042 Contest Human Review Handoff`
+5. The next lane packages the remaining manual submission work into a short reviewer handoff
 
 ## AI-owned blockers
 
-- None currently. The command-backed smoke lane passed on 2026-04-24 and is already merged into `main`.
+- None currently. The contest submission package is now blocked only by human review actions, not by missing AI-authored docs.
 
 ## Human-review blockers
 
-- Human-only submission items still remain, including IP commitment review and final package sign-off. `T041` is the last clearly AI-doable checklist alignment step.
+- Human-only submission items still remain, including IP commitment review, optional video decision, and final package sign-off. `T042` exists to shorten that manual path, not to replace it.
 
 ## Read path
 
