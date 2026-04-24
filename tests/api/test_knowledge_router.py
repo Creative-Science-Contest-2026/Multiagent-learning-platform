@@ -431,3 +431,84 @@ def test_update_config_normalizes_learning_objectives(monkeypatch, tmp_path: Pat
     assert config["owner"] == "teacher-a"
     assert config["team_members"] == ["teacher-a", "teacher-b"]
     assert config["pending_invites"] == ["invite@example.com", "reviewer@example.com"]
+
+
+def test_update_config_appends_teacher_pack_version_history(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+
+    class _FakeConfigService:
+        def __init__(self) -> None:
+            self.store = {
+                "demo": {
+                    "rag_provider": "llamaindex",
+                    "subject": "Math",
+                    "grade": "10",
+                    "owner": "teacher-a",
+                }
+            }
+
+        def set_kb_config(self, kb_name: str, config: dict) -> None:
+            current = self.store.get(kb_name, {})
+            current.update(config)
+            self.store[kb_name] = current
+
+        def get_kb_config(self, kb_name: str) -> dict:
+            return dict(self.store.get(kb_name, {}))
+
+    fake_service = _FakeConfigService()
+    config_module = importlib.import_module("deeptutor.services.config")
+    monkeypatch.setattr(config_module, "get_kb_config_service", lambda: fake_service)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.put(
+            "/api/v1/knowledge/demo/config",
+            json={
+                "subject": "Advanced Math",
+                "grade": "10",
+                "owner": "teacher-a",
+                "learning_objectives": ["Quadratic equations"],
+            },
+        )
+
+    assert response.status_code == 200
+    config = response.json()["config"]
+    assert config["current_version"] == 2
+    assert len(config["version_history"]) == 1
+    revision = config["version_history"][0]
+    assert revision["version"] == 2
+    assert revision["changed_fields"] == ["learning_objectives", "subject"]
+
+
+def test_update_config_starts_teacher_pack_version_history_at_one(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+
+    class _FakeConfigService:
+        def __init__(self) -> None:
+            self.store = {"demo": {"rag_provider": "llamaindex"}}
+
+        def set_kb_config(self, kb_name: str, config: dict) -> None:
+            current = self.store.get(kb_name, {})
+            current.update(config)
+            self.store[kb_name] = current
+
+        def get_kb_config(self, kb_name: str) -> dict:
+            return dict(self.store.get(kb_name, {}))
+
+    fake_service = _FakeConfigService()
+    config_module = importlib.import_module("deeptutor.services.config")
+    monkeypatch.setattr(config_module, "get_kb_config_service", lambda: fake_service)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.put(
+            "/api/v1/knowledge/demo/config",
+            json={
+                "subject": "Math",
+                "owner": "teacher-a",
+            },
+        )
+
+    assert response.status_code == 200
+    config = response.json()["config"]
+    assert config["current_version"] == 1
+    assert config["version_history"][0]["version"] == 1
+    assert config["version_history"][0]["changed_fields"] == ["owner", "subject"]

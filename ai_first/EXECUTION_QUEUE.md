@@ -7,28 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#82 [MVP] T030 Assessment Time Tracking & Analytics`
-- `#82` added lightweight per-question duration recording and assessment review timing metrics, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#84 [MVP] T031 Smart Tutor Follow-Up Questions`
+- `#84` added lightweight follow-up questions in tutor replies and result metadata, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#83 [MVP] T031 Smart Tutor Follow-Up Questions`
-- Active branch: `pod-a/t031-tutor-follow-ups`
-- Active task packet: `docs/superpowers/tasks/2026-04-24-T031-tutor-follow-up-prompts.md`
-- Focus set: `T031` (Tutor follow-up prompts)
+- Active issue: `#85 [MVP] T032 Knowledge Pack Versioning`
+- Active branch: `pod-a/t032-kb-versioning`
+- Active task packet: `docs/superpowers/tasks/2026-04-24-T032-knowledge-pack-versioning.md`
+- Focus set: `T032` (Knowledge pack versioning)
 
 ## Next recommended task
 
-Implement `T031` on `pod-a/t031-tutor-follow-ups`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Implement `T032` on `pod-a/t032-kb-versioning`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-24)
 
 **Queue Advance**:
-1. `#82` merged to `main` after all required CI checks passed
-2. Issue `#81` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T031 Smart Tutor Follow-Up Questions`
-4. Issue `#83`, branch `pod-a/t031-tutor-follow-ups`, and task packet were created immediately after the merge sync
+1. `#84` merged to `main` after all required CI checks passed
+2. Issue `#83` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T032 Knowledge Pack Versioning System`
+4. Issue `#85`, branch `pod-a/t032-kb-versioning`, and task packet were created immediately after the merge sync
 
 ## AI-owned blockers
 
@@ -71,7 +71,8 @@ Implement `T031` on `pod-a/t031-tutor-follow-ups`, then open a Draft PR with a M
 | T027: Analytics Dashboard | Completed | 8 | NO | Done |
 | T029: Marketplace Search | Completed | 3 | NO | Done |
 | T030: Assessment Time | Completed | 2 | NO | Done |
-| T031: Tutor Follow-Up Questions | In Progress | 3 | NO | Now |
+| T031: Tutor Follow-Up Questions | Completed | 3 | NO | Done |
+| T032: Knowledge Pack Versioning | In Progress | 4 | NO | Now |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 
