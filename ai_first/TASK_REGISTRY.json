@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-24T08:40:00Z",
+    "last_updated": "2026-04-24T15:46:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 35
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 21,
+      "count": 22,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -30,14 +30,15 @@
         "T026_MOBILE_RESPONSIVE_MARKETPLACE",
         "T027_ANALYTICS_DASHBOARD",
         "T028_API_RATE_LIMITING",
-        "T029_MARKETPLACE_SEARCH_FULLTEXT"
+        "T029_MARKETPLACE_SEARCH_FULLTEXT",
+        "T030_ASSESSMENT_TIME_TRACKING"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T030_ASSESSMENT_TIME_TRACKING"
+        "T031_TUTOR_FOLLOW_UP_PROMPTS"
       ]
     },
     "blocked": {
@@ -47,9 +48,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 5,
+      "count": 4,
       "tasks": [
-        "T031_TUTOR_FOLLOW_UP_PROMPTS",
         "T032_KNOWLEDGE_PACK_VERSIONING",
         "T033_LEARNING_PATH_SEQUENCING",
         "T034_BATCH_ASSESSMENT_IMPORT",
@@ -431,8 +431,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["Assessment Schema"],
-      "status": "in-progress",
-      "notes": "Issue #81 now mirrors the active lane. The branch records optional per-question duration_seconds in quiz results, parses timing from the existing [Quiz Performance] transcript, and surfaces total/average/per-question timing in assessment review without a new storage table."
+      "status": "completed",
+      "notes": "Merged to main through PR #82. Assessment review now records optional per-question duration_seconds inside the existing [Quiz Performance] transcript and surfaces total/average/per-question timing without a new storage table."
     },
     {
       "id": "T031_TUTOR_FOLLOW_UP_PROMPTS",
@@ -448,8 +448,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["LLM Service", "Tutor Agent"],
-      "status": "not-started",
-      "notes": "Generate 1-3 follow-up questions when student answer indicates misunderstanding"
+      "status": "in-progress",
+      "notes": "Issue #83 mirrors the active lane. Task packet created at docs/superpowers/tasks/2026-04-24-T031-tutor-follow-up-prompts.md. Active branch: pod-a/t031-tutor-follow-ups."
     },
     {
       "id": "T032_KNOWLEDGE_PACK_VERSIONING",

@@ -7,30 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#80 [MVP] T029 Marketplace Full-Text Search`
-- `#80` upgraded marketplace search to match broader metadata and objective text through the list API, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment insights, adaptive difficulty selection, teacher analytics, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#82 [MVP] T030 Assessment Time Tracking & Analytics`
+- `#82` added lightweight per-question duration recording and assessment review timing metrics, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#81 [MVP] T030 Assessment Time Tracking & Analytics`
-- Active branch: `pod-a/t030-assessment-time`
-- Active task packet: `docs/superpowers/tasks/2026-04-24-T030-assessment-time.md`
-- Focus set: `T030` (Assessment time tracking)
+- Active issue: `#83 [MVP] T031 Smart Tutor Follow-Up Questions`
+- Active branch: `pod-a/t031-tutor-follow-ups`
+- Active task packet: `docs/superpowers/tasks/2026-04-24-T031-tutor-follow-up-prompts.md`
+- Focus set: `T031` (Tutor follow-up prompts)
 
 ## Next recommended task
 
-Publish the completed `T030` implementation from `pod-a/t030-assessment-time` as a Draft PR, then monitor CI and merge before opening `T031`.
+Implement `T031` on `pod-a/t031-tutor-follow-ups`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-24)
 
 **Queue Advance**:
-1. `#80` merged to `main` after all required CI checks passed
-2. Issue `#79` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T030 Assessment Time Tracking & Analytics`
-4. Task packet and execution lane created immediately
-5. Issue `#81` now mirrors the active `T030` lane after the earlier transient GitHub CLI `503` issue cleared
-6. `T030` implementation and validation are complete locally; the lane is ready for commit/push/Draft PR
+1. `#82` merged to `main` after all required CI checks passed
+2. Issue `#81` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T031 Smart Tutor Follow-Up Questions`
+4. Issue `#83`, branch `pod-a/t031-tutor-follow-ups`, and task packet were created immediately after the merge sync
 
 ## AI-owned blockers
 
@@ -72,7 +70,8 @@ Publish the completed `T030` implementation from `pod-a/t030-assessment-time` as
 | T026: Marketplace Mobile | Completed | 1 | NO | Done |
 | T027: Analytics Dashboard | Completed | 8 | NO | Done |
 | T029: Marketplace Search | Completed | 3 | NO | Done |
-| T030: Assessment Time | In Progress | 2 | NO | Now |
+| T030: Assessment Time | Completed | 2 | NO | Done |
+| T031: Tutor Follow-Up Questions | In Progress | 3 | NO | Now |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 

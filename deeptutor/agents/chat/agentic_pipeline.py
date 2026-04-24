@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass
 import json
 import logging
 import os
+import re
 from typing import Any
 
 import httpx
@@ -42,6 +43,7 @@ CHAT_OPTIONAL_TOOLS = [
 ]
 MAX_PARALLEL_TOOL_CALLS = 8
 MAX_TOOL_RESULT_CHARS = 4000
+FOLLOWUP_LIST_RE = re.compile(r"^\s*(?:[-*]|\d+[.)])\s*(?P<question>.+?)\s*$")
 
 
 @dataclass
@@ -93,11 +95,14 @@ class AgenticChatPipeline:
                 answer_now_context=answer_now_context,
                 stream=stream,
             )
+            final_response, followup_questions = self._extract_followup_questions(final_response)
             result_payload: dict[str, Any] = {
                 "response": final_response,
                 "answer_now": True,
                 "source_trace": trace_meta.get("label", "Answer now"),
             }
+            if followup_questions:
+                result_payload["followup_questions"] = followup_questions
             cs = self._get_cost_summary()
             if cs:
                 result_payload["metadata"] = {"cost_summary": cs}
@@ -127,6 +132,7 @@ class AgenticChatPipeline:
             tool_traces=tool_traces,
             stream=stream,
         )
+        final_response, followup_questions = self._extract_followup_questions(final_response)
 
         all_sources: list[dict[str, Any]] = []
         for trace in tool_traces:
@@ -147,6 +153,8 @@ class AgenticChatPipeline:
             "observation": observation,
             "tool_traces": [asdict(trace) for trace in tool_traces],
         }
+        if followup_questions:
+            result_payload["followup_questions"] = followup_questions
         cs = self._get_cost_summary()
         if cs:
             result_payload["metadata"] = {"cost_summary": cs}
@@ -1269,9 +1277,54 @@ class AgenticChatPipeline:
                 "1. Output only the final user-facing answer.\n"
                 "2. Do not reveal the internal chain, reasoning, or tool orchestration.\n"
                 "3. Naturally integrate evidence or limits surfaced by the tools.\n\n"
+                "4. If the learner still seems confused, partially correct, or unsure, end with a section titled "
+                "'Follow-up questions:' and include 1-3 short numbered questions that help them continue thinking.\n\n"
                 f"Tool context for this turn:\n{tool_list or '- none'}"
             ),
         )
+
+    def _extract_followup_questions(self, response: str) -> tuple[str, list[str]]:
+        text = str(response or "").strip()
+        if not text:
+            return "", []
+
+        headings = {
+            "follow-up questions:",
+            "follow up questions:",
+            "cau hoi tiep theo:",
+            "câu hỏi tiếp theo:",
+            "后续问题:",
+        }
+        lines = text.splitlines()
+        heading_index = -1
+        for index, raw_line in enumerate(lines):
+            normalized = raw_line.strip().lower()
+            if normalized in headings:
+                heading_index = index
+                break
+
+        if heading_index < 0:
+            return text, []
+
+        questions: list[str] = []
+        for raw_line in lines[heading_index + 1 :]:
+            line = raw_line.strip()
+            if not line:
+                if questions:
+                    break
+                continue
+            match = FOLLOWUP_LIST_RE.match(line)
+            if match is None:
+                if questions:
+                    break
+                continue
+            question = match.group("question").strip()
+            if question:
+                questions.append(question)
+            if len(questions) == 3:
+                break
+
+        return text, questions
 
     def _acting_user_prompt(self, context: UnifiedContext, thinking_text: str) -> str:
         return self._text(

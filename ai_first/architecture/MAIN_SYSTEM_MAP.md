@@ -61,7 +61,9 @@ flowchart TD
   Product --> StudentTutor["Student Tutor Workspace"]
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
   StudentTutor --> TutorKBBadges["KB Context Badges in Chat Messages"]
+  StudentTutor --> TutorFollowups["Optional follow-up questions in tutor replies"]
   TutorKBBadges --> SnapshotKBs["Message requestSnapshot.knowledgeBases"]
+  TutorFollowups --> ChatResponse["Agentic chat final response section: Follow-up questions"]
   
   Product --> TeacherDashboard["Teacher Dashboard"]
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
