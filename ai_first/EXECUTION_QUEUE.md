@@ -7,28 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#99 [Docs] T037 Contest screenshot evidence refresh`
-- `#99` refreshed the linked contest screenshot bundle on 2026-04-24, so screenshot evidence is `Current` again on `main`.
+- Latest merged PR: `#101 [Docs] T038 Contest submission package freshness sync`
+- `#101` synced the contest-facing README and submission package to the latest 2026-04-24 evidence state.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active short task: `T038 Contest Submission Package Freshness Sync`
-- Branch: `docs/t038-submission-readiness-sync`
-- Goal: sync the contest-facing README and submission package with the latest 2026-04-24 smoke and screenshot evidence state.
+- Active short task: `T039 Submission Checklist Evidence Alignment`
+- Branch: `docs/t039-submission-checklist-sync`
+- Goal: mark AI-verifiable submission checklist items from current repo evidence and advance control-plane tracking after `T038` merged.
 
 ## Next recommended task
 
-Publish the submission-readiness sync lane, then reassess whether any remaining contest evidence gaps or MVP/runtime gaps still need a new short task.
+Publish the submission-checklist sync lane, then reassess whether any remaining contest-submission gaps are purely human-owned or still need another docs/runtime slice.
 
 ## Status Update (2026-04-24)
 
 **Queue Advance**:
-1. `#99` merged to `main` after all required CI checks passed
-2. Issue `#97` auto-closed with the merge
-3. `T037 Contest Screenshot Evidence Refresh` is now complete on `main`
-4. Opened issue `#100` for `T038 Contest Submission Package Freshness Sync`
-5. The next lane syncs contest-facing entry docs that still point at the older 2026-04-19 evidence state
+1. `#101` merged to `main` after all required CI checks passed
+2. Issue `#100` auto-closed with the merge
+3. `T038 Contest Submission Package Freshness Sync` is now complete on `main`
+4. Opened issue `#102` for `T039 Submission Checklist Evidence Alignment`
+5. The next lane aligns the final submission checklist with AI-verifiable repo evidence and leaves human-only items explicit
 
 ## AI-owned blockers
 
@@ -36,7 +36,7 @@ Publish the submission-readiness sync lane, then reassess whether any remaining 
 
 ## Human-review blockers
 
-- None currently. Command evidence and screenshot evidence are both current on `main`; the remaining gap is submission-facing doc freshness.
+- Human-only submission items remain, including product-description review, IP commitment review, and final package sign-off. `T039` keeps those explicit while marking AI-verifiable items with evidence.
 
 ## Read path
 
