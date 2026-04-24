@@ -7,28 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#84 [MVP] T031 Smart Tutor Follow-Up Questions`
-- `#84` added lightweight follow-up questions in tutor replies and result metadata, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#86 [MVP] T032 Knowledge Pack Versioning System`
+- `#86` added lightweight `current_version` and `version_history` tracking for teacher-pack metadata updates, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#85 [MVP] T032 Knowledge Pack Versioning`
-- Active branch: `pod-a/t032-kb-versioning`
-- Active task packet: `docs/superpowers/tasks/2026-04-24-T032-knowledge-pack-versioning.md`
-- Focus set: `T032` (Knowledge pack versioning)
+- Active issue: `#88 [MVP] T033 Suggested Learning Path Sequencing`
+- Active branch: `pod-a/t033-learning-paths`
+- Active task packet: `docs/superpowers/tasks/2026-04-24-T033-learning-path-sequencing.md`
+- Focus set: `T033` (Suggested learning path sequencing)
 
 ## Next recommended task
 
-Implement `T032` on `pod-a/t032-kb-versioning`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Implement `T033` on `pod-a/t033-learning-paths`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-24)
 
 **Queue Advance**:
-1. `#84` merged to `main` after all required CI checks passed
-2. Issue `#83` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T032 Knowledge Pack Versioning System`
-4. Issue `#85`, branch `pod-a/t032-kb-versioning`, and task packet were created immediately after the merge sync
+1. `#86` merged to `main` after all required CI checks passed
+2. Issue `#85` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T033 Suggested Learning Path Sequencing`
+4. Issue `#88`, branch `pod-a/t033-learning-paths`, and task packet were created immediately after the merge sync
 
 ## AI-owned blockers
 
@@ -72,7 +72,8 @@ Implement `T032` on `pod-a/t032-kb-versioning`, then open a Draft PR with a Merm
 | T029: Marketplace Search | Completed | 3 | NO | Done |
 | T030: Assessment Time | Completed | 2 | NO | Done |
 | T031: Tutor Follow-Up Questions | Completed | 3 | NO | Done |
-| T032: Knowledge Pack Versioning | In Progress | 4 | NO | Now |
+| T032: Knowledge Pack Versioning | Completed | 4 | NO | Done |
+| T033: Suggested Learning Path Sequencing | In Progress | 6 | NO | Now |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 

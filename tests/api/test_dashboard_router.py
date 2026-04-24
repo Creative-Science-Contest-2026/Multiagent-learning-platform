@@ -274,6 +274,62 @@ async def test_student_progress_summarizes_scores_topics_and_streak(
         "assessment-recent",
         "assessment-older",
     ]
+    assert payload["suggested_learning_path"][0]["topic"] == "fractions subtraction"
+    assert payload["suggested_learning_path"][0]["status"] == "review"
+    assert payload["suggested_learning_path"][0]["source"] == "focus_topic"
+
+
+def test_learning_path_builder_includes_kb_objectives_and_skips_mastered(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services import learning_path
+
+    class FakeManager:
+        def get_metadata(self, name: str) -> dict:
+            if name == "fractions-pack":
+                return {
+                    "learning_objectives": [
+                        "Fractions subtraction",
+                        "Fractions addition",
+                    ]
+                }
+            if name == "algebra-pack":
+                return {"learning_objectives": ["Algebra equation"]}
+            return {}
+
+    monkeypatch.setattr(learning_path, "_get_kb_manager", lambda: FakeManager())
+
+    suggestions = learning_path.build_suggested_learning_path(
+        focus_topics=[
+            {
+                "topic": "fractions subtraction",
+                "incorrect_count": 2,
+                "accuracy_percent": 0,
+            }
+        ],
+        mastered_topics=[
+            {
+                "topic": "algebra equation",
+                "correct_count": 2,
+                "accuracy_percent": 100,
+            }
+        ],
+        knowledge_bases=["fractions-pack", "algebra-pack"],
+    )
+
+    assert suggestions == [
+        {
+            "topic": "fractions subtraction",
+            "status": "review",
+            "source": "focus_topic",
+        },
+        {
+            "topic": "Fractions addition",
+            "status": "next",
+            "source": "learning_objective",
+            "knowledge_base": "fractions-pack",
+        },
+    ]
 
 
 @pytest.mark.asyncio

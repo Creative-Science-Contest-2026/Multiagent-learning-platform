@@ -146,6 +146,13 @@ export interface StudentProgressAssessment {
   review_ref?: string | null;
 }
 
+export interface StudentProgressPathStep {
+  topic: string;
+  status: "review" | "next" | string;
+  source: "focus_topic" | "learning_objective" | string;
+  knowledge_base?: string | null;
+}
+
 export interface StudentProgressPoint {
   session_id: string;
   score_percent: number;
@@ -164,6 +171,7 @@ export interface StudentProgressOverview {
   mastered_topics: StudentProgressTopic[];
   score_trend: StudentProgressPoint[];
   recent_assessments: StudentProgressAssessment[];
+  suggested_learning_path: StudentProgressPathStep[];
 }
 
 async function expectJson<T>(response: Response): Promise<T> {
