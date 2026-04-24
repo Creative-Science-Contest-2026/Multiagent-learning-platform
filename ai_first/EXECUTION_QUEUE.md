@@ -7,36 +7,36 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#93 [MVP] T035 Offline Mode for Downloaded Packs`
-- `#93` added a browser-local imported-pack fallback plus offline quiz-result sync queue, then passed all required CI checks before merge.
+- Latest merged PR: `#96 [Docs] T036 Contest smoke and evidence refresh`
+- `#96` refreshed the command-backed contest smoke evidence on 2026-04-24 and correctly marked screenshot evidence as `Stale` pending a new capture pass.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active short task: `T036 Contest Smoke and Evidence Refresh`
-- Branch: `docs/t036-contest-evidence-refresh`
-- Goal: refresh smoke-backed contest validation evidence and mark screenshot freshness honestly after the recent merged UI changes.
+- Active short task: `T037 Contest Screenshot Evidence Refresh`
+- Branch: `docs/t037-contest-screenshot-refresh`
+- Goal: refresh the linked screenshot bundle so contest screenshot evidence can move from `Stale` back to `Current`.
 
 ## Next recommended task
 
-Finish `T036` by publishing the smoke/evidence refresh docs lane, then choose whether the next short task should be screenshot recapture or a new MVP/runtime slice.
+Publish the screenshot-refresh lane, then reassess whether any remaining contest evidence gaps or MVP/runtime gaps still need a new short task.
 
 ## Status Update (2026-04-24)
 
 **Queue Advance**:
-1. `#93` merged to `main` after all required CI checks passed
-2. Issue `#92` auto-closed with the merge
-3. Derived docs short task `T036 Contest Smoke and Evidence Refresh`
-4. Opened issue `#95` and started branch `docs/t036-contest-evidence-refresh`
-5. Re-ran the scripted-reset smoke lane on 2026-04-24
+1. `#96` merged to `main` after all required CI checks passed
+2. Issue `#95` was closed after the merge
+3. `T036 Contest Smoke and Evidence Refresh` is now complete on `main`
+4. Opened issue `#97` for `T037 Contest Screenshot Evidence Refresh`
+5. The next lane is screenshot recapture because screenshot evidence remains the explicit stale item
 
 ## AI-owned blockers
 
-- None currently. The scripted-reset smoke lane passed on 2026-04-24 with demo-safe reset output, backend startup through the CLI server path, frontend production build, Knowledge Pack metadata, assessment session evidence, tutor session evidence, and dashboard activity.
+- None currently. The command-backed smoke lane passed on 2026-04-24 and is already merged into `main`.
 
 ## Human-review blockers
 
-- Screenshot freshness is now `Stale` until a human recapture refreshes the linked UI bundle. This does not block command-backed smoke evidence, but it does block claiming the screenshot bundle is current.
+- Screenshot freshness is `Stale` until a fresh recapture refreshes the linked UI bundle. This is the active short-task target for `T037`.
 
 ## Read path
 

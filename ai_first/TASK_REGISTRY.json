@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "last_updated": "2026-04-24T16:55:00Z",
+    "last_updated": "2026-04-24T17:05:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 36
+    "total_tasks": 37
   },
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 27,
+      "count": 28,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -36,14 +36,15 @@
         "T032_KNOWLEDGE_PACK_VERSIONING",
         "T033_LEARNING_PATH_SEQUENCING",
         "T034_BATCH_ASSESSMENT_IMPORT",
-        "T035_OFFLINE_MODE_SUPPORT"
+        "T035_OFFLINE_MODE_SUPPORT",
+        "T036_CONTEST_EVIDENCE_REFRESH"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T036_CONTEST_EVIDENCE_REFRESH"
+        "T037_CONTEST_SCREENSHOT_REFRESH"
       ]
     },
     "blocked": {
@@ -533,8 +534,26 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["T035 merged to main", "scripts/contest/reset_demo_data.py"],
+      "status": "completed",
+      "notes": "Merged to main through PR #96. Command-backed contest smoke evidence is refreshed to 2026-04-24 and screenshot evidence is explicitly marked stale pending recapture."
+    },
+    {
+      "id": "T037_CONTEST_SCREENSHOT_REFRESH",
+      "category": "Low",
+      "priority": 29,
+      "title": "Contest Screenshot Evidence Refresh",
+      "description": "Refresh the linked contest screenshot bundle so screenshot evidence can move from stale back to current after the recent UI merges.",
+      "scope": {
+        "screenshots": "docs/contest/screenshots/*",
+        "docs": "docs/contest/EVIDENCE_CHECKLIST.md, docs/contest/VALIDATION_REPORT.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
+      },
+      "affected_features": ["Contest Evidence", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["T036 merged to main", "Fresh screenshot capture path"],
       "status": "in-progress",
-      "notes": "Issue #95 opened and task packet created at docs/superpowers/tasks/2026-04-24-T036-contest-evidence-refresh.md. Active branch: docs/t036-contest-evidence-refresh."
+      "notes": "Issue #97 opened and task packet created at docs/superpowers/tasks/2026-04-24-T037-contest-screenshot-refresh.md. Active branch: docs/t037-contest-screenshot-refresh."
     }
   ],
   "github_issues_template": {
@@ -630,7 +649,7 @@
     },
     "MVP_PHASE_3": {
       "title": "Medium Priority & Polish (Weeks 5+)",
-      "tasks": ["T024", "T025", "T026", "T027", "T029", "T030", "T031", "T032", "T033", "T034", "T035", "T036"],
+      "tasks": ["T024", "T025", "T026", "T027", "T029", "T030", "T031", "T032", "T033", "T034", "T035", "T036", "T037"],
       "target_date": "2026-06-01"
     }
   }
