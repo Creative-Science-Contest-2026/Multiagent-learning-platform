@@ -40,10 +40,8 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "T035_OFFLINE_MODE_SUPPORT"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -515,8 +513,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["Service Worker", "IndexedDB"],
-      "status": "in-progress",
-      "notes": "Issue #92 mirrors the active lane. Task packet created at docs/superpowers/tasks/2026-04-24-T035-offline-mode-support.md. Active branch: pod-a/t035-offline-mode."
+      "status": "completed",
+      "notes": "Merged to main through PR #93. Imported packs now have a browser-local offline manifest fallback and loaded quiz results can queue sync until the browser reconnects."
     }
   ],
   "github_issues_template": {
