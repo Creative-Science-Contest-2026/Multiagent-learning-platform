@@ -23,7 +23,7 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 | Demo-safe reset command | Ready | [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) |
 | Smoke procedure | Ready | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) |
 | Contest rules summary | Ready | [`ai_first/competition/vnexpress-rules-summary.md`](../../ai_first/competition/vnexpress-rules-summary.md) |
-| Final checklist | In review | [`ai_first/competition/submission-checklist.md`](../../ai_first/competition/submission-checklist.md) |
+| Final checklist | Partially verified | [`ai_first/competition/submission-checklist.md`](../../ai_first/competition/submission-checklist.md) |
 | Optional video | Deferred | Record only if final submission requires a video artifact. |
 
 ## Latest Validation
@@ -48,6 +48,8 @@ Before final submission, a human should review:
 - screenshots for clarity and absence of private data;
 - known limitations and environment notes in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md);
 - Apache 2.0 license and HKUDS/DeepTutor attribution.
+
+AI-verifiable checklist items are tracked in [`ai_first/competition/submission-checklist.md`](../../ai_first/competition/submission-checklist.md). Human-only items stay unchecked until a final manual review happens.
 
 ## Known Limitations
 

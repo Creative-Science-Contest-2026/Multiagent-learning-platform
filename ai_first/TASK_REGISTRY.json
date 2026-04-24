@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "last_updated": "2026-04-24T18:35:00Z",
+    "last_updated": "2026-04-25T00:20:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 38
+    "total_tasks": 39
   },
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 29,
+      "count": 30,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -38,14 +38,15 @@
         "T034_BATCH_ASSESSMENT_IMPORT",
         "T035_OFFLINE_MODE_SUPPORT",
         "T036_CONTEST_EVIDENCE_REFRESH",
-        "T037_CONTEST_SCREENSHOT_REFRESH"
+        "T037_CONTEST_SCREENSHOT_REFRESH",
+        "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC"
+        "T039_SUBMISSION_CHECKLIST_ALIGNMENT"
       ]
     },
     "blocked": {
@@ -570,8 +571,25 @@
       "complexity": "Low",
       "estimated_hours": 1.5,
       "dependencies": ["T037 merged to main"],
+      "status": "completed",
+      "notes": "Merged to main through PR #101. Contest-facing README and submission package now reflect the latest 2026-04-24 smoke and screenshot evidence state."
+    },
+    {
+      "id": "T039_SUBMISSION_CHECKLIST_ALIGNMENT",
+      "category": "Low",
+      "priority": 31,
+      "title": "Submission Checklist Evidence Alignment",
+      "description": "Align the final contest submission checklist with AI-verifiable repo evidence, while keeping human-only review items explicitly unchecked.",
+      "scope": {
+        "docs": "ai_first/competition/submission-checklist.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
+      },
+      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.5,
+      "dependencies": ["T038 merged to main"],
       "status": "in-progress",
-      "notes": "Issue #100 opened for docs freshness sync. Active branch: docs/t038-submission-readiness-sync."
+      "notes": "Issue #102 opened for checklist evidence alignment. Active branch: docs/t039-submission-checklist-sync."
     }
   ],
   "github_issues_template": {
