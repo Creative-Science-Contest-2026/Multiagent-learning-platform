@@ -7,28 +7,27 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#91 [MVP] T034 Batch Import Multiple Packs`
-- `#91` added batch marketplace import through a shared import helper plus multi-select UI, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#93 [MVP] T035 Offline Mode for Downloaded Packs`
+- `#93` added a browser-local imported-pack fallback plus offline quiz-result sync queue, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#92 [MVP] T035 Offline Mode for Downloaded Packs`
-- Active branch: `pod-a/t035-offline-mode`
-- Active task packet: `docs/superpowers/tasks/2026-04-24-T035-offline-mode-support.md`
-- Focus set: `T035` (Offline mode for downloaded packs)
+- No strict-order registry task is currently active.
+- The last completed task was `T035 Offline Mode for Downloaded Packs`.
+- Next lane should be derived from smoke gaps, evidence freshness, or the MVP goal.
 
 ## Next recommended task
 
-Implement `T035` on `pod-a/t035-offline-mode`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Run smoke/evidence freshness checks or derive the next short task from the MVP goal, then open a new task packet and focused branch before implementation.
 
 ## Status Update (2026-04-24)
 
 **Queue Advance**:
-1. `#91` merged to `main` after all required CI checks passed
-2. Issue `#90` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T035 Offline Mode for Downloaded Packs`
-4. Issue `#92`, branch `pod-a/t035-offline-mode`, and task packet were created immediately after the merge sync
+1. `#93` merged to `main` after all required CI checks passed
+2. Issue `#92` auto-closed with the merge
+3. The strict-order registry queue is now empty
+4. Next work should be chosen from smoke gaps, evidence freshness, or newly created MVP tasks
 
 ## AI-owned blockers
 
@@ -75,7 +74,7 @@ Implement `T035` on `pod-a/t035-offline-mode`, then open a Draft PR with a Merma
 | T032: Knowledge Pack Versioning | Completed | 4 | NO | Done |
 | T033: Suggested Learning Path Sequencing | Completed | 6 | NO | Done |
 | T034: Batch Import Multiple Packs | Completed | 2 | NO | Done |
-| T035: Offline Mode for Downloaded Packs | In Progress | 6 | NO | Now |
+| T035: Offline Mode for Downloaded Packs | Completed | 6 | NO | Done |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 
