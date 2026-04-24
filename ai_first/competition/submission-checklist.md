@@ -21,7 +21,7 @@
 
 - [x] Apache 2.0 license retained.
 - [x] HKUDS/DeepTutor credit retained.
-- [ ] Fork modifications described.
+- [x] Fork modifications described.
 - [x] No secrets committed.
 - [x] Uploaded sample data is licensed or self-created.
 
@@ -39,3 +39,4 @@
 - No secrets committed: tracked-file grep on 2026-04-25 found only test/example placeholders, not live credentials or private keys.
 - Uploaded sample data is licensed or self-created: contest docs require demo-safe local data only via `docs/contest/DEMO_DATA_RESET.md`.
 - Product description drafted: see `ai_first/competition/product-description.md`.
+- Fork modifications described: see `ai_first/competition/fork-modifications.md`.

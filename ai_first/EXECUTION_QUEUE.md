@@ -1,34 +1,34 @@
 # Execution Queue
 
-Last updated: 2026-04-24
+Last updated: 2026-04-25
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#103 [Docs] T039 Submission checklist evidence alignment`
-- `#103` aligned the final submission checklist with AI-verifiable repo evidence and kept human-only review items explicit.
+- Latest merged PR: `#105 [Docs] T040 Contest product description draft`
+- `#105` added the reusable contest product description draft and narrowed the remaining AI-doable submission gap to the fork-modifications note.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active short task: `T040 Contest Product Description Draft`
-- Branch: `docs/t040-product-description`
-- Goal: draft the contest product description so the remaining submission checklist gaps narrow to human approval rather than missing submission content.
+- Active short task: `T041 Contest Fork Modifications Note`
+- Branch: `docs/t041-fork-modifications`
+- Goal: document how this fork extends HKUDS/DeepTutor for the contest MVP so the final AI-doable submission checklist item is backed by a repo note.
 
 ## Next recommended task
 
-Publish the product-description lane, then reassess whether the remaining contest-submission gaps are now purely human-owned.
+Publish the fork-modifications lane, then confirm the remaining submission checklist items are human-owned only.
 
-## Status Update (2026-04-24)
+## Status Update (2026-04-25)
 
 **Queue Advance**:
-1. `#103` merged to `main` after all required CI checks passed
-2. Issue `#102` auto-closed with the merge
-3. `T039 Submission Checklist Evidence Alignment` is now complete on `main`
-4. Opened issue `#104` for `T040 Contest Product Description Draft`
-5. The next lane drafts the missing product description so submission readiness is blocked mostly by human approval items only
+1. `#105` merged to `main` after all required CI checks passed
+2. Issue `#104` auto-closed with the merge
+3. `T040 Contest Product Description Draft` is now complete on `main`
+4. Opened issue `#106` for `T041 Contest Fork Modifications Note`
+5. The next lane documents contest-specific fork changes so only human-review submission items remain unchecked
 
 ## AI-owned blockers
 
@@ -36,7 +36,7 @@ Publish the product-description lane, then reassess whether the remaining contes
 
 ## Human-review blockers
 
-- Human-only submission items still remain, including product-description review, IP commitment review, and final package sign-off. `T040` addresses the missing draft, but final approval stays human-owned.
+- Human-only submission items still remain, including IP commitment review and final package sign-off. `T041` is the last clearly AI-doable checklist alignment step.
 
 ## Read path
 
