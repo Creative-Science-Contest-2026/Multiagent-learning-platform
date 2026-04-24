@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "last_updated": "2026-04-25T00:20:00Z",
+    "last_updated": "2026-04-25T00:45:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 39
+    "total_tasks": 40
   },
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 30,
+      "count": 31,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -39,14 +39,15 @@
         "T035_OFFLINE_MODE_SUPPORT",
         "T036_CONTEST_EVIDENCE_REFRESH",
         "T037_CONTEST_SCREENSHOT_REFRESH",
-        "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC"
+        "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC",
+        "T039_SUBMISSION_CHECKLIST_ALIGNMENT"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T039_SUBMISSION_CHECKLIST_ALIGNMENT"
+        "T040_CONTEST_PRODUCT_DESCRIPTION"
       ]
     },
     "blocked": {
@@ -588,8 +589,25 @@
       "complexity": "Low",
       "estimated_hours": 1.5,
       "dependencies": ["T038 merged to main"],
+      "status": "completed",
+      "notes": "Merged to main through PR #103. The final submission checklist now distinguishes AI-verifiable items from human-only review items."
+    },
+    {
+      "id": "T040_CONTEST_PRODUCT_DESCRIPTION",
+      "category": "Low",
+      "priority": 32,
+      "title": "Contest Product Description Draft",
+      "description": "Draft the contest product description from current MVP evidence, pitch notes, and submission materials so the remaining submission checklist gaps narrow to human approval rather than missing text.",
+      "scope": {
+        "docs": "ai_first/competition/product-description.md, ai_first/competition/submission-checklist.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
+      },
+      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.5,
+      "dependencies": ["T039 merged to main", "ai_first/competition/pitch-notes.md"],
       "status": "in-progress",
-      "notes": "Issue #102 opened for checklist evidence alignment. Active branch: docs/t039-submission-checklist-sync."
+      "notes": "Issue #104 opened for contest product description drafting. Active branch: docs/t040-product-description."
     }
   ],
   "github_issues_template": {
