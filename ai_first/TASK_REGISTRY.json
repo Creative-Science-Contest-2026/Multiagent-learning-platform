@@ -363,8 +363,8 @@
       "complexity": "Low",
       "estimated_hours": 1,
       "dependencies": ["Tailwind CSS"],
-      "status": "in-progress",
-      "notes": "Issue #75 opened and task packet created at docs/superpowers/tasks/2026-04-23-T026-marketplace-mobile.md. Active branch: pod-a/t026-marketplace-mobile."
+      "status": "completed",
+      "notes": "Merged to main through PR #76. Mobile/tablet marketplace layout now has safer filters, card spacing, CTA layout, and preview modal scrolling."
     },
     {
       "id": "T027_ANALYTICS_DASHBOARD",
@@ -380,8 +380,8 @@
       "complexity": "High",
       "estimated_hours": 8,
       "dependencies": ["Analytics Service"],
-      "status": "not-started",
-      "notes": "Charts: student participation over time, question difficulty heatmap, performance distribution"
+      "status": "in-progress",
+      "notes": "Issue #77 opened and task packet created at docs/superpowers/tasks/2026-04-23-T027-analytics-dashboard.md. Active branch: pod-a/t027-analytics-dashboard."
     },
     {
       "id": "T028_API_RATE_LIMITING",

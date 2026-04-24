@@ -337,6 +337,77 @@ async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_overview_includes_teacher_analytics_signals(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="assessment-latest",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.add_message(
+        "assessment-latest",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4)\n"
+        "2. [q2] Q: Solve fractions addition 1/2 + 1/4 -> Answered: 3/4 (Correct)\n"
+        "Score: 1/2 (50%)",
+        capability="deep_question",
+    )
+    _set_session_timestamp(store, "assessment-latest", 1_710_000_000)
+
+    await _seed_session(
+        store,
+        session_id="assessment-older",
+        capability="deep_question",
+        message="Generate a quiz on algebra",
+        knowledge_bases=["algebra-pack"],
+    )
+    await store.add_message(
+        "assessment-older",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve algebra equation x + 2 = 5 -> Answered: 3 (Correct)\n"
+        "2. [q2] Q: Solve algebra equation 2x = 10 -> Answered: 5 (Correct)\n"
+        "Score: 2/2 (100%)",
+        capability="deep_question",
+    )
+    _set_session_timestamp(store, "assessment-older", 1_709_913_600)
+
+    await _seed_session(
+        store,
+        session_id="tutor-recent",
+        capability="chat",
+        message="Tutor the student on fraction mistakes",
+        knowledge_bases=["fractions-pack"],
+    )
+    _set_session_timestamp(store, "tutor-recent", 1_709_827_200)
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/overview")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["analytics"]["engagement"] == {
+        "active_days": 3,
+        "streak_days": 3,
+        "knowledge_packs_used": 2,
+    }
+    assert payload["analytics"]["assessment_trend"] == {
+        "assessments_completed": 2,
+        "average_score_percent": 75,
+        "latest_score_percent": 50,
+        "score_delta": -50,
+    }
+    assert payload["analytics"]["learning_signals"]["focus_topics"][0]["topic"] == "fractions subtraction"
+    assert payload["analytics"]["learning_signals"]["mastered_topics"][0]["topic"] == "algebra equation"
+
+
+@pytest.mark.asyncio
 async def test_dashboard_recent_tutoring_activity_includes_replay_ref(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

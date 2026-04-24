@@ -118,6 +118,56 @@ def _summarize_topic_mastery(
     return focus_topics, mastered_topics
 
 
+def _build_dashboard_analytics(
+    activities: list[dict[str, Any]],
+    assessment_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    focus_topics, mastered_topics = _summarize_topic_mastery(assessment_rows)
+    unique_knowledge_packs = sorted(
+        {
+            kb_name
+            for activity in activities
+            for kb_name in activity.get("knowledge_bases", [])
+        }
+    )
+    average_score_percent = round(
+        sum(int(row["summary"]["score_percent"]) for row in assessment_rows) / len(assessment_rows)
+    ) if assessment_rows else 0
+    ordered_assessments = sorted(assessment_rows, key=lambda row: row["timestamp"])
+    latest_score_percent = (
+        int(ordered_assessments[-1]["summary"]["score_percent"]) if ordered_assessments else 0
+    )
+    previous_score_percent = (
+        int(ordered_assessments[-2]["summary"]["score_percent"])
+        if len(ordered_assessments) > 1
+        else latest_score_percent
+    )
+
+    return {
+        "engagement": {
+            "active_days": len(
+                {
+                    day
+                    for activity in activities
+                    if (day := _timestamp_to_day(activity.get("timestamp"))) is not None
+                }
+            ),
+            "streak_days": _learning_streak_days(activities),
+            "knowledge_packs_used": len(unique_knowledge_packs),
+        },
+        "assessment_trend": {
+            "assessments_completed": len(assessment_rows),
+            "average_score_percent": average_score_percent,
+            "latest_score_percent": latest_score_percent,
+            "score_delta": latest_score_percent - previous_score_percent,
+        },
+        "learning_signals": {
+            "focus_topics": focus_topics,
+            "mastered_topics": mastered_topics,
+        },
+    }
+
+
 def _learning_streak_days(activities: list[dict[str, Any]]) -> int:
     days = []
     seen_days: set[int] = set()
@@ -286,6 +336,22 @@ async def get_dashboard_overview(
         for kb_name in activity["knowledge_bases"]:
             knowledge_pack_counts[kb_name] = knowledge_pack_counts.get(kb_name, 0) + 1
 
+    assessment_rows = [
+        {
+            "session_id": activity["id"],
+            "title": activity["title"],
+            "timestamp": activity["timestamp"],
+            "knowledge_bases": activity["knowledge_bases"],
+            "summary": activity["assessment_summary"],
+            "review_ref": activity["review_ref"],
+            "assessment_results": activity.get("assessment_summary") and (
+                extract_assessment_review(await store.get_session_with_messages(activity["id"])) or {}
+            ).get("results", []),
+        }
+        for activity in activities
+        if activity["type"] == "assessment" and activity.get("assessment_summary")
+    ]
+
     return {
         "totals": {
             "total_sessions": len(activities),
@@ -302,6 +368,7 @@ async def get_dashboard_overview(
                 key=lambda item: (-item[1], item[0]),
             )
         ],
+        "analytics": _build_dashboard_analytics(activities, assessment_rows),
         "recent_activity": activities[:limit],
     }
 
