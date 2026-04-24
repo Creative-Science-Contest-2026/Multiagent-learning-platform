@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-24T16:45:00Z",
+    "last_updated": "2026-04-24T16:28:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 35
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 24,
+      "count": 25,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -33,14 +33,15 @@
         "T029_MARKETPLACE_SEARCH_FULLTEXT",
         "T030_ASSESSMENT_TIME_TRACKING",
         "T031_TUTOR_FOLLOW_UP_PROMPTS",
-        "T032_KNOWLEDGE_PACK_VERSIONING"
+        "T032_KNOWLEDGE_PACK_VERSIONING",
+        "T033_LEARNING_PATH_SEQUENCING"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "T033_LEARNING_PATH_SEQUENCING"
+        "T034_BATCH_ASSESSMENT_IMPORT"
       ]
     },
     "blocked": {
@@ -50,9 +51,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 2,
+      "count": 1,
       "tasks": [
-        "T034_BATCH_ASSESSMENT_IMPORT",
         "T035_OFFLINE_MODE_SUPPORT"
       ]
     }
@@ -482,8 +482,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["Knowledge Graph", "Prerequisite Metadata"],
-      "status": "in-progress",
-      "notes": "Issue #88 mirrors the active lane. Task packet created at docs/superpowers/tasks/2026-04-24-T033-learning-path-sequencing.md. Active branch: pod-a/t033-learning-paths."
+      "status": "completed",
+      "notes": "Merged to main through PR #89. Student progress now exposes a deterministic suggested_learning_path sequence built from weak topics and knowledge-pack learning objectives."
     },
     {
       "id": "T034_BATCH_ASSESSMENT_IMPORT",
@@ -499,8 +499,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["Import Implementation"],
-      "status": "not-started",
-      "notes": "Add checkbox to pack cards, show selected count, batch import button"
+      "status": "in-progress",
+      "notes": "Issue #90 mirrors the active lane. Task packet created at docs/superpowers/tasks/2026-04-24-T034-batch-import-multiple-packs.md. Active branch: pod-a/t034-batch-import."
     },
     {
       "id": "T035_OFFLINE_MODE_SUPPORT",

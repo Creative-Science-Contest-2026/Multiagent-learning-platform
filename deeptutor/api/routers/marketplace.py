@@ -19,6 +19,10 @@ class MarketplaceReviewRequest(BaseModel):
     comment: str | None = Field(default=None, max_length=400)
 
 
+class MarketplaceBatchImportRequest(BaseModel):
+    pack_names: list[str] = Field(min_length=1, max_length=20)
+
+
 def _pack_reviews(source_cfg: dict[str, Any]) -> list[dict[str, Any]]:
     raw_reviews = source_cfg.get("marketplace_reviews", [])
     if not isinstance(raw_reviews, list):
@@ -158,6 +162,71 @@ def _preview_document_summary(pack_dir: Path) -> tuple[int, list[str]]:
         if path.is_file()
     )
     return len(documents), documents[:3]
+
+
+def _import_marketplace_pack_impl(pack_name: str) -> dict[str, Any]:
+    manager = get_kb_manager()
+
+    source_info = next(
+        (kb for kb in _list_marketplace_candidates() if kb.get("name") == pack_name),
+        None,
+    )
+    if not source_info:
+        raise HTTPException(status_code=404, detail=f"Knowledge pack '{pack_name}' not found")
+
+    source_path = manager.base_dir / pack_name
+    if not source_path.exists() or not source_path.is_dir():
+        raise HTTPException(status_code=404, detail=f"Knowledge pack directory '{pack_name}' not found")
+
+    imported_name = f"{pack_name}__imported"
+    dest_path = manager.base_dir / imported_name
+    import_timestamp = datetime.utcnow().isoformat()
+
+    if dest_path.exists():
+        return {
+            "success": True,
+            "message": "Pack already available",
+            "pack": {
+                "name": imported_name,
+                "subject": source_info.get("subject"),
+                "grade": source_info.get("grade"),
+                "owner": source_info.get("owner"),
+                "import_date": import_timestamp,
+                "session_count": source_info.get("session_count", 0),
+            },
+        }
+
+    shutil.copytree(source_path, dest_path)
+
+    manager.config = manager._load_config()
+    source_cfg = manager.config.get("knowledge_bases", {}).get(pack_name, {})
+    imported_cfg = dict(source_cfg)
+    imported_cfg["path"] = imported_name
+    imported_cfg["description"] = source_cfg.get("description") or f"Imported from {pack_name}"
+    imported_cfg["owner"] = source_cfg.get("owner") or source_info.get("owner")
+    imported_cfg["sharing_status"] = "private"
+    imported_cfg["updated_at"] = import_timestamp
+    imported_cfg["created_at"] = source_cfg.get("created_at") or import_timestamp
+    imported_cfg["imported_from"] = pack_name
+    imported_cfg["import_date"] = import_timestamp
+
+    if "knowledge_bases" not in manager.config:
+        manager.config["knowledge_bases"] = {}
+    manager.config["knowledge_bases"][imported_name] = imported_cfg
+    manager._save_config()
+
+    return {
+        "success": True,
+        "message": f"Knowledge pack '{pack_name}' imported successfully as '{imported_name}'",
+        "pack": {
+            "name": imported_name,
+            "subject": source_info.get("subject"),
+            "grade": source_info.get("grade"),
+            "owner": source_info.get("owner"),
+            "import_date": import_timestamp,
+            "session_count": source_info.get("session_count", 0),
+        },
+    }
 
 
 @router.get("/list")
@@ -324,72 +393,43 @@ async def import_marketplace_pack(pack_name: str):
     Updates metadata with import_date and imported_from fields.
     """
     try:
-        manager = get_kb_manager()
-
-        source_info = None
-        for kb in _list_marketplace_candidates():
-            if kb.get("name") == pack_name:
-                source_info = kb
-                break
-
-        if not source_info:
-            raise HTTPException(status_code=404, detail=f"Knowledge pack '{pack_name}' not found")
-
-        source_path = manager.base_dir / pack_name
-        if not source_path.exists() or not source_path.is_dir():
-            raise HTTPException(status_code=404, detail=f"Knowledge pack directory '{pack_name}' not found")
-
-        imported_name = f"{pack_name}__imported"
-        dest_path = manager.base_dir / imported_name
-
-        if dest_path.exists():
-            return {
-                "success": True,
-                "message": "Pack already available",
-                "pack": {
-                    "name": imported_name,
-                    "subject": source_info.get("subject"),
-                    "grade": source_info.get("grade"),
-                    "owner": source_info.get("owner"),
-                    "import_date": datetime.utcnow().isoformat(),
-                },
-            }
-
-        shutil.copytree(source_path, dest_path)
-
-        import_timestamp = datetime.utcnow().isoformat()
-
-        manager.config = manager._load_config()  # keep manager in sync before updating registry
-        source_cfg = manager.config.get("knowledge_bases", {}).get(pack_name, {})
-        imported_cfg = dict(source_cfg)
-        imported_cfg["path"] = imported_name
-        imported_cfg["description"] = source_cfg.get("description") or f"Imported from {pack_name}"
-        imported_cfg["owner"] = source_cfg.get("owner") or source_info.get("owner")
-        imported_cfg["sharing_status"] = "private"
-        imported_cfg["updated_at"] = import_timestamp
-        imported_cfg["created_at"] = source_cfg.get("created_at") or import_timestamp
-        imported_cfg["imported_from"] = pack_name
-        imported_cfg["import_date"] = import_timestamp
-
-        if "knowledge_bases" not in manager.config:
-            manager.config["knowledge_bases"] = {}
-        manager.config["knowledge_bases"][imported_name] = imported_cfg
-        manager._save_config()
-
-        return {
-            "success": True,
-            "message": f"Knowledge pack '{pack_name}' imported successfully as '{imported_name}'",
-            "pack": {
-                "name": imported_name,
-                "subject": source_info.get("subject"),
-                "grade": source_info.get("grade"),
-                "owner": source_info.get("owner"),
-                "import_date": import_timestamp,
-                "session_count": source_info.get("session_count", 0),
-            },
-        }
-    
+        return _import_marketplace_pack_impl(pack_name)
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
+
+
+@router.post("/import-batch")
+async def import_marketplace_packs_batch(payload: MarketplaceBatchImportRequest):
+    results: list[dict[str, Any]] = []
+
+    for pack_name in payload.pack_names:
+        normalized_name = pack_name.strip()
+        if not normalized_name:
+            continue
+        try:
+            result = _import_marketplace_pack_impl(normalized_name)
+            results.append(
+                {
+                    "source_pack": normalized_name,
+                    **result,
+                }
+            )
+        except HTTPException as exc:
+            results.append(
+                {
+                    "source_pack": normalized_name,
+                    "success": False,
+                    "message": str(exc.detail),
+                    "pack": None,
+                }
+            )
+
+    imported = sum(1 for row in results if row.get("success"))
+    return {
+        "success": imported == len(results),
+        "requested": len(payload.pack_names),
+        "imported": imported,
+        "results": results,
+    }

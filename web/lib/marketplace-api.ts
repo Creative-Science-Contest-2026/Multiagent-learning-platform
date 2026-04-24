@@ -255,6 +255,20 @@ export interface ImportPackResult {
   };
 }
 
+export interface BatchImportPackResult {
+  source_pack: string;
+  success: boolean;
+  message: string;
+  pack: ImportPackResult["pack"] | null;
+}
+
+export interface BatchImportPacksResult {
+  success: boolean;
+  requested: number;
+  imported: number;
+  results: BatchImportPackResult[];
+}
+
 export interface SubmitMarketplaceReviewRequest {
   reviewer: string;
   rating: number;
@@ -289,6 +303,33 @@ export async function importMarketplacePack(
   }
 
   const result = await response.json();
+  invalidateMarketplaceListCache();
+  return result;
+}
+
+export async function importMarketplacePacks(
+  packNames: string[],
+): Promise<BatchImportPacksResult> {
+  const response = await fetch(
+    apiUrl("/api/v1/marketplace/import-batch"),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pack_names: packNames }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    try {
+      const error = JSON.parse(errorBody);
+      throw new Error(error.detail || `Failed to import packs: ${response.status}`);
+    } catch {
+      throw new Error(`Failed to import packs: ${response.status} ${response.statusText}`);
+    }
+  }
+
+  const result = (await response.json()) as BatchImportPacksResult;
   invalidateMarketplaceListCache();
   return result;
 }

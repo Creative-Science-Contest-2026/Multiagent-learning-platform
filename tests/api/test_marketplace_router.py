@@ -119,6 +119,44 @@ def test_marketplace_import_copies_pack_and_registers_new_entry(monkeypatch, tmp
     assert (imported_path / "rag_storage").exists()
 
 
+def test_marketplace_batch_import_returns_per_pack_results(monkeypatch, tmp_path: Path) -> None:
+    client, marketplace = _build_app(monkeypatch, tmp_path)
+
+    second_pack = tmp_path / "science-pack"
+    (second_pack / "raw").mkdir(parents=True)
+    (second_pack / "rag_storage").mkdir(parents=True)
+    (second_pack / "raw" / "cells.md").write_text("Cells lesson", encoding="utf-8")
+
+    manager = marketplace.get_kb_manager()
+    manager.config["knowledge_bases"]["science-pack"] = {
+        "path": "science-pack",
+        "description": "Science pack",
+        "sharing_status": "public",
+        "subject": "Science",
+        "grade": "7",
+        "curriculum": "National",
+        "learning_objectives": ["Cells"],
+        "owner": "Teacher Z",
+        "created_at": "2026-04-21T00:00:00",
+        "updated_at": "2026-04-21T00:00:00",
+    }
+
+    response = client.post(
+        "/api/v1/marketplace/import-batch",
+        json={"pack_names": ["shared-pack", "science-pack"]},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["requested"] == 2
+    assert payload["imported"] == 2
+    assert [row["source_pack"] for row in payload["results"]] == ["shared-pack", "science-pack"]
+    assert all(row["success"] is True for row in payload["results"])
+    assert (tmp_path / "shared-pack__imported").exists()
+    assert (tmp_path / "science-pack__imported").exists()
+
+
 def test_marketplace_preview_returns_compact_pack_summary(monkeypatch, tmp_path: Path) -> None:
     client, _ = _build_app(monkeypatch, tmp_path)
 
