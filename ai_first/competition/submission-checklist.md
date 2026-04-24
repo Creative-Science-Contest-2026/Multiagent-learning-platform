@@ -27,7 +27,7 @@
 
 ## Submission
 
-- [ ] Product description drafted.
+- [x] Product description drafted.
 - [x] Technical requirements drafted.
 - [ ] IP commitment reviewed.
 - [ ] Final package reviewed by humans.
@@ -38,3 +38,4 @@
 - HKUDS/DeepTutor credit retained: upstream credit remains visible in `README.md` and `AGENTS.md`.
 - No secrets committed: tracked-file grep on 2026-04-25 found only test/example placeholders, not live credentials or private keys.
 - Uploaded sample data is licensed or self-created: contest docs require demo-safe local data only via `docs/contest/DEMO_DATA_RESET.md`.
+- Product description drafted: see `ai_first/competition/product-description.md`.
