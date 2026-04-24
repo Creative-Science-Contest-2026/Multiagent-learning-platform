@@ -380,8 +380,8 @@
       "complexity": "High",
       "estimated_hours": 8,
       "dependencies": ["Analytics Service"],
-      "status": "in-progress",
-      "notes": "Issue #77 opened and task packet created at docs/superpowers/tasks/2026-04-23-T027-analytics-dashboard.md. Active branch: pod-a/t027-analytics-dashboard."
+      "status": "completed",
+      "notes": "Merged to main through PR #78. Dashboard overview now includes teacher-facing engagement, assessment trend, and learning signal analytics."
     },
     {
       "id": "T028_API_RATE_LIMITING",
@@ -414,8 +414,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Search Service"],
-      "status": "not-started",
-      "notes": "Search in pack metadata and first 3 questions/objectives, case-insensitive match"
+      "status": "in-progress",
+      "notes": "Issue #79 opened and task packet created at docs/superpowers/tasks/2026-04-24-T029-marketplace-search.md. Active branch: pod-a/t029-marketplace-search."
     },
     {
       "id": "T030_ASSESSMENT_TIME_TRACKING",
