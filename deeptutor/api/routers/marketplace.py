@@ -63,6 +63,7 @@ def _list_marketplace_candidates() -> list[dict]:
                     "curriculum": metadata.get("curriculum"),
                     "learning_objectives": metadata.get("learning_objectives", []),
                     "owner": metadata.get("owner"),
+                    "description": source_cfg.get("description"),
                     "sharing_status": sharing_status,
                     "session_count": info.get("statistics", {}).get("content_lists", 0),
                     "status": info.get("status", "ready"),
@@ -76,6 +77,24 @@ def _list_marketplace_candidates() -> list[dict]:
             continue
 
     return items
+
+
+def _matches_marketplace_search(pack: dict[str, Any], search: str | None) -> bool:
+    needle = str(search or "").strip().lower()
+    if not needle:
+        return True
+
+    haystack_parts = [
+        str(pack.get("name") or ""),
+        str(pack.get("subject") or ""),
+        str(pack.get("grade") or ""),
+        str(pack.get("curriculum") or ""),
+        str(pack.get("owner") or ""),
+        str(pack.get("description") or ""),
+        " ".join(str(item or "") for item in pack.get("learning_objectives") or []),
+    ]
+    haystack = " ".join(part for part in haystack_parts if part).lower()
+    return needle in haystack
 
 
 def _sort_marketplace_candidates(items: list[dict], sort_by: str | None) -> list[dict]:
@@ -146,6 +165,7 @@ async def list_marketplace_packs(
     sharing_status: str | None = Query(None, description="Filter by sharing_status: public, team, or None for all"),
     subject: str | None = Query(None, description="Filter by subject"),
     owner: str | None = Query(None, description="Filter by owner"),
+    search: str | None = Query(None, description="Case-insensitive metadata search"),
     sort_by: str | None = Query(
         None,
         description="Sort packs by popularity, recent, rating, or most_objectives",
@@ -179,6 +199,9 @@ async def list_marketplace_packs(
                 for kb in all_kbs
                 if (kb.get("owner") or "").lower() == needle
             ]
+
+        if search:
+            all_kbs = [kb for kb in all_kbs if _matches_marketplace_search(kb, search)]
 
         all_kbs = _sort_marketplace_candidates(all_kbs, sort_by)
 

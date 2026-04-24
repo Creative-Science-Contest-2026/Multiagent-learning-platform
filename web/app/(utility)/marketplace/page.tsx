@@ -58,22 +58,25 @@ export default function MarketplacePage() {
 
   const subjectFilter = filterSubject.trim() || undefined;
   const ownerFilter = filterOwner.trim() || undefined;
+  const searchFilter = searchTerm.trim() || undefined;
 
   const queryState = useMemo(
     () => ({
+      searchFilter,
       sharingStatus,
       subjectFilter,
       ownerFilter,
       sortBy,
       limit,
     }),
-    [limit, ownerFilter, sharingStatus, sortBy, subjectFilter],
+    [limit, ownerFilter, searchFilter, sharingStatus, sortBy, subjectFilter],
   );
 
   useEffect(() => {
     let cancelled = false;
 
     const cachedFirstPage = getCachedMarketplacePacks(
+      queryState.searchFilter,
       queryState.sharingStatus,
       queryState.subjectFilter,
       queryState.ownerFilter,
@@ -82,6 +85,7 @@ export default function MarketplacePage() {
       0,
     );
     const needsRefresh = isMarketplacePacksCacheStale(
+      queryState.searchFilter,
       queryState.sharingStatus,
       queryState.subjectFilter,
       queryState.ownerFilter,
@@ -106,6 +110,7 @@ export default function MarketplacePage() {
 
     if (!cachedFirstPage || needsRefresh) {
       listMarketplacePacks(
+        queryState.searchFilter,
         queryState.sharingStatus,
         queryState.subjectFilter,
         queryState.ownerFilter,
@@ -145,6 +150,7 @@ export default function MarketplacePage() {
     setError(null);
     try {
       const response = await listMarketplacePacks(
+        queryState.searchFilter,
         queryState.sharingStatus,
         queryState.subjectFilter,
         queryState.ownerFilter,
@@ -169,6 +175,7 @@ export default function MarketplacePage() {
     setError(null);
     try {
       const response = await listMarketplacePacks(
+        queryState.searchFilter,
         queryState.sharingStatus,
         queryState.subjectFilter,
         queryState.ownerFilter,
@@ -247,16 +254,6 @@ export default function MarketplacePage() {
       setSubmittingReview(false);
     }
   };
-
-  const filteredPacks = packs.filter((pack) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      pack.name.toLowerCase().includes(term) ||
-      pack.subject?.toLowerCase().includes(term) ||
-      pack.owner?.toLowerCase().includes(term)
-    );
-  });
 
   return (
     <main className="h-full overflow-y-auto bg-[var(--background)]">
@@ -369,7 +366,7 @@ export default function MarketplacePage() {
         <div>
           <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-[13px] text-[var(--muted-foreground)]">
-              {t("Showing")} {filteredPacks.length} {t("of")} {total} {t("packs")}
+              {t("Showing")} {packs.length} {t("of")} {total} {t("packs")}
             </span>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               {refreshing && !loading && (
@@ -396,7 +393,7 @@ export default function MarketplacePage() {
             <div className="flex justify-center py-12">
               <Loader2 size={24} className="animate-spin text-[var(--muted-foreground)]" />
             </div>
-          ) : filteredPacks.length === 0 ? (
+          ) : packs.length === 0 ? (
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-12 text-center">
               <BookOpen size={32} className="mx-auto mb-3 text-[var(--muted-foreground)]" />
               <p className="text-[14px] font-medium text-[var(--foreground)]">
@@ -408,7 +405,7 @@ export default function MarketplacePage() {
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {filteredPacks.map((pack) => (
+              {packs.map((pack) => (
                 <div
                   key={pack.name}
                   className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 transition-colors hover:border-[var(--foreground)]/30"

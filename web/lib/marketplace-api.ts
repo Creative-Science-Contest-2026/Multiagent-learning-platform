@@ -68,6 +68,7 @@ const MARKETPLACE_LIST_CACHE_TTL_MS = 5 * 60 * 1000;
 const marketplaceListCache = new Map<string, MarketplaceListCacheEntry>();
 
 function buildMarketplaceListCacheKey(
+  search?: string,
   sharingStatus?: string,
   subject?: string,
   owner?: string,
@@ -76,6 +77,7 @@ function buildMarketplaceListCacheKey(
   offset = 0,
 ): string {
   return JSON.stringify({
+    search: search || "",
     sharingStatus: sharingStatus || "",
     subject: subject || "",
     owner: owner || "",
@@ -90,6 +92,7 @@ function isMarketplaceListCacheFresh(entry?: MarketplaceListCacheEntry): boolean
 }
 
 export function getCachedMarketplacePacks(
+  search?: string,
   sharingStatus?: string,
   subject?: string,
   owner?: string,
@@ -98,6 +101,7 @@ export function getCachedMarketplacePacks(
   offset = 0,
 ): MarketplaceListResponse | null {
   const cacheKey = buildMarketplaceListCacheKey(
+    search,
     sharingStatus,
     subject,
     owner,
@@ -109,6 +113,7 @@ export function getCachedMarketplacePacks(
 }
 
 export function isMarketplacePacksCacheStale(
+  search?: string,
   sharingStatus?: string,
   subject?: string,
   owner?: string,
@@ -117,6 +122,7 @@ export function isMarketplacePacksCacheStale(
   offset = 0,
 ): boolean {
   const cacheKey = buildMarketplaceListCacheKey(
+    search,
     sharingStatus,
     subject,
     owner,
@@ -132,6 +138,7 @@ export function invalidateMarketplaceListCache(): void {
 }
 
 export async function listMarketplacePacks(
+  search?: string,
   sharingStatus?: string,
   subject?: string,
   owner?: string,
@@ -141,6 +148,7 @@ export async function listMarketplacePacks(
   options: MarketplaceListFetchOptions = {},
 ): Promise<MarketplaceListResponse> {
   const cacheKey = buildMarketplaceListCacheKey(
+    search,
     sharingStatus,
     subject,
     owner,
@@ -165,6 +173,7 @@ export async function listMarketplacePacks(
   });
 
   if (sharingStatus) params.append("sharing_status", sharingStatus);
+  if (search) params.append("search", search);
   if (subject) params.append("subject", subject);
   if (owner) params.append("owner", owner);
   if (sortBy) params.append("sort_by", sortBy);

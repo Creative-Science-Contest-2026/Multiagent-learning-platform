@@ -7,28 +7,28 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#76 [MVP] T026 Mobile-First Marketplace Responsive Design`
-- `#76` improved marketplace responsiveness for mobile/tablet browsing without changing the underlying API or cache behavior, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, assessment insights, adaptive difficulty selection, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, teacher dashboard filtering, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#78 [MVP] T027 Teacher Analytics Dashboard`
+- `#78` extended the teacher dashboard with engagement, assessment trend, and learning signal analytics, then passed all required CI checks before merge.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, assessment insights, adaptive difficulty selection, teacher analytics, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#77 [MVP] Teacher Analytics Dashboard`
-- Active branch: `pod-a/t027-analytics-dashboard`
-- Active task packet: `docs/superpowers/tasks/2026-04-23-T027-analytics-dashboard.md`
-- Focus set: `T027` (Teacher analytics dashboard)
+- Active issue: `#79 [MVP] Marketplace Full-Text Search`
+- Active branch: `pod-a/t029-marketplace-search`
+- Active task packet: `docs/superpowers/tasks/2026-04-24-T029-marketplace-search.md`
+- Focus set: `T029` (Marketplace search)
 
 ## Next recommended task
 
-Implement `T027` on `pod-a/t027-analytics-dashboard`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Implement `T029` on `pod-a/t029-marketplace-search`, then open a Draft PR with a Mermaid architecture note and required validation before review.
 
 ## Status Update (2026-04-21)
 
 **Queue Advance**:
-1. `#76` merged to `main` after all required CI checks passed
-2. Issue `#75` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T027 Teacher Analytics Dashboard`
-4. Issue `#77` created and task packet added for the new execution lane
+1. `#78` merged to `main` after all required CI checks passed
+2. Issue `#77` auto-closed with the merge
+3. Next pending registry task selected in strict order: `T029 Marketplace Full-Text Search`
+4. Issue `#79` created and task packet added for the new execution lane
 
 ## AI-owned blockers
 
@@ -68,7 +68,8 @@ Implement `T027` on `pod-a/t027-analytics-dashboard`, then open a Draft PR with 
 | T024: Team Sharing | Completed | 6 | NO | Done |
 | T025: Adaptive Difficulty | Completed | 5 | NO | Done |
 | T026: Marketplace Mobile | Completed | 1 | NO | Done |
-| T027: Analytics Dashboard | In Progress | 8 | NO | Now |
+| T027: Analytics Dashboard | Completed | 8 | NO | Done |
+| T029: Marketplace Search | In Progress | 3 | NO | Now |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 
