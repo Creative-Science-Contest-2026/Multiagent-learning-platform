@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-25T15:20:00Z",
+    "last_updated": "2026-04-25T15:35:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 43
@@ -548,7 +548,7 @@
       "estimated_hours": 2,
       "dependencies": ["T035 merged to main", "scripts/contest/reset_demo_data.py"],
       "status": "completed",
-      "notes": "Merged to main through PR #96. Command-backed contest smoke evidence is refreshed to 2026-04-24 and screenshot evidence is explicitly marked stale pending recapture."
+      "notes": "Merged to main through PR #96. Re-run on 2026-04-25 after T044-T051 merged: command-backed smoke evidence is current again and screenshot evidence remains explicitly stale pending recapture."
     },
     {
       "id": "T037_CONTEST_SCREENSHOT_REFRESH",

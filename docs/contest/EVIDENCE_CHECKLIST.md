@@ -8,15 +8,15 @@ Refresh these only when the UI changed or when the latest smoke-backed validatio
 
 | Area | Evidence | Refresh mode | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current Knowledge Pack edit surface. |
-| Knowledge Pack | Metadata still visible after reload | Human capture | Current | Refreshed on 2026-04-24 in `T037` after reload against the current Knowledge Pack UI. |
-| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the live assessment configuration flow. |
-| Assessment | Generated questions visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded contest assessment session. |
-| Assessment | Common-mistake or feedback guidance visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded contest assessment guidance view. |
-| Tutor Agent | Student asks a follow-up question | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded tutor replay session. |
-| Tutor Agent | Tutor response with learning context | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded tutor replay session. |
-| Dashboard | Summary cards visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current dashboard summary view. |
-| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current dashboard activity feed. |
+| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Human capture | Stale | Last captured on 2026-04-24 in `T037`; lane-1 UI changed after `T044` and `T045`. |
+| Knowledge Pack | Metadata still visible after reload | Human capture | Stale | Last captured on 2026-04-24 in `T037`; lane-1 UI changed after `T044` and `T045`. |
+| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Human capture | Stale | Last captured on 2026-04-24 in `T037`; lane-1 UI changed after `T046`. |
+| Assessment | Generated questions visible | Human capture | Stale | Last captured on 2026-04-24 in `T037`; assessment review surfaces changed after `T046`. |
+| Assessment | Common-mistake or feedback guidance visible | Human capture | Stale | Last captured on 2026-04-24 in `T037`; assessment review surfaces changed after `T046`. |
+| Tutor Agent | Student asks a follow-up question | Human capture | Stale | Last captured on 2026-04-24 in `T037`; supporting replay/context surfaces changed after `T046` and `T051`. |
+| Tutor Agent | Tutor response with learning context | Human capture | Stale | Last captured on 2026-04-24 in `T037`; supporting replay/context surfaces changed after `T046` and `T051`. |
+| Dashboard | Summary cards visible | Human capture | Stale | Last captured on 2026-04-24 in `T037`; dashboard summary UI changed after `T046`. |
+| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Human capture | Stale | Last captured on 2026-04-24 in `T037`; dashboard/review context changed after `T046`, `T050`, and `T051`. |
 
 ## Required Command Evidence
 
@@ -24,14 +24,14 @@ Refresh these automatically after every successful smoke pass.
 
 | Command | Refresh mode | Status | Source |
 | --- | --- | --- | --- |
-| `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
-| `cd web && npm run build` | Auto after smoke | Current | Passed on 2026-04-24 after `npm ci`, with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing lockfile warning. |
+| `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
+| `cd web && npm ci && npm run build` | Auto after smoke | Current | Passed on 2026-04-25 in the fresh smoke worktree, with the existing lockfile warning. |
 
 ## Optional Video
 
@@ -61,6 +61,6 @@ Video status follows the same freshness states:
 | --- | --- | --- |
 | Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
 | Product commands have smoke-backed validation evidence | Passed | See `VALIDATION_REPORT.md`. |
-| Screenshots are captured and linked | Passed | Screenshot bundle was refreshed on 2026-04-24 in `T037`. |
+| Screenshots are captured and linked | Stale | The latest screenshot bundle predates the merged contest-facing UI changes from `T044` through `T046`. |
 | Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |
 | No secrets or private data in evidence | Passed | Screenshots use demo-safe Knowledge Pack and session data. |

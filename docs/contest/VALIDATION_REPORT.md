@@ -1,6 +1,6 @@
 # Validation Report
 
-Last updated: 2026-04-24
+Last updated: 2026-04-25
 
 ## Scope
 
@@ -10,13 +10,13 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Evidence Freshness Status
 
-Latest smoke-backed refresh: 2026-04-24
+Latest smoke-backed refresh: 2026-04-25
 
 | Evidence group | Refresh mode | Status | Latest source |
 | --- | --- | --- | --- |
-| Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-24.md`. |
-| Frontend production build | Auto after smoke | Current | `npm run build` passed on 2026-04-24 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` after installing worktree dependencies. |
-| Screenshot bundle | Human capture after smoke when the UI changes | Current | Refreshed on 2026-04-24 in `T037` against the latest merged UI after the 2026-04-24 smoke baseline. |
+| Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-25.md`. |
+| Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-25 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the fresh smoke worktree. |
+| Screenshot bundle | Human capture after smoke when the UI changes | Stale | The last capture was on 2026-04-24, but `T044`, `T045`, and `T046` changed contest-facing UI after that bundle. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
 Use these status values consistently:
@@ -30,18 +30,18 @@ Use these status values consistently:
 
 | Area | Command | Result |
 | --- | --- | --- |
-| Scripted demo reset | `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Passed on 2026-04-24; it reported `contest-demo-quadratics`, `contest-assessment-demo`, and `contest-tutor-demo`. |
-| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed on 2026-04-24 with backend `online`, configured `gpt-4o-mini`, and local fallback search. |
-| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed on 2026-04-24; `contest-demo-quadratics` was present with demo-safe metadata and `sharing_status=demo`. |
-| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed on 2026-04-24 with one assessment, one tutoring session, analytics totals, and recent activity grounded in `contest-demo-quadratics`. |
-| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed on 2026-04-24 with assessment and tutor activity grounded in `contest-demo-quadratics`. |
-| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed on 2026-04-24. |
-| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed on 2026-04-24. |
-| Frontend production build | `cd web && npm run build` | Passed on 2026-04-24 after `npm ci`, with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing multiple-lockfile warning. |
+| Scripted demo reset | `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Passed on 2026-04-25; it recreated `contest-demo-quadratics`, `contest-assessment-demo`, and `contest-tutor-demo` in the fresh worktree. |
+| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed on 2026-04-25 with backend `online`, configured `gpt-4o-mini`, and local fallback search. |
+| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed on 2026-04-25; `contest-demo-quadratics` was present with demo-safe metadata and `sharing_status=demo`. |
+| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed on 2026-04-25 with one assessment, one tutoring session, and recent activity grounded in `contest-demo-quadratics`. |
+| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed on 2026-04-25 with assessment and tutor activity grounded in `contest-demo-quadratics`. |
+| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed on 2026-04-25 and returned `context_support` plus demo-safe Knowledge Pack references. |
+| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed on 2026-04-25 and returned `context_support` plus demo-safe Knowledge Pack references. |
+| Frontend production build | `cd web && npm ci && npm run build` | Passed on 2026-04-25 in the fresh smoke worktree, with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing multiple-lockfile warning. |
 
 ## Current Known Limitations
 
-- Screenshot evidence is captured under `docs/contest/screenshots/`, and the current bundle was refreshed on 2026-04-24 in `T037`.
+- Screenshot evidence is captured under `docs/contest/screenshots/`, but the current bundle is now stale because contest-facing UI changed after the 2026-04-24 capture.
 - Video evidence is deferred unless the final contest submission requires it.
 - The frontend build emits a Next.js warning about multiple lockfiles and inferred workspace root. The build still completes successfully.
 - Screenshot freshness still requires a human capture step when the UI meaningfully changes.
@@ -74,13 +74,13 @@ The first frontend build attempt failed in sandbox because Next.js could not fet
 
 ## Smoke-backed Verification Record
 
-The 2026-04-24 scripted-reset smoke run verified the full MVP path in order:
+The 2026-04-25 scripted-reset smoke run verified the MVP path in the current merged state:
 
-1. scripted reset recreated the demo-safe Knowledge Pack and assessment/tutor sessions;
+1. scripted reset recreated the demo-safe Knowledge Pack and assessment/tutor sessions in the fresh worktree;
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
-4. the frontend production build passed against `http://localhost:8001`;
-5. the screenshot bundle was refreshed in `T037`, so screenshot status is back to `Current` for the latest merged UI.
+4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the new worktree;
+5. screenshot evidence remains `Stale` because the 2026-04-24 capture predates the merged UI changes from `T044`, `T045`, and `T046`.
 
 ## Manual Verification Template
 

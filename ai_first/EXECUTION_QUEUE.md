@@ -7,24 +7,24 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#126 feat: improve session context quality (T051)`
+- Latest merged PR: `#127 docs: sync control plane after lane rollout`
+- Latest smoke result: the 2026-04-25 scripted-reset smoke pass succeeded against current `main`.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
-- Current workflow result: the lane task packets created by `T047` and `T048` were exercised end to end and the control plane is now being synced to match the merged reality.
 - Core MVP path in `main` now also includes contest-facing Vietnamese UI coverage, marketplace and knowledge-screen polish, dashboard/review polish, deeper dashboard insight payloads, richer metadata contracts, and improved session context support on top of the earlier marketplace, assessment, tutor, dashboard, offline, analytics, evidence, and submission flows.
 
 ## Active queue
 
-- Active docs/control-plane sync: post-lane status refresh for `T047` and `T048`
-- Current purpose: replace stale pre-lane bootstrap state with the merged lane results and point the queue to the next smoke/evidence step.
+- Active docs/evidence lane: `T036 Contest Smoke and Evidence Refresh`
+- Current purpose: keep command-backed evidence current and mark screenshot freshness honestly after the merged contest UI changes.
 
 ## Next recommended task
 
-Run the demo-readiness smoke and evidence refresh loop against the now-merged product state:
+Refresh the screenshot bundle or complete the human evidence review step:
 
-1. Use `docs/contest/DEMO_DATA_RESET.md` to reset demo-safe local state if needed
-2. Run the existing smoke lane and update `docs/contest/VALIDATION_REPORT.md` if the evidence freshness changes
-3. Treat any smoke failure as the next product task before starting new polish work
+1. Capture a fresh screenshot bundle for the contest-facing UI updated by `T044`, `T045`, and `T046`
+2. Update `docs/contest/EVIDENCE_CHECKLIST.md` from `Stale` to `Current` only after the new capture exists
+3. If screenshot capture cannot happen now, keep the current command evidence and carry the screenshot freshness gap as an explicit human follow-up
 
 ## Status Update (2026-04-25)
 
@@ -32,11 +32,13 @@ Run the demo-readiness smoke and evidence refresh loop against the now-merged pr
 1. `T047` and `T048` succeeded: the two-lane experiment had bounded ownership and clean merge flow.
 2. Lane 1 completed `T044`, `T045`, and `T046`.
 3. Lane 2 completed `T049`, `T050`, and `T051`.
-4. Contest submission docs still remain available for human review in parallel with the next smoke/evidence validation pass.
+4. The 2026-04-25 scripted-reset smoke run passed on current `main`.
+5. Screenshot evidence is now explicitly `Stale` because the last capture predates the merged contest-facing UI changes.
 
 ## AI-owned blockers
 
-- None currently. The immediate AI work after this sync is smoke/evidence validation, not another bootstrap packet.
+- None currently for command-backed validation.
+- Screenshot freshness remains a human capture follow-up unless a browser-capable worker refreshes the bundle.
 
 ## Human-review blockers
 
@@ -48,9 +50,9 @@ Run the demo-readiness smoke and evidence refresh loop against the now-merged pr
 1. `ai_first/AI_OPERATING_PROMPT.md`
 2. `ai_first/EXECUTION_QUEUE.md`
 3. `ai_first/ACTIVE_ASSIGNMENTS.md`
-4. `docs/contest/DEMO_DATA_RESET.md`
-5. `docs/contest/VALIDATION_REPORT.md`
-6. `docs/superpowers/tasks/2026-04-19-demo-readiness-smoke.md`
+4. `docs/contest/VALIDATION_REPORT.md`
+5. `docs/contest/EVIDENCE_CHECKLIST.md`
+6. `docs/contest/DEMO_DATA_RESET.md`
 
 ---
 
