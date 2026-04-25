@@ -1,15 +1,15 @@
 # Next Actions
 
-Last updated: 2026-04-19
+Last updated: 2026-04-25
 
 This file is a compatibility snapshot. The authoritative action list lives in `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Immediate
 
 1. Keep `ai_first/EXECUTION_QUEUE.md` current after merges and blocker changes.
-2. Clear active draft PRs: close superseded workflow drafts and merge the Teacher Assessment Review MVP only after checks pass.
+2. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new implementation lane.
 3. Review IP commitment, final product description wording, and optional video requirements.
-4. If optional video is required, create a separate focused video capture task.
+4. If optional video is required, create a separate focused video capture task from `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`.
 5. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
 6. If a future smoke fails, create or update the next focused product/runtime bug task from the first hard failure.
 7. Keep open issues aligned with active task packets and unfinished work only.

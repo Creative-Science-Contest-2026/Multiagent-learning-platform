@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-04-19
+Last updated: 2026-04-25
 
 This file is a compatibility snapshot. The authoritative operating instructions live in `ai_first/AI_OPERATING_PROMPT.md`.
 
@@ -24,15 +24,14 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - GitHub Issues and PRs coordinate active execution.
 - The AI operating prompt is the single entry point for new workers.
 - `ai_first/AI_FIRST_ROADMAP.md` explains the autonomous loop and future operating direction for humans checking progress.
-- Two Feature Pods may work in parallel after shared operating files land.
+- Two collaborators may work in parallel through one active task, one branch, and one PR per person, coordinated by `ai_first/ACTIVE_ASSIGNMENTS.md`.
 
 ## Active Branches and PRs
 
-- Current branch for this docs update: `docs/contest-submission-package`
-- Milestone 0 status: merged into `main` via PR #1 on 2026-04-13
-- PR `#4 docs: add first feature pod task packets` merged into `main` on 2026-04-18.
-- Product MVP path status: Knowledge Pack, Assessment Builder, Student Tutor context, Teacher Dashboard, Teacher Assessment Review drill-down, contest evidence screenshots, and runtime/backend/frontend/docs CI are merged or ready in the active PR flow.
-- Current purpose: clear active draft PRs, merge the Teacher Assessment Review MVP when checks pass, and keep the contest submission package ready for human review.
+- Latest merged workflow PR: `#116 [docs] Two-person AI-first collaboration workflow`
+- Current branch for this sync: `docs/post-116-collab-sync`
+- Product MVP path status: Knowledge Pack, assessment, tutor, dashboard, marketplace, offline, analytics, contest evidence, submission docs, optional video runbook, and two-person collaboration workflow are merged to `main`.
+- Current purpose: keep the contest submission package ready for human review and use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new implementation lane.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -69,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Clear active draft PRs, merge the Teacher Assessment Review MVP when checks pass, then review IP commitment, final product description wording, and optional video requirements.
+Wait for human review of the contest submission package. If the team decides a video is required, use `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`; otherwise no AI implementation lane is active.
 
 ## Autonomous Merge Policy
 

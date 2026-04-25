@@ -7,8 +7,9 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#113 [Docs] T043 Optional contest video capture runbook`
-- `#113` added the optional video storyboard/runbook without changing the deferred status of the video artifact itself.
+- Latest merged PR: `#116 [docs] Two-person AI-first collaboration workflow`
+- `#116` added the `ai_first/ACTIVE_ASSIGNMENTS.md` coordination board, encoded collaboration rules in the operating prompt, and tightened task/handoff templates for assignment-before-code work.
+- Previous contest result: `#113` added the optional video storyboard/runbook without changing the deferred status of the video artifact itself.
 - Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
@@ -23,11 +24,11 @@ Wait for human review of the submission package. If the team decides a video is 
 ## Status Update (2026-04-25)
 
 **Queue Advance**:
-1. `#113` merged to `main` after all required CI checks passed
-2. Issue `#112` auto-closed with the merge
-3. `T043 Optional Contest Video Capture Runbook` is now complete on `main`
-4. The repository now includes `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
-5. The contest queue is back to waiting on manual review unless the team chooses to record the optional video
+1. `#116` merged to `main` after all required CI checks passed
+2. The repository now includes `ai_first/ACTIVE_ASSIGNMENTS.md` for short-lived two-person coordination
+3. Task and handoff templates now require explicit assignment and owned-file scope
+4. `T043 Optional Contest Video Capture Runbook` remains complete on `main`
+5. The contest queue is still waiting on manual review unless the team chooses to record the optional video
 
 ## AI-owned blockers
 
@@ -41,8 +42,9 @@ Wait for human review of the submission package. If the team decides a video is 
 
 1. `ai_first/AI_OPERATING_PROMPT.md`
 2. `ai_first/EXECUTION_QUEUE.md`
-3. `docs/contest/HUMAN_REVIEW_HANDOFF.md`
-4. `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
+3. `ai_first/ACTIVE_ASSIGNMENTS.md`
+4. `docs/contest/HUMAN_REVIEW_HANDOFF.md`
+5. `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
 
 ---
 
