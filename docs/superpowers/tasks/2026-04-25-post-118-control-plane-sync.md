@@ -4,6 +4,7 @@ Owner: Codex
 Branch: `docs/task-registry-count-sync`
 GitHub Issue:
 Active assignment: `ai_first/ACTIVE_ASSIGNMENTS.md`
+PR: `#119`
 
 ## Goal
 

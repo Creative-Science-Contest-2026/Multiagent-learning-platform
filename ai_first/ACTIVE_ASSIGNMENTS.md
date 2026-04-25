@@ -32,11 +32,11 @@ Rules:
 - Owner: Codex
 - Machine: MacBook-Air-cua-Loc.local
 - Task: Post-118 control-plane sync
-- Status: in_progress
+- Status: in_review
 - Branch: docs/task-registry-count-sync
 - Task packet: docs/superpowers/tasks/2026-04-25-post-118-control-plane-sync.md
 - Owned files: ai_first/AI_OPERATING_PROMPT.md; ai_first/EXECUTION_QUEUE.md; ai_first/ACTIVE_ASSIGNMENTS.md; ai_first/CURRENT_STATE.md; ai_first/NEXT_ACTIONS.md; ai_first/daily/2026-04-25.md; docs/superpowers/tasks/2026-04-25-post-118-control-plane-sync.md; docs/superpowers/pr-notes/2026-04-25-post-118-control-plane-sync.md
-- PR:
+- PR: `#119`
 - Last update: 2026-04-25 18:30 +07
-- Next action: Open PR for the post-118 control-plane sync.
+- Next action: Move PR `#119` to Ready for review after final validation.
 - Blocker: None
