@@ -763,6 +763,12 @@ export default function KnowledgePage() {
 
   const uploadDisabled =
     !uploadTarget || !uploadFiles.length || !!uploadingKb || Boolean(uploadBlockedReason);
+  const metadataProgressCount = [
+    editKbSubject,
+    editKbGrade,
+    editKbCurriculum,
+    editKbOwner,
+  ].filter((value) => value.trim().length > 0).length;
 
   return (
     <div className="h-full overflow-y-auto bg-[var(--background)] [scrollbar-gutter:stable]">
@@ -980,12 +986,17 @@ export default function KnowledgePage() {
               </section>
 
               {/* Upload to existing KB */}
-              <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-                <div className="mb-4 flex items-center gap-2">
-                  <Upload size={15} className="text-[var(--muted-foreground)]" />
-                  <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
-                    {t("Upload documents")}
-                  </h2>
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex items-center gap-2">
+                    <Upload size={15} className="text-[var(--muted-foreground)]" />
+                    <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
+                      {t("Upload documents")}
+                    </h2>
+                  </div>
+                  <div className="rounded-full bg-[var(--background)] px-3 py-1 text-[11px] text-[var(--muted-foreground)]">
+                    {uploadFiles.length}
+                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -1100,10 +1111,10 @@ export default function KnowledgePage() {
             </div>
 
             {/* KB list */}
-            <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <BookOpen size={15} className="text-[var(--muted-foreground)]" />
-                <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
+                <div className="mb-4 flex items-center gap-2">
+                  <BookOpen size={15} className="text-[var(--muted-foreground)]" />
+                  <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
                   {t("Knowledge bases")}
                 </h2>
               </div>
@@ -1129,7 +1140,7 @@ export default function KnowledgePage() {
                   return (
                     <div
                       key={kb.name}
-                      className="group rounded-lg border border-[var(--border)] bg-[var(--background)] p-4 transition-colors hover:border-[var(--foreground)]/10"
+                      className="group rounded-2xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm transition-colors hover:border-[var(--foreground)]/10"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -1245,12 +1256,17 @@ export default function KnowledgePage() {
                       )}
 
                       {editingKbName === kb.name && (
-                        <div className="mt-3 space-y-3 rounded-lg border border-[var(--border)] bg-[var(--card)] p-3">
-                          <div className="text-[12px] font-medium text-[var(--foreground)]">
-                            {t("Edit Knowledge Pack Metadata")}
+                        <div className="mt-3 space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="text-[12px] font-medium text-[var(--foreground)]">
+                              {t("Edit Knowledge Pack Metadata")}
+                            </div>
+                            <div className="rounded-full bg-[var(--background)] px-3 py-1 text-[11px] text-[var(--muted-foreground)]">
+                              {metadataProgressCount}
+                            </div>
                           </div>
 
-                          <div className="grid gap-2 md:grid-cols-2">
+                          <div className="grid gap-2 rounded-xl bg-[var(--background)] p-3 md:grid-cols-2">
                             <input
                               value={editKbSubject}
                               onChange={(event) => setEditKbSubject(event.target.value)}
@@ -1265,34 +1281,38 @@ export default function KnowledgePage() {
                             />
                           </div>
 
-                          <input
-                            value={editKbCurriculum}
-                            onChange={(event) => setEditKbCurriculum(event.target.value)}
-                            placeholder={t("Curriculum")}
-                            className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                          />
+                          <div className="rounded-xl bg-[var(--background)] p-3">
+                            <input
+                              value={editKbCurriculum}
+                              onChange={(event) => setEditKbCurriculum(event.target.value)}
+                              placeholder={t("Curriculum")}
+                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                            />
+                          </div>
 
-                          <textarea
-                            value={editKbLearningObjectives}
-                            onChange={(event) => setEditKbLearningObjectives(event.target.value)}
-                            placeholder={t("Learning objectives (one per line)")}
-                            rows={4}
-                            className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                          />
+                          <div className="rounded-xl bg-[var(--background)] p-3">
+                            <textarea
+                              value={editKbLearningObjectives}
+                              onChange={(event) => setEditKbLearningObjectives(event.target.value)}
+                              placeholder={t("Learning objectives (one per line)")}
+                              rows={4}
+                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                            />
+                          </div>
 
-                          <div className="grid gap-2 md:grid-cols-[1fr_180px]">
+                          <div className="grid gap-2 rounded-xl bg-[var(--background)] p-3 md:grid-cols-[1fr_180px]">
                             <input
                               value={editKbOwner}
                               onChange={(event) => setEditKbOwner(event.target.value)}
                               placeholder={t("Owner")}
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
                             />
                             <select
                               value={editKbSharingStatus}
                               onChange={(event) =>
                                 setEditKbSharingStatus(event.target.value as "private" | "team" | "public")
                               }
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none"
+                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none"
                             >
                               <option value="private">{t("Private")}</option>
                               <option value="team">{t("Team")}</option>
@@ -1301,20 +1321,20 @@ export default function KnowledgePage() {
                           </div>
 
                           {editKbSharingStatus === "team" && (
-                            <div className="grid gap-2 md:grid-cols-2">
+                            <div className="grid gap-2 rounded-xl bg-[var(--background)] p-3 md:grid-cols-2">
                               <textarea
                                 value={editKbTeamMembers}
                                 onChange={(event) => setEditKbTeamMembers(event.target.value)}
                                 placeholder={t("Team members (one per line)")}
                                 rows={4}
-                                className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                                className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
                               />
                               <textarea
                                 value={editKbPendingInvites}
                                 onChange={(event) => setEditKbPendingInvites(event.target.value)}
                                 placeholder={t("Invite emails (one per line)")}
                                 rows={4}
-                                className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
+                                className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
                               />
                             </div>
                           )}

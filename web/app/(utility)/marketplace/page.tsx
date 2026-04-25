@@ -64,6 +64,8 @@ export default function MarketplacePage() {
   const subjectFilter = filterSubject.trim() || undefined;
   const ownerFilter = filterOwner.trim() || undefined;
   const searchFilter = searchTerm.trim() || undefined;
+  const activeFilters = [searchFilter, subjectFilter, ownerFilter, sharingStatus].filter(Boolean);
+  const importedCount = batchImportResult?.imported ?? 0;
 
   const queryState = useMemo(
     () => ({
@@ -297,23 +299,69 @@ export default function MarketplacePage() {
     <main className="h-full overflow-y-auto bg-[var(--background)]">
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8">
         {/* Header */}
-        <header>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-            {t("Knowledge Marketplace")}
-          </p>
-          <h1 className="mt-2 text-[24px] font-semibold tracking-tight text-[var(--foreground)] sm:text-[28px]">
-            {t("Discover & Import Knowledge Packs")}
-          </h1>
-          <p className="mt-2 max-w-[680px] text-[13px] leading-6 text-[var(--muted-foreground)] sm:text-[14px]">
-            {t("Browse knowledge packs shared by other teachers and import them to your workspace.")}
-          </p>
+        <header className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-5 shadow-sm sm:px-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+                {t("Knowledge Marketplace")}
+              </p>
+              <h1 className="mt-2 text-[24px] font-semibold tracking-tight text-[var(--foreground)] sm:text-[28px]">
+                {t("Discover & Import Knowledge Packs")}
+              </h1>
+              <p className="mt-2 max-w-[680px] text-[13px] leading-6 text-[var(--muted-foreground)] sm:text-[14px]">
+                {t("Browse knowledge packs shared by other teachers and import them to your workspace.")}
+              </p>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2 lg:min-w-[280px]">
+              <div className="rounded-xl bg-[var(--background)] px-4 py-3">
+                <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                  {t("packs loaded")}
+                </div>
+                <div className="mt-1 text-[18px] font-semibold text-[var(--foreground)]">
+                  {packs.length} / {total}
+                </div>
+              </div>
+              <div className="rounded-xl bg-[var(--background)] px-4 py-3">
+                <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                  {t("selected")}
+                </div>
+                <div className="mt-1 text-[18px] font-semibold text-[var(--foreground)]">
+                  {selectedPacks.length}
+                </div>
+              </div>
+            </div>
+          </div>
         </header>
 
         {/* Filters */}
-        <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 sm:p-5">
-          <div className="mb-3 flex items-center gap-2 text-[13px] font-medium text-[var(--muted-foreground)]">
-            <Filter size={14} />
-            {t("Filters")}
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm sm:p-5">
+          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-[13px] font-medium text-[var(--muted-foreground)]">
+                <Filter size={14} />
+                {t("Filters")}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {activeFilters.length > 0 ? (
+                  activeFilters.map((value, index) => (
+                    <span
+                      key={`${value}-${index}`}
+                      className="rounded-full bg-[var(--background)] px-3 py-1 text-[11px] text-[var(--muted-foreground)]"
+                    >
+                      {value}
+                    </span>
+                  ))
+                ) : (
+                  <span className="rounded-full bg-[var(--background)] px-3 py-1 text-[11px] text-[var(--muted-foreground)]">
+                    {t("All")}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="rounded-xl bg-[var(--background)] px-4 py-3 text-[12px] text-[var(--muted-foreground)]">
+              {t("Showing")} {packs.length} {t("of")} {total} {t("packs")}
+            </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -403,9 +451,6 @@ export default function MarketplacePage() {
         {/* Packs Grid */}
         <div>
           <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-[13px] text-[var(--muted-foreground)]">
-              {t("Showing")} {packs.length} {t("of")} {total} {t("packs")}
-            </span>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               {selectedPacks.length > 0 && (
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -481,9 +526,8 @@ export default function MarketplacePage() {
               {packs.map((pack) => (
                 <div
                   key={pack.name}
-                  className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 transition-colors hover:border-[var(--foreground)]/30"
+                  className="flex h-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm transition-colors hover:border-[var(--foreground)]/30"
                 >
-                  {/* Header */}
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <label className="mt-0.5 inline-flex items-center">
                       <input
@@ -494,17 +538,27 @@ export default function MarketplacePage() {
                       />
                     </label>
                     <div className="flex-1">
-                      <h3 className="break-words text-[14px] font-semibold text-[var(--foreground)]">
-                        {pack.name}
-                      </h3>
-                      <div className="mt-1 flex flex-wrap gap-1">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <h3 className="break-words text-[15px] font-semibold text-[var(--foreground)]">
+                          {pack.name}
+                        </h3>
+                        {selectedPacks.includes(pack.name) && (
+                          <span className="rounded-full bg-[var(--background)] px-2.5 py-1 text-[10px] font-medium text-[var(--muted-foreground)]">
+                            {t("selected")}
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        <span className="inline-block rounded-full bg-[var(--background)] px-2 py-1 text-[11px] text-[var(--muted-foreground)]">
+                          {t("Sharing")}: {pack.sharing_status || t("Unknown")}
+                        </span>
                         {pack.subject && (
-                          <span className="inline-block rounded-full bg-[var(--muted)] px-2 py-1 text-[11px] text-[var(--muted-foreground)]">
+                          <span className="inline-block rounded-full bg-[var(--background)] px-2 py-1 text-[11px] text-[var(--muted-foreground)]">
                             {pack.subject}
                           </span>
                         )}
                         {pack.grade && (
-                          <span className="inline-block rounded-full bg-[var(--muted)] px-2 py-1 text-[11px] text-[var(--muted-foreground)]">
+                          <span className="inline-block rounded-full bg-[var(--background)] px-2 py-1 text-[11px] text-[var(--muted-foreground)]">
                             {pack.grade}
                           </span>
                         )}
@@ -512,55 +566,59 @@ export default function MarketplacePage() {
                     </div>
                   </div>
 
-                  {/* Metadata */}
-                  <div className="mb-4 flex-1 space-y-1">
+                  <div className="grid gap-2 rounded-xl bg-[var(--background)]/80 p-3 text-[12px] text-[var(--muted-foreground)]">
                     {pack.owner && (
-                      <p className="text-[12px] text-[var(--muted-foreground)]">
-                        <span className="font-medium">{t("By")}:</span> {pack.owner}
-                      </p>
+                      <div className="flex items-start justify-between gap-3">
+                        <span>{t("Owner")}</span>
+                        <span className="text-right text-[var(--foreground)]">{pack.owner}</span>
+                      </div>
                     )}
                     {pack.curriculum && (
-                      <p className="text-[12px] text-[var(--muted-foreground)]">
-                        <span className="font-medium">{t("Curriculum")}:</span> {pack.curriculum}
-                      </p>
-                    )}
-                    <p className="text-[12px] text-[var(--muted-foreground)]">
-                      <span className="font-medium">{t("Sessions")}:</span> {pack.session_count || 0}
-                    </p>
-                    <div className="flex items-center gap-2 text-[12px] text-[var(--muted-foreground)]">
-                      <div className="flex items-center gap-0.5">
-                        {renderStars(pack.rating_summary?.average_rating || 0)}
+                      <div className="flex items-start justify-between gap-3">
+                        <span>{t("Curriculum")}</span>
+                        <span className="text-right text-[var(--foreground)]">{pack.curriculum}</span>
                       </div>
-                      <span>
-                        {pack.rating_summary?.review_count
-                          ? `${pack.rating_summary.average_rating.toFixed(1)} • ${pack.rating_summary.review_count} ${t("reviews")}`
-                          : t("Unrated")}
+                    )}
+                    <div className="flex items-start justify-between gap-3">
+                      <span>{t("Sessions")}</span>
+                      <span className="text-right text-[var(--foreground)]">{pack.session_count || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <span>{t("Rating")}</span>
+                      <span className="flex items-center gap-2 text-right text-[var(--foreground)]">
+                        <span className="flex items-center gap-0.5">
+                          {renderStars(pack.rating_summary?.average_rating || 0)}
+                        </span>
+                        <span>
+                          {pack.rating_summary?.review_count
+                            ? `${pack.rating_summary.average_rating.toFixed(1)} • ${pack.rating_summary.review_count} ${t("reviews")}`
+                            : t("Unrated")}
+                        </span>
                       </span>
                     </div>
                   </div>
 
-                  {/* Learning Objectives */}
                   {pack.learning_objectives && pack.learning_objectives.length > 0 && (
-                    <div className="mb-4 rounded-md bg-[var(--background)] p-2">
+                    <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
                       <p className="text-[11px] font-medium text-[var(--muted-foreground)]">
-                        {t("Learning Objectives")}:
+                        {t("Learning Objectives")}
                       </p>
-                      <ul className="mt-1 list-inside list-disc space-y-1 break-words">
-                        {pack.learning_objectives.slice(0, 2).map((obj, idx) => (
-                          <li key={idx} className="text-[11px] text-[var(--foreground)]">
+                      <ul className="mt-2 list-inside list-disc space-y-1 break-words">
+                        {pack.learning_objectives.slice(0, 3).map((obj, idx) => (
+                          <li key={idx} className="text-[12px] text-[var(--foreground)]">
                             {obj}
                           </li>
                         ))}
-                        {pack.learning_objectives.length > 2 && (
-                          <li className="text-[11px] text-[var(--muted-foreground)]">
-                            +{pack.learning_objectives.length - 2} {t("more")}
+                        {pack.learning_objectives.length > 3 && (
+                          <li className="text-[12px] text-[var(--muted-foreground)]">
+                            +{pack.learning_objectives.length - 3} {t("more")}
                           </li>
                         )}
                       </ul>
                     </div>
                   )}
 
-                  <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="mt-4 grid gap-2 sm:grid-cols-2">
                     <button
                       onClick={() => handlePreviewPack(pack.name)}
                       className="flex items-center justify-center gap-2 rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
@@ -588,6 +646,12 @@ export default function MarketplacePage() {
                       )}
                     </button>
                   </div>
+
+                  {importSuccess === pack.name && (
+                    <div className="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300">
+                      {t("Imported!")}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -595,15 +659,25 @@ export default function MarketplacePage() {
         </div>
 
         {batchImportResult && (
-          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
-            <div className="text-[13px] font-medium text-[var(--foreground)]">
-              {t("Batch import result")}: {batchImportResult.imported}/{batchImportResult.requested} {t("packs imported")}
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <div className="text-[13px] font-medium text-[var(--foreground)]">
+                  {t("Batch import result")}
+                </div>
+                <div className="mt-1 text-[12px] text-[var(--muted-foreground)]">
+                  {importedCount}/{batchImportResult.requested} {t("packs imported")}
+                </div>
+              </div>
+              <div className="rounded-full bg-[var(--background)] px-3 py-1 text-[11px] text-[var(--muted-foreground)]">
+                {selectedPacks.length} {t("selected")}
+              </div>
             </div>
             <div className="mt-3 space-y-2">
               {batchImportResult.results.map((row) => (
                 <div
                   key={row.source_pack}
-                  className="flex flex-col gap-1 rounded-md bg-[var(--background)] px-3 py-2 text-[12px] sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-1 rounded-xl bg-[var(--background)] px-3 py-2 text-[12px] sm:flex-row sm:items-center sm:justify-between"
                 >
                   <span className="font-medium text-[var(--foreground)]">{row.source_pack}</span>
                   <span className={row.success ? "text-emerald-600" : "text-rose-600"}>
@@ -642,7 +716,7 @@ export default function MarketplacePage() {
 
       {previewOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 px-3 py-4 sm:items-center sm:px-4">
-          <div className="max-h-[calc(100vh-2rem)] w-full max-w-[640px] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-2xl">
+          <div className="max-h-[calc(100vh-2rem)] w-full max-w-[700px] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl">
             <div className="flex items-start justify-between gap-3 border-b border-[var(--border)] px-4 py-4 sm:px-5">
               <div>
                 <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
@@ -663,7 +737,7 @@ export default function MarketplacePage() {
               </button>
             </div>
 
-            <div className="max-h-[calc(100vh-8rem)] space-y-4 overflow-y-auto px-4 py-4 sm:px-5">
+            <div className="max-h-[calc(100vh-8rem)] space-y-5 overflow-y-auto px-4 py-4 sm:px-5">
               {previewLoading ? (
                 <div className="flex items-center justify-center py-12 text-[13px] text-[var(--muted-foreground)]">
                   <Loader2 size={16} className="mr-2 animate-spin" />
@@ -671,94 +745,94 @@ export default function MarketplacePage() {
                 </div>
               ) : previewPack ? (
                 <>
-                  {previewPack.description && (
-                    <p className="text-[13px] leading-6 text-[var(--muted-foreground)]">
-                      {previewPack.description}
-                    </p>
-                  )}
+                  <section className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                    {previewPack.description && (
+                      <p className="text-[13px] leading-6 text-[var(--muted-foreground)]">
+                        {previewPack.description}
+                      </p>
+                    )}
 
-                  <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                    <div className="rounded-lg bg-[var(--background)] p-3">
-                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
-                        {t("Sharing")}
-                      </p>
-                      <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
-                        {previewPack.sharing_status || t("Unknown")}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-[var(--background)] p-3">
-                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
-                        {t("Documents")}
-                      </p>
-                      <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
-                        {previewPack.document_count}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-[var(--background)] p-3">
-                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
-                        {t("Sessions")}
-                      </p>
-                      <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
-                        {previewPack.session_count || 0}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-[var(--background)] p-3 sm:col-span-2 md:col-span-3">
-                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
-                        {t("Rating")}
-                      </p>
-                      <div className="mt-2 flex items-center gap-2">
-                        <div className="flex items-center gap-0.5">
-                          {renderStars(previewPack.rating_summary?.average_rating || 0)}
-                        </div>
-                        <p className="text-[13px] font-medium text-[var(--foreground)]">
-                          {previewPack.rating_summary?.review_count
-                            ? `${previewPack.rating_summary.average_rating.toFixed(1)} • ${previewPack.rating_summary.review_count} ${t("reviews")}`
-                            : t("No reviews yet")}
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                      <div className="rounded-lg bg-[var(--card)] p-3">
+                        <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                          {t("Sharing")}
+                        </p>
+                        <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                          {previewPack.sharing_status || t("Unknown")}
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-[var(--card)] p-3">
+                        <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                          {t("Documents")}
+                        </p>
+                        <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                          {previewPack.document_count}
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-[var(--card)] p-3">
+                        <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                          {t("Sessions")}
+                        </p>
+                        <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                          {previewPack.session_count || 0}
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </section>
 
-                  {previewPack.learning_objectives && previewPack.learning_objectives.length > 0 && (
-                    <div>
-                      <p className="text-[12px] font-semibold text-[var(--foreground)]">
-                        {t("Learning Objectives")}
-                      </p>
-                      <ul className="mt-2 list-inside list-disc space-y-1 text-[13px] text-[var(--muted-foreground)]">
-                        {previewPack.learning_objectives.map((objective) => (
-                          <li key={objective}>{objective}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div>
-                    <p className="text-[12px] font-semibold text-[var(--foreground)]">
-                      {t("Sample Documents")}
-                    </p>
-                    {previewPack.sample_documents.length > 0 ? (
-                      <ul className="mt-2 space-y-2">
-                        {previewPack.sample_documents.map((document) => (
-                          <li
-                            key={document}
-                            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)]"
-                          >
-                            {document}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="mt-2 text-[13px] text-[var(--muted-foreground)]">
-                        {t("No preview documents available")}
-                      </p>
+                  <section className="grid gap-4 rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                    {previewPack.learning_objectives && previewPack.learning_objectives.length > 0 && (
+                      <div>
+                        <p className="text-[12px] font-semibold text-[var(--foreground)]">
+                          {t("Learning Objectives")}
+                        </p>
+                        <ul className="mt-2 list-inside list-disc space-y-1 text-[13px] text-[var(--muted-foreground)]">
+                          {previewPack.learning_objectives.map((objective) => (
+                            <li key={objective}>{objective}</li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
-                  </div>
-
-                  <div className="grid gap-4 rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
                     <div>
                       <p className="text-[12px] font-semibold text-[var(--foreground)]">
-                        {t("Ratings & Reviews")}
+                        {t("Sample Documents")}
                       </p>
+                      {previewPack.sample_documents.length > 0 ? (
+                        <ul className="mt-2 space-y-2">
+                          {previewPack.sample_documents.map((document) => (
+                            <li
+                              key={document}
+                              className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)]"
+                            >
+                              {document}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mt-2 text-[13px] text-[var(--muted-foreground)]">
+                          {t("No preview documents available")}
+                        </p>
+                      )}
+                    </div>
+                  </section>
+
+                  <section className="grid gap-4 rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                    <div>
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-[12px] font-semibold text-[var(--foreground)]">
+                          {t("Ratings & Reviews")}
+                        </p>
+                        <div className="flex items-center gap-2 text-[13px] font-medium text-[var(--foreground)]">
+                          <span className="flex items-center gap-0.5">
+                            {renderStars(previewPack.rating_summary?.average_rating || 0)}
+                          </span>
+                          <span>
+                            {previewPack.rating_summary?.review_count
+                              ? `${previewPack.rating_summary.average_rating.toFixed(1)} • ${previewPack.rating_summary.review_count} ${t("reviews")}`
+                              : t("No reviews yet")}
+                          </span>
+                        </div>
+                      </div>
                       {previewPack.recent_reviews.length > 0 ? (
                         <div className="mt-3 space-y-2">
                           {previewPack.recent_reviews.map((review) => (
@@ -838,7 +912,7 @@ export default function MarketplacePage() {
                         )}
                       </button>
                     </div>
-                  </div>
+                  </section>
                 </>
               ) : null}
             </div>
