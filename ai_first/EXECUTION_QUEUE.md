@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#128 docs: refresh smoke evidence after lane rollout`
+- Latest merged PR: `#130 docs: refresh contest screenshot evidence`
 - Latest smoke result: the 2026-04-25 scripted-reset smoke pass succeeded against current `main`.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -15,16 +15,16 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- Active docs lane: `T037_CONTEST_SCREENSHOT_REFRESH` on `docs/t037-contest-screenshot-refresh-pass`
-- Current purpose: finish the screenshot refresh docs pass and move the refreshed evidence bundle through review.
+- No active AI-owned implementation or docs lane is open right now.
+- Current purpose: keep the refreshed screenshot evidence visible and leave only human-only submission follow-ups explicit.
 
 ## Next recommended task
 
-Complete the screenshot-refresh review lane:
+Review the remaining human-owned submission items:
 
-1. Keep the refreshed screenshot bundle from 2026-04-25 attached to the current docs lane
-2. Validate the updated evidence docs and control-plane mirrors
-3. Open the screenshot-refresh PR in Draft, then move it to Ready after local review
+1. Keep the 2026-04-25 smoke and screenshot evidence bundle as the current repo-backed source of truth
+2. Decide whether an optional video artifact is required for final submission
+3. Complete the final human review items in the contest submission checklist
 
 ## Status Update (2026-04-25)
 
@@ -33,12 +33,11 @@ Complete the screenshot-refresh review lane:
 2. Lane 1 completed `T044`, `T045`, and `T046`.
 3. Lane 2 completed `T049`, `T050`, and `T051`.
 4. The 2026-04-25 scripted-reset smoke run passed on current `main`.
-5. Screenshot evidence was refreshed on 2026-04-25 against the current merged UI and is now ready for docs review.
+5. Screenshot evidence was refreshed and merged on 2026-04-25 through PR `#130`.
 
 ## AI-owned blockers
 
-- None currently for command-backed validation.
-- The screenshot bundle is refreshed locally; only the review/merge step remains for the docs lane.
+- None currently for command-backed validation or screenshot evidence.
 
 ## Human-review blockers
 

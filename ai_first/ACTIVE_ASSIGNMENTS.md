@@ -33,12 +33,12 @@ Rules:
 - Owner: Codex
 - Machine: `MacBook-Air-cua-Loc.local`
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/t037-screenshot-refresh-pass`
-- Task: `T037_CONTEST_SCREENSHOT_REFRESH`
-- Status: Ready for review
-- Branch: `docs/t037-contest-screenshot-refresh-pass`
-- Task packet: `docs/superpowers/tasks/2026-04-24-T037-contest-screenshot-refresh.md`
-- Owned files: `docs/contest/screenshots/*`, `docs/contest/EVIDENCE_CHECKLIST.md`, `docs/contest/VALIDATION_REPORT.md`, `docs/superpowers/tasks/2026-04-24-T037-contest-screenshot-refresh.md`, `docs/superpowers/pr-notes/*`, `ai_first/TASK_REGISTRY.json`, `ai_first/EXECUTION_QUEUE.md`, `ai_first/AI_OPERATING_PROMPT.md`, `ai_first/daily/2026-04-25.md`
-- PR: `#130`
+- Task: `POST_130_SCREENSHOT_SYNC`
+- Status: In progress
+- Branch: `docs/post-130-screenshot-sync`
+- Task packet: `docs/superpowers/tasks/2026-04-25-post-130-screenshot-sync.md`
+- Owned files: `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/AI_OPERATING_PROMPT.md`, `ai_first/EXECUTION_QUEUE.md`, `ai_first/CURRENT_STATE.md`, `ai_first/NEXT_ACTIONS.md`, `ai_first/daily/2026-04-25.md`, `docs/contest/README.md`, `docs/contest/SUBMISSION_PACKAGE.md`, `docs/superpowers/tasks/2026-04-25-post-130-screenshot-sync.md`, `docs/superpowers/pr-notes/*`
+- PR: Not opened yet
 - Last update: 2026-04-25
-- Next action: Wait for CI on `#130`, then merge when the docs lane is green and mergeable.
+- Next action: Remove stale post-merge lane status and refresh contest entry docs after PR `#130`.
 - Blocker: None

@@ -18,8 +18,8 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ## Current Status
 
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
-- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-24 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
-- Screenshot evidence is captured in [`screenshots/`](./screenshots/) and is current again after the `T037` refresh on 2026-04-24.
+- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-25 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
+- Screenshot evidence is captured in [`screenshots/`](./screenshots/) and is current again after the refreshed `T037` re-run merged on 2026-04-25.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 
 ## Evidence Refresh Rules
@@ -27,7 +27,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 Run [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) first when local demo data may be stale, then run [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md), then refresh evidence using these rules:
 
 - Auto-refresh evidence: smoke-backed command results, API reachability checks, and the evidence status table in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
-- Human-triggered refresh: screenshots and any optional video, because they require an interactive capture step.
+- Browser-triggered refresh: screenshots and any optional video, because they require an interactive capture step.
 - Status vocabulary:
   - `Current`: evidence still matches the latest successful smoke run.
   - `Stale`: the MVP path changed after the last capture or validation.

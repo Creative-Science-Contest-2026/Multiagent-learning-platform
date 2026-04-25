@@ -25,7 +25,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
 - Latest product status: Knowledge Pack, marketplace import, batch marketplace import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment generation and review insights, student tutoring context, KB context badges, Teacher Dashboard, Vietnamese MVP prompt variants, contest-facing Vietnamese UI coverage, marketplace sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, marketplace and knowledge-screen polish, dashboard/review polish, dashboard insight depth, metadata depth, session context quality, assessment adaptive difficulty, teacher analytics, assessment PDF export, tutoring session replay, route error boundaries, API rate limiting, teacher invitation metadata, assessment time tracking, tutor follow-up prompts, knowledge-pack version metadata, contest evidence screenshots, contest submission-package sync, checklist evidence alignment, contest product-description drafting, and contest fork-modifications documentation are merged into `main`.
-- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, `ai_first/ACTIVE_ASSIGNMENTS.md` is the active coordination board, the 2026-04-25 smoke/evidence refresh is merged, and the screenshot-refresh docs lane is active to move screenshot evidence back to current.
+- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, `ai_first/ACTIVE_ASSIGNMENTS.md` is the active coordination board, the 2026-04-25 smoke/evidence refresh is merged, and the 2026-04-25 screenshot-refresh re-run is merged through PR `#130`.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -212,7 +212,7 @@ When starting a new feature or fix:
 4. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
 5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, blocker changes, and task selection.
 6. Keep GitHub issue state aligned with merged PRs so the queue mirrors real work, not historical leftovers.
-7. Continue from the next pending registry task in strict order after every successful merge or verification pass. The two-lane contest MVP polish experiment (`T044` through `T051`) is complete, the 2026-04-25 smoke refresh passed, and the current operational step is to finish review/merge of the refreshed screenshot bundle.
+7. Continue from the next pending registry task in strict order after every successful merge or verification pass. The two-lane contest MVP polish experiment (`T044` through `T051`) is complete, the 2026-04-25 smoke refresh passed, and the refreshed screenshot bundle is now merged, so the next operational step is the remaining human review or optional video decision.
 8. Keep the demo-readiness smoke lane current after meaningful merges and treat smoke failures as the next task.
 9. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when local demo state may be stale, missing, or private.
 10. Run the scripted reset command before the next smoke/evidence refresh so the merged utility is validated end to end.

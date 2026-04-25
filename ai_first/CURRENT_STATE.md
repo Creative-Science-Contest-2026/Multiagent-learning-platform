@@ -29,9 +29,9 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ## Active Branches and PRs
 
 - Latest merged docs/control-plane PR: `#129 docs: clean up control plane after smoke refresh`
-- Current branch for this sync: `docs/t037-contest-screenshot-refresh-pass`
+- Current branch for this sync: `docs/post-130-screenshot-sync`
 - Product MVP path status: Knowledge Pack, assessment, tutor, dashboard, marketplace, offline, analytics, contest evidence, submission docs, optional video runbook, two-person collaboration workflow, and the full two-lane contest MVP polish experiment are merged to `main`.
-- Current purpose: move the refreshed screenshot bundle and evidence-doc sync through review.
+- Current purpose: clear the stale post-merge lane status and keep the merged evidence state visible.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -59,16 +59,16 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-24-T037-contest-screenshot-refresh.md`
-- Current open GitHub issue: `#97`
+- Current open task packet: `docs/superpowers/tasks/2026-04-25-post-130-screenshot-sync.md`
+- Current open GitHub issue:
 - Latest completed smoke run result: the 2026-04-25 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
-- Recently completed local work: the screenshot bundle was refreshed again on 2026-04-25, and evidence docs now mark screenshots `Current` in the active docs lane.
+- Recently completed merged work: the screenshot bundle refresh re-run merged on 2026-04-25 through PR `#130`, and evidence docs now mark screenshots `Current`.
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Run the final docs review flow for the refreshed screenshot lane, then open the PR in Draft and move it toward merge.
+Keep the merged screenshot evidence state reflected in the compact mirrors and contest entry docs.
 
 ## Autonomous Merge Policy
 
