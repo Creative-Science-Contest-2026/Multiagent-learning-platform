@@ -451,6 +451,79 @@ async def get_student_progress(limit: int = 50):
     }
 
 
+def _build_teacher_insights(
+    activities: list[dict[str, Any]],
+    assessment_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    analytics = _build_dashboard_analytics(activities, assessment_rows)
+    focus = analytics.get("learning_signals", {}).get("focus_topics", [])
+    recommendations: list[str] = []
+    avg = analytics.get("assessment_trend", {}).get("average_score_percent", 0)
+
+    if avg < 70:
+        recommendations.append("Schedule a targeted review for top focus topics.")
+    if analytics.get("assessment_trend", {}).get("score_delta", 0) < 0:
+        recommendations.append("Follow up with students from recent lower-scoring assessments.")
+    if not focus:
+        recommendations.append("No clear focus topics — consider a short diagnostic quiz.")
+
+    return {
+        "analytics": analytics,
+        "at_risk_topics": focus,
+        "recommendations": recommendations,
+    }
+
+
+@router.get("/insights")
+async def get_dashboard_insights(
+    limit: int = 100,
+    knowledge_base: str | None = None,
+    start_ts: int | None = None,
+    end_ts: int | None = None,
+):
+    """Teacher-facing aggregated insights for a class or cohort.
+
+    This endpoint reuses existing activity aggregation and returns a compact
+    set of actionable signals and recommendations for teachers.
+    """
+    store = get_sqlite_session_store()
+    sessions = await store.list_sessions(limit=limit, offset=0)
+    activities = [await _activity_with_review(store, session) for session in sessions]
+
+    # Apply optional filters: knowledge_base and timestamp window
+    filtered_activities: list[dict[str, Any]] = []
+    for activity in activities:
+        if knowledge_base or start_ts or end_ts:
+            if knowledge_base and not _matches_dashboard_filters(
+                activity, knowledge_base=knowledge_base
+            ):
+                continue
+            ts = activity.get("timestamp") or 0
+            if start_ts is not None and ts < start_ts:
+                continue
+            if end_ts is not None and ts > end_ts:
+                continue
+        filtered_activities.append(activity)
+
+    assessment_rows = [
+        {
+            "session_id": activity["id"],
+            "title": activity["title"],
+            "timestamp": activity["timestamp"],
+            "knowledge_bases": activity["knowledge_bases"],
+            "summary": activity.get("assessment_summary"),
+            "review_ref": activity.get("review_ref"),
+            "assessment_results": activity.get("assessment_summary") and (
+                extract_assessment_review(await store.get_session_with_messages(activity["id"])) or {}
+            ).get("results", []),
+        }
+        for activity in filtered_activities
+        if activity["type"] == "assessment" and activity.get("assessment_summary")
+    ]
+
+    return _build_teacher_insights(filtered_activities, assessment_rows)
+
+
 @router.get("/{entry_id}")
 async def get_activity_entry(entry_id: str):
     store = get_sqlite_session_store()
