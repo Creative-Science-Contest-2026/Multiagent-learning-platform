@@ -121,6 +121,17 @@ export default function SessionReplayPage() {
           )}
         </header>
 
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+            {t("Next Steps")}
+          </p>
+          <p className="mt-2 text-[14px] leading-6 text-[var(--muted-foreground)]">
+            {replayMessages.length > 0
+              ? t("Review your incorrect answers")
+              : t("This tutoring session does not have replayable message content yet.")}
+          </p>
+        </section>
+
         <section className="space-y-4">
           {replayMessages.length > 0 ? (
             replayMessages.map((message) => {
@@ -128,7 +139,7 @@ export default function SessionReplayPage() {
               return (
                 <article
                   key={message.id}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4"
+                  className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-2 text-[13px] font-medium text-[var(--foreground)]">
@@ -139,7 +150,7 @@ export default function SessionReplayPage() {
                       {formatTime(message.created_at)}
                     </span>
                   </div>
-                  <div className="mt-3 whitespace-pre-wrap text-[14px] leading-6 text-[var(--foreground)]">
+                  <div className="mt-3 rounded-xl bg-[var(--background)] px-4 py-3 whitespace-pre-wrap text-[14px] leading-6 text-[var(--foreground)]">
                     {message.content}
                   </div>
                 </article>

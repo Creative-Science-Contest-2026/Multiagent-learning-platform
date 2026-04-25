@@ -77,6 +77,8 @@ export default function DashboardPage() {
 
   const totals = overview?.totals;
   const analytics = overview?.analytics;
+  const focusTopics = analytics?.learning_signals.focus_topics ?? [];
+  const masteredTopics = analytics?.learning_signals.mastered_topics ?? [];
   const cards = useMemo(
     () => [
       {
@@ -103,32 +105,66 @@ export default function DashboardPage() {
     [t, totals],
   );
   const activeFilterCount = [searchTerm, activityType, knowledgeBase, minScore].filter(Boolean).length;
+  const nextActionLabel =
+    focusTopics.length > 0
+      ? t("Review the weakest topics first")
+      : t("Open the latest session and confirm the student is ready for the next pack");
+  const recentActivity = overview?.recent_activity ?? [];
+  const knowledgePackActivity = overview?.knowledge_packs ?? [];
 
   return (
     <main className="h-full overflow-y-auto bg-[var(--background)]">
       <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-6 px-6 py-8">
-        <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-              {t("Teacher Dashboard")}
-            </p>
-            <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
-              {t("Class activity")}
-            </h1>
-            <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-[var(--muted-foreground)]">
-              {t("Review recent assessments, tutoring sessions, and Knowledge Pack usage.")}
-            </p>
+        <header className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+                {t("Teacher Dashboard")}
+              </p>
+              <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
+                {t("Class activity")}
+              </h1>
+              <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-[var(--muted-foreground)]">
+                {t("Review recent assessments, tutoring sessions, and Knowledge Pack usage.")}
+              </p>
+            </div>
+            <Link
+              href="/dashboard/student"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[13px] font-medium text-[var(--foreground)] transition hover:border-[var(--foreground)]"
+            >
+              {t("Open student progress")}
+              <ArrowRight size={15} />
+            </Link>
           </div>
-          <Link
-            href="/dashboard/student"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[13px] font-medium text-[var(--foreground)] transition hover:border-[var(--foreground)]"
-          >
-            {t("Open student progress")}
-            <ArrowRight size={15} />
-          </Link>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-xl bg-[var(--background)] px-4 py-3">
+              <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                {t("Next Steps")}
+              </div>
+              <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                {nextActionLabel}
+              </div>
+            </div>
+            <div className="rounded-xl bg-[var(--background)] px-4 py-3">
+              <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                {t("Needs attention")}
+              </div>
+              <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                {focusTopics.length > 0 ? focusTopics[0]?.topic : t("No weak topics yet")}
+              </div>
+            </div>
+            <div className="rounded-xl bg-[var(--background)] px-4 py-3">
+              <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                {t("Strong areas")}
+              </div>
+              <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                {masteredTopics.length > 0 ? masteredTopics[0]?.topic : t("No strong topics yet")}
+              </div>
+            </div>
+          </div>
         </header>
 
-        <section className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-[13px] font-medium text-[var(--muted-foreground)]">
               <Filter size={14} />
@@ -236,7 +272,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-3">
-          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-[16px] font-semibold text-[var(--foreground)]">
                 {t("Engagement")}
@@ -265,7 +301,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-[16px] font-semibold text-[var(--foreground)]">
                 {t("Assessment trend")}
@@ -302,7 +338,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-[16px] font-semibold text-[var(--foreground)]">
                 {t("Learning signals")}
@@ -315,8 +351,8 @@ export default function DashboardPage() {
                   {t("Needs attention")}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {(analytics?.learning_signals.focus_topics ?? []).length > 0 ? (
-                    analytics?.learning_signals.focus_topics.map((topic) => (
+                  {focusTopics.length > 0 ? (
+                    focusTopics.map((topic) => (
                       <span
                         key={`focus-${topic.topic}`}
                         className="rounded-full bg-rose-50 px-3 py-1 text-[12px] text-rose-700"
@@ -336,8 +372,8 @@ export default function DashboardPage() {
                   {t("Strong areas")}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {(analytics?.learning_signals.mastered_topics ?? []).length > 0 ? (
-                    analytics?.learning_signals.mastered_topics.map((topic) => (
+                  {masteredTopics.length > 0 ? (
+                    masteredTopics.map((topic) => (
                       <span
                         key={`mastered-${topic.topic}`}
                         className="rounded-full bg-emerald-50 px-3 py-1 text-[12px] text-emerald-700"
@@ -369,9 +405,9 @@ export default function DashboardPage() {
                 </span>
               )}
             </div>
-            <div className="overflow-hidden rounded-lg border border-[var(--border)]">
-              {(overview?.recent_activity ?? []).length > 0 ? (
-                overview?.recent_activity.map((activity) => {
+            <div className="overflow-hidden rounded-2xl border border-[var(--border)] shadow-sm">
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity) => {
                   const activityHref =
                     activity.type === "assessment" && activity.review_ref
                       ? `/${activity.review_ref}`
@@ -446,9 +482,9 @@ export default function DashboardPage() {
             <h2 className="mb-3 text-[16px] font-semibold text-[var(--foreground)]">
               {t("Knowledge Packs")}
             </h2>
-            <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
-              {(overview?.knowledge_packs ?? []).length > 0 ? (
-                overview?.knowledge_packs.map((pack) => (
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+              {knowledgePackActivity.length > 0 ? (
+                knowledgePackActivity.map((pack) => (
                   <div
                     key={pack.name}
                     className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3 last:border-b-0"

@@ -161,6 +161,35 @@ export default function AssessmentReviewPage() {
           </button>
         </header>
 
+        <section className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+              {t("Next Steps")}
+            </div>
+            <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+              {review.summary.score_percent < 75
+                ? t("Review challenging topics")
+                : t("Take another assessment to track improvement")}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+              {t("Knowledge Pack")}
+            </div>
+            <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+              {review.knowledge_bases[0] || t("Assessment review not found.")}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+              {t("Overall Score")}
+            </div>
+            <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+              {review.summary.score_percent}%
+            </div>
+          </div>
+        </section>
+
         <ProgressIndicator
           totalQuestions={review.summary.total_questions}
           correctCount={review.summary.correct_count}
@@ -219,7 +248,7 @@ export default function AssessmentReviewPage() {
             review.results.map((result, index) => (
               <article
                 key={result.question_id || `${index}`}
-                className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4"
+                className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -236,7 +265,7 @@ export default function AssessmentReviewPage() {
                     <XCircle size={19} className="shrink-0 text-red-600" />
                   )}
                 </div>
-                <div className="mt-3 grid gap-2 text-[13px] text-[var(--muted-foreground)] md:grid-cols-2">
+                <div className="mt-3 grid gap-2 rounded-xl bg-[var(--background)] p-3 text-[13px] text-[var(--muted-foreground)] md:grid-cols-2">
                   <p>
                     <span className="font-medium text-[var(--foreground)]">
                       {t("Student answer")}:
