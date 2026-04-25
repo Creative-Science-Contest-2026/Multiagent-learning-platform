@@ -7,36 +7,36 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#87 [docs] Teacher-agent platform doctrine and AI-first engineering philosophy`
-- `#87` merged the long-form engineering doctrine and reinforced the repo's bias toward bounded modules, explicit contracts, and future-safe parallel work.
-- Previous workflow result: `#118` synced the queue, prompt, snapshots, and assignment board after the two-person collaboration workflow had already landed in `main`.
-- Previous contest result: `#113` added the optional video storyboard/runbook without changing the deferred status of the video artifact itself.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#126 feat: improve session context quality (T051)`
+- The two-lane contest MVP polish experiment is now fully merged to `main`:
+  `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
+- Current workflow result: the lane task packets created by `T047` and `T048` were exercised end to end and the control plane is now being synced to match the merged reality.
+- Core MVP path in `main` now also includes contest-facing Vietnamese UI coverage, marketplace and knowledge-screen polish, dashboard/review polish, deeper dashboard insight payloads, richer metadata contracts, and improved session context support on top of the earlier marketplace, assessment, tutor, dashboard, offline, analytics, evidence, and submission flows.
 
 ## Active queue
 
-- Active docs/control-plane rollout: `T047 Contest Flow Operating Hygiene Refresh`
-- Active docs/control-plane rollout: `T048 Parallel Lane Task Packet Set`
-- Current purpose: prepare a two-lane contest MVP polish experiment for two accounts or machines without overlapping file ownership by default.
+- Active docs/control-plane sync: post-lane status refresh for `T047` and `T048`
+- Current purpose: replace stale pre-lane bootstrap state with the merged lane results and point the queue to the next smoke/evidence step.
 
 ## Next recommended task
 
-Finish `T047` and `T048`, then start two parallel lanes:
+Run the demo-readiness smoke and evidence refresh loop against the now-merged product state:
 
-1. Lane 1: `T044` Vietnamese coverage, then `T045` marketplace/knowledge polish, then `T046` dashboard/review polish
-2. Lane 2: choose one bounded depth slice from `T049`, `T050`, or `T051`
+1. Use `docs/contest/DEMO_DATA_RESET.md` to reset demo-safe local state if needed
+2. Run the existing smoke lane and update `docs/contest/VALIDATION_REPORT.md` if the evidence freshness changes
+3. Treat any smoke failure as the next product task before starting new polish work
 
 ## Status Update (2026-04-25)
 
 **Queue Advance**:
-1. The old "wait on human review only" queue state has been replaced by a two-lane contest MVP polish experiment.
-2. `T047` refreshes stale coordination state before the experiment starts.
-3. `T048` creates bounded task packets for both lanes so each account has explicit owned files.
-4. Contest submission docs remain ready for human review in parallel with this product-quality backlog refresh.
+1. `T047` and `T048` succeeded: the two-lane experiment had bounded ownership and clean merge flow.
+2. Lane 1 completed `T044`, `T045`, and `T046`.
+3. Lane 2 completed `T049`, `T050`, and `T051`.
+4. Contest submission docs still remain available for human review in parallel with the next smoke/evidence validation pass.
 
 ## AI-owned blockers
 
-- None currently. The immediate AI work is a docs/control-plane bootstrap before two bounded implementation lanes start.
+- None currently. The immediate AI work after this sync is smoke/evidence validation, not another bootstrap packet.
 
 ## Human-review blockers
 
@@ -48,9 +48,9 @@ Finish `T047` and `T048`, then start two parallel lanes:
 1. `ai_first/AI_OPERATING_PROMPT.md`
 2. `ai_first/EXECUTION_QUEUE.md`
 3. `ai_first/ACTIVE_ASSIGNMENTS.md`
-4. `docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md`
-5. `docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md`
-6. `docs/superpowers/tasks/2026-04-25-T048-parallel-lane-task-packets.md`
+4. `docs/contest/DEMO_DATA_RESET.md`
+5. `docs/contest/VALIDATION_REPORT.md`
+6. `docs/superpowers/tasks/2026-04-19-demo-readiness-smoke.md`
 
 ---
 
