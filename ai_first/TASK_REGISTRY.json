@@ -566,7 +566,7 @@
       "estimated_hours": 2,
       "dependencies": ["T036 merged to main", "Fresh screenshot capture path"],
       "status": "completed",
-      "notes": "Merged to main through PR #99. Contest screenshot evidence was refreshed to current on 2026-04-24 and linked docs now point at the latest screenshot bundle."
+      "notes": "Merged to main through PR #99. Re-run on 2026-04-25 after T044-T051 changed contest-facing UI: the screenshot bundle was refreshed again in docs lane `docs/t037-contest-screenshot-refresh-pass`, and evidence docs now mark screenshots current against the latest merged UI."
     },
     {
       "id": "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC",

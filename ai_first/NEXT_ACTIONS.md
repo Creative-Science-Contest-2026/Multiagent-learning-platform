@@ -6,13 +6,13 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Capture a fresh screenshot bundle for the contest-facing UI changed by `T044`, `T045`, and `T046`.
-2. Update `docs/contest/EVIDENCE_CHECKLIST.md` from `Stale` to `Current` only after the new screenshot capture exists.
-3. Keep `docs/contest/VALIDATION_REPORT.md` as the latest command-backed smoke record.
+1. Keep the refreshed screenshot bundle and evidence-doc updates on `docs/t037-contest-screenshot-refresh-pass`.
+2. Open the screenshot-refresh PR in Draft after local review, then move it to Ready when the docs lane is clean.
+3. Keep `docs/contest/VALIDATION_REPORT.md` as the latest command-backed smoke record and screenshot freshness mirror.
 4. Treat any future smoke failure as the next product task before opening another polish slice.
 5. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new lane or docs sync.
 6. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, smoke passes, screenshot refreshes, lane changes, and blocker changes.
-7. Review IP commitment, final product description wording, and optional video requirements in parallel with the remaining screenshot/human evidence step.
+7. Review IP commitment, final product description wording, and optional video requirements in parallel with the final evidence review step.
 
 ## After Milestone 0
 
