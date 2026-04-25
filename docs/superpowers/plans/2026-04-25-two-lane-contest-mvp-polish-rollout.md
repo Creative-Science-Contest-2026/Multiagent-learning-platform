@@ -161,7 +161,7 @@ It must include:
 
 ```markdown
 # T047/T048 Two-Lane Contest MVP Rollout
-``` 
+```
 
 And one Mermaid diagram describing:
 - bootstrap docs refresh
