@@ -236,3 +236,19 @@ export async function getDashboardActivityDetail(entryId: string): Promise<Dashb
   });
   return expectJson<DashboardActivityDetail>(response);
 }
+
+export interface DashboardInsights {
+  analytics: DashboardOverview["analytics"];
+  at_risk_topics: StudentProgressTopic[];
+  recommendations: string[];
+}
+
+/**
+ * Teacher-facing insights: actionable signals and recommendations.
+ */
+export async function getDashboardInsights(limit = 100): Promise<DashboardInsights> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/insights?limit=${limit}`), {
+    cache: "no-store",
+  });
+  return expectJson<DashboardInsights>(response);
+}

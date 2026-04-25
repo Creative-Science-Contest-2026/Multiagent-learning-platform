@@ -15,6 +15,19 @@ Make teacher dashboard summaries and assessment review outputs more actionable t
 - Assessment review communicates clearer next-step insights.
 - Lane 1 can consume better data later without changing this slice's ownership.
 
+## Progress (in this cycle)
+
+- Implemented backend endpoint: `GET /api/v1/dashboard/insights` in `deeptutor/api/routers/dashboard.py`.
+- Added unit test coverage: `tests/api/test_dashboard_router.py` includes `test_dashboard_insights_returns_teacher_recommendations`.
+- Added a minimal TypeScript client wrapper and types in `web/lib/dashboard-api.ts` (`getDashboardInsights`, `DashboardInsights`).
+- Draft PR opened on branch `pod-b/t050-dashboard-insight-depth` (PR #123).
+
+## Next steps
+
+- Expand `insights` payload with cohort- and teacher-scoped filters (if requested).
+- Add front-end consumption examples or a small widget if Lane 1 requests UI exposure.
+- Add additional tests and refine recommendations language.
+
 ## Owned files/modules
 
 - `deeptutor/api/routers/dashboard.py`
