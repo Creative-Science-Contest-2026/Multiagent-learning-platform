@@ -6,20 +6,21 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Keep `ai_first/EXECUTION_QUEUE.md` current after merges and blocker changes.
-2. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new implementation lane.
-3. Review IP commitment, final product description wording, and optional video requirements.
-4. If optional video is required, create a separate focused video capture task from `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`.
-5. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
-6. If a future smoke fails, create or update the next focused product/runtime bug task from the first hard failure.
-7. Keep open issues aligned with active task packets and unfinished work only.
-8. Preserve unrelated dirty files until they are intentionally handled.
+1. Finish `T047 Contest Flow Operating Hygiene Refresh`.
+2. Finish `T048 Parallel Lane Task Packet Set`.
+3. Start Lane 1 with `T044 Contest MVP Vietnamese Coverage Audit and Fix Pass`.
+4. Start Lane 2 with one bounded depth slice from `T049`, `T050`, or `T051`.
+5. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting or switching any lane.
+6. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, lane changes, and blocker changes.
+7. Review IP commitment, final product description wording, and optional video requirements in parallel with the polish backlog.
+8. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
 
 ## After Milestone 0
 
 1. Keep the main system map updated when shared contracts change.
 2. Keep `ai_first/AI_FIRST_ROADMAP.md` current when the autonomous operating loop changes.
 3. Keep CI green and treat CI failures as the next task before starting another runtime/product feature.
+4. Preserve lane ownership boundaries so two-account parallel execution stays low-conflict.
 
 ## Human Review Needed
 

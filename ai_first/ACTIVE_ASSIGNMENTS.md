@@ -20,7 +20,7 @@ Rules:
 - Branch:
 - Task packet:
 - Owned files:
-- PR: `#118`
+- PR:
 - Last update:
 - Next action:
 - Blocker:
@@ -31,12 +31,12 @@ Rules:
 
 - Owner: Codex
 - Machine: MacBook-Air-cua-Loc.local
-- Task: Post-118 control-plane sync
-- Status: in_review
-- Branch: docs/task-registry-count-sync
-- Task packet: docs/superpowers/tasks/2026-04-25-post-118-control-plane-sync.md
-- Owned files: ai_first/AI_OPERATING_PROMPT.md; ai_first/EXECUTION_QUEUE.md; ai_first/ACTIVE_ASSIGNMENTS.md; ai_first/CURRENT_STATE.md; ai_first/NEXT_ACTIONS.md; ai_first/daily/2026-04-25.md; docs/superpowers/tasks/2026-04-25-post-118-control-plane-sync.md; docs/superpowers/pr-notes/2026-04-25-post-118-control-plane-sync.md
-- PR: `#119`
-- Last update: 2026-04-25 18:30 +07
-- Next action: Move PR `#119` to Ready for review after final validation.
+- Task: T047/T048 two-lane contest MVP backlog rollout
+- Status: in_progress
+- Branch: docs/t044-two-lane-parallel-backlog
+- Task packet: docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md
+- Owned files: ai_first/TASK_REGISTRY.json; ai_first/AI_OPERATING_PROMPT.md; ai_first/EXECUTION_QUEUE.md; ai_first/ACTIVE_ASSIGNMENTS.md; ai_first/CURRENT_STATE.md; ai_first/NEXT_ACTIONS.md; ai_first/daily/2026-04-25.md; docs/superpowers/plans/2026-04-25-two-lane-contest-mvp-polish-rollout.md; docs/superpowers/tasks/2026-04-25-T044-contest-vietnamese-coverage.md; docs/superpowers/tasks/2026-04-25-T045-marketplace-knowledge-polish.md; docs/superpowers/tasks/2026-04-25-T046-dashboard-review-polish.md; docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md; docs/superpowers/tasks/2026-04-25-T048-parallel-lane-task-packets.md; docs/superpowers/tasks/2026-04-25-T049-metadata-depth-pass.md; docs/superpowers/tasks/2026-04-25-T050-dashboard-insight-depth.md; docs/superpowers/tasks/2026-04-25-T051-session-context-quality-pass.md; docs/superpowers/pr-notes/2026-04-25-t047-t048-two-lane-rollout.md
+- PR:
+- Last update: 2026-04-25 19:25 +07
+- Next action: Finish registry expansion and publish lane task packets for the two-account experiment.
 - Blocker: None

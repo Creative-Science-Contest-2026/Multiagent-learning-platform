@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "last_updated": "2026-04-25T18:20:00Z",
+    "last_updated": "2026-04-25T12:25:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 35
+    "total_tasks": 43
   },
   "task_categories": {
     "completed": {
@@ -49,8 +49,11 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 2,
+      "tasks": [
+        "T047_CONTEST_FLOW_OPERATING_HYGIENE_REFRESH",
+        "T048_PARALLEL_LANE_TASK_PACKET_SET"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -59,8 +62,15 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 0,
-      "tasks": []
+      "count": 6,
+      "tasks": [
+        "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
+        "T045_MARKETPLACE_KNOWLEDGE_POLISH",
+        "T046_DASHBOARD_REVIEW_POLISH",
+        "T049_METADATA_DEPTH_PASS",
+        "T050_DASHBOARD_INSIGHT_DEPTH",
+        "T051_SESSION_CONTEXT_QUALITY_PASS"
+      ]
     }
   },
   "tasks": [
@@ -661,6 +671,142 @@
       "dependencies": ["T042 merged to main", "docs/contest/DEMO_SCRIPT.md", "docs/contest/HUMAN_REVIEW_HANDOFF.md"],
       "status": "completed",
       "notes": "Merged to main through PR #113. Added docs/contest/VIDEO_CAPTURE_RUNBOOK.md and linked it into contest evidence/submission docs without marking video as captured."
+    },
+    {
+      "id": "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
+      "category": "High",
+      "priority": 36,
+      "title": "Contest MVP Vietnamese Coverage Audit and Fix Pass",
+      "description": "Close obvious English leakage on contest MVP screens and align Vietnamese wording across the contest-facing teacher and student workflow.",
+      "scope": {
+        "frontend": "web/app/(utility)/marketplace/page.tsx, web/app/(utility)/knowledge/page.tsx, web/app/(workspace)/dashboard/page.tsx, web/app/(workspace)/dashboard/student/page.tsx, web/app/(workspace)/dashboard/assessments/[sessionId]/page.tsx, web/app/(workspace)/dashboard/sessions/[sessionId]/page.tsx",
+        "locales": "web/locales/vi/app.json, web/locales/vi/common.json"
+      },
+      "affected_features": ["Contest MVP Screens", "Vietnamese UI", "Teacher and Student Workflow"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["Current contest MVP screens on main", "Existing locale loader"],
+      "status": "pending",
+      "notes": "Planned as Lane 1 bootstrap implementation task after T047/T048 establish the two-account experiment."
+    },
+    {
+      "id": "T045_MARKETPLACE_KNOWLEDGE_POLISH",
+      "category": "Medium",
+      "priority": 37,
+      "title": "Marketplace and Knowledge Pack Screen Polish",
+      "description": "Improve the teacher-facing marketplace and knowledge-pack surfaces so discovery, metadata editing, preview, and import feedback feel more complete and less prototype-like.",
+      "scope": {
+        "frontend": "web/app/(utility)/marketplace/page.tsx, web/app/(utility)/marketplace/error.tsx, web/app/(utility)/knowledge/page.tsx"
+      },
+      "affected_features": ["Marketplace", "Knowledge Pack Management", "Contest Demo UX"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["T044 started or completed", "Current marketplace and knowledge UI on main"],
+      "status": "pending",
+      "notes": "Lane 1 follow-up task that stays frontend-only by default and should not widen into backend contracts without a packet update."
+    },
+    {
+      "id": "T046_DASHBOARD_REVIEW_POLISH",
+      "category": "Medium",
+      "priority": 38,
+      "title": "Dashboard and Review Screen Copy and UX Polish",
+      "description": "Refine teacher dashboard, assessment review, and tutoring replay screen copy and empty-state quality so the contest flow reads like one coherent workflow.",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard/page.tsx, web/app/(workspace)/dashboard/student/page.tsx, web/app/(workspace)/dashboard/assessments/[sessionId]/page.tsx, web/app/(workspace)/dashboard/sessions/[sessionId]/page.tsx, web/components/assessment/LearningJourneySummary.tsx, web/components/assessment/ProgressIndicator.tsx"
+      },
+      "affected_features": ["Teacher Dashboard", "Assessment Review", "Session Replay"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["T044 started or completed", "Current dashboard UI contracts on main"],
+      "status": "pending",
+      "notes": "Lane 1 polish task that should avoid backend changes during the same window."
+    },
+    {
+      "id": "T047_CONTEST_FLOW_OPERATING_HYGIENE_REFRESH",
+      "category": "High",
+      "priority": 39,
+      "title": "Contest Flow Operating Hygiene Refresh",
+      "description": "Refresh stale coordination docs, assignment state, and queue mirrors so two parallel sessions can start the contest MVP polish experiment with accurate ownership and status.",
+      "scope": {
+        "control_plane": "ai_first/ACTIVE_ASSIGNMENTS.md, ai_first/EXECUTION_QUEUE.md, ai_first/AI_OPERATING_PROMPT.md, ai_first/CURRENT_STATE.md, ai_first/NEXT_ACTIONS.md, ai_first/daily/2026-04-25.md",
+        "registry": "ai_first/TASK_REGISTRY.json"
+      },
+      "affected_features": ["AI-first Control Plane", "Parallel Execution Hygiene"],
+      "complexity": "Low",
+      "estimated_hours": 1.5,
+      "dependencies": ["Approved spec docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md"],
+      "status": "in-progress",
+      "notes": "Current branch docs/t044-two-lane-parallel-backlog is implementing this bootstrap task before opening the two lane experiment."
+    },
+    {
+      "id": "T048_PARALLEL_LANE_TASK_PACKET_SET",
+      "category": "High",
+      "priority": 40,
+      "title": "Parallel Lane Task Packet Set",
+      "description": "Create explicit task packets and rollout notes for the two-lane contest MVP polish experiment so each account has bounded owned files and do-not-touch rules.",
+      "scope": {
+        "docs": "docs/superpowers/tasks/2026-04-25-T044-contest-vietnamese-coverage.md, docs/superpowers/tasks/2026-04-25-T045-marketplace-knowledge-polish.md, docs/superpowers/tasks/2026-04-25-T046-dashboard-review-polish.md, docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md, docs/superpowers/tasks/2026-04-25-T048-parallel-lane-task-packets.md, docs/superpowers/tasks/2026-04-25-T049-metadata-depth-pass.md, docs/superpowers/tasks/2026-04-25-T050-dashboard-insight-depth.md, docs/superpowers/tasks/2026-04-25-T051-session-context-quality-pass.md, docs/superpowers/pr-notes/2026-04-25-t047-t048-two-lane-rollout.md"
+      },
+      "affected_features": ["AI-first Control Plane", "Parallel Task Contracts"],
+      "complexity": "Low",
+      "estimated_hours": 2.0,
+      "dependencies": ["T047 started", "Approved spec docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md"],
+      "status": "in-progress",
+      "notes": "Current branch docs/t044-two-lane-parallel-backlog is creating the lane packets and rollout note as the second bootstrap step."
+    },
+    {
+      "id": "T049_METADATA_DEPTH_PASS",
+      "category": "Medium",
+      "priority": 41,
+      "title": "Knowledge and Marketplace Metadata Depth Pass",
+      "description": "Deepen teacher-facing pack metadata and marketplace detail contracts so metadata quality feels more complete without redesigning the product.",
+      "scope": {
+        "backend": "deeptutor/api/routers/knowledge.py, deeptutor/api/routers/marketplace.py, deeptutor/knowledge/manager.py",
+        "api_client": "web/lib/knowledge-api.ts, web/lib/marketplace-api.ts",
+        "tests": "tests/api/test_knowledge_router.py, tests/api/test_marketplace_router.py, tests/knowledge/test_kb_metadata_normalization.py"
+      },
+      "affected_features": ["Knowledge Pack Management", "Marketplace Preview", "Teacher Metadata Flow"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["T048 packet set complete", "Current metadata contracts on main"],
+      "status": "pending",
+      "notes": "Lane 2 bounded depth slice. It should add contract depth without forcing simultaneous Lane 1 page rewrites."
+    },
+    {
+      "id": "T050_DASHBOARD_INSIGHT_DEPTH",
+      "category": "Medium",
+      "priority": 42,
+      "title": "Dashboard Insight Depth Pass",
+      "description": "Make teacher dashboard summaries and assessment review outputs more actionable through bounded contract additions rather than a new analytics subsystem.",
+      "scope": {
+        "backend": "deeptutor/api/routers/dashboard.py, deeptutor/services/session/assessment_review.py",
+        "api_client": "web/lib/dashboard-api.ts",
+        "tests": "tests/api/test_dashboard_router.py, tests/api/test_session_review_router.py"
+      },
+      "affected_features": ["Teacher Dashboard", "Assessment Review"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["T048 packet set complete", "Current dashboard and review routes on main"],
+      "status": "pending",
+      "notes": "Lane 2 depth slice for actionable dashboard signals. Keep contract additions incremental and documented."
+    },
+    {
+      "id": "T051_SESSION_CONTEXT_QUALITY_PASS",
+      "category": "Medium",
+      "priority": 43,
+      "title": "Tutor and Assessment Session Context Quality Pass",
+      "description": "Improve session review and tutoring context quality so the contest learning loop feels less thin while staying inside existing session and reply flows.",
+      "scope": {
+        "backend": "deeptutor/api/routers/sessions.py, deeptutor/agents/chat/agentic_pipeline.py",
+        "api_client": "web/lib/session-api.ts",
+        "tests": "tests/api/test_assessment_router.py, tests/api/test_session_review_router.py, tests/agents/chat/test_agentic_followup_prompts.py"
+      },
+      "affected_features": ["Student Tutor Workspace", "Assessment Review", "Session Replay"],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": ["T048 packet set complete", "Current session and tutoring flows on main"],
+      "status": "pending",
+      "notes": "Lane 2 depth slice focused on contextual quality and bounded follow-up improvements."
     }
   ],
   "github_issues_template": {
