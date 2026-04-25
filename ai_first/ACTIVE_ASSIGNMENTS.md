@@ -15,6 +15,7 @@ Rules:
 
 - Owner:
 - Machine:
+- Worktree:
 - Task:
 - Status:
 - Branch:
@@ -31,6 +32,7 @@ Rules:
 
 - Owner: Codex
 - Machine: MacBook-Air-cua-Loc.local
+- Worktree: /Users/nguyenhuuloc/Documents/Multiagent-learning-platform
 - Task: T047/T048 two-lane contest MVP backlog rollout
 - Status: in_progress
 - Branch: docs/t044-two-lane-parallel-backlog

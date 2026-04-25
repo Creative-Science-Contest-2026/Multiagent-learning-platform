@@ -35,8 +35,9 @@ Before edits:
 1. Read `AGENTS.md`.
 2. Read this file.
 3. Run `git status --short --branch`.
-4. Read the relevant spec, plan, task packet, or compatibility snapshot only if the prompt points to one.
-5. Confirm the assigned task scope, owned files, and do-not-touch files.
+4. Check `ai_first/ACTIVE_ASSIGNMENTS.md` if any parallel lane may already be active.
+5. Read the relevant spec, plan, task packet, or compatibility snapshot only if the prompt points to one.
+6. Confirm the assigned task scope, owned files, and do-not-touch files.
 
 ## Work rules
 
@@ -83,6 +84,24 @@ Before edits:
 - Keep task packets current with owned files and do-not-touch scope before parallel work begins.
 - Do not split one feature across two people unless it has been decomposed into separate task packets with separate ownership.
 - Treat `ai_first/ACTIVE_ASSIGNMENTS.md` as the short-term coordination memory for active work.
+
+## Same-machine parallel rules
+
+- Two AI sessions on the same machine must not edit from the same filesystem checkout.
+- If two sessions are active on one machine, each session must use a different git worktree under `.worktrees/` or another explicitly assigned path.
+- Record the worktree path in `ai_first/ACTIVE_ASSIGNMENTS.md` before code starts.
+- When starting a new lane on the same machine, first run `git fetch origin main`, then create the lane branch and worktree from `origin/main`.
+- If a lane is continuing existing work, reopen its assigned worktree instead of reusing another lane's checkout.
+- Do not run two sessions against the repo root at the same time unless one of them is docs-only and not editing files.
+
+## Sync rules
+
+- Prefer explicit `git fetch origin main` plus `git merge origin/main` inside the active lane worktree.
+- Do not rely on plain `git pull` for lane sync because it hides which upstream branch was integrated.
+- After another lane merges to `main`, every still-active lane must `git fetch origin main` and merge `origin/main` into its own feature branch before the next substantial edit.
+- Do not merge one feature branch into another feature branch.
+- Do not rebase a shared or review-active branch unless the human explicitly asks for that cleanup.
+- If merge conflicts appear after syncing `origin/main`, resolving those conflicts becomes the current task before new feature edits continue.
 
 ## Autonomous completion loop
 
