@@ -6,14 +6,14 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Finish `T047 Contest Flow Operating Hygiene Refresh`.
-2. Finish `T048 Parallel Lane Task Packet Set`.
-3. Start Lane 1 with `T044 Contest MVP Vietnamese Coverage Audit and Fix Pass`.
-4. Start Lane 2 with one bounded depth slice from `T049`, `T050`, or `T051`.
-5. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting or switching any lane.
-6. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, lane changes, and blocker changes.
-7. Review IP commitment, final product description wording, and optional video requirements in parallel with the polish backlog.
-8. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
+1. Finish the post-lane sync for `T047` and `T048`.
+2. Run the demo-readiness smoke flow against the merged `T044`-`T051` product state.
+3. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
+4. Update `docs/contest/VALIDATION_REPORT.md` and evidence freshness mirrors if smoke findings or artifact timestamps changed.
+5. Treat any smoke failure as the next product task before opening another polish slice.
+6. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting or switching any new lane or docs sync.
+7. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, smoke passes, lane changes, and blocker changes.
+8. Review IP commitment, final product description wording, and optional video requirements in parallel with the smoke/evidence lane.
 
 ## After Milestone 0
 

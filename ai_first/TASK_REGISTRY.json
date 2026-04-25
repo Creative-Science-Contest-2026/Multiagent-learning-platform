@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 36,
+      "count": 43,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -45,17 +45,20 @@
         "T041_CONTEST_FORK_MODIFICATIONS_NOTE",
         "T042_CONTEST_HUMAN_REVIEW_HANDOFF",
         "T043_OPTIONAL_CONTEST_VIDEO_CAPTURE_RUNBOOK",
-        "T049_METADATA_DEPTH_PASS"
+        "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
+        "T045_MARKETPLACE_KNOWLEDGE_POLISH",
+        "T046_DASHBOARD_REVIEW_POLISH",
+        "T047_CONTEST_FLOW_OPERATING_HYGIENE_REFRESH",
+        "T048_PARALLEL_LANE_TASK_PACKET_SET",
+        "T049_METADATA_DEPTH_PASS",
+        "T050_DASHBOARD_INSIGHT_DEPTH",
+        "T051_SESSION_CONTEXT_QUALITY_PASS"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 3,
-      "tasks": [
-        "T047_CONTEST_FLOW_OPERATING_HYGIENE_REFRESH",
-        "T048_PARALLEL_LANE_TASK_PACKET_SET",
-        "T050_DASHBOARD_INSIGHT_DEPTH"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -64,13 +67,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 4,
-      "tasks": [
-        "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
-        "T045_MARKETPLACE_KNOWLEDGE_POLISH",
-        "T046_DASHBOARD_REVIEW_POLISH",
-        "T051_SESSION_CONTEXT_QUALITY_PASS"
-      ]
+      "count": 0,
+      "tasks": []
     }
   },
   "tasks": [
@@ -686,8 +684,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["Current contest MVP screens on main", "Existing locale loader"],
-      "status": "in_progress",
-      "notes": "Planned as Lane 1 bootstrap implementation task after T047/T048 establish the two-account experiment."
+      "status": "completed",
+      "notes": "Merged to main through PR #122. Localized contest-facing marketplace, knowledge, and dashboard screens and expanded Vietnamese coverage for the MVP flow."
     },
     {
       "id": "T045_MARKETPLACE_KNOWLEDGE_POLISH",
@@ -702,8 +700,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["T044 started or completed", "Current marketplace and knowledge UI on main"],
-      "status": "pending",
-      "notes": "Lane 1 follow-up task that stays frontend-only by default and should not widen into backend contracts without a packet update."
+      "status": "completed",
+      "notes": "Merged to main through PR #124. Polished marketplace and knowledge-pack teacher screens without widening backend scope."
     },
     {
       "id": "T046_DASHBOARD_REVIEW_POLISH",
@@ -718,8 +716,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["T044 started or completed", "Current dashboard UI contracts on main"],
-      "status": "pending",
-      "notes": "Lane 1 polish task that should avoid backend changes during the same window."
+      "status": "completed",
+      "notes": "Merged to main through PR #125. Improved dashboard, assessment review, and replay readability while keeping existing contracts intact."
     },
     {
       "id": "T047_CONTEST_FLOW_OPERATING_HYGIENE_REFRESH",
@@ -735,8 +733,8 @@
       "complexity": "Low",
       "estimated_hours": 1.5,
       "dependencies": ["Approved spec docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md"],
-      "status": "in-progress",
-      "notes": "Current branch docs/t044-two-lane-parallel-backlog is implementing this bootstrap task before opening the two lane experiment."
+      "status": "completed",
+      "notes": "Completed by the post-lane control-plane sync after the two-lane experiment finished. Queue, prompt, snapshots, and assignments now reflect the merged lane results."
     },
     {
       "id": "T048_PARALLEL_LANE_TASK_PACKET_SET",
@@ -751,8 +749,8 @@
       "complexity": "Low",
       "estimated_hours": 2.0,
       "dependencies": ["T047 started", "Approved spec docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md"],
-      "status": "in-progress",
-      "notes": "Current branch docs/t044-two-lane-parallel-backlog is creating the lane packets and rollout note as the second bootstrap step."
+      "status": "completed",
+      "notes": "Completed on the docs rollout branch before implementation began. The lane packets and rollout note were then exercised by T044 through T051."
     },
     {
       "id": "T049_METADATA_DEPTH_PASS",
@@ -787,8 +785,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["T048 packet set complete", "Current dashboard and review routes on main"],
-      "status": "pending",
-      "notes": "Lane 2 depth slice for actionable dashboard signals. Keep contract additions incremental and documented."
+      "status": "completed",
+      "notes": "Merged to main through PR #123. Added bounded dashboard insight depth and additive TypeScript client support."
     },
     {
       "id": "T051_SESSION_CONTEXT_QUALITY_PASS",
@@ -805,8 +803,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["T048 packet set complete", "Current session and tutoring flows on main"],
-      "status": "pending",
-      "notes": "Lane 2 depth slice focused on contextual quality and bounded follow-up improvements."
+      "status": "completed",
+      "notes": "Merged to main through PR #126. Added additive session context support to session/review payloads and tutoring result metadata."
     }
   ],
   "github_issues_template": {

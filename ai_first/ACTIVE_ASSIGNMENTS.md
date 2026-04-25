@@ -32,48 +32,13 @@ Rules:
 
 - Owner: Codex
 - Machine: MacBook-Air-cua-Loc.local
-- Worktree: /Users/nguyenhuuloc/Documents/Multiagent-learning-platform
-- Task: T047/T048 two-lane contest MVP backlog rollout
+- Worktree: /Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/post-lane-sync
+- Task: T047/T048 post-lane control-plane sync
 - Status: in_progress
-- Branch: docs/t044-two-lane-parallel-backlog
+- Branch: docs/post-lane-sync
 - Task packet: docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md
 - Owned files: ai_first/TASK_REGISTRY.json; ai_first/AI_OPERATING_PROMPT.md; ai_first/EXECUTION_QUEUE.md; ai_first/ACTIVE_ASSIGNMENTS.md; ai_first/CURRENT_STATE.md; ai_first/NEXT_ACTIONS.md; ai_first/daily/2026-04-25.md; docs/superpowers/plans/2026-04-25-two-lane-contest-mvp-polish-rollout.md; docs/superpowers/tasks/2026-04-25-T044-contest-vietnamese-coverage.md; docs/superpowers/tasks/2026-04-25-T045-marketplace-knowledge-polish.md; docs/superpowers/tasks/2026-04-25-T046-dashboard-review-polish.md; docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md; docs/superpowers/tasks/2026-04-25-T048-parallel-lane-task-packets.md; docs/superpowers/tasks/2026-04-25-T049-metadata-depth-pass.md; docs/superpowers/tasks/2026-04-25-T050-dashboard-insight-depth.md; docs/superpowers/tasks/2026-04-25-T051-session-context-quality-pass.md; docs/superpowers/pr-notes/2026-04-25-t047-t048-two-lane-rollout.md
 - PR:
-- Last update: 2026-04-25 19:25 +07
-- Next action: Finish registry expansion and publish lane task packets for the two-account experiment.
+- Last update: 2026-04-25 22:25 +07
+- Next action: Sync registry, queue, prompt, snapshots, and daily log after T044-T051 all merged to main.
 - Blocker: None
-
-### Assignment
-
-- Owner: GitHub Copilot
-- Machine: MacBook-Air-cua-Loc.local
-- Worktree: /Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/lane2
-- Task: T049 metadata depth pass
-- Status: in_progress
-- Branch: pod-b/t049-metadata-depth-pass
-- Task packet: docs/superpowers/tasks/2026-04-25-T049-metadata-depth-pass.md
-- Owned files: deeptutor/api/routers/knowledge.py; deeptutor/api/routers/marketplace.py; deeptutor/knowledge/manager.py; web/lib/knowledge-api.ts; web/lib/marketplace-api.ts; tests/api/test_knowledge_router.py; tests/api/test_marketplace_router.py; tests/knowledge/test_kb_metadata_normalization.py
- - PR: https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/pull/121 (merged)
- - Last update: 2026-04-25 21:10 +07
- - Status: completed
- - Next action: None (completed in this cycle)
- - Blocker: None
-
-### Assignment
-
-- Owner: GitHub Copilot
-- Machine: MacBook-Air-cua-Loc.local
-- Worktree: /Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/lane2
-- Task: T050 dashboard insight depth
-- Status: in_progress
-- Branch: pod-b/t050-dashboard-insight-depth
-- Task packet: docs/superpowers/tasks/2026-04-25-T050-dashboard-insight-depth.md
-- Owned files: deeptutor/api/routers/dashboard.py; deeptutor/services/session/assessment_review.py; web/lib/dashboard-api.ts; tests/api/test_dashboard_router.py; tests/api/test_session_review_router.py
-- PR:
-- Last update: 2026-04-25 21:12 +07
-- Next action: Implement API additions and tests for dashboard insight signals
-- Blocker: None
- - PR: https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/pull/123 (draft)
- - Last update: 2026-04-25 21:35 +07
- - Next action: Self-review, mark PR Ready for review
- - Blocker: None
