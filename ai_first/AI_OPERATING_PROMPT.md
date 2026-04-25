@@ -67,6 +67,15 @@ Before edits:
 - Every PR must include a Markdown architecture note under `docs/superpowers/pr-notes/` with at least one Mermaid diagram.
 - Every PR must state whether `ai_first/architecture/MAIN_SYSTEM_MAP.md` was updated.
 
+## Engineering philosophy
+
+- Build features with bounded modules, explicit contracts, and low coupling so future AI workers can extend the system without cross-feature breakage.
+- Keep policy separate from runtime, observation separate from diagnosis, recommendation separate from execution, and retrieval infrastructure separate from pedagogy.
+- Do not encode product rules as scattered prompt fragments or hidden side effects.
+- Prefer small, isolated modules over shared god files and broad if-else growth.
+- Treat clean architecture as a scaling prerequisite, not a cleanup task for later.
+- Use `ai_first/ENGINEERING_PHILOSOPHY.md` as the long-form doctrine when planning or reviewing architecture-heavy work.
+
 ## Collaboration rules
 
 - For two-person collaboration, prefer one person, one active task, one branch, and one PR.
@@ -174,6 +183,7 @@ When starting a new feature or fix:
 - Every PR updates corresponding task status in JSON
 - Daily logs reference task IDs for tracking progress
 - Architecture changes trigger MAIN_SYSTEM_MAP.md updates per the task scope
+- Post-MVP and upgrade work should be tracked in AI-readable `Now / Next / Later` buckets with product-pipeline context so future workers can continue without rebuilding intent from scratch.
 
 ## Next actions
 

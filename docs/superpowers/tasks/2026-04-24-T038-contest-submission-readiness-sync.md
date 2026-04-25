@@ -47,4 +47,3 @@ Sync the contest-facing entry docs with the latest 2026-04-24 smoke and screensh
 
 - Must include Mermaid diagram.
 - Must state whether `ai_first/architecture/MAIN_SYSTEM_MAP.md` changed.
-
