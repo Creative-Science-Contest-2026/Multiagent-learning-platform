@@ -4,9 +4,13 @@
 
 ## Why
 
+## Owned files in scope
+
 ## Tests run
 
 ## Tests not run
+
+## Current blocker
 
 ## Risks
 
