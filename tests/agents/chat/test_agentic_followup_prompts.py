@@ -124,4 +124,13 @@ async def test_run_emits_followup_questions_in_result_metadata(
         "What derivative do you get for x^3?",
         "Which step turns x^2 into 2x?",
     ]
+    assert result_event.metadata["session_context"] == {
+        "learner_request": "I think the derivative of x^2 is x.",
+        "knowledge_bases": [],
+        "followup_questions": [
+            "What derivative do you get for x^3?",
+            "Which step turns x^2 into 2x?",
+        ],
+        "language": "en",
+    }
     assert "Follow-up questions:" in result_event.metadata["response"]

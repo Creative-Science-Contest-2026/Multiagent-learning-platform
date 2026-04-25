@@ -103,6 +103,9 @@ class AgenticChatPipeline:
             }
             if followup_questions:
                 result_payload["followup_questions"] = followup_questions
+            session_context = self._build_session_context_payload(context, followup_questions)
+            if session_context:
+                result_payload["session_context"] = session_context
             cs = self._get_cost_summary()
             if cs:
                 result_payload["metadata"] = {"cost_summary": cs}
@@ -155,6 +158,9 @@ class AgenticChatPipeline:
         }
         if followup_questions:
             result_payload["followup_questions"] = followup_questions
+        session_context = self._build_session_context_payload(context, followup_questions)
+        if session_context:
+            result_payload["session_context"] = session_context
         cs = self._get_cost_summary()
         if cs:
             result_payload["metadata"] = {"cost_summary": cs}
@@ -1325,6 +1331,23 @@ class AgenticChatPipeline:
                 break
 
         return text, questions
+
+    def _build_session_context_payload(
+        self,
+        context: UnifiedContext,
+        followup_questions: list[str],
+    ) -> dict[str, Any] | None:
+        payload: dict[str, Any] = {"knowledge_bases": []}
+        learner_request = str(context.user_message or "").strip()
+        if learner_request:
+            payload["learner_request"] = learner_request[:280]
+        if context.knowledge_bases:
+            payload["knowledge_bases"] = [str(kb).strip() for kb in context.knowledge_bases if str(kb).strip()]
+        if followup_questions:
+            payload["followup_questions"] = followup_questions
+        if context.language:
+            payload["language"] = str(context.language)
+        return payload if len(payload) > 1 else None
 
     def _acting_user_prompt(self, context: UnifiedContext, thinking_text: str) -> str:
         return self._text(
