@@ -6,14 +6,14 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Finish the post-lane sync for `T047` and `T048`.
-2. Run the demo-readiness smoke flow against the merged `T044`-`T051` product state.
-3. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when demo-safe Knowledge Pack or session state may be stale.
-4. Update `docs/contest/VALIDATION_REPORT.md` and evidence freshness mirrors if smoke findings or artifact timestamps changed.
-5. Treat any smoke failure as the next product task before opening another polish slice.
+1. Finish the current `T036` smoke/evidence refresh branch.
+2. Capture a fresh screenshot bundle for the contest-facing UI changed by `T044`, `T045`, and `T046`.
+3. Update `docs/contest/EVIDENCE_CHECKLIST.md` from `Stale` to `Current` only after the new screenshot capture exists.
+4. Keep `docs/contest/VALIDATION_REPORT.md` as the latest command-backed smoke record.
+5. Treat any future smoke failure as the next product task before opening another polish slice.
 6. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting or switching any new lane or docs sync.
-7. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, smoke passes, lane changes, and blocker changes.
-8. Review IP commitment, final product description wording, and optional video requirements in parallel with the smoke/evidence lane.
+7. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, smoke passes, screenshot refreshes, lane changes, and blocker changes.
+8. Review IP commitment, final product description wording, and optional video requirements in parallel with the remaining screenshot/human evidence step.
 
 ## After Milestone 0
 

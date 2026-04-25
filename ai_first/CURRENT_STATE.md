@@ -28,10 +28,10 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Latest merged product PR: `#126 feat: improve session context quality (T051)`
-- Current branch for this sync: `docs/post-lane-sync`
+- Latest merged docs/control-plane PR: `#127 docs: sync control plane after lane rollout`
+- Current branch for this sync: `docs/demo-readiness-refresh`
 - Product MVP path status: Knowledge Pack, assessment, tutor, dashboard, marketplace, offline, analytics, contest evidence, submission docs, optional video runbook, two-person collaboration workflow, and the full two-lane contest MVP polish experiment are merged to `main`.
-- Current purpose: sync the control plane after `T044` through `T051` all merged and point the repo back to smoke/evidence validation.
+- Current purpose: keep smoke-backed evidence current after `T044` through `T051` merged and record screenshot freshness honestly.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -59,16 +59,16 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md`
+- Current open task packet: `docs/superpowers/tasks/2026-04-24-T036-contest-evidence-refresh.md`
 - Current open GitHub issue:
-- Latest completed smoke run result: scripted reset passed, backend online through the CLI server path, frontend build passed, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
-- Recently completed merged work: `T044`, `T045`, `T046`, `T049`, `T050`, and `T051` are all merged to `main`; the current branch is refreshing queue and status mirrors rather than adding new product behavior.
+- Latest completed smoke run result: the 2026-04-25 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
+- Recently completed merged work: `T044`, `T045`, `T046`, `T049`, `T050`, `T051`, and the post-lane control-plane sync are all merged to `main`; the current branch is refreshing evidence freshness rather than adding new product behavior.
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Finish the post-lane control-plane sync, then run the demo-readiness smoke/evidence refresh loop against the now-merged product state.
+Finish the smoke/evidence refresh lane, then refresh the stale screenshot bundle or carry that gap as an explicit human follow-up.
 
 ## Autonomous Merge Policy
 
