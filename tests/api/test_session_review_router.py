@@ -109,3 +109,134 @@ async def test_record_and_review_quiz_results_preserves_duration_metrics(
     assert review_payload["summary"]["average_time_per_question"] == 50
     assert review_payload["results"][0]["duration_seconds"] == 35
     assert review_payload["results"][1]["duration_seconds"] == 65
+
+
+@pytest.mark.asyncio
+async def test_assessment_review_includes_context_support_and_followups(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await store.create_session(session_id="quiz-context-session")
+    await store.update_session_preferences(
+        "quiz-context-session",
+        {
+            "capability": "deep_question",
+            "tools": ["rag"],
+            "knowledge_bases": ["fractions-pack"],
+            "language": "en",
+        },
+    )
+    await store.add_message(
+        "quiz-context-session",
+        "assistant",
+        "Let's review what went wrong on fractions subtraction.",
+        capability="chat",
+        events=[
+            {
+                "type": "result",
+                "metadata": {
+                    "followup_questions": [
+                        "Which subtraction step caused the mistake?",
+                        "What common denominator should you use first?",
+                    ],
+                    "session_context": {
+                        "knowledge_bases": ["fractions-pack"],
+                        "followup_questions": [
+                            "Which subtraction step caused the mistake?",
+                            "What common denominator should you use first?",
+                        ],
+                    },
+                },
+            }
+        ],
+    )
+    await store.add_message(
+        "quiz-context-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+    await store.update_summary(
+        "quiz-context-session",
+        "Learner needs help with fraction subtraction and denominator alignment.",
+        up_to_msg_id=2,
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/sessions/quiz-context-session/assessment-review")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["context_support"]["knowledge_bases"] == ["fractions-pack"]
+    assert "fraction subtraction" in payload["context_support"]["conversation_summary"].lower()
+    assert payload["context_support"]["followup_questions"] == [
+        "Which subtraction step caused the mistake?",
+        "What common denominator should you use first?",
+    ]
+    assert payload["context_support"]["incorrect_questions"] == [
+        {
+            "question_id": "q1",
+            "question": "3/4 - 1/2",
+            "correct_answer": "1/4",
+        }
+    ]
+
+
+@pytest.mark.asyncio
+async def test_get_session_includes_context_support_snapshot(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await store.create_session(session_id="chat-context-session")
+    await store.update_session_preferences(
+        "chat-context-session",
+        {
+            "capability": "chat",
+            "tools": ["rag"],
+            "knowledge_bases": ["biology-pack"],
+            "language": "en",
+        },
+    )
+    await store.add_message(
+        "chat-context-session",
+        "user",
+        "Why do plants need sunlight?",
+        capability="chat",
+    )
+    await store.add_message(
+        "chat-context-session",
+        "assistant",
+        "Plants use sunlight to drive photosynthesis.",
+        capability="chat",
+        events=[
+            {
+                "type": "result",
+                "metadata": {
+                    "session_context": {
+                        "followup_questions": [
+                            "What role does chlorophyll play?",
+                        ]
+                    }
+                },
+            }
+        ],
+    )
+    await store.update_summary(
+        "chat-context-session",
+        "Learner is reviewing basic photosynthesis concepts.",
+        up_to_msg_id=2,
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/sessions/chat-context-session")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["context_support"]["knowledge_bases"] == ["biology-pack"]
+    assert payload["context_support"]["last_user_message"] == "Why do plants need sunlight?"
+    assert payload["context_support"]["last_assistant_message"] == "Plants use sunlight to drive photosynthesis."
+    assert payload["context_support"]["followup_questions"] == ["What role does chlorophyll play?"]

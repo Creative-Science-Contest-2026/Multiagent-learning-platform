@@ -24,6 +24,19 @@ export interface SessionMessage {
   created_at: number;
 }
 
+export interface SessionContextSupport {
+  knowledge_bases: string[];
+  conversation_summary: string;
+  last_user_message?: string | null;
+  last_assistant_message?: string | null;
+  followup_questions: string[];
+  incorrect_questions?: Array<{
+    question_id?: string | null;
+    question?: string | null;
+    correct_answer?: string | null;
+  }>;
+}
+
 export interface SessionSummary {
   id: string;
   session_id: string;
@@ -73,6 +86,7 @@ export interface SessionDetail {
   };
   messages: SessionMessage[];
   active_turns?: ActiveTurnSummary[];
+  context_support?: SessionContextSupport;
 }
 
 export interface QuizResultItem {
