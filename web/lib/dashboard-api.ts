@@ -243,11 +243,25 @@ export interface DashboardInsights {
   recommendations: string[];
 }
 
+export interface DashboardInsightsFilters {
+  knowledge_base?: string;
+  start_ts?: number;
+  end_ts?: number;
+}
+
 /**
  * Teacher-facing insights: actionable signals and recommendations.
  */
-export async function getDashboardInsights(limit = 100): Promise<DashboardInsights> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/insights?limit=${limit}`), {
+export async function getDashboardInsights(
+  limit = 100,
+  filters: DashboardInsightsFilters = {},
+): Promise<DashboardInsights> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (filters.knowledge_base) params.set("knowledge_base", filters.knowledge_base);
+  if (typeof filters.start_ts === "number") params.set("start_ts", String(filters.start_ts));
+  if (typeof filters.end_ts === "number") params.set("end_ts", String(filters.end_ts));
+
+  const response = await fetch(apiUrl(`/api/v1/dashboard/insights?${params.toString()}`), {
     cache: "no-store",
   });
   return expectJson<DashboardInsights>(response);

@@ -475,7 +475,12 @@ def _build_teacher_insights(
 
 
 @router.get("/insights")
-async def get_dashboard_insights(limit: int = 100):
+async def get_dashboard_insights(
+    limit: int = 100,
+    knowledge_base: str | None = None,
+    start_ts: int | None = None,
+    end_ts: int | None = None,
+):
     """Teacher-facing aggregated insights for a class or cohort.
 
     This endpoint reuses existing activity aggregation and returns a compact
@@ -484,6 +489,21 @@ async def get_dashboard_insights(limit: int = 100):
     store = get_sqlite_session_store()
     sessions = await store.list_sessions(limit=limit, offset=0)
     activities = [await _activity_with_review(store, session) for session in sessions]
+
+    # Apply optional filters: knowledge_base and timestamp window
+    filtered_activities: list[dict[str, Any]] = []
+    for activity in activities:
+        if knowledge_base or start_ts or end_ts:
+            if knowledge_base and not _matches_dashboard_filters(
+                activity, knowledge_base=knowledge_base
+            ):
+                continue
+            ts = activity.get("timestamp") or 0
+            if start_ts is not None and ts < start_ts:
+                continue
+            if end_ts is not None and ts > end_ts:
+                continue
+        filtered_activities.append(activity)
 
     assessment_rows = [
         {
@@ -497,11 +517,11 @@ async def get_dashboard_insights(limit: int = 100):
                 extract_assessment_review(await store.get_session_with_messages(activity["id"])) or {}
             ).get("results", []),
         }
-        for activity in activities
+        for activity in filtered_activities
         if activity["type"] == "assessment" and activity.get("assessment_summary")
     ]
 
-    return _build_teacher_insights(activities, assessment_rows)
+    return _build_teacher_insights(filtered_activities, assessment_rows)
 
 
 @router.get("/{entry_id}")

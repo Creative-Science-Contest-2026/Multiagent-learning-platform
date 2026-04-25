@@ -379,6 +379,61 @@ async def test_dashboard_insights_returns_teacher_recommendations(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_insights_filters_by_knowledge_base_and_time(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+
+    # older assessment in math-pack
+    await _seed_session(
+        store,
+        session_id="old-assessment",
+        capability="deep_question",
+        message="Old quiz",
+        knowledge_bases=["math-pack"],
+    )
+    await store.add_message(
+        "old-assessment",
+        "user",
+        "[Quiz Performance]\nScore: 1/2 (50%)",
+        capability="deep_question",
+    )
+    _set_session_timestamp(store, "old-assessment", 1_700_000_000)
+
+    # recent assessment in fractions-pack
+    await _seed_session(
+        store,
+        session_id="recent-assessment",
+        capability="deep_question",
+        message="Recent quiz",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.add_message(
+        "recent-assessment",
+        "user",
+        "[Quiz Performance]\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+    _set_session_timestamp(store, "recent-assessment", 1_710_000_000)
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        resp_all = client.get("/api/v1/dashboard/insights")
+        assert resp_all.status_code == 200
+        payload_all = resp_all.json()
+        assert payload_all["analytics"]["assessment_trend"]["assessments_completed"] == 2
+
+        resp_kb = client.get("/api/v1/dashboard/insights?knowledge_base=fractions-pack")
+        assert resp_kb.status_code == 200
+        payload_kb = resp_kb.json()
+        assert payload_kb["analytics"]["assessment_trend"]["assessments_completed"] == 1
+
+        resp_time = client.get("/api/v1/dashboard/insights?start_ts=1710000000")
+        assert resp_time.status_code == 200
+        payload_time = resp_time.json()
+        assert payload_time["analytics"]["assessment_trend"]["assessments_completed"] == 1
+
+
+@pytest.mark.asyncio
 async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
