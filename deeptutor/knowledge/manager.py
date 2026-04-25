@@ -32,6 +32,12 @@ PACK_METADATA_FIELDS = (
     "pending_invites",
     "current_version",
     "version_history",
+    "tags",
+    "difficulty",
+    "language",
+    "estimated_hours",
+    "prerequisites",
+    "content_types",
 )
 
 
@@ -79,10 +85,26 @@ def _normalize_teacher_pack_field(field: str, value):
             cleaned_history.append(cleaned_entry)
         return cleaned_history or None
 
-    if field == "learning_objectives":
+    if field in {"learning_objectives", "tags", "prerequisites", "content_types"}:
         if isinstance(value, list):
             cleaned = [item.strip() for item in value if isinstance(item, str) and item.strip()]
             return cleaned or None
+        return None
+
+    if field == "difficulty":
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"beginner", "intermediate", "advanced"}:
+                return normalized
+        return None
+
+    if field == "estimated_hours":
+        if isinstance(value, (int, float)):
+            try:
+                hours = float(value)
+                return hours if hours > 0 else None
+            except (TypeError, ValueError):
+                return None
         return None
 
     if field in {"team_members", "pending_invites"}:

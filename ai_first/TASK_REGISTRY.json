@@ -49,10 +49,11 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 2,
+      "count": 3,
       "tasks": [
         "T047_CONTEST_FLOW_OPERATING_HYGIENE_REFRESH",
-        "T048_PARALLEL_LANE_TASK_PACKET_SET"
+        "T048_PARALLEL_LANE_TASK_PACKET_SET",
+        "T049_METADATA_DEPTH_PASS"
       ]
     },
     "blocked": {
@@ -62,12 +63,11 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 6,
+      "count": 5,
       "tasks": [
         "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
         "T045_MARKETPLACE_KNOWLEDGE_POLISH",
         "T046_DASHBOARD_REVIEW_POLISH",
-        "T049_METADATA_DEPTH_PASS",
         "T050_DASHBOARD_INSIGHT_DEPTH",
         "T051_SESSION_CONTEXT_QUALITY_PASS"
       ]
@@ -769,7 +769,7 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["T048 packet set complete", "Current metadata contracts on main"],
-      "status": "pending",
+      "status": "in_progress",
       "notes": "Lane 2 bounded depth slice. It should add contract depth without forcing simultaneous Lane 1 page rewrites."
     },
     {

@@ -277,6 +277,52 @@ def test_update_config_persists_teacher_pack_metadata(monkeypatch, tmp_path: Pat
     assert body["config"]["pending_invites"] == ["invite@example.com"]
 
 
+def test_update_config_persists_extended_teacher_pack_metadata(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+
+    class _FakeConfigService:
+        def __init__(self) -> None:
+            self.store = {
+                "demo": {
+                    "rag_provider": "llamaindex",
+                }
+            }
+
+        def set_kb_config(self, kb_name: str, config: dict) -> None:
+            current = self.store.get(kb_name, {})
+            current.update(config)
+            self.store[kb_name] = current
+
+        def get_kb_config(self, kb_name: str) -> dict:
+            return self.store.get(kb_name, {})
+
+    fake_service = _FakeConfigService()
+    config_module = importlib.import_module("deeptutor.services.config")
+
+    payload = {
+        "tags": ["algebra", "geometry"],
+        "difficulty": "intermediate",
+        "language": "Vietnamese",
+        "estimated_hours": 12.5,
+        "prerequisites": ["Basic math"],
+        "content_types": ["text", "images"],
+    }
+
+    monkeypatch.setattr(config_module, "get_kb_config_service", lambda: fake_service)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.put("/api/v1/knowledge/demo/config", json=payload)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["config"]["tags"] == ["algebra", "geometry"]
+    assert body["config"]["difficulty"] == "intermediate"
+    assert body["config"]["language"] == "Vietnamese"
+    assert body["config"]["estimated_hours"] == 12.5
+    assert body["config"]["prerequisites"] == ["Basic math"]
+    assert body["config"]["content_types"] == ["text", "images"]
+
+
 def test_get_knowledge_base_details_exposes_teacher_pack_metadata(
     monkeypatch, tmp_path: Path
 ) -> None:

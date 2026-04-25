@@ -42,6 +42,41 @@ def test_get_info_normalizes_teacher_pack_metadata(tmp_path) -> None:
     assert metadata["pending_invites"] == ["invite1@example.com", "invite2@example.com"]
 
 
+def test_get_info_normalizes_extended_teacher_pack_metadata(tmp_path) -> None:
+    kb_root = tmp_path / "knowledge_bases"
+    kb_dir = kb_root / "demo"
+    (kb_dir / "llamaindex_storage").mkdir(parents=True, exist_ok=True)
+
+    manager = KnowledgeBaseManager(base_dir=str(kb_root))
+    manager.config = {
+        "knowledge_bases": {
+            "demo": {
+                "path": "demo",
+                "description": "Knowledge base: demo",
+                "rag_provider": "llamaindex",
+                "tags": ["  algebra  ", "", " geometry "],
+                "difficulty": "  Intermediate  ",
+                "language": "  Vietnamese  ",
+                "estimated_hours": 15.5,
+                "prerequisites": ["  Basic math  ", " ", "Fractions"],
+                "content_types": ["  text  ", "images"],
+                "status": "ready",
+            }
+        }
+    }
+    manager._save_config()
+
+    info = manager.get_info("demo")
+    metadata = info["metadata"]
+
+    assert metadata["tags"] == ["algebra", "geometry"]
+    assert metadata["difficulty"] == "intermediate"
+    assert metadata["language"] == "Vietnamese"
+    assert metadata["estimated_hours"] == 15.5
+    assert metadata["prerequisites"] == ["Basic math", "Fractions"]
+    assert metadata["content_types"] == ["text", "images"]
+
+
 def test_get_info_normalizes_version_history_metadata(tmp_path) -> None:
     kb_root = tmp_path / "knowledge_bases"
     kb_dir = kb_root / "demo"
