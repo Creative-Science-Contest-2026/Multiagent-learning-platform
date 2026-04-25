@@ -23,12 +23,16 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 | Demo-safe reset command | Ready | [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) |
 | Smoke procedure | Ready | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) |
 | Contest rules summary | Ready | [`ai_first/competition/vnexpress-rules-summary.md`](../../ai_first/competition/vnexpress-rules-summary.md) |
-| Final checklist | In review | [`ai_first/competition/submission-checklist.md`](../../ai_first/competition/submission-checklist.md) |
+| Product description draft | Ready for human review | [`ai_first/competition/product-description.md`](../../ai_first/competition/product-description.md) |
+| Fork modifications note | Ready | [`ai_first/competition/fork-modifications.md`](../../ai_first/competition/fork-modifications.md) |
+| Human review handoff | Ready | [`HUMAN_REVIEW_HANDOFF.md`](./HUMAN_REVIEW_HANDOFF.md) |
+| Optional video runbook | Ready if needed | [`VIDEO_CAPTURE_RUNBOOK.md`](./VIDEO_CAPTURE_RUNBOOK.md) |
+| Final checklist | Partially verified | [`ai_first/competition/submission-checklist.md`](../../ai_first/competition/submission-checklist.md) |
 | Optional video | Deferred | Record only if final submission requires a video artifact. |
 
 ## Latest Validation
 
-The latest smoke-backed refresh passed on 2026-04-19 after running the scripted local reset. It verified:
+The latest smoke-backed refresh passed on 2026-04-24 after running the scripted local reset. It verified:
 
 - demo-safe Knowledge Pack `contest-demo-quadratics`;
 - assessment session `contest-assessment-demo`;
@@ -36,7 +40,7 @@ The latest smoke-backed refresh passed on 2026-04-19 after running the scripted 
 - dashboard overview and recent activity;
 - frontend production build with `NEXT_PUBLIC_API_BASE=http://localhost:8001`.
 
-Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The execution PR is `#40`.
+Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` for smoke-backed evidence and `#99` for the screenshot bundle.
 
 ## Human Review Checklist
 
@@ -49,13 +53,17 @@ Before final submission, a human should review:
 - known limitations and environment notes in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md);
 - Apache 2.0 license and HKUDS/DeepTutor attribution.
 
+AI-verifiable checklist items are tracked in [`ai_first/competition/submission-checklist.md`](../../ai_first/competition/submission-checklist.md). Human-only items stay unchecked until a final manual review happens.
+Use [`HUMAN_REVIEW_HANDOFF.md`](./HUMAN_REVIEW_HANDOFF.md) for the shortest remaining manual review path.
+If the submission requires video, use [`VIDEO_CAPTURE_RUNBOOK.md`](./VIDEO_CAPTURE_RUNBOOK.md) before recording.
+
 ## Known Limitations
 
 - Optional video is deferred to avoid storing large media in the repository.
 - Provider-backed AI quality depends on configured model credentials.
 - The backend `deeptutor.api.run_server` path has a reload/absolute-pattern incompatibility with the installed `uvicorn`; latest smoke used the CLI server path with reload disabled.
 - Frontend build may need network access to fetch Google Fonts.
-- Screenshots should be recaptured only if the UI meaningfully changes.
+- Screenshots are current as of the 2026-04-24 `T037` refresh and should be recaptured only if the UI meaningfully changes again.
 
 ## Review Flow
 

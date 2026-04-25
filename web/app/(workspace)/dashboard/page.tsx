@@ -28,6 +28,12 @@ function activityLabel(activity: DashboardActivity): string {
   return activity.type.replaceAll("_", " ");
 }
 
+function scoreDeltaTone(value: number): string {
+  if (value > 0) return "text-emerald-600";
+  if (value < 0) return "text-rose-600";
+  return "text-[var(--muted-foreground)]";
+}
+
 export default function DashboardPage() {
   const { t } = useTranslation();
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
@@ -70,6 +76,7 @@ export default function DashboardPage() {
   }, [filters]);
 
   const totals = overview?.totals;
+  const analytics = overview?.analytics;
   const cards = useMemo(
     () => [
       {
@@ -226,6 +233,127 @@ export default function DashboardPage() {
               </div>
             </div>
           ))}
+        </section>
+
+        <section className="grid gap-4 lg:grid-cols-3">
+          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-[16px] font-semibold text-[var(--foreground)]">
+                {t("Engagement")}
+              </h2>
+              <Activity size={16} className="text-[var(--muted-foreground)]" />
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              <div className="rounded-lg bg-[var(--background)] px-3 py-3">
+                <div className="text-[12px] text-[var(--muted-foreground)]">{t("Active days")}</div>
+                <div className="mt-2 text-[24px] font-semibold text-[var(--foreground)]">
+                  {loading ? "-" : analytics?.engagement.active_days ?? 0}
+                </div>
+              </div>
+              <div className="rounded-lg bg-[var(--background)] px-3 py-3">
+                <div className="text-[12px] text-[var(--muted-foreground)]">{t("Streak")}</div>
+                <div className="mt-2 text-[24px] font-semibold text-[var(--foreground)]">
+                  {loading ? "-" : analytics?.engagement.streak_days ?? 0}
+                </div>
+              </div>
+              <div className="rounded-lg bg-[var(--background)] px-3 py-3">
+                <div className="text-[12px] text-[var(--muted-foreground)]">{t("Knowledge Packs used")}</div>
+                <div className="mt-2 text-[24px] font-semibold text-[var(--foreground)]">
+                  {loading ? "-" : analytics?.engagement.knowledge_packs_used ?? 0}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-[16px] font-semibold text-[var(--foreground)]">
+                {t("Assessment trend")}
+              </h2>
+              <PenLine size={16} className="text-[var(--muted-foreground)]" />
+            </div>
+            <div className="mt-4 space-y-3">
+              <div className="rounded-lg bg-[var(--background)] px-3 py-3">
+                <div className="text-[12px] text-[var(--muted-foreground)]">{t("Average score")}</div>
+                <div className="mt-2 text-[24px] font-semibold text-[var(--foreground)]">
+                  {loading ? "-" : `${analytics?.assessment_trend.average_score_percent ?? 0}%`}
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-lg bg-[var(--background)] px-3 py-3">
+                  <div className="text-[12px] text-[var(--muted-foreground)]">{t("Latest score")}</div>
+                  <div className="mt-2 text-[18px] font-semibold text-[var(--foreground)]">
+                    {loading ? "-" : `${analytics?.assessment_trend.latest_score_percent ?? 0}%`}
+                  </div>
+                </div>
+                <div className="rounded-lg bg-[var(--background)] px-3 py-3">
+                  <div className="text-[12px] text-[var(--muted-foreground)]">{t("Score delta")}</div>
+                  <div
+                    className={`mt-2 text-[18px] font-semibold ${scoreDeltaTone(
+                      analytics?.assessment_trend.score_delta ?? 0,
+                    )}`}
+                  >
+                    {loading
+                      ? "-"
+                      : `${(analytics?.assessment_trend.score_delta ?? 0) > 0 ? "+" : ""}${analytics?.assessment_trend.score_delta ?? 0}`}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-[16px] font-semibold text-[var(--foreground)]">
+                {t("Learning signals")}
+              </h2>
+              <BookOpen size={16} className="text-[var(--muted-foreground)]" />
+            </div>
+            <div className="mt-4 grid gap-4">
+              <div>
+                <div className="text-[12px] font-medium text-[var(--muted-foreground)]">
+                  {t("Needs attention")}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(analytics?.learning_signals.focus_topics ?? []).length > 0 ? (
+                    analytics?.learning_signals.focus_topics.map((topic) => (
+                      <span
+                        key={`focus-${topic.topic}`}
+                        className="rounded-full bg-rose-50 px-3 py-1 text-[12px] text-rose-700"
+                      >
+                        {topic.topic}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-[13px] text-[var(--muted-foreground)]">
+                      {loading ? t("Loading") : t("No weak topics yet")}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div>
+                <div className="text-[12px] font-medium text-[var(--muted-foreground)]">
+                  {t("Strong areas")}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(analytics?.learning_signals.mastered_topics ?? []).length > 0 ? (
+                    analytics?.learning_signals.mastered_topics.map((topic) => (
+                      <span
+                        key={`mastered-${topic.topic}`}
+                        className="rounded-full bg-emerald-50 px-3 py-1 text-[12px] text-emerald-700"
+                      >
+                        {topic.topic}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-[13px] text-[var(--muted-foreground)]">
+                      {loading ? t("Loading") : t("No strong topics yet")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section className="grid gap-5 lg:grid-cols-[1fr_320px]">

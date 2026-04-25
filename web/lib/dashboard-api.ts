@@ -6,6 +6,7 @@ export interface AssessmentSummary {
   incorrect_count: number;
   score_percent: number;
   estimated_time_spent?: number;
+  average_time_per_question?: number;
 }
 
 export interface AssessmentReviewResult {
@@ -14,6 +15,7 @@ export interface AssessmentReviewResult {
   user_answer: string;
   correct_answer: string;
   is_correct: boolean;
+  duration_seconds?: number | null;
 }
 
 export interface AssessmentReview {
@@ -98,6 +100,23 @@ export interface DashboardOverview {
     name: string;
     session_count: number;
   }>;
+  analytics: {
+    engagement: {
+      active_days: number;
+      streak_days: number;
+      knowledge_packs_used: number;
+    };
+    assessment_trend: {
+      assessments_completed: number;
+      average_score_percent: number;
+      latest_score_percent: number;
+      score_delta: number;
+    };
+    learning_signals: {
+      focus_topics: StudentProgressTopic[];
+      mastered_topics: StudentProgressTopic[];
+    };
+  };
   recent_activity: DashboardActivity[];
 }
 
@@ -127,6 +146,13 @@ export interface StudentProgressAssessment {
   review_ref?: string | null;
 }
 
+export interface StudentProgressPathStep {
+  topic: string;
+  status: "review" | "next" | string;
+  source: "focus_topic" | "learning_objective" | string;
+  knowledge_base?: string | null;
+}
+
 export interface StudentProgressPoint {
   session_id: string;
   score_percent: number;
@@ -145,6 +171,7 @@ export interface StudentProgressOverview {
   mastered_topics: StudentProgressTopic[];
   score_trend: StudentProgressPoint[];
   recent_assessments: StudentProgressAssessment[];
+  suggested_learning_path: StudentProgressPathStep[];
 }
 
 async function expectJson<T>(response: Response): Promise<T> {

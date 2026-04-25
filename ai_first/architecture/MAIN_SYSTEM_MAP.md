@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-23
+Last updated: 2026-04-24
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -36,6 +36,7 @@ flowchart TD
   Product --> TeacherWorkspace["Teacher Workspace"]
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
+  KnowledgePack --> KPVersions["Versioned teacher-pack metadata: current_version + version_history"]
   
   Product --> Marketplace["Knowledge Pack Marketplace"]
   Marketplace --> MarketplaceAPI["/api/v1/marketplace"]
@@ -45,9 +46,13 @@ flowchart TD
   MarketplacePreview --> PreviewModal["Preview modal: metadata + sample documents"]
   MarketplacePreview --> PackRatings["Average rating + recent reviews"]
   Marketplace --> MarketplaceImport["POST /api/v1/marketplace/import/{pack_name}"]
+  Marketplace --> MarketplaceBatchImport["POST /api/v1/marketplace/import-batch"]
   Marketplace --> MarketplaceReviewAPI["POST /api/v1/marketplace/{pack_name}/reviews"]
   MarketplaceReviewAPI --> ReviewStorage["KB config: marketplace_reviews metadata"]
   MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported"]
+  MarketplaceBatchImport --> BatchSelectUI["Multi-select cards + import selected action bar"]
+  MarketplaceBatchImport --> ImportedClone
+  ImportedClone --> OfflinePackManifest["Browser offline imported-pack manifest"]
   
   Product --> AssessmentBuilder["Assessment Builder"]
   AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
@@ -61,22 +66,35 @@ flowchart TD
   Product --> StudentTutor["Student Tutor Workspace"]
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
   StudentTutor --> TutorKBBadges["KB Context Badges in Chat Messages"]
+  StudentTutor --> TutorFollowups["Optional follow-up questions in tutor replies"]
   TutorKBBadges --> SnapshotKBs["Message requestSnapshot.knowledgeBases"]
+  TutorFollowups --> ChatResponse["Agentic chat final response section: Follow-up questions"]
   
   Product --> TeacherDashboard["Teacher Dashboard"]
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
   DashboardSummary --> DashboardFilters["History filters: type + KB + search + min score"]
+  DashboardSummary --> TeacherAnalytics["Teacher Analytics Signals"]
+  TeacherAnalytics --> EngagementSignals["Engagement: active days + streak + KB usage"]
+  TeacherAnalytics --> AssessmentTrend["Assessment trend: average + latest + delta"]
+  TeacherAnalytics --> DifficultySignals["Learning signals: focus topics + strong areas"]
   TeacherDashboard --> StudentDashboard["Student Progress Dashboard"]
   TeacherDashboard --> AssessmentReview["Assessment Review Drill-down"]
   StudentDashboard --> StudentRoute["/dashboard/student"]
   StudentDashboard --> StudentProgressAPI["GET /api/v1/dashboard/student-progress"]
   StudentDashboard --> TrendCards["Streak + average score + recent assessments"]
   StudentDashboard --> TopicSignals["Focus topics + mastered topics"]
+  StudentDashboard --> LearningPathSignals["Suggested learning path sequence"]
+  LearningPathSignals --> PathEngine["Deterministic learning-path helper"]
+  PathEngine --> FocusTopicInputs["Focus topics from assessment analysis"]
+  PathEngine --> ObjectiveInputs["Knowledge-pack learning_objectives metadata"]
   AssessmentReview --> ReviewRoute["/dashboard/assessments/[sessionId]"]
   AssessmentReview --> ReviewAPI["/api/v1/sessions/{session_id}/assessment-review"]
+  AssessmentReview --> OfflineQuizQueue["Browser offline quiz-result sync queue"]
   AssessmentReview --> ProgressIndicator["ProgressIndicator Component"]
   AssessmentReview --> LearningJourney["LearningJourneySummary Component"]
+  AssessmentReview --> TimeMetrics["Timing metrics: total + average + per-question response time"]
   AssessmentReview --> AssessErrorBoundary["Route Error Boundary: /dashboard/assessments/error.tsx"]
+  ReviewAPI --> QuizTranscript["[Quiz Performance] transcript with optional time: Ns suffix"]
   ProgressIndicator --> ScoreViz["Score Progress Bar + Recommendations"]
   LearningJourney --> TopicBadges["Mastered/Recommended Topics"]
   Marketplace --> MarketErrorBoundary["Route Error Boundary: /marketplace/error.tsx"]

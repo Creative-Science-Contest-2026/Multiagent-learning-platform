@@ -1,49 +1,50 @@
 # Execution Queue
 
-Last updated: 2026-04-23
+Last updated: 2026-04-25
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#74 [MVP] T025 Adaptive Difficulty Selection`
-- `#74` added coordinator-side adaptive quiz difficulty selection from recent quiz performance context, then passed all required CI checks before merge.
-- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, assessment insights, adaptive difficulty selection, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, teacher dashboard filtering, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
+- Latest merged PR: `#118 [docs] Post-116 collaboration workflow status sync`
+- `#118` synced the queue, prompt, snapshots, and assignment board after the two-person collaboration workflow had already landed in `main`.
+- Previous workflow result: `#116` added the `ai_first/ACTIVE_ASSIGNMENTS.md` coordination board, encoded collaboration rules in the operating prompt, and tightened task/handoff templates for assignment-before-code work.
+- Previous contest result: `#113` added the optional video storyboard/runbook without changing the deferred status of the video artifact itself.
+- Core MVP path in `main` now includes marketplace import, preview, ratings, sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, batch import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment insights, adaptive difficulty selection, teacher analytics, assessment timing metrics, tutor follow-up prompts, knowledge-pack version metadata, student learning-path sequencing, PDF export, tutoring session replay, recommendation flow, KB context badges, student progress dashboard, Vietnamese prompts, route error boundaries, API rate limiting, and teacher collaboration metadata in addition to the earlier Knowledge Pack, assessment, tutor, dashboard, and contest evidence flows.
 
 ## Active queue
 
-- Active issue: `#75 [MVP] Mobile-First Marketplace Responsive Design`
-- Active branch: `pod-a/t026-marketplace-mobile`
-- Active task packet: `docs/superpowers/tasks/2026-04-23-T026-marketplace-mobile.md`
-- Focus set: `T026` (Marketplace mobile responsive design)
+- No active AI implementation task.
+- Current state: contest submission package is waiting on manual review, with optional video support docs ready if the team decides to record.
 
 ## Next recommended task
 
-Implement `T026` on `pod-a/t026-marketplace-mobile`, then open a Draft PR with a Mermaid architecture note and required validation before review.
+Wait for human review of the submission package. If the team decides a video is required, use `docs/contest/VIDEO_CAPTURE_RUNBOOK.md` to record it; otherwise no further AI lane is required.
 
-## Status Update (2026-04-21)
+## Status Update (2026-04-25)
 
 **Queue Advance**:
-1. `#74` merged to `main` after all required CI checks passed
-2. Issue `#73` auto-closed with the merge
-3. Next pending registry task selected in strict order: `T026 Mobile-First Marketplace Responsive Design`
-4. Issue `#75` created and task packet added for the new execution lane
+1. `#118` merged to `main` after all required CI checks passed
+2. The queue, prompt, compatibility snapshots, and assignment board were synced to the latest merged state
+3. `T043 Optional Contest Video Capture Runbook` remains complete on `main`
+4. The contest queue is still waiting on manual review unless the team chooses to record the optional video
 
 ## AI-owned blockers
 
-- None currently. The scripted-reset smoke lane passed with demo-safe reset output, backend startup through the CLI server path, frontend production build, Knowledge Pack metadata, assessment session evidence, tutor session evidence, and dashboard activity.
+- None currently. The contest submission package is now blocked only by human review actions and the optional choice of whether to record video.
 
 ## Human-review blockers
 
-- None currently. Human review is still required for product direction changes, deployment or credential decisions, and any PR explicitly marked blocked.
+- Human-only submission items still remain, including IP commitment review, optional video decision, and final package sign-off.
 
 ## Read path
 
 1. `ai_first/AI_OPERATING_PROMPT.md`
 2. `ai_first/EXECUTION_QUEUE.md`
-3. Task packet for the active branch
-4. `ai_first/CURRENT_STATE.md` only if more context is needed
+3. `ai_first/ACTIVE_ASSIGNMENTS.md`
+4. `docs/contest/HUMAN_REVIEW_HANDOFF.md`
+5. `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
 
 ---
 
@@ -67,7 +68,15 @@ Implement `T026` on `pod-a/t026-marketplace-mobile`, then open a Draft PR with a
 | T023: Cache Optimization | Completed | 2 | NO | Done |
 | T024: Team Sharing | Completed | 6 | NO | Done |
 | T025: Adaptive Difficulty | Completed | 5 | NO | Done |
-| T026: Marketplace Mobile | In Progress | 1 | NO | Now |
+| T026: Marketplace Mobile | Completed | 1 | NO | Done |
+| T027: Analytics Dashboard | Completed | 8 | NO | Done |
+| T029: Marketplace Search | Completed | 3 | NO | Done |
+| T030: Assessment Time | Completed | 2 | NO | Done |
+| T031: Tutor Follow-Up Questions | Completed | 3 | NO | Done |
+| T032: Knowledge Pack Versioning | Completed | 4 | NO | Done |
+| T033: Suggested Learning Path Sequencing | Completed | 6 | NO | Done |
+| T034: Batch Import Multiple Packs | Completed | 2 | NO | Done |
+| T035: Offline Mode for Downloaded Packs | Completed | 6 | NO | Done |
 | T022: Error Boundaries | Completed | 2 | NO | Done |
 | T028: Rate Limiting | Completed | 2 | YES | Done |
 

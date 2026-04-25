@@ -1,4 +1,5 @@
 import { apiUrl } from "@/lib/api";
+import { cacheImportedPack } from "@/lib/offline-pack-cache";
 
 export interface MarketplacePackMetadata {
   subject?: string | null;
@@ -68,6 +69,7 @@ const MARKETPLACE_LIST_CACHE_TTL_MS = 5 * 60 * 1000;
 const marketplaceListCache = new Map<string, MarketplaceListCacheEntry>();
 
 function buildMarketplaceListCacheKey(
+  search?: string,
   sharingStatus?: string,
   subject?: string,
   owner?: string,
@@ -76,6 +78,7 @@ function buildMarketplaceListCacheKey(
   offset = 0,
 ): string {
   return JSON.stringify({
+    search: search || "",
     sharingStatus: sharingStatus || "",
     subject: subject || "",
     owner: owner || "",
@@ -90,6 +93,7 @@ function isMarketplaceListCacheFresh(entry?: MarketplaceListCacheEntry): boolean
 }
 
 export function getCachedMarketplacePacks(
+  search?: string,
   sharingStatus?: string,
   subject?: string,
   owner?: string,
@@ -98,6 +102,7 @@ export function getCachedMarketplacePacks(
   offset = 0,
 ): MarketplaceListResponse | null {
   const cacheKey = buildMarketplaceListCacheKey(
+    search,
     sharingStatus,
     subject,
     owner,
@@ -109,6 +114,7 @@ export function getCachedMarketplacePacks(
 }
 
 export function isMarketplacePacksCacheStale(
+  search?: string,
   sharingStatus?: string,
   subject?: string,
   owner?: string,
@@ -117,6 +123,7 @@ export function isMarketplacePacksCacheStale(
   offset = 0,
 ): boolean {
   const cacheKey = buildMarketplaceListCacheKey(
+    search,
     sharingStatus,
     subject,
     owner,
@@ -132,6 +139,7 @@ export function invalidateMarketplaceListCache(): void {
 }
 
 export async function listMarketplacePacks(
+  search?: string,
   sharingStatus?: string,
   subject?: string,
   owner?: string,
@@ -141,6 +149,7 @@ export async function listMarketplacePacks(
   options: MarketplaceListFetchOptions = {},
 ): Promise<MarketplaceListResponse> {
   const cacheKey = buildMarketplaceListCacheKey(
+    search,
     sharingStatus,
     subject,
     owner,
@@ -165,6 +174,7 @@ export async function listMarketplacePacks(
   });
 
   if (sharingStatus) params.append("sharing_status", sharingStatus);
+  if (search) params.append("search", search);
   if (subject) params.append("subject", subject);
   if (owner) params.append("owner", owner);
   if (sortBy) params.append("sort_by", sortBy);
@@ -246,6 +256,20 @@ export interface ImportPackResult {
   };
 }
 
+export interface BatchImportPackResult {
+  source_pack: string;
+  success: boolean;
+  message: string;
+  pack: ImportPackResult["pack"] | null;
+}
+
+export interface BatchImportPacksResult {
+  success: boolean;
+  requested: number;
+  imported: number;
+  results: BatchImportPackResult[];
+}
+
 export interface SubmitMarketplaceReviewRequest {
   reviewer: string;
   rating: number;
@@ -280,6 +304,57 @@ export async function importMarketplacePack(
   }
 
   const result = await response.json();
+  cacheImportedPack({
+    name: result.pack.name,
+    imported_at: result.pack.import_date,
+    metadata: {
+      subject: result.pack.subject ?? null,
+      grade: result.pack.grade ?? null,
+      owner: result.pack.owner ?? null,
+      sharing_status: "private",
+    },
+  });
+  invalidateMarketplaceListCache();
+  return result;
+}
+
+export async function importMarketplacePacks(
+  packNames: string[],
+): Promise<BatchImportPacksResult> {
+  const response = await fetch(
+    apiUrl("/api/v1/marketplace/import-batch"),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pack_names: packNames }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    try {
+      const error = JSON.parse(errorBody);
+      throw new Error(error.detail || `Failed to import packs: ${response.status}`);
+    } catch {
+      throw new Error(`Failed to import packs: ${response.status} ${response.statusText}`);
+    }
+  }
+
+  const result = (await response.json()) as BatchImportPacksResult;
+  result.results
+    .filter((row) => row.success && row.pack)
+    .forEach((row) => {
+      cacheImportedPack({
+        name: row.pack!.name,
+        imported_at: row.pack!.import_date,
+        metadata: {
+          subject: row.pack!.subject ?? null,
+          grade: row.pack!.grade ?? null,
+          owner: row.pack!.owner ?? null,
+          sharing_status: "private",
+        },
+      });
+    });
   invalidateMarketplaceListCache();
   return result;
 }

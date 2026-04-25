@@ -8,7 +8,7 @@ import QuestionFollowupPanel, {
   type FollowupThreadState,
 } from "@/components/quiz/QuestionFollowupPanel";
 import { buildQuizFollowupConfig, type QuizQuestion } from "@/lib/quiz-types";
-import { recordQuizResults } from "@/lib/session-api";
+import { flushQueuedQuizResults, recordQuizResults } from "@/lib/session-api";
 import { shouldAppendEventContent } from "@/lib/stream";
 import { type StartTurnMessage, type StreamEvent, UnifiedWSClient } from "@/lib/unified-ws";
 
@@ -22,9 +22,13 @@ type AnswerState = {
   selected: string | null;
   typed: string;
   submitted: boolean;
+  startedAt: number;
+  durationSeconds?: number;
 };
 
-const EMPTY_ANSWER: AnswerState = { selected: null, typed: "", submitted: false };
+function createEmptyAnswerState(startedAt = Date.now()): AnswerState {
+  return { selected: null, typed: "", submitted: false, startedAt };
+}
 
 function createEmptyThreadState(): FollowupThreadState {
   return {
@@ -80,6 +84,7 @@ export default function QuizViewer({
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [threads, setThreads] = useState<Record<string, FollowupThreadState>>({});
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saved" | "queued-offline" | "syncing">("idle");
   const lastReportedSignatureRef = useRef("");
   const threadsRef = useRef<Record<string, FollowupThreadState>>({});
   const threadRunnersRef = useRef<
@@ -87,7 +92,7 @@ export default function QuizViewer({
   >(new Map());
 
   const q = questions[idx];
-  const ans = answers[idx] ?? EMPTY_ANSWER;
+  const ans = answers[idx] ?? createEmptyAnswerState();
   const total = questions.length;
   const navigationProgress = total > 0 ? ((idx + 1) / total) * 100 : 0;
   const questionKey = q ? getQuestionKey(q, idx) : "";
@@ -103,6 +108,14 @@ export default function QuizViewer({
     threadsRef.current = threads;
   }, [threads]);
 
+  useEffect(() => {
+    if (!q) return;
+    setAnswers((prev) => {
+      if (prev[idx]) return prev;
+      return { ...prev, [idx]: createEmptyAnswerState() };
+    });
+  }, [idx, q]);
+
   useEffect(
     () => () => {
       threadRunnersRef.current.forEach(({ client }) => client.disconnect());
@@ -115,7 +128,7 @@ export default function QuizViewer({
     (patch: Partial<AnswerState>) =>
       setAnswers((prev) => ({
         ...prev,
-        [idx]: { ...(prev[idx] ?? EMPTY_ANSWER), ...patch },
+        [idx]: { ...(prev[idx] ?? createEmptyAnswerState()), ...patch },
       })),
     [idx],
   );
@@ -285,6 +298,7 @@ export default function QuizViewer({
             user_answer: getUserAnswer(question, answer),
             correct_answer: question.correct_answer,
             is_correct: isAnswerCorrect(question, answer),
+            duration_seconds: answer.durationSeconds,
           },
         ];
       }),
@@ -296,21 +310,44 @@ export default function QuizViewer({
     const signature = JSON.stringify(submittedResults);
     if (!signature || signature === lastReportedSignatureRef.current) return;
     lastReportedSignatureRef.current = signature;
-    void recordQuizResults(sessionId, submittedResults).catch((error) => {
-      console.error("Failed to record quiz results:", error);
-      if (lastReportedSignatureRef.current === signature) {
-        lastReportedSignatureRef.current = "";
-      }
-    });
+    void recordQuizResults(sessionId, submittedResults)
+      .then((result) => {
+        setSaveStatus(result.queued_offline ? "queued-offline" : "saved");
+      })
+      .catch((error) => {
+        console.error("Failed to record quiz results:", error);
+        if (lastReportedSignatureRef.current === signature) {
+          lastReportedSignatureRef.current = "";
+        }
+      });
   }, [completedCount, sessionId, submittedResults, total]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleOnline = () => {
+      setSaveStatus((current) => (current === "queued-offline" ? "syncing" : current));
+      void flushQueuedQuizResults().then((count) => {
+        if (count > 0) {
+          setSaveStatus("saved");
+        } else {
+          setSaveStatus((current) => (current === "syncing" ? "queued-offline" : current));
+        }
+      });
+    };
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
+  }, []);
 
   const handleSubmit = () => {
     if (ans.submitted) return;
-    updateAnswer({ submitted: true });
+    const durationSeconds =
+      ans.durationSeconds ??
+      Math.max(1, Math.round((Date.now() - (ans.startedAt || Date.now())) / 1000));
+    updateAnswer({ submitted: true, durationSeconds });
   };
 
   const handleReset = () => {
-    updateAnswer({ selected: null, typed: "", submitted: false });
+    updateAnswer(createEmptyAnswerState());
   };
 
   const handleToggleFollowup = useCallback(() => {
@@ -335,7 +372,7 @@ export default function QuizViewer({
     const content = currentThread.input.trim();
     if (!content || currentThread.isStreaming) return;
 
-    const answer = answers[idx] ?? EMPTY_ANSWER;
+    const answer = answers[idx] ?? createEmptyAnswerState();
     const followupConfig = buildQuizFollowupConfig(
       q,
       getUserAnswer(q, answer),
@@ -373,6 +410,15 @@ export default function QuizViewer({
         <span className="mr-2 text-[11px] font-semibold text-[var(--muted-foreground)]">
           {completedCount}/{total}
         </span>
+        {saveStatus !== "idle" && (
+          <span className="mr-2 rounded-full bg-[var(--muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--muted-foreground)]">
+            {saveStatus === "saved"
+              ? t("Results saved")
+              : saveStatus === "queued-offline"
+                ? t("Saved offline, syncing later")
+                : t("Syncing offline results")}
+          </span>
+        )}
         <div className="flex flex-wrap gap-1">
           {questions.map((question, questionIndex) => {
             const answer = answers[questionIndex];

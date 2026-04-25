@@ -18,8 +18,8 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ## Current Status
 
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
-- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-19 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
-- Screenshot evidence is captured in [`screenshots/`](./screenshots/).
+- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-24 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
+- Screenshot evidence is captured in [`screenshots/`](./screenshots/) and is current again after the `T037` refresh on 2026-04-24.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 
 ## Evidence Refresh Rules

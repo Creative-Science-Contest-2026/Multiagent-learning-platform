@@ -8,15 +8,15 @@ Refresh these only when the UI changed or when the latest smoke-backed validatio
 
 | Area | Evidence | Refresh mode | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Human capture | Current | [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png) |
-| Knowledge Pack | Metadata still visible after reload | Human capture | Current | [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png) |
-| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Human capture | Current | [`04-assessment-config.png`](./screenshots/04-assessment-config.png) |
-| Assessment | Generated questions visible | Human capture | Current | [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png) |
-| Assessment | Common-mistake or feedback guidance visible | Human capture | Current | [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png) |
-| Tutor Agent | Student asks a follow-up question | Human capture | Current | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
-| Tutor Agent | Tutor response with learning context | Human capture | Current | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
-| Dashboard | Summary cards visible | Human capture | Current | [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png) |
-| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Human capture | Current | [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png) |
+| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current Knowledge Pack edit surface. |
+| Knowledge Pack | Metadata still visible after reload | Human capture | Current | Refreshed on 2026-04-24 in `T037` after reload against the current Knowledge Pack UI. |
+| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the live assessment configuration flow. |
+| Assessment | Generated questions visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded contest assessment session. |
+| Assessment | Common-mistake or feedback guidance visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded contest assessment guidance view. |
+| Tutor Agent | Student asks a follow-up question | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded tutor replay session. |
+| Tutor Agent | Tutor response with learning context | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the seeded tutor replay session. |
+| Dashboard | Summary cards visible | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current dashboard summary view. |
+| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Human capture | Current | Refreshed on 2026-04-24 in `T037` from the current dashboard activity feed. |
 
 ## Required Command Evidence
 
@@ -24,14 +24,14 @@ Refresh these automatically after every successful smoke pass.
 
 | Command | Refresh mode | Status | Source |
 | --- | --- | --- | --- |
-| `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run; see `VALIDATION_REPORT.md`. |
-| `cd web && npm run build` | Auto after smoke | Current | Passed in the 2026-04-19 scripted-reset smoke run with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing lockfile warning. |
+| `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed on 2026-04-24; see `VALIDATION_REPORT.md`. |
+| `cd web && npm run build` | Auto after smoke | Current | Passed on 2026-04-24 after `npm ci`, with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing lockfile warning. |
 
 ## Optional Video
 
@@ -42,6 +42,8 @@ Capture one short video, ideally under five minutes:
 3. Student tutoring follow-up.
 4. Teacher Dashboard review.
 5. Validation report summary.
+
+If capture is required, use [`VIDEO_CAPTURE_RUNBOOK.md`](./VIDEO_CAPTURE_RUNBOOK.md) for the clip order, narration scope, and storage rules.
 
 Store large video files outside the repository and link them here:
 
@@ -59,6 +61,6 @@ Video status follows the same freshness states:
 | --- | --- | --- |
 | Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
 | Product commands have smoke-backed validation evidence | Passed | See `VALIDATION_REPORT.md`. |
-| Screenshots are captured and linked | Passed | All screenshot entries are currently marked `Current`. |
+| Screenshots are captured and linked | Passed | Screenshot bundle was refreshed on 2026-04-24 in `T037`. |
 | Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |
 | No secrets or private data in evidence | Passed | Screenshots use demo-safe Knowledge Pack and session data. |

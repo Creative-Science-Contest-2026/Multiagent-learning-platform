@@ -83,8 +83,8 @@ async def test_assessment_recommend_returns_targeted_next_topic(
         "assessment-recent",
         "user",
         "[Quiz Performance]\n"
-        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4)\n"
-        "2. [q2] Q: Solve fractions subtraction 5/6 - 1/3 -> Answered: 1/2 (Incorrect, correct: 1/2)\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "2. [q2] Q: Solve fractions subtraction 5/6 - 1/3 -> Answered: 1/2 (Incorrect, correct: 1/2, time: 61s)\n"
         "Score: 0/2 (0%)",
         capability="deep_question",
     )

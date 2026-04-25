@@ -1,11 +1,10 @@
 from __future__ import annotations
 
+import importlib
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-
-from deeptutor.api.routers import marketplace
 
 
 class _FakeKBManager:
@@ -70,7 +69,11 @@ class _FakeKBManager:
         return
 
 
-def _build_app(monkeypatch, tmp_path: Path) -> TestClient:
+def _build_app(monkeypatch, tmp_path: Path) -> tuple[TestClient, object]:
+    settings_dir = Path.cwd() / "data" / "user" / "settings"
+    settings_dir.mkdir(parents=True, exist_ok=True)
+    (settings_dir / "main.yaml").write_text("knowledge_base: {}\n", encoding="utf-8")
+
     (tmp_path / "shared-pack").mkdir(parents=True)
     (tmp_path / "shared-pack" / "raw").mkdir(parents=True)
     (tmp_path / "shared-pack" / "rag_storage").mkdir(parents=True)
@@ -80,15 +83,16 @@ def _build_app(monkeypatch, tmp_path: Path) -> TestClient:
     (tmp_path / "shared-pack" / "raw" / "lesson-4.md").write_text("Lesson 4", encoding="utf-8")
 
     manager = _FakeKBManager(tmp_path)
-    monkeypatch.setattr("deeptutor.api.routers.marketplace.get_kb_manager", lambda: manager)
+    marketplace = importlib.import_module("deeptutor.api.routers.marketplace")
+    monkeypatch.setattr(marketplace, "get_kb_manager", lambda: manager)
 
     app = FastAPI()
     app.include_router(marketplace.router, prefix="/api/v1/marketplace")
-    return TestClient(app)
+    return TestClient(app), marketplace
 
 
 def test_marketplace_list_only_returns_shareable_packs(monkeypatch, tmp_path: Path) -> None:
-    client = _build_app(monkeypatch, tmp_path)
+    client, _ = _build_app(monkeypatch, tmp_path)
 
     response = client.get("/api/v1/marketplace/list")
 
@@ -100,7 +104,7 @@ def test_marketplace_list_only_returns_shareable_packs(monkeypatch, tmp_path: Pa
 
 
 def test_marketplace_import_copies_pack_and_registers_new_entry(monkeypatch, tmp_path: Path) -> None:
-    client = _build_app(monkeypatch, tmp_path)
+    client, _ = _build_app(monkeypatch, tmp_path)
 
     response = client.post("/api/v1/marketplace/import/shared-pack")
 
@@ -115,8 +119,46 @@ def test_marketplace_import_copies_pack_and_registers_new_entry(monkeypatch, tmp
     assert (imported_path / "rag_storage").exists()
 
 
+def test_marketplace_batch_import_returns_per_pack_results(monkeypatch, tmp_path: Path) -> None:
+    client, marketplace = _build_app(monkeypatch, tmp_path)
+
+    second_pack = tmp_path / "science-pack"
+    (second_pack / "raw").mkdir(parents=True)
+    (second_pack / "rag_storage").mkdir(parents=True)
+    (second_pack / "raw" / "cells.md").write_text("Cells lesson", encoding="utf-8")
+
+    manager = marketplace.get_kb_manager()
+    manager.config["knowledge_bases"]["science-pack"] = {
+        "path": "science-pack",
+        "description": "Science pack",
+        "sharing_status": "public",
+        "subject": "Science",
+        "grade": "7",
+        "curriculum": "National",
+        "learning_objectives": ["Cells"],
+        "owner": "Teacher Z",
+        "created_at": "2026-04-21T00:00:00",
+        "updated_at": "2026-04-21T00:00:00",
+    }
+
+    response = client.post(
+        "/api/v1/marketplace/import-batch",
+        json={"pack_names": ["shared-pack", "science-pack"]},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["requested"] == 2
+    assert payload["imported"] == 2
+    assert [row["source_pack"] for row in payload["results"]] == ["shared-pack", "science-pack"]
+    assert all(row["success"] is True for row in payload["results"])
+    assert (tmp_path / "shared-pack__imported").exists()
+    assert (tmp_path / "science-pack__imported").exists()
+
+
 def test_marketplace_preview_returns_compact_pack_summary(monkeypatch, tmp_path: Path) -> None:
-    client = _build_app(monkeypatch, tmp_path)
+    client, _ = _build_app(monkeypatch, tmp_path)
 
     response = client.get("/api/v1/marketplace/shared-pack/preview")
 
@@ -132,7 +174,7 @@ def test_marketplace_preview_returns_compact_pack_summary(monkeypatch, tmp_path:
 
 
 def test_marketplace_list_includes_rating_summary(monkeypatch, tmp_path: Path) -> None:
-    client = _build_app(monkeypatch, tmp_path)
+    client, _ = _build_app(monkeypatch, tmp_path)
 
     response = client.get("/api/v1/marketplace/list")
 
@@ -142,7 +184,7 @@ def test_marketplace_list_includes_rating_summary(monkeypatch, tmp_path: Path) -
 
 
 def test_marketplace_review_submission_updates_pack_summary(monkeypatch, tmp_path: Path) -> None:
-    client = _build_app(monkeypatch, tmp_path)
+    client, _ = _build_app(monkeypatch, tmp_path)
 
     response = client.post(
         "/api/v1/marketplace/shared-pack/reviews",
@@ -163,7 +205,7 @@ def test_marketplace_review_submission_updates_pack_summary(monkeypatch, tmp_pat
 
 
 def test_marketplace_list_supports_sorting_modes(monkeypatch, tmp_path: Path) -> None:
-    client = _build_app(monkeypatch, tmp_path)
+    client, marketplace = _build_app(monkeypatch, tmp_path)
 
     second_pack = tmp_path / "second-pack"
     (second_pack / "raw").mkdir(parents=True)
@@ -209,3 +251,35 @@ def test_marketplace_list_supports_sorting_modes(monkeypatch, tmp_path: Path) ->
 
     recent = client.get("/api/v1/marketplace/list?sort_by=recent").json()["packs"]
     assert [pack["name"] for pack in recent] == ["second-pack", "shared-pack"]
+
+
+def test_marketplace_list_search_matches_metadata_and_objectives(monkeypatch, tmp_path: Path) -> None:
+    client, marketplace = _build_app(monkeypatch, tmp_path)
+
+    second_pack = tmp_path / "science-pack"
+    (second_pack / "raw").mkdir(parents=True)
+    (second_pack / "rag_storage").mkdir(parents=True)
+    (second_pack / "raw" / "cells.md").write_text("Cells lesson", encoding="utf-8")
+
+    manager = marketplace.get_kb_manager()
+    manager.config["knowledge_bases"]["science-pack"] = {
+        "path": "science-pack",
+        "description": "Microscopy starter pack",
+        "sharing_status": "public",
+        "subject": "Science",
+        "grade": "7",
+        "curriculum": "STEM Explorers",
+        "learning_objectives": ["Cell structure", "Microscope safety"],
+        "owner": "Teacher Z",
+        "created_at": "2026-04-21T00:00:00",
+        "updated_at": "2026-04-21T00:00:00",
+    }
+
+    by_objective = client.get("/api/v1/marketplace/list?search=microscope").json()
+    assert [pack["name"] for pack in by_objective["packs"]] == ["science-pack"]
+
+    by_curriculum = client.get("/api/v1/marketplace/list?search=stem").json()
+    assert [pack["name"] for pack in by_curriculum["packs"]] == ["science-pack"]
+
+    by_owner = client.get("/api/v1/marketplace/list?search=teacher%20a").json()
+    assert [pack["name"] for pack in by_owner["packs"]] == ["shared-pack"]

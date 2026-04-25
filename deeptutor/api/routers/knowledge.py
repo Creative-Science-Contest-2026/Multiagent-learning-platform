@@ -52,6 +52,16 @@ BYTES_PER_GB = 1024**3
 BYTES_PER_MB = 1024**2
 ALLOWED_SHARING_STATUSES = {"private", "team", "public"}
 LIST_METADATA_FIELDS = {"learning_objectives", "team_members", "pending_invites"}
+VERSION_METADATA_FIELDS = (
+    "subject",
+    "grade",
+    "curriculum",
+    "learning_objectives",
+    "owner",
+    "sharing_status",
+    "team_members",
+    "pending_invites",
+)
 
 
 def format_bytes_human_readable(size_bytes: int) -> str:
@@ -262,6 +272,48 @@ def _load_kb_entry_or_404(manager: KnowledgeBaseManager, kb_name: str) -> dict:
     if kb_entry is None:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     return kb_entry
+
+
+def _build_versioned_teacher_pack_config(
+    current_config: dict,
+    updated_config: dict,
+) -> dict:
+    merged = dict(updated_config)
+    has_prior_pack_metadata = any(
+        current_config.get(field) not in (None, [], "")
+        for field in VERSION_METADATA_FIELDS
+    )
+    changed_fields: list[str] = []
+    for field in VERSION_METADATA_FIELDS:
+        before = current_config.get(field)
+        after = updated_config.get(field, before)
+        if before != after:
+            changed_fields.append(field)
+
+    current_version = current_config.get("current_version")
+    try:
+        normalized_current_version = int(current_version)
+    except (TypeError, ValueError):
+        normalized_current_version = 1 if has_prior_pack_metadata else 0
+
+    if changed_fields:
+        next_version = normalized_current_version + 1 if normalized_current_version > 0 else 1
+        history = list(current_config.get("version_history") or [])
+        history.append(
+            {
+                "version": next_version,
+                "updated_at": datetime.utcnow().isoformat() + "Z",
+                "changed_fields": sorted(changed_fields),
+            }
+        )
+        merged["current_version"] = next_version
+        merged["version_history"] = history
+    elif normalized_current_version > 0:
+        merged["current_version"] = normalized_current_version
+        if current_config.get("version_history"):
+            merged["version_history"] = current_config["version_history"]
+
+    return merged
 
 
 def _assert_kb_writable_or_409(kb_name: str, kb_entry: dict) -> None:
@@ -529,7 +581,9 @@ async def update_kb_config(kb_name: str, config: dict):
             )
 
         service = get_kb_config_service()
-        service.set_kb_config(kb_name, normalized_config)
+        current_config = service.get_kb_config(kb_name)
+        versioned_config = _build_versioned_teacher_pack_config(current_config, normalized_config)
+        service.set_kb_config(kb_name, versioned_config)
         return {"status": "success", "kb_name": kb_name, "config": service.get_kb_config(kb_name)}
     except HTTPException:
         raise

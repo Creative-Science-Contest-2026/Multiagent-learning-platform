@@ -8,6 +8,7 @@ import {
   getStudentProgress,
   type StudentProgressAssessment,
   type StudentProgressOverview,
+  type StudentProgressPathStep,
   type StudentProgressTopic,
 } from "@/lib/dashboard-api";
 
@@ -143,6 +144,57 @@ function AssessmentList({
         );
       })}
     </div>
+  );
+}
+
+function LearningPathCard({
+  rows,
+  t,
+}: {
+  rows: StudentProgressPathStep[];
+  t: (value: string) => string;
+}) {
+  return (
+    <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5">
+      <div className="flex items-center gap-2">
+        <ArrowRight size={16} className="text-[var(--muted-foreground)]" />
+        <h2 className="text-[16px] font-semibold text-[var(--foreground)]">
+          {t("Suggested learning path")}
+        </h2>
+      </div>
+      {rows.length > 0 ? (
+        <div className="mt-4 space-y-3">
+          {rows.map((row, index) => (
+            <div key={`${row.topic}-${index}`} className="rounded-2xl bg-[var(--muted)]/60 px-4 py-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+                    {t("Step")} {index + 1}
+                  </div>
+                  <div className="mt-1 text-[14px] font-medium text-[var(--foreground)]">
+                    {row.topic}
+                  </div>
+                </div>
+                <span className="rounded-full bg-[var(--card)] px-2.5 py-1 text-[11px] text-[var(--muted-foreground)]">
+                  {row.status === "review" ? t("Review next") : t("Learn next")}
+                </span>
+              </div>
+              <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
+                {row.source === "focus_topic"
+                  ? t("Triggered by recent weak-topic signals")
+                  : row.knowledge_base
+                    ? t(`Pulled from ${row.knowledge_base} objectives`)
+                    : t("Pulled from knowledge-pack objectives")}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-4 rounded-2xl bg-[var(--muted)]/50 px-4 py-6 text-center text-[13px] text-[var(--muted-foreground)]">
+          {t("No learning path suggestions yet. Complete an assessment or add pack objectives to unlock the next-step sequence.")}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -295,6 +347,7 @@ export default function StudentDashboardPage() {
           </div>
 
           <div className="space-y-6">
+            <LearningPathCard rows={overview?.suggested_learning_path ?? []} t={t} />
             <TopicList
               title={t("Focus next")}
               icon={Target}

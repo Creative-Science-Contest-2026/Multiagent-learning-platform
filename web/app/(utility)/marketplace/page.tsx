@@ -6,11 +6,13 @@ import { useTranslation } from "react-i18next";
 import {
   getCachedMarketplacePacks,
   getMarketplacePackPreview,
+  importMarketplacePacks,
   invalidateMarketplaceListCache,
   isMarketplacePacksCacheStale,
   listMarketplacePacks,
   importMarketplacePack,
   submitMarketplaceReview,
+  type BatchImportPacksResult,
   type MarketplacePack,
   type MarketplacePackPreview,
   type MarketplaceSortBy,
@@ -47,7 +49,10 @@ export default function MarketplacePage() {
 
   // Import state
   const [importing, setImporting] = useState<string | null>(null);
+  const [batchImporting, setBatchImporting] = useState(false);
   const [importSuccess, setImportSuccess] = useState<string | null>(null);
+  const [selectedPacks, setSelectedPacks] = useState<string[]>([]);
+  const [batchImportResult, setBatchImportResult] = useState<BatchImportPacksResult | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewPack, setPreviewPack] = useState<MarketplacePackPreview | null>(null);
@@ -58,22 +63,25 @@ export default function MarketplacePage() {
 
   const subjectFilter = filterSubject.trim() || undefined;
   const ownerFilter = filterOwner.trim() || undefined;
+  const searchFilter = searchTerm.trim() || undefined;
 
   const queryState = useMemo(
     () => ({
+      searchFilter,
       sharingStatus,
       subjectFilter,
       ownerFilter,
       sortBy,
       limit,
     }),
-    [limit, ownerFilter, sharingStatus, sortBy, subjectFilter],
+    [limit, ownerFilter, searchFilter, sharingStatus, sortBy, subjectFilter],
   );
 
   useEffect(() => {
     let cancelled = false;
 
     const cachedFirstPage = getCachedMarketplacePacks(
+      queryState.searchFilter,
       queryState.sharingStatus,
       queryState.subjectFilter,
       queryState.ownerFilter,
@@ -82,6 +90,7 @@ export default function MarketplacePage() {
       0,
     );
     const needsRefresh = isMarketplacePacksCacheStale(
+      queryState.searchFilter,
       queryState.sharingStatus,
       queryState.subjectFilter,
       queryState.ownerFilter,
@@ -106,6 +115,7 @@ export default function MarketplacePage() {
 
     if (!cachedFirstPage || needsRefresh) {
       listMarketplacePacks(
+        queryState.searchFilter,
         queryState.sharingStatus,
         queryState.subjectFilter,
         queryState.ownerFilter,
@@ -145,6 +155,7 @@ export default function MarketplacePage() {
     setError(null);
     try {
       const response = await listMarketplacePacks(
+        queryState.searchFilter,
         queryState.sharingStatus,
         queryState.subjectFilter,
         queryState.ownerFilter,
@@ -169,6 +180,7 @@ export default function MarketplacePage() {
     setError(null);
     try {
       const response = await listMarketplacePacks(
+        queryState.searchFilter,
         queryState.sharingStatus,
         queryState.subjectFilter,
         queryState.ownerFilter,
@@ -192,6 +204,7 @@ export default function MarketplacePage() {
 
   const handleImportPack = async (packName: string) => {
     setImporting(packName);
+    setBatchImportResult(null);
     try {
       await importMarketplacePack(packName);
       setImportSuccess(packName);
@@ -201,6 +214,38 @@ export default function MarketplacePage() {
       setError(err instanceof Error ? err.message : "Failed to import pack");
     } finally {
       setImporting(null);
+    }
+  };
+
+  const togglePackSelection = (packName: string) => {
+    setBatchImportResult(null);
+    setSelectedPacks((current) =>
+      current.includes(packName)
+        ? current.filter((name) => name !== packName)
+        : [...current, packName],
+    );
+  };
+
+  const handleBatchImport = async () => {
+    if (!selectedPacks.length || batchImporting) return;
+    setBatchImporting(true);
+    setBatchImportResult(null);
+    try {
+      const result = await importMarketplacePacks(selectedPacks);
+      setBatchImportResult(result);
+      const successfulPacks = result.results
+        .filter((row) => row.success)
+        .map((row) => row.source_pack);
+      if (successfulPacks.length > 0) {
+        setImportSuccess(successfulPacks[0] ?? null);
+        setTimeout(() => setImportSuccess(null), 3000);
+      }
+      setSelectedPacks(result.results.filter((row) => !row.success).map((row) => row.source_pack));
+      await refreshCurrentQuery(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to import selected packs");
+    } finally {
+      setBatchImporting(false);
     }
   };
 
@@ -247,16 +292,6 @@ export default function MarketplacePage() {
       setSubmittingReview(false);
     }
   };
-
-  const filteredPacks = packs.filter((pack) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      pack.name.toLowerCase().includes(term) ||
-      pack.subject?.toLowerCase().includes(term) ||
-      pack.owner?.toLowerCase().includes(term)
-    );
-  });
 
   return (
     <main className="h-full overflow-y-auto bg-[var(--background)]">
@@ -369,9 +404,44 @@ export default function MarketplacePage() {
         <div>
           <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-[13px] text-[var(--muted-foreground)]">
-              {t("Showing")} {filteredPacks.length} {t("of")} {total} {t("packs")}
+              {t("Showing")} {packs.length} {t("of")} {total} {t("packs")}
             </span>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              {selectedPacks.length > 0 && (
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <span className="text-[12px] text-[var(--muted-foreground)]">
+                    {selectedPacks.length} {t("selected")}
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPacks([])}
+                      disabled={batchImporting}
+                      className="rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[12px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:opacity-50"
+                    >
+                      {t("Clear selection")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleBatchImport()}
+                      disabled={batchImporting}
+                      className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--primary)] px-3 py-2 text-[12px] font-medium text-[var(--primary-foreground)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                    >
+                      {batchImporting ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin" />
+                          {t("Importing selected")}
+                        </>
+                      ) : (
+                        <>
+                          <Download size={13} />
+                          {t("Import selected")}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
               {refreshing && !loading && (
                 <span className="flex items-center gap-2 text-[12px] text-[var(--muted-foreground)]">
                   <Loader2 size={13} className="animate-spin" />
@@ -396,7 +466,7 @@ export default function MarketplacePage() {
             <div className="flex justify-center py-12">
               <Loader2 size={24} className="animate-spin text-[var(--muted-foreground)]" />
             </div>
-          ) : filteredPacks.length === 0 ? (
+          ) : packs.length === 0 ? (
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-12 text-center">
               <BookOpen size={32} className="mx-auto mb-3 text-[var(--muted-foreground)]" />
               <p className="text-[14px] font-medium text-[var(--foreground)]">
@@ -408,13 +478,21 @@ export default function MarketplacePage() {
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {filteredPacks.map((pack) => (
+              {packs.map((pack) => (
                 <div
                   key={pack.name}
                   className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 transition-colors hover:border-[var(--foreground)]/30"
                 >
                   {/* Header */}
                   <div className="mb-3 flex items-start justify-between gap-3">
+                    <label className="mt-0.5 inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedPacks.includes(pack.name)}
+                        onChange={() => togglePackSelection(pack.name)}
+                        className="h-4 w-4 rounded border-[var(--border)]"
+                      />
+                    </label>
                     <div className="flex-1">
                       <h3 className="break-words text-[14px] font-semibold text-[var(--foreground)]">
                         {pack.name}
@@ -492,7 +570,7 @@ export default function MarketplacePage() {
                     </button>
                     <button
                       onClick={() => handleImportPack(pack.name)}
-                      disabled={importing === pack.name || importSuccess === pack.name}
+                      disabled={batchImporting || importing === pack.name || importSuccess === pack.name}
                       className="flex items-center justify-center gap-2 rounded-md bg-[var(--primary)] px-3 py-2 text-[12px] font-medium text-[var(--primary-foreground)] transition-opacity hover:opacity-90 disabled:opacity-50"
                     >
                       {importing === pack.name ? (
@@ -515,6 +593,27 @@ export default function MarketplacePage() {
             </div>
           )}
         </div>
+
+        {batchImportResult && (
+          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+            <div className="text-[13px] font-medium text-[var(--foreground)]">
+              {t("Batch import result")}: {batchImportResult.imported}/{batchImportResult.requested} {t("packs imported")}
+            </div>
+            <div className="mt-3 space-y-2">
+              {batchImportResult.results.map((row) => (
+                <div
+                  key={row.source_pack}
+                  className="flex flex-col gap-1 rounded-md bg-[var(--background)] px-3 py-2 text-[12px] sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="font-medium text-[var(--foreground)]">{row.source_pack}</span>
+                  <span className={row.success ? "text-emerald-600" : "text-rose-600"}>
+                    {row.message}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Pagination */}
         {total > packs.length && (

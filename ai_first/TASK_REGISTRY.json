@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-23T14:30:00Z",
+    "last_updated": "2026-04-25T18:20:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 35
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 15,
+      "count": 35,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -24,15 +24,33 @@
         "T020_ASSESSMENT_EXPORT_PDF",
         "T021_SESSION_REPLAY",
         "T022_ERROR_BOUNDARY_HANDLING",
-        "T028_API_RATE_LIMITING"
+        "T023_MARKETPLACE_CACHE_OPTIMIZATION",
+        "T024_TEACHER_INVITATION_SYSTEM",
+        "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
+        "T026_MOBILE_RESPONSIVE_MARKETPLACE",
+        "T027_ANALYTICS_DASHBOARD",
+        "T028_API_RATE_LIMITING",
+        "T029_MARKETPLACE_SEARCH_FULLTEXT",
+        "T030_ASSESSMENT_TIME_TRACKING",
+        "T031_TUTOR_FOLLOW_UP_PROMPTS",
+        "T032_KNOWLEDGE_PACK_VERSIONING",
+        "T033_LEARNING_PATH_SEQUENCING",
+        "T034_BATCH_ASSESSMENT_IMPORT",
+        "T035_OFFLINE_MODE_SUPPORT",
+        "T036_CONTEST_EVIDENCE_REFRESH",
+        "T037_CONTEST_SCREENSHOT_REFRESH",
+        "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC",
+        "T039_SUBMISSION_CHECKLIST_ALIGNMENT",
+        "T040_CONTEST_PRODUCT_DESCRIPTION",
+        "T041_CONTEST_FORK_MODIFICATIONS_NOTE",
+        "T042_CONTEST_HUMAN_REVIEW_HANDOFF",
+        "T043_OPTIONAL_CONTEST_VIDEO_CAPTURE_RUNBOOK"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "T023_MARKETPLACE_CACHE_OPTIMIZATION"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -41,20 +59,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 11,
-      "tasks": [
-        "T024_TEACHER_INVITATION_SYSTEM",
-        "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
-        "T026_MOBILE_RESPONSIVE_MARKETPLACE",
-        "T027_ANALYTICS_DASHBOARD",
-        "T029_MARKETPLACE_SEARCH_FULLTEXT",
-        "T030_ASSESSMENT_TIME_TRACKING",
-        "T031_TUTOR_FOLLOW_UP_PROMPTS",
-        "T032_KNOWLEDGE_PACK_VERSIONING",
-        "T033_LEARNING_PATH_SEQUENCING",
-        "T034_BATCH_ASSESSMENT_IMPORT",
-        "T035_OFFLINE_MODE_SUPPORT"
-      ]
+      "count": 0,
+      "tasks": []
     }
   },
   "tasks": [
@@ -330,8 +336,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["User Management", "Access Control"],
-      "status": "in-progress",
-      "notes": "Issue #71 opened and task packet created at docs/superpowers/tasks/2026-04-23-T024-teacher-invitation-sharing.md. Active branch: pod-a/t024-teacher-invitation-sharing."
+      "status": "completed",
+      "notes": "Verified on 2026-04-25: knowledge router and UI already persist and display team members / pending invites, with coverage in tests/api/test_knowledge_router.py and tests/knowledge/test_kb_metadata_normalization.py."
     },
     {
       "id": "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
@@ -363,8 +369,8 @@
       "complexity": "Low",
       "estimated_hours": 1,
       "dependencies": ["Tailwind CSS"],
-      "status": "in-progress",
-      "notes": "Issue #75 opened and task packet created at docs/superpowers/tasks/2026-04-23-T026-marketplace-mobile.md. Active branch: pod-a/t026-marketplace-mobile."
+      "status": "completed",
+      "notes": "Merged to main through PR #76. Mobile/tablet marketplace layout now has safer filters, card spacing, CTA layout, and preview modal scrolling."
     },
     {
       "id": "T027_ANALYTICS_DASHBOARD",
@@ -380,8 +386,8 @@
       "complexity": "High",
       "estimated_hours": 8,
       "dependencies": ["Analytics Service"],
-      "status": "not-started",
-      "notes": "Charts: student participation over time, question difficulty heatmap, performance distribution"
+      "status": "completed",
+      "notes": "Merged to main through PR #78. Dashboard overview now includes teacher-facing engagement, assessment trend, and learning signal analytics."
     },
     {
       "id": "T028_API_RATE_LIMITING",
@@ -414,8 +420,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["Search Service"],
-      "status": "not-started",
-      "notes": "Search in pack metadata and first 3 questions/objectives, case-insensitive match"
+      "status": "completed",
+      "notes": "Merged to main through PR #80. Marketplace search now matches broader metadata/objective text and is wired through the list API."
     },
     {
       "id": "T030_ASSESSMENT_TIME_TRACKING",
@@ -431,8 +437,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["Assessment Schema"],
-      "status": "not-started",
-      "notes": "Display average time per question, identify rush vs. careful answering patterns"
+      "status": "completed",
+      "notes": "Merged to main through PR #82. Assessment review now records optional per-question duration_seconds inside the existing [Quiz Performance] transcript and surfaces total/average/per-question timing without a new storage table."
     },
     {
       "id": "T031_TUTOR_FOLLOW_UP_PROMPTS",
@@ -448,8 +454,8 @@
       "complexity": "Medium",
       "estimated_hours": 3,
       "dependencies": ["LLM Service", "Tutor Agent"],
-      "status": "not-started",
-      "notes": "Generate 1-3 follow-up questions when student answer indicates misunderstanding"
+      "status": "completed",
+      "notes": "Merged to main through PR #84. The tutoring chat pipeline can now emit a visible 'Follow-up questions:' section and parse the same section back into result.followup_questions metadata without changing the chat route."
     },
     {
       "id": "T032_KNOWLEDGE_PACK_VERSIONING",
@@ -465,8 +471,8 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["Database Schema"],
-      "status": "not-started",
-      "notes": "Allow teachers to update packs while preserving old versions for existing assessments"
+      "status": "completed",
+      "notes": "Merged to main through PR #86. Lightweight version metadata now records current_version and version_history for teacher-pack metadata updates in the knowledge config flow."
     },
     {
       "id": "T033_LEARNING_PATH_SEQUENCING",
@@ -482,8 +488,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["Knowledge Graph", "Prerequisite Metadata"],
-      "status": "not-started",
-      "notes": "Extract prerequisites from pack metadata, generate optimal learning sequence"
+      "status": "completed",
+      "notes": "Merged to main through PR #89. Student progress now exposes a deterministic suggested_learning_path sequence built from weak topics and knowledge-pack learning objectives."
     },
     {
       "id": "T034_BATCH_ASSESSMENT_IMPORT",
@@ -499,8 +505,8 @@
       "complexity": "Low",
       "estimated_hours": 2,
       "dependencies": ["Import Implementation"],
-      "status": "not-started",
-      "notes": "Add checkbox to pack cards, show selected count, batch import button"
+      "status": "completed",
+      "notes": "Merged to main through PR #91. Marketplace now supports batch import through a shared single-pack import helper plus multi-select UI."
     },
     {
       "id": "T035_OFFLINE_MODE_SUPPORT",
@@ -516,8 +522,145 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["Service Worker", "IndexedDB"],
-      "status": "not-started",
-      "notes": "Sync when online, allow working offline for imported packs"
+      "status": "completed",
+      "notes": "Merged to main through PR #93. Imported packs now have a browser-local offline manifest fallback and loaded quiz results can queue sync until the browser reconnects."
+    },
+    {
+      "id": "T036_CONTEST_EVIDENCE_REFRESH",
+      "category": "Low",
+      "priority": 28,
+      "title": "Contest Smoke and Evidence Refresh",
+      "description": "Refresh the smoke-backed contest validation record, mark screenshot freshness honestly, and keep AI-first control-plane docs aligned with the derived evidence lane.",
+      "scope": {
+        "docs": "docs/contest/VALIDATION_REPORT.md, docs/contest/EVIDENCE_CHECKLIST.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
+      },
+      "affected_features": ["Contest Evidence", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["T035 merged to main", "scripts/contest/reset_demo_data.py"],
+      "status": "completed",
+      "notes": "Merged to main through PR #96. Command-backed contest smoke evidence is refreshed to 2026-04-24 and screenshot evidence is explicitly marked stale pending recapture."
+    },
+    {
+      "id": "T037_CONTEST_SCREENSHOT_REFRESH",
+      "category": "Low",
+      "priority": 29,
+      "title": "Contest Screenshot Evidence Refresh",
+      "description": "Refresh the linked contest screenshot bundle so screenshot evidence can move from stale back to current after the recent UI merges.",
+      "scope": {
+        "screenshots": "docs/contest/screenshots/*",
+        "docs": "docs/contest/EVIDENCE_CHECKLIST.md, docs/contest/VALIDATION_REPORT.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
+      },
+      "affected_features": ["Contest Evidence", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": ["T036 merged to main", "Fresh screenshot capture path"],
+      "status": "completed",
+      "notes": "Merged to main through PR #99. Contest screenshot evidence was refreshed to current on 2026-04-24 and linked docs now point at the latest screenshot bundle."
+    },
+    {
+      "id": "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC",
+      "category": "Low",
+      "priority": 30,
+      "title": "Contest Submission Package Freshness Sync",
+      "description": "Sync the contest-facing README and submission package with the latest merged smoke and screenshot evidence state so submission entry docs no longer point at the older validation window.",
+      "scope": {
+        "docs": "docs/contest/README.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
+      },
+      "affected_features": ["Contest Evidence", "Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.5,
+      "dependencies": ["T037 merged to main"],
+      "status": "completed",
+      "notes": "Merged to main through PR #101. Contest-facing README and submission package now reflect the latest 2026-04-24 smoke and screenshot evidence state."
+    },
+    {
+      "id": "T039_SUBMISSION_CHECKLIST_ALIGNMENT",
+      "category": "Low",
+      "priority": 31,
+      "title": "Submission Checklist Evidence Alignment",
+      "description": "Align the final contest submission checklist with AI-verifiable repo evidence, while keeping human-only review items explicitly unchecked.",
+      "scope": {
+        "docs": "ai_first/competition/submission-checklist.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
+      },
+      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.5,
+      "dependencies": ["T038 merged to main"],
+      "status": "completed",
+      "notes": "Merged to main through PR #103. The final submission checklist now distinguishes AI-verifiable items from human-only review items."
+    },
+    {
+      "id": "T040_CONTEST_PRODUCT_DESCRIPTION",
+      "category": "Low",
+      "priority": 32,
+      "title": "Contest Product Description Draft",
+      "description": "Draft the contest product description from current MVP evidence, pitch notes, and submission materials so the remaining submission checklist gaps narrow to human approval rather than missing text.",
+      "scope": {
+        "docs": "ai_first/competition/product-description.md, ai_first/competition/submission-checklist.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
+      },
+      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.5,
+      "dependencies": ["T039 merged to main", "ai_first/competition/pitch-notes.md"],
+      "status": "completed",
+      "notes": "Merged to main through PR #105. Added ai_first/competition/product-description.md and linked it into the submission package/checklist."
+    },
+    {
+      "id": "T041_CONTEST_FORK_MODIFICATIONS_NOTE",
+      "category": "Low",
+      "priority": 33,
+      "title": "Contest Fork Modifications Note",
+      "description": "Document how this repository extends HKUDS/DeepTutor for the VnExpress contest MVP so the final AI-doable submission checklist item is backed by a concise repo note.",
+      "scope": {
+        "docs": "ai_first/competition/fork-modifications.md, ai_first/competition/submission-checklist.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
+      },
+      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.0,
+      "dependencies": ["T040 merged to main", "README.md", "ai_first/competition/product-description.md"],
+      "status": "completed",
+      "notes": "Merged to main through PR #107. Added ai_first/competition/fork-modifications.md and wired it into the submission package/checklist."
+    },
+    {
+      "id": "T042_CONTEST_HUMAN_REVIEW_HANDOFF",
+      "category": "Low",
+      "priority": 34,
+      "title": "Contest Human Review Handoff",
+      "description": "Package the remaining human-only submission work into a short review path so the AI-first queue can land in a clean waiting-on-human state instead of a stale in-progress state.",
+      "scope": {
+        "docs": "docs/contest/HUMAN_REVIEW_HANDOFF.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
+      },
+      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.0,
+      "dependencies": ["T041 merged to main", "docs/contest/SUBMISSION_PACKAGE.md", "ai_first/competition/submission-checklist.md"],
+      "status": "completed",
+      "notes": "Merged to main through PR #109. Added docs/contest/HUMAN_REVIEW_HANDOFF.md and linked the final manual review path from the submission package."
+    },
+    {
+      "id": "T043_OPTIONAL_CONTEST_VIDEO_CAPTURE_RUNBOOK",
+      "category": "Low",
+      "priority": 35,
+      "title": "Optional Contest Video Capture Runbook",
+      "description": "Prepare a concise optional video storyboard and recording runbook so the team can produce a contest video artifact quickly if the final submission requires one.",
+      "scope": {
+        "docs": "docs/contest/VIDEO_CAPTURE_RUNBOOK.md, docs/contest/EVIDENCE_CHECKLIST.md, docs/contest/SUBMISSION_PACKAGE.md, docs/contest/HUMAN_REVIEW_HANDOFF.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
+      },
+      "affected_features": ["Contest Evidence", "Submission Docs", "AI-first Control Plane"],
+      "complexity": "Low",
+      "estimated_hours": 1.0,
+      "dependencies": ["T042 merged to main", "docs/contest/DEMO_SCRIPT.md", "docs/contest/HUMAN_REVIEW_HANDOFF.md"],
+      "status": "completed",
+      "notes": "Merged to main through PR #113. Added docs/contest/VIDEO_CAPTURE_RUNBOOK.md and linked it into contest evidence/submission docs without marking video as captured."
     }
   ],
   "github_issues_template": {
@@ -613,7 +756,7 @@
     },
     "MVP_PHASE_3": {
       "title": "Medium Priority & Polish (Weeks 5+)",
-      "tasks": ["T024", "T025", "T026", "T027", "T029", "T030", "T031", "T032", "T033", "T034", "T035"],
+      "tasks": ["T024", "T025", "T026", "T027", "T029", "T030", "T031", "T032", "T033", "T034", "T035", "T036", "T037"],
       "target_date": "2026-06-01"
     }
   }
