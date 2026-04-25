@@ -474,7 +474,7 @@ export default function KnowledgePage() {
       });
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.detail || "Failed to create knowledge base");
+        throw new Error(error.detail || t("Failed to create knowledge base"));
       }
 
       const data = (await res.json()) as KnowledgeTaskResponse;
@@ -487,20 +487,22 @@ export default function KnowledgePage() {
           metadataSyncError =
             error instanceof Error
               ? error.message
-              : `Knowledge base '${kbName}' was created but teacher pack metadata could not be saved.`;
+              : t('Knowledge base "{{name}}" was created but teacher pack metadata could not be saved.', {
+                  name: kbName,
+                });
         }
       }
 
       invalidateKnowledgeCaches();
       if (data.task_id) {
-        openTaskLogStream("create", data.task_id, `Create ${kbName}`);
+        openTaskLogStream("create", data.task_id, t('Create "{{name}}"', { name: kbName }));
         subscribeProgress(kbName, data.task_id);
         setProgressMap((prev) => ({
           ...prev,
           [kbName]: {
             task_id: data.task_id,
             stage: "initializing",
-            message: "Initializing knowledge base...",
+            message: t("Initializing knowledge base..."),
             current: 0,
             total: fileCount,
             progress_percent: 0,
@@ -527,7 +529,7 @@ export default function KnowledgePage() {
         setCreateProcess((prev) => ({
           ...prev,
           error: metadataSyncError,
-          label: prev.label || `Create ${kbName}`,
+          label: prev.label || t('Create "{{name}}"', { name: kbName }),
         }));
       }
     } catch (error) {
@@ -558,20 +560,20 @@ export default function KnowledgePage() {
       });
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.detail || "Failed to upload files");
+        throw new Error(error.detail || t("Failed to upload files"));
       }
 
       const data = (await res.json()) as KnowledgeTaskResponse;
       invalidateKnowledgeCaches();
       if (data.task_id) {
-        openTaskLogStream("upload", data.task_id, `Upload to ${targetKb}`);
+        openTaskLogStream("upload", data.task_id, t('Upload to "{{name}}"', { name: targetKb }));
         subscribeProgress(targetKb, data.task_id);
         setProgressMap((prev) => ({
           ...prev,
           [targetKb]: {
             task_id: data.task_id,
             stage: "processing_documents",
-            message: `Processing ${fileCount} files...`,
+            message: t("Processing {{count}} files...", { count: fileCount }),
             current: 0,
             total: fileCount,
             progress_percent: 0,
@@ -589,7 +591,7 @@ export default function KnowledgePage() {
         ...prev,
         executing: false,
         error: error instanceof Error ? error.message : String(error),
-        label: prev.label || `Upload to ${targetKb}`,
+          label: prev.label || t('Upload to "{{name}}"', { name: targetKb }),
       }));
     } finally {
       setUploadingKb(null);
@@ -799,7 +801,7 @@ export default function KnowledgePage() {
 
         {pageError && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-            {pageError}
+            {t("Knowledge Pack page failed to load")}: {pageError}
           </div>
         )}
 
@@ -1090,7 +1092,7 @@ export default function KnowledgePage() {
 
                   {uploadProcess.error && (
                     <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                      {uploadProcess.error}
+                      {t("Document upload failed")}: {uploadProcess.error}
                     </div>
                   )}
                 </div>
@@ -1319,7 +1321,7 @@ export default function KnowledgePage() {
 
                           {editKbError && (
                             <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                              {editKbError}
+                              {t("Knowledge Pack metadata could not be saved")}: {editKbError}
                             </div>
                           )}
 
