@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-25T14:52:00Z",
+    "last_updated": "2026-04-25T15:20:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 43
@@ -50,10 +50,11 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 2,
+      "count": 3,
       "tasks": [
         "T047_CONTEST_FLOW_OPERATING_HYGIENE_REFRESH",
-        "T048_PARALLEL_LANE_TASK_PACKET_SET"
+        "T048_PARALLEL_LANE_TASK_PACKET_SET",
+        "T050_DASHBOARD_INSIGHT_DEPTH"
       ]
     },
     "blocked": {
@@ -63,12 +64,11 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 5,
+      "count": 4,
       "tasks": [
         "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
         "T045_MARKETPLACE_KNOWLEDGE_POLISH",
         "T046_DASHBOARD_REVIEW_POLISH",
-        "T050_DASHBOARD_INSIGHT_DEPTH",
         "T051_SESSION_CONTEXT_QUALITY_PASS"
       ]
     }
@@ -686,7 +686,7 @@
       "complexity": "Medium",
       "estimated_hours": 4,
       "dependencies": ["Current contest MVP screens on main", "Existing locale loader"],
-      "status": "pending",
+      "status": "in_progress",
       "notes": "Planned as Lane 1 bootstrap implementation task after T047/T048 establish the two-account experiment."
     },
     {
