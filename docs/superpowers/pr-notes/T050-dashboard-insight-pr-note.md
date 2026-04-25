@@ -16,7 +16,7 @@ graph LR
 
 Checklist:
 
-- [x] Adds filters: `knowledge_base`, `start_ts`, `end_ts`.
+- [x] Adds filters: `knowledge_base`, `cohort`, `start_ts`, `end_ts`.
 - [x] TypeScript client updated to accept filters.
 - [x] Unit tests added for filter behavior.
 - [x] Local focused tests passed (`tests/api/test_dashboard_router.py`).
