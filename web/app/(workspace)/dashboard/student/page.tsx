@@ -29,16 +29,31 @@ function scoreTone(value: number): string {
   return "text-rose-600";
 }
 
+function buildPathSourceLabel(
+  row: StudentProgressPathStep,
+  t: (value: string, options?: Record<string, string | number>) => string,
+): string {
+  if (row.source === "focus_topic") {
+    return t("Triggered by recent weak-topic signals");
+  }
+  if (row.knowledge_base) {
+    return t("Pulled from {{knowledgeBase}} objectives", { knowledgeBase: row.knowledge_base });
+  }
+  return t("Pulled from knowledge-pack objectives");
+}
+
 function TopicList({
   title,
   icon: Icon,
   rows,
   emptyLabel,
+  t,
 }: {
   title: string;
   icon: typeof Target;
   rows: StudentProgressTopic[];
   emptyLabel: string;
+  t: (value: string, options?: Record<string, string | number>) => string;
 }) {
   return (
     <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5">
@@ -60,8 +75,13 @@ function TopicList({
                 </span>
               </div>
               <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
-                {row.correct_count}/{row.total_questions} correct
-                {row.incorrect_count > 0 ? ` • ${row.incorrect_count} to revisit` : ""}
+                {t("{{correct}}/{{total}} correct", {
+                  correct: row.correct_count,
+                  total: row.total_questions,
+                })}
+                {row.incorrect_count > 0
+                  ? ` • ${t("{{incorrect}} to revisit", { incorrect: row.incorrect_count })}`
+                  : ""}
               </div>
             </div>
           ))}
@@ -82,7 +102,7 @@ function AssessmentList({
 }: {
   rows: StudentProgressAssessment[];
   emptyLabel: string;
-  t: (value: string) => string;
+  t: (value: string, options?: Record<string, string | number>) => string;
 }) {
   if (rows.length === 0) {
     return (
@@ -136,7 +156,10 @@ function AssessmentList({
                   {row.score_percent}%
                 </div>
                 <div className="text-[12px] text-[var(--muted-foreground)]">
-                  {row.correct_count}/{row.total_questions} {t("correct")}
+                {t("{{correct}}/{{total}} correct", {
+                  correct: row.correct_count,
+                  total: row.total_questions,
+                })}
                 </div>
               </div>
             </div>
@@ -180,11 +203,7 @@ function LearningPathCard({
                 </span>
               </div>
               <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
-                {row.source === "focus_topic"
-                  ? t("Triggered by recent weak-topic signals")
-                  : row.knowledge_base
-                    ? t(`Pulled from ${row.knowledge_base} objectives`)
-                    : t("Pulled from knowledge-pack objectives")}
+                {buildPathSourceLabel(row, t)}
               </div>
             </div>
           ))}
@@ -353,12 +372,14 @@ export default function StudentDashboardPage() {
               icon={Target}
               rows={overview?.focus_topics ?? []}
               emptyLabel={t("No weak topics detected yet.")}
+              t={t}
             />
             <TopicList
               title={t("Mastered topics")}
               icon={LineChart}
               rows={overview?.mastered_topics ?? []}
               emptyLabel={t("Mastered topics will appear after completed assessments.")}
+              t={t}
             />
           </div>
         </section>

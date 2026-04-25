@@ -132,7 +132,7 @@ export default function MarketplacePage() {
         })
         .catch((err) => {
           if (cancelled) return;
-          setError(err instanceof Error ? err.message : "Failed to load marketplace");
+          setError(err instanceof Error ? err.message : t("Failed to load marketplace"));
           if (!cachedFirstPage) {
             setPacks([]);
             setTotal(0);
@@ -167,7 +167,7 @@ export default function MarketplacePage() {
       setPacks(response.packs);
       setTotal(response.total);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load marketplace");
+      setError(err instanceof Error ? err.message : t("Failed to load marketplace"));
     } finally {
       setRefreshing(false);
       setLoading(false);
@@ -196,7 +196,7 @@ export default function MarketplacePage() {
       ]);
       setTotal(response.total);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load more packs");
+      setError(err instanceof Error ? err.message : t("Failed to load more packs"));
     } finally {
       setLoadingMore(false);
     }
@@ -211,7 +211,7 @@ export default function MarketplacePage() {
       setTimeout(() => setImportSuccess(null), 3000);
       await refreshCurrentQuery(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to import pack");
+      setError(err instanceof Error ? err.message : t("Failed to import pack"));
     } finally {
       setImporting(null);
     }
@@ -243,7 +243,7 @@ export default function MarketplacePage() {
       setSelectedPacks(result.results.filter((row) => !row.success).map((row) => row.source_pack));
       await refreshCurrentQuery(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to import selected packs");
+      setError(err instanceof Error ? err.message : t("Failed to import selected packs"));
     } finally {
       setBatchImporting(false);
     }
@@ -257,7 +257,7 @@ export default function MarketplacePage() {
       const preview = await getMarketplacePackPreview(packName);
       setPreviewPack(preview);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load pack preview");
+      setError(err instanceof Error ? err.message : t("Failed to load pack preview"));
       setPreviewOpen(false);
     } finally {
       setPreviewLoading(false);
@@ -287,7 +287,7 @@ export default function MarketplacePage() {
       setReviewComment("");
       await refreshCurrentQuery(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit review");
+      setError(err instanceof Error ? err.message : t("Failed to submit review"));
     } finally {
       setSubmittingReview(false);
     }
@@ -396,7 +396,7 @@ export default function MarketplacePage() {
         {/* Error */}
         {error && (
           <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-            {error}
+            {t("Marketplace action failed")}: {error}
           </div>
         )}
 

@@ -212,7 +212,7 @@ export default function DashboardPage() {
 
         {error && (
           <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-            {error}
+            {t("Failed to load teacher dashboard")}: {error}
           </div>
         )}
 
