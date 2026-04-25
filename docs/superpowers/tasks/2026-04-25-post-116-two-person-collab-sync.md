@@ -4,6 +4,7 @@ Owner: Codex
 Branch: `docs/post-116-collab-sync`
 GitHub Issue: `#117`
 Active assignment: `ai_first/ACTIVE_ASSIGNMENTS.md`
+PR: `#118`
 
 ## Goal
 

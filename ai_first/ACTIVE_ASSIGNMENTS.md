@@ -20,7 +20,7 @@ Rules:
 - Branch:
 - Task packet:
 - Owned files:
-- PR:
+- PR: `#118`
 - Last update:
 - Next action:
 - Blocker:
@@ -38,5 +38,5 @@ Rules:
 - Owned files: ai_first/AI_OPERATING_PROMPT.md; ai_first/EXECUTION_QUEUE.md; ai_first/ACTIVE_ASSIGNMENTS.md; ai_first/CURRENT_STATE.md; ai_first/NEXT_ACTIONS.md; ai_first/daily/2026-04-25.md; docs/superpowers/tasks/2026-04-25-post-116-two-person-collab-sync.md; docs/superpowers/pr-notes/2026-04-25-post-116-two-person-collab-sync.md
 - PR:
 - Last update: 2026-04-25 17:58 +07
-- Next action: Open PR for post-116 control-plane sync.
+- Next action: Move PR `#118` to Ready for review after final validation.
 - Blocker: None
