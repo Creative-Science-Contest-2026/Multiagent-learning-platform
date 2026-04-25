@@ -34,22 +34,46 @@ export function ProgressIndicator({
   };
 
   const rating = getScoreRating(scorePercent);
-  const percentageCorrect = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+  const weakestTopic = analysis?.performance_by_topic
+    ?.slice()
+    .sort((left, right) => left.accuracy_percent - right.accuracy_percent)?.[0];
+  const strongestTopic = analysis?.performance_by_topic
+    ?.slice()
+    .sort((left, right) => right.accuracy_percent - left.accuracy_percent)?.[0];
 
   return (
     <div className="space-y-4">
       {/* Main Progress Card */}
-      <div className="rounded-lg border border-[var(--border)] bg-gradient-to-br from-[var(--card)] to-[var(--card)]/50 p-6">
+      <div className="rounded-2xl border border-[var(--border)] bg-gradient-to-br from-[var(--card)] to-[var(--card)]/50 p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <TrendingUp size={20} className={rating.color} />
             <h3 className="text-[14px] font-semibold text-[var(--foreground)]">
-              {t("Learning Progress")}
+              {t("Teacher review summary")}
             </h3>
           </div>
           <span className={`text-[12px] font-medium px-2 py-1 rounded ${rating.color} opacity-80`}>
             {rating.label}
           </span>
+        </div>
+
+        <div className="mb-4 grid gap-3 md:grid-cols-2">
+          <div className="rounded-xl bg-[var(--background)] px-4 py-3">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+              {t("Needs attention")}
+            </div>
+            <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+              {weakestTopic?.topic || t("Review your incorrect answers")}
+            </div>
+          </div>
+          <div className="rounded-xl bg-[var(--background)] px-4 py-3">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+              {t("Strong areas")}
+            </div>
+            <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+              {strongestTopic?.topic || t("Excellent performance!")}
+            </div>
+          </div>
         </div>
 
         {/* Main Progress Bar */}
@@ -124,7 +148,7 @@ export function ProgressIndicator({
       {/* Expandable Recommendations */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 hover:bg-[var(--card)]/80 transition-colors"
+        className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 hover:bg-[var(--card)]/80 transition-colors shadow-sm"
       >
         <div className="flex items-center justify-between">
           <h3 className="text-[13px] font-semibold text-[var(--foreground)]">
@@ -143,7 +167,7 @@ export function ProgressIndicator({
       </button>
 
       {expanded && (
-        <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 space-y-3">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 space-y-3 shadow-sm">
           {analysis && analysis.performance_by_topic.length > 0 && (
             <div className="rounded-md border border-[var(--border)] p-3">
               <p className="text-[12px] font-semibold text-[var(--foreground)] mb-2">

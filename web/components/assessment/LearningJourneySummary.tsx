@@ -38,11 +38,11 @@ export function LearningJourneySummary({
   };
 
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp size={18} className="text-blue-600" />
         <h3 className="text-[14px] font-semibold text-[var(--foreground)]">
-          {t("Your Learning Journey")}
+          {t("Session recap")}
         </h3>
       </div>
 
@@ -73,7 +73,7 @@ export function LearningJourneySummary({
           </div>
         </div>
 
-        {/* Streak */}
+        {/* Session Status */}
         <div className="flex items-start gap-3 p-3 rounded-md bg-[var(--muted)]/50">
           <Target size={16} className="text-[var(--muted-foreground)] mt-0.5 shrink-0" />
           <div className="min-w-0">
@@ -85,6 +85,12 @@ export function LearningJourneySummary({
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="mb-6 rounded-xl bg-[var(--background)] px-4 py-3 text-[13px] text-[var(--muted-foreground)]">
+        {nextTopics.length > 0
+          ? t("Next Steps")
+          : t("Review your incorrect answers")}
       </div>
 
       {/* Mastered Topics */}

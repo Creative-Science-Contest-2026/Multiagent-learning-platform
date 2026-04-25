@@ -245,6 +245,9 @@ export default function StudentDashboardPage() {
   }, []);
 
   const totals = overview?.totals;
+  const focusTopics = overview?.focus_topics ?? [];
+  const masteredTopics = overview?.mastered_topics ?? [];
+  const suggestedPath = overview?.suggested_learning_path ?? [];
   const statCards = useMemo(
     () => [
       {
@@ -311,6 +314,34 @@ export default function StudentDashboardPage() {
               </div>
             )}
           </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-2xl bg-[var(--muted)]/50 px-4 py-3">
+              <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                {t("Next Steps")}
+              </div>
+              <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                {focusTopics.length > 0
+                  ? t("Review the weakest topic before assigning a harder pack")
+                  : t("No weak topics detected yet. The student is ready for a stretch goal.")}
+              </div>
+            </div>
+            <div className="rounded-2xl bg-[var(--muted)]/50 px-4 py-3">
+              <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                {t("Focus next")}
+              </div>
+              <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                {focusTopics[0]?.topic || t("No weak topics detected yet.")}
+              </div>
+            </div>
+            <div className="rounded-2xl bg-[var(--muted)]/50 px-4 py-3">
+              <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+                {t("Suggested learning path")}
+              </div>
+              <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
+                {suggestedPath[0]?.topic || t("No learning path suggestions yet. Complete an assessment or add pack objectives to unlock the next-step sequence.")}
+              </div>
+            </div>
+          </div>
         </section>
 
         {error && (
@@ -371,13 +402,13 @@ export default function StudentDashboardPage() {
               title={t("Focus next")}
               icon={Target}
               rows={overview?.focus_topics ?? []}
-              emptyLabel={t("No weak topics detected yet.")}
+              emptyLabel={t("No weak topics detected yet. The student is ready for a stretch goal.")}
               t={t}
             />
             <TopicList
               title={t("Mastered topics")}
               icon={LineChart}
-              rows={overview?.mastered_topics ?? []}
+              rows={masteredTopics}
               emptyLabel={t("Mastered topics will appear after completed assessments.")}
               t={t}
             />
