@@ -53,7 +53,7 @@ Rules:
 - Branch: pod-b/t049-metadata-depth-pass
 - Task packet: docs/superpowers/tasks/2026-04-25-T049-metadata-depth-pass.md
 - Owned files: deeptutor/api/routers/knowledge.py; deeptutor/api/routers/marketplace.py; deeptutor/knowledge/manager.py; web/lib/knowledge-api.ts; web/lib/marketplace-api.ts; tests/api/test_knowledge_router.py; tests/api/test_marketplace_router.py; tests/knowledge/test_kb_metadata_normalization.py
- - PR: https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/pull/121
- - Last update: 2026-04-25 20:45 +07
- - Next action: Move PR from Draft -> Ready after self-review and run tests
+ - PR: https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/pull/121 (Ready for review)
+ - Last update: 2026-04-25 21:05 +07
+ - Next action: Monitor CI and address any failures; merge when green
  - Blocker: None
