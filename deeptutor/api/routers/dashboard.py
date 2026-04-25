@@ -59,6 +59,7 @@ def _activity_from_session(
         "status": session.get("status", "idle"),
         "active_turn_id": session.get("active_turn_id"),
         "knowledge_bases": knowledge_bases,
+        "cohort": (session.get("preferences") or {}).get("cohort"),
         "assessment_summary": assessment_review["summary"] if assessment_review else None,
         "review_ref": (
             f"dashboard/assessments/{session.get('session_id')}" if assessment_review else None
@@ -196,6 +197,7 @@ def _matches_dashboard_filters(
     *,
     type: str | None = None,
     knowledge_base: str | None = None,
+    cohort: str | None = None,
     search: str | None = None,
     min_score: int | None = None,
 ) -> bool:
@@ -205,6 +207,11 @@ def _matches_dashboard_filters(
     if knowledge_base is not None:
         available = [str(kb).lower() for kb in activity.get("knowledge_bases", [])]
         if knowledge_base.lower() not in available:
+            return False
+
+    if cohort is not None:
+        act_cohort = activity.get("cohort")
+        if act_cohort is None or str(act_cohort) != str(cohort):
             return False
 
     if search:
@@ -478,6 +485,7 @@ def _build_teacher_insights(
 async def get_dashboard_insights(
     limit: int = 100,
     knowledge_base: str | None = None,
+    cohort: str | None = None,
     start_ts: int | None = None,
     end_ts: int | None = None,
 ):
@@ -493,9 +501,9 @@ async def get_dashboard_insights(
     # Apply optional filters: knowledge_base and timestamp window
     filtered_activities: list[dict[str, Any]] = []
     for activity in activities:
-        if knowledge_base or start_ts or end_ts:
-            if knowledge_base and not _matches_dashboard_filters(
-                activity, knowledge_base=knowledge_base
+        if knowledge_base or cohort or start_ts or end_ts:
+            if not _matches_dashboard_filters(
+                activity, knowledge_base=knowledge_base, cohort=cohort
             ):
                 continue
             ts = activity.get("timestamp") or 0
