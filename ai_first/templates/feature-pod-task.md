@@ -3,6 +3,7 @@
 Owner:
 Branch:
 GitHub Issue:
+Active assignment:
 
 ## Goal
 
@@ -19,6 +20,12 @@ GitHub Issue:
 ## Required tests
 
 ## Manual verification
+
+## Parallel-work notes
+
+- Confirm `ai_first/ACTIVE_ASSIGNMENTS.md` is updated before code starts.
+- Keep owned files concrete; do not use broad labels like "frontend" or "backend".
+- Update this packet before scope expands.
 
 ## PR architecture note
 

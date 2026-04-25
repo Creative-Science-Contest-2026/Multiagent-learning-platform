@@ -67,6 +67,14 @@ Before edits:
 - Every PR must include a Markdown architecture note under `docs/superpowers/pr-notes/` with at least one Mermaid diagram.
 - Every PR must state whether `ai_first/architecture/MAIN_SYSTEM_MAP.md` was updated.
 
+## Collaboration rules
+
+- For two-person collaboration, prefer one person, one active task, one branch, and one PR.
+- Do not start code work until the task is reflected in `ai_first/ACTIVE_ASSIGNMENTS.md`.
+- Keep task packets current with owned files and do-not-touch scope before parallel work begins.
+- Do not split one feature across two people unless it has been decomposed into separate task packets with separate ownership.
+- Treat `ai_first/ACTIVE_ASSIGNMENTS.md` as the short-term coordination memory for active work.
+
 ## Autonomous completion loop
 
 After opening or updating a PR, classify it before handing off:
