@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#127 docs: sync control plane after lane rollout`
+- Latest merged PR: `#128 docs: refresh smoke evidence after lane rollout`
 - Latest smoke result: the 2026-04-25 scripted-reset smoke pass succeeded against current `main`.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -15,8 +15,8 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- Active docs/evidence lane: `T036 Contest Smoke and Evidence Refresh`
-- Current purpose: keep command-backed evidence current and mark screenshot freshness honestly after the merged contest UI changes.
+- No active AI-owned implementation or docs lane is open right now.
+- Current purpose: carry forward the remaining screenshot refresh as an explicit human follow-up while keeping command-backed evidence current.
 
 ## Next recommended task
 

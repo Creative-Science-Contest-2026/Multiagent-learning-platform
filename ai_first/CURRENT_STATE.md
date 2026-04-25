@@ -28,10 +28,10 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Latest merged docs/control-plane PR: `#127 docs: sync control plane after lane rollout`
-- Current branch for this sync: `docs/demo-readiness-refresh`
+- Latest merged docs/control-plane PR: `#128 docs: refresh smoke evidence after lane rollout`
+- Current branch for this sync: none; the last docs/evidence sync is merged
 - Product MVP path status: Knowledge Pack, assessment, tutor, dashboard, marketplace, offline, analytics, contest evidence, submission docs, optional video runbook, two-person collaboration workflow, and the full two-lane contest MVP polish experiment are merged to `main`.
-- Current purpose: keep smoke-backed evidence current after `T044` through `T051` merged and record screenshot freshness honestly.
+- Current purpose: keep the merged smoke/evidence state visible and leave the stale screenshot bundle as an explicit follow-up.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -59,16 +59,16 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-24-T036-contest-evidence-refresh.md`
+- Current open task packet:
 - Current open GitHub issue:
 - Latest completed smoke run result: the 2026-04-25 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
-- Recently completed merged work: `T044`, `T045`, `T046`, `T049`, `T050`, `T051`, and the post-lane control-plane sync are all merged to `main`; the current branch is refreshing evidence freshness rather than adding new product behavior.
+- Recently completed merged work: `T044`, `T045`, `T046`, `T049`, `T050`, `T051`, the post-lane control-plane sync, and the 2026-04-25 smoke/evidence refresh are all merged to `main`.
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Finish the smoke/evidence refresh lane, then refresh the stale screenshot bundle or carry that gap as an explicit human follow-up.
+Refresh the stale screenshot bundle or carry that gap as an explicit human follow-up.
 
 ## Autonomous Merge Policy
 
