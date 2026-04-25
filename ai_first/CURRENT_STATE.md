@@ -28,9 +28,9 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Latest merged workflow PR: `#116 [docs] Two-person AI-first collaboration workflow`
-- Current branch for this sync: `docs/post-116-collab-sync`
-- Product MVP path status: Knowledge Pack, assessment, tutor, dashboard, marketplace, offline, analytics, contest evidence, submission docs, optional video runbook, and two-person collaboration workflow are merged to `main`.
+- Latest merged workflow PR: `#118 [docs] Post-116 collaboration workflow status sync`
+- Current branch for this sync: `docs/task-registry-count-sync`
+- Product MVP path status: Knowledge Pack, assessment, tutor, dashboard, marketplace, offline, analytics, contest evidence, submission docs, optional video runbook, two-person collaboration workflow, and control-plane sync are merged to `main`.
 - Current purpose: keep the contest submission package ready for human review and use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new implementation lane.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 

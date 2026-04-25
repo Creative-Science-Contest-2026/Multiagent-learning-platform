@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "last_updated": "2026-04-25T04:30:00Z",
+    "last_updated": "2026-04-25T18:20:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 43
+    "total_tasks": 35
   },
   "task_categories": {
     "completed": {
@@ -336,8 +336,8 @@
       "complexity": "High",
       "estimated_hours": 6,
       "dependencies": ["User Management", "Access Control"],
-      "status": "in-progress",
-      "notes": "Issue #71 opened and task packet created at docs/superpowers/tasks/2026-04-23-T024-teacher-invitation-sharing.md. Active branch: pod-a/t024-teacher-invitation-sharing."
+      "status": "completed",
+      "notes": "Verified on 2026-04-25: knowledge router and UI already persist and display team members / pending invites, with coverage in tests/api/test_knowledge_router.py and tests/knowledge/test_kb_metadata_normalization.py."
     },
     {
       "id": "T025_ASSESSMENT_DIFFICULTY_ADJUSTMENT",
@@ -625,7 +625,7 @@
       "complexity": "Low",
       "estimated_hours": 1.0,
       "dependencies": ["T040 merged to main", "README.md", "ai_first/competition/product-description.md"],
-      "status": "in-progress",
+      "status": "completed",
       "notes": "Merged to main through PR #107. Added ai_first/competition/fork-modifications.md and wired it into the submission package/checklist."
     },
     {
