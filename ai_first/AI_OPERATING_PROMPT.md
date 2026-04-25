@@ -25,7 +25,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
 - Latest product status: Knowledge Pack, marketplace import, batch marketplace import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment generation and review insights, student tutoring context, KB context badges, Teacher Dashboard, Vietnamese MVP prompt variants, marketplace sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, assessment adaptive difficulty, teacher analytics, assessment PDF export, tutoring session replay, route error boundaries, API rate limiting, teacher invitation metadata, assessment time tracking, tutor follow-up prompts, knowledge-pack version metadata, contest evidence screenshots, contest submission-package sync, checklist evidence alignment, contest product-description drafting, and contest fork-modifications documentation are merged into `main`.
-- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, PR `#118` merged the post-116 control-plane sync into `main`, `ai_first/ACTIVE_ASSIGNMENTS.md` is the active coordination board, and the contest submission queue remains waiting on human review rather than an active AI implementation lane.
+- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, `ai_first/ACTIVE_ASSIGNMENTS.md` is the active coordination board, and the current docs/control-plane branch `docs/t044-two-lane-parallel-backlog` is bootstrapping a two-lane contest MVP polish experiment through `T047` and `T048` before two parallel implementation lanes begin.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -35,8 +35,9 @@ Before edits:
 1. Read `AGENTS.md`.
 2. Read this file.
 3. Run `git status --short --branch`.
-4. Read the relevant spec, plan, task packet, or compatibility snapshot only if the prompt points to one.
-5. Confirm the assigned task scope, owned files, and do-not-touch files.
+4. Check `ai_first/ACTIVE_ASSIGNMENTS.md` if any parallel lane may already be active.
+5. Read the relevant spec, plan, task packet, or compatibility snapshot only if the prompt points to one.
+6. Confirm the assigned task scope, owned files, and do-not-touch files.
 
 ## Work rules
 
@@ -83,6 +84,24 @@ Before edits:
 - Keep task packets current with owned files and do-not-touch scope before parallel work begins.
 - Do not split one feature across two people unless it has been decomposed into separate task packets with separate ownership.
 - Treat `ai_first/ACTIVE_ASSIGNMENTS.md` as the short-term coordination memory for active work.
+
+## Same-machine parallel rules
+
+- Two AI sessions on the same machine must not edit from the same filesystem checkout.
+- If two sessions are active on one machine, each session must use a different git worktree under `.worktrees/` or another explicitly assigned path.
+- Record the worktree path in `ai_first/ACTIVE_ASSIGNMENTS.md` before code starts.
+- When starting a new lane on the same machine, first run `git fetch origin main`, then create the lane branch and worktree from `origin/main`.
+- If a lane is continuing existing work, reopen its assigned worktree instead of reusing another lane's checkout.
+- Do not run two sessions against the repo root at the same time unless one of them is docs-only and not editing files.
+
+## Sync rules
+
+- Prefer explicit `git fetch origin main` plus `git merge origin/main` inside the active lane worktree.
+- Do not rely on plain `git pull` for lane sync because it hides which upstream branch was integrated.
+- After another lane merges to `main`, every still-active lane must `git fetch origin main` and merge `origin/main` into its own feature branch before the next substantial edit.
+- Do not merge one feature branch into another feature branch.
+- Do not rebase a shared or review-active branch unless the human explicitly asks for that cleanup.
+- If merge conflicts appear after syncing `origin/main`, resolving those conflicts becomes the current task before new feature edits continue.
 
 ## Autonomous completion loop
 
@@ -145,7 +164,7 @@ Tasks flow through states:
 - **P1 Critical**: Blockers for contest submission, MVP incomplete
 - **P2-P3 High**: Essential for MVP, fix next
 - **P4-P10 Medium**: Important UX/features, schedule for later
-- **P11-P27 Low**: Nice-to-have, polish items
+- **P11-P43 Low**: Nice-to-have, polish items
 
 ### Workflow: MVP Gap Analysis to Execution
 
@@ -193,7 +212,7 @@ When starting a new feature or fix:
 4. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
 5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, blocker changes, and task selection.
 6. Keep GitHub issue state aligned with merged PRs so the queue mirrors real work, not historical leftovers.
-7. Continue from the next pending registry task in strict order after every successful merge or verification pass; the strict-order registry queue is currently empty. While the contest package is waiting on human review, do not open another AI implementation lane unless humans request follow-up changes, actual video capture work based on `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`, or a final archival sync after submission.
+7. Continue from the next pending registry task in strict order after every successful merge or verification pass. The queue is no longer empty: finish `T047` and `T048`, then start the two-lane contest MVP polish experiment with `T044` in Lane 1 and one bounded depth slice from `T049`, `T050`, or `T051` in Lane 2.
 8. Keep the demo-readiness smoke lane current after meaningful merges and treat smoke failures as the next task.
 9. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when local demo state may be stale, missing, or private.
 10. Run the scripted reset command before the next smoke/evidence refresh so the merged utility is validated end to end.

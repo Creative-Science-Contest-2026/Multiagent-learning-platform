@@ -29,15 +29,15 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ## Active Branches and PRs
 
 - Latest merged workflow PR: `#118 [docs] Post-116 collaboration workflow status sync`
-- Current branch for this sync: `docs/task-registry-count-sync`
+- Current branch for this sync: `docs/t044-two-lane-parallel-backlog`
 - Product MVP path status: Knowledge Pack, assessment, tutor, dashboard, marketplace, offline, analytics, contest evidence, submission docs, optional video runbook, two-person collaboration workflow, and control-plane sync are merged to `main`.
-- Current purpose: keep the contest submission package ready for human review and use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new implementation lane.
+- Current purpose: bootstrap a two-lane contest MVP polish backlog while keeping the contest submission package ready for human review.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
 
-- Spec: `docs/superpowers/specs/2026-04-12-ai-first-project-os-design.md`
-- Plan: `docs/superpowers/plans/2026-04-12-ai-first-project-os.md`
+- Spec: `docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md`
+- Plan: `docs/superpowers/plans/2026-04-25-two-lane-contest-mvp-polish-rollout.md`
 
 ## Known Worktree Notes
 
@@ -59,16 +59,16 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-19-contest-submission-package.md`
-- Current open GitHub issue: `#41`
+- Current open task packet: `docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md`
+- Current open GitHub issue:
 - Latest completed smoke run result: scripted reset passed, backend online through the CLI server path, frontend build passed, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
-- Recently completed merged work: Knowledge Pack (`#6`), Assessment + Student Tutor (`#8`), Teacher Dashboard (`#11`), contest evidence (`#13`, `#14`, `#15`), CI (`#17`, `#18`), execution queue status board (`#21`), smoke lane packet (`#23`), smoke execution result (`#24`), contest evidence refresh packet (`#27`), and contest evidence refresh execution (`#28`)
+- Recently completed merged work: marketplace, knowledge, assessment, tutor, dashboard, contest evidence, control-plane sync, and engineering doctrine updates are all merged to `main`; the current branch is preparing the next two-lane experiment rather than closing a product bug.
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Wait for human review of the contest submission package. If the team decides a video is required, use `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`; otherwise no AI implementation lane is active.
+Finish `T047` and `T048` so the queue, assignment board, and lane packets are ready for two parallel accounts to start `T044` and one of `T049`/`T050`/`T051`.
 
 ## Autonomous Merge Policy
 

@@ -25,7 +25,9 @@ Before code work starts on a task:
 
 1. Confirm the task packet is current.
 2. Add the task to `ai_first/ACTIVE_ASSIGNMENTS.md`.
-3. Create or switch to the task branch.
-4. Work only inside the packet's owned-file scope.
+3. If another session is active on the same machine, create or switch to a separate worktree for this task.
+4. Create or switch to the task branch inside that task's own worktree.
+5. Run `git fetch origin main` and merge `origin/main` into the task branch when `main` has advanced before continuing feature edits.
+6. Work only inside the packet's owned-file scope.
 
 Use `ai_first/ACTIVE_ASSIGNMENTS.md` for short-lived active coordination and the task packet for the execution contract.
