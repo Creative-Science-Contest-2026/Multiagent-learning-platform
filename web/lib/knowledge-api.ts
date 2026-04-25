@@ -13,6 +13,12 @@ export interface TeacherPackMetadata {
   sharing_status?: "private" | "team" | "public" | null;
   team_members?: string[] | null;
   pending_invites?: string[] | null;
+  tags?: string[] | null;
+  difficulty?: "beginner" | "intermediate" | "advanced" | null;
+  language?: string | null;
+  estimated_hours?: number | null;
+  prerequisites?: string[] | null;
+  content_types?: string[] | null;
 }
 
 export interface KnowledgeBaseSummary {

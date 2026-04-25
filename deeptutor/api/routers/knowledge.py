@@ -51,7 +51,7 @@ router = APIRouter()
 BYTES_PER_GB = 1024**3
 BYTES_PER_MB = 1024**2
 ALLOWED_SHARING_STATUSES = {"private", "team", "public"}
-LIST_METADATA_FIELDS = {"learning_objectives", "team_members", "pending_invites"}
+LIST_METADATA_FIELDS = {"learning_objectives", "team_members", "pending_invites", "tags", "prerequisites", "content_types"}
 VERSION_METADATA_FIELDS = (
     "subject",
     "grade",
@@ -61,6 +61,12 @@ VERSION_METADATA_FIELDS = (
     "sharing_status",
     "team_members",
     "pending_invites",
+    "tags",
+    "difficulty",
+    "language",
+    "estimated_hours",
+    "prerequisites",
+    "content_types",
 )
 
 
@@ -206,7 +212,7 @@ def _validate_registered_provider(raw_provider: str | None) -> str:
 def _normalize_teacher_pack_config(config: dict) -> dict:
     normalized = dict(config)
 
-    text_fields = ("subject", "grade", "curriculum", "owner")
+    text_fields = ("subject", "grade", "curriculum", "owner", "difficulty", "language")
     for field in text_fields:
         if field not in normalized:
             continue
@@ -216,7 +222,18 @@ def _normalize_teacher_pack_config(config: dict) -> dict:
         if not isinstance(value, str):
             raise HTTPException(status_code=400, detail=f"'{field}' must be a string")
         value = value.strip()
+        if field == "difficulty" and value and value.lower() not in {"beginner", "intermediate", "advanced"}:
+            raise HTTPException(status_code=400, detail=f"'difficulty' must be one of: beginner, intermediate, advanced")
         normalized[field] = value or None
+
+    if "estimated_hours" in normalized:
+        value = normalized["estimated_hours"]
+        if value is not None:
+            if not isinstance(value, (int, float)):
+                raise HTTPException(status_code=400, detail="'estimated_hours' must be a number")
+            if value <= 0:
+                raise HTTPException(status_code=400, detail="'estimated_hours' must be positive")
+            normalized["estimated_hours"] = float(value)
 
     for field in LIST_METADATA_FIELDS:
         if field not in normalized:

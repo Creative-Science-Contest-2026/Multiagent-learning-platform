@@ -8,6 +8,12 @@ export interface MarketplacePackMetadata {
   learning_objectives?: string[] | null;
   owner?: string | null;
   sharing_status?: "private" | "team" | "public" | null;
+  tags?: string[] | null;
+  difficulty?: "beginner" | "intermediate" | "advanced" | null;
+  language?: string | null;
+  estimated_hours?: number | null;
+  prerequisites?: string[] | null;
+  content_types?: string[] | null;
 }
 
 export interface MarketplaceRatingSummary {
@@ -33,6 +39,12 @@ export interface MarketplacePack {
   session_count?: number;
   status?: string;
   rating_summary?: MarketplaceRatingSummary;
+  tags?: string[] | null;
+  difficulty?: "beginner" | "intermediate" | "advanced" | null;
+  language?: string | null;
+  estimated_hours?: number | null;
+  prerequisites?: string[] | null;
+  content_types?: string[] | null;
 }
 
 export interface MarketplacePackPreview extends MarketplacePack {

@@ -75,6 +75,12 @@ def _list_marketplace_candidates() -> list[dict]:
                     "created_at": source_cfg.get("created_at"),
                     "updated_at": source_cfg.get("updated_at"),
                     "rating_summary": _rating_summary(source_cfg),
+                    "tags": metadata.get("tags", []),
+                    "difficulty": metadata.get("difficulty"),
+                    "language": metadata.get("language"),
+                    "estimated_hours": metadata.get("estimated_hours"),
+                    "prerequisites": metadata.get("prerequisites", []),
+                    "content_types": metadata.get("content_types", []),
                 }
             )
         except Exception:
@@ -96,6 +102,11 @@ def _matches_marketplace_search(pack: dict[str, Any], search: str | None) -> boo
         str(pack.get("owner") or ""),
         str(pack.get("description") or ""),
         " ".join(str(item or "") for item in pack.get("learning_objectives") or []),
+        " ".join(str(tag or "") for tag in pack.get("tags") or []),
+        str(pack.get("difficulty") or ""),
+        str(pack.get("language") or ""),
+        " ".join(str(prereq or "") for prereq in pack.get("prerequisites") or []),
+        " ".join(str(ct or "") for ct in pack.get("content_types") or []),
     ]
     haystack = " ".join(part for part in haystack_parts if part).lower()
     return needle in haystack
@@ -309,6 +320,12 @@ async def get_marketplace_pack(pack_name: str):
             "statistics": match.get("statistics", {}),
             "rating_summary": _rating_summary(source_cfg),
             "recent_reviews": _pack_reviews(source_cfg)[:5],
+            "tags": match.get("tags", []),
+            "difficulty": match.get("difficulty"),
+            "language": match.get("language"),
+            "estimated_hours": match.get("estimated_hours"),
+            "prerequisites": match.get("prerequisites", []),
+            "content_types": match.get("content_types", []),
         }
     
     except HTTPException:

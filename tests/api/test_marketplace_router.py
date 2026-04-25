@@ -21,6 +21,12 @@ class _FakeKBManager:
                     "curriculum": "National",
                     "learning_objectives": ["Linear equations", "Word problems"],
                     "owner": "Teacher A",
+                    "tags": ["algebra", "equations"],
+                    "difficulty": "intermediate",
+                    "language": "Vietnamese",
+                    "estimated_hours": 10.0,
+                    "prerequisites": ["Basic arithmetic"],
+                    "content_types": ["text", "images"],
                     "marketplace_reviews": [
                         {
                             "reviewer": "Teacher B",
@@ -59,6 +65,12 @@ class _FakeKBManager:
                 "learning_objectives": kb.get("learning_objectives", []),
                 "owner": kb.get("owner"),
                 "sharing_status": kb.get("sharing_status"),
+                "tags": kb.get("tags", []),
+                "difficulty": kb.get("difficulty"),
+                "language": kb.get("language"),
+                "estimated_hours": kb.get("estimated_hours"),
+                "prerequisites": kb.get("prerequisites", []),
+                "content_types": kb.get("content_types", []),
             },
         }
 
@@ -101,6 +113,22 @@ def test_marketplace_list_only_returns_shareable_packs(monkeypatch, tmp_path: Pa
     assert payload["total"] == 1
     assert payload["packs"][0]["name"] == "shared-pack"
     assert payload["packs"][0]["sharing_status"] == "public"
+
+
+def test_marketplace_list_includes_extended_metadata(monkeypatch, tmp_path: Path) -> None:
+    client, _ = _build_app(monkeypatch, tmp_path)
+
+    response = client.get("/api/v1/marketplace/list")
+
+    assert response.status_code == 200
+    payload = response.json()
+    pack = payload["packs"][0]
+    assert pack["tags"] == ["algebra", "equations"]
+    assert pack["difficulty"] == "intermediate"
+    assert pack["language"] == "Vietnamese"
+    assert pack["estimated_hours"] == 10.0
+    assert pack["prerequisites"] == ["Basic arithmetic"]
+    assert pack["content_types"] == ["text", "images"]
 
 
 def test_marketplace_import_copies_pack_and_registers_new_entry(monkeypatch, tmp_path: Path) -> None:

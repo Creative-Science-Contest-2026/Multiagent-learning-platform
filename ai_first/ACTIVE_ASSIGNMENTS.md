@@ -42,3 +42,18 @@ Rules:
 - Last update: 2026-04-25 19:25 +07
 - Next action: Finish registry expansion and publish lane task packets for the two-account experiment.
 - Blocker: None
+
+### Assignment
+
+- Owner: GitHub Copilot
+- Machine: MacBook-Air-cua-Loc.local
+- Worktree: /Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/lane2
+- Task: T049 metadata depth pass
+- Status: in_progress
+- Branch: pod-b/t049-metadata-depth-pass
+- Task packet: docs/superpowers/tasks/2026-04-25-T049-metadata-depth-pass.md
+- Owned files: deeptutor/api/routers/knowledge.py; deeptutor/api/routers/marketplace.py; deeptutor/knowledge/manager.py; web/lib/knowledge-api.ts; web/lib/marketplace-api.ts; tests/api/test_knowledge_router.py; tests/api/test_marketplace_router.py; tests/knowledge/test_kb_metadata_normalization.py
+- PR:
+- Last update: 2026-04-25 20:00 +07
+- Next action: Analyze current metadata contracts and identify depth improvements
+- Blocker: None
