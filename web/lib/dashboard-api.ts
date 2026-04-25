@@ -247,6 +247,7 @@ export interface DashboardInsightsFilters {
   knowledge_base?: string;
   start_ts?: number;
   end_ts?: number;
+  cohort?: string;
 }
 
 /**
@@ -260,6 +261,7 @@ export async function getDashboardInsights(
   if (filters.knowledge_base) params.set("knowledge_base", filters.knowledge_base);
   if (typeof filters.start_ts === "number") params.set("start_ts", String(filters.start_ts));
   if (typeof filters.end_ts === "number") params.set("end_ts", String(filters.end_ts));
+  if (filters.cohort) params.set("cohort", filters.cohort);
 
   const response = await fetch(apiUrl(`/api/v1/dashboard/insights?${params.toString()}`), {
     cache: "no-store",
