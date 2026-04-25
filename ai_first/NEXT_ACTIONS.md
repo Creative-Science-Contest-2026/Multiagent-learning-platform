@@ -6,14 +6,13 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Finish the current `T036` smoke/evidence refresh branch.
-2. Capture a fresh screenshot bundle for the contest-facing UI changed by `T044`, `T045`, and `T046`.
-3. Update `docs/contest/EVIDENCE_CHECKLIST.md` from `Stale` to `Current` only after the new screenshot capture exists.
-4. Keep `docs/contest/VALIDATION_REPORT.md` as the latest command-backed smoke record.
-5. Treat any future smoke failure as the next product task before opening another polish slice.
-6. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting or switching any new lane or docs sync.
-7. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, smoke passes, screenshot refreshes, lane changes, and blocker changes.
-8. Review IP commitment, final product description wording, and optional video requirements in parallel with the remaining screenshot/human evidence step.
+1. Capture a fresh screenshot bundle for the contest-facing UI changed by `T044`, `T045`, and `T046`.
+2. Update `docs/contest/EVIDENCE_CHECKLIST.md` from `Stale` to `Current` only after the new screenshot capture exists.
+3. Keep `docs/contest/VALIDATION_REPORT.md` as the latest command-backed smoke record.
+4. Treat any future smoke failure as the next product task before opening another polish slice.
+5. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new lane or docs sync.
+6. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, smoke passes, screenshot refreshes, lane changes, and blocker changes.
+7. Review IP commitment, final product description wording, and optional video requirements in parallel with the remaining screenshot/human evidence step.
 
 ## After Milestone 0
 
