@@ -333,6 +333,52 @@ def test_learning_path_builder_includes_kb_objectives_and_skips_mastered(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_insights_returns_teacher_recommendations(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    # Create a lower-scoring older assessment
+    await _seed_session(
+        store,
+        session_id="assessment-older",
+        capability="deep_question",
+        message="Generate a quiz on algebra",
+        knowledge_bases=["algebra-pack"],
+    )
+    await store.add_message(
+        "assessment-older",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: x+2=5 -> Answered: 3 (Correct)\nScore: 1/1 (100%)",
+        capability="deep_question",
+    )
+
+    # Create a recent lower-scoring assessment to drive recommendations
+    await _seed_session(
+        store,
+        session_id="assessment-latest",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.add_message(
+        "assessment-latest",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/insights")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert "analytics" in payload
+    assert "at_risk_topics" in payload
+    assert isinstance(payload["recommendations"], list)
+    assert len(payload["recommendations"]) >= 1
+
+
+@pytest.mark.asyncio
 async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

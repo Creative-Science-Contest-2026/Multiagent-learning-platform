@@ -451,6 +451,59 @@ async def get_student_progress(limit: int = 50):
     }
 
 
+def _build_teacher_insights(
+    activities: list[dict[str, Any]],
+    assessment_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    analytics = _build_dashboard_analytics(activities, assessment_rows)
+    focus = analytics.get("learning_signals", {}).get("focus_topics", [])
+    recommendations: list[str] = []
+    avg = analytics.get("assessment_trend", {}).get("average_score_percent", 0)
+
+    if avg < 70:
+        recommendations.append("Schedule a targeted review for top focus topics.")
+    if analytics.get("assessment_trend", {}).get("score_delta", 0) < 0:
+        recommendations.append("Follow up with students from recent lower-scoring assessments.")
+    if not focus:
+        recommendations.append("No clear focus topics — consider a short diagnostic quiz.")
+
+    return {
+        "analytics": analytics,
+        "at_risk_topics": focus,
+        "recommendations": recommendations,
+    }
+
+
+@router.get("/insights")
+async def get_dashboard_insights(limit: int = 100):
+    """Teacher-facing aggregated insights for a class or cohort.
+
+    This endpoint reuses existing activity aggregation and returns a compact
+    set of actionable signals and recommendations for teachers.
+    """
+    store = get_sqlite_session_store()
+    sessions = await store.list_sessions(limit=limit, offset=0)
+    activities = [await _activity_with_review(store, session) for session in sessions]
+
+    assessment_rows = [
+        {
+            "session_id": activity["id"],
+            "title": activity["title"],
+            "timestamp": activity["timestamp"],
+            "knowledge_bases": activity["knowledge_bases"],
+            "summary": activity.get("assessment_summary"),
+            "review_ref": activity.get("review_ref"),
+            "assessment_results": activity.get("assessment_summary") and (
+                extract_assessment_review(await store.get_session_with_messages(activity["id"])) or {}
+            ).get("results", []),
+        }
+        for activity in activities
+        if activity["type"] == "assessment" and activity.get("assessment_summary")
+    ]
+
+    return _build_teacher_insights(activities, assessment_rows)
+
+
 @router.get("/{entry_id}")
 async def get_activity_entry(entry_id: str):
     store = get_sqlite_session_store()
