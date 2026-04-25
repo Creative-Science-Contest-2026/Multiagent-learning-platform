@@ -72,4 +72,5 @@ Refresh the contest screenshot bundle so `docs/contest/EVIDENCE_CHECKLIST.md` ca
 ## Handoff notes
 
 - `T036` merged to `main` through PR `#96` and refreshed command-backed smoke evidence.
-- Screenshot freshness is now the remaining explicit evidence blocker.
+- Screenshot freshness was picked up again on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass` after the `T044` through `T051` UI rollout changed the contest-facing screens.
+- The refreshed `07` and `08` captures use demo-safe local session content in the worktree data store because provider-backed quiz generation was unavailable with the placeholder local API key.

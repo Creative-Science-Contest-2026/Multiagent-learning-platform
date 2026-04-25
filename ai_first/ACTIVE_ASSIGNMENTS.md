@@ -28,4 +28,17 @@ Rules:
 
 ## Active
 
-- None currently. The latest docs/evidence lane (`T036`) merged after the 2026-04-25 smoke pass, and the remaining screenshot refresh is a human follow-up until a browser-capable worker or teammate takes the new capture set.
+### Assignment
+
+- Owner: Codex
+- Machine: `MacBook-Air-cua-Loc.local`
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/t037-screenshot-refresh-pass`
+- Task: `T037_CONTEST_SCREENSHOT_REFRESH`
+- Status: Ready for draft PR
+- Branch: `docs/t037-contest-screenshot-refresh-pass`
+- Task packet: `docs/superpowers/tasks/2026-04-24-T037-contest-screenshot-refresh.md`
+- Owned files: `docs/contest/screenshots/*`, `docs/contest/EVIDENCE_CHECKLIST.md`, `docs/contest/VALIDATION_REPORT.md`, `docs/superpowers/tasks/2026-04-24-T037-contest-screenshot-refresh.md`, `docs/superpowers/pr-notes/*`, `ai_first/TASK_REGISTRY.json`, `ai_first/EXECUTION_QUEUE.md`, `ai_first/AI_OPERATING_PROMPT.md`, `ai_first/daily/2026-04-25.md`
+- PR: Not opened yet
+- Last update: 2026-04-25
+- Next action: Stage, commit, push, and open the screenshot-refresh docs PR in Draft.
+- Blocker: None

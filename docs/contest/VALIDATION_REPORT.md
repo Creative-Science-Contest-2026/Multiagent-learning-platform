@@ -16,7 +16,7 @@ Latest smoke-backed refresh: 2026-04-25
 | --- | --- | --- | --- |
 | Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-25.md`. |
 | Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-25 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the fresh smoke worktree. |
-| Screenshot bundle | Human capture after smoke when the UI changes | Stale | The last capture was on 2026-04-24, but `T044`, `T045`, and `T046` changed contest-facing UI after that bundle. |
+| Screenshot bundle | Browser capture after smoke when the UI changes | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass` against the current merged UI. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
 Use these status values consistently:
@@ -41,10 +41,10 @@ Use these status values consistently:
 
 ## Current Known Limitations
 
-- Screenshot evidence is captured under `docs/contest/screenshots/`, but the current bundle is now stale because contest-facing UI changed after the 2026-04-24 capture.
 - Video evidence is deferred unless the final contest submission requires it.
 - The frontend build emits a Next.js warning about multiple lockfiles and inferred workspace root. The build still completes successfully.
-- Screenshot freshness still requires a human capture step when the UI meaningfully changes.
+- Browser-backed screenshot refresh now works in a local worktree, but it still depends on a running backend and frontend plus demo-safe local data.
+- Local provider-backed assessment generation was unavailable during the 2026-04-25 screenshot refresh because the configured model key was still a placeholder. The refreshed `07` and `08` screenshots therefore use demo-safe local session content in the worktree data store instead of a live provider response.
 - Provider-backed AI quality depends on configured model credentials. If credentials are unavailable during a demo, use the command validation and recorded UI flow as fallback evidence.
 - This report uses demo-safe descriptions only. Do not add real student data.
 
@@ -59,6 +59,10 @@ The latest smoke-backed evidence refresh used local demo data only:
 - Demo sessions:
   - `contest-assessment-demo`
   - `contest-tutor-demo`
+- Screenshot refresh follow-up:
+  - browser capture run from `docs/t037-contest-screenshot-refresh-pass`
+  - refreshed files under `docs/contest/screenshots/`
+  - local demo-safe assistant content was seeded into `contest-assessment-demo` inside the worktree `data/` directory only
 
 Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
 
@@ -80,7 +84,7 @@ The 2026-04-25 scripted-reset smoke run verified the MVP path in the current mer
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
 4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the new worktree;
-5. screenshot evidence remains `Stale` because the 2026-04-24 capture predates the merged UI changes from `T044`, `T045`, and `T046`.
+5. screenshot evidence was refreshed on 2026-04-25 after the merged UI changes from `T044`, `T045`, and `T046`.
 
 ## Manual Verification Template
 
@@ -90,9 +94,11 @@ Complete this section when the local app is running.
 | --- | --- | --- | --- |
 | Open Knowledge page | Teacher can create or edit Knowledge Pack metadata | Passed | [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png) |
 | Reload Knowledge page | Metadata remains visible | Passed | [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png) |
-| Generate assessment | Questions are generated from selected subject/context | Passed with seeded demo result metadata | [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png) |
-| Review feedback | Common-mistake or guidance output is visible | Passed | [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png) |
-| Ask Tutor Agent follow-up | Tutor responds to student question | Passed with seeded demo response | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
+| Open assessment config | Quiz generation mode shows the demo Knowledge Pack context | Passed | [`04-assessment-config.png`](./screenshots/04-assessment-config.png) |
+| Generate assessment | Questions are generated from selected subject/context | Passed with demo-safe local session content | [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png) |
+| Review feedback | Common-mistake or guidance output is visible | Passed with demo-safe local session content | [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png) |
+| Ask Tutor Agent follow-up | Student prompt is visible before the tutor answer | Passed with seeded demo response | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
+| Review tutor answer | Tutor responds to student question with learning context | Passed with seeded demo response | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
 | Open Dashboard | Recent assessment and tutoring activity appears | Passed | [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png) |
 
 ## PR Evidence Links

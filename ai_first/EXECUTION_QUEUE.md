@@ -15,16 +15,16 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- No active AI-owned implementation or docs lane is open right now.
-- Current purpose: carry forward the remaining screenshot refresh as an explicit human follow-up while keeping command-backed evidence current.
+- Active docs lane: `T037_CONTEST_SCREENSHOT_REFRESH` on `docs/t037-contest-screenshot-refresh-pass`
+- Current purpose: finish the screenshot refresh docs pass and move the refreshed evidence bundle through review.
 
 ## Next recommended task
 
-Refresh the screenshot bundle or complete the human evidence review step:
+Complete the screenshot-refresh review lane:
 
-1. Capture a fresh screenshot bundle for the contest-facing UI updated by `T044`, `T045`, and `T046`
-2. Update `docs/contest/EVIDENCE_CHECKLIST.md` from `Stale` to `Current` only after the new capture exists
-3. If screenshot capture cannot happen now, keep the current command evidence and carry the screenshot freshness gap as an explicit human follow-up
+1. Keep the refreshed screenshot bundle from 2026-04-25 attached to the current docs lane
+2. Validate the updated evidence docs and control-plane mirrors
+3. Open the screenshot-refresh PR in Draft, then move it to Ready after local review
 
 ## Status Update (2026-04-25)
 
@@ -33,12 +33,12 @@ Refresh the screenshot bundle or complete the human evidence review step:
 2. Lane 1 completed `T044`, `T045`, and `T046`.
 3. Lane 2 completed `T049`, `T050`, and `T051`.
 4. The 2026-04-25 scripted-reset smoke run passed on current `main`.
-5. Screenshot evidence is now explicitly `Stale` because the last capture predates the merged contest-facing UI changes.
+5. Screenshot evidence was refreshed on 2026-04-25 against the current merged UI and is now ready for docs review.
 
 ## AI-owned blockers
 
 - None currently for command-backed validation.
-- Screenshot freshness remains a human capture follow-up unless a browser-capable worker refreshes the bundle.
+- The screenshot bundle is refreshed locally; only the review/merge step remains for the docs lane.
 
 ## Human-review blockers
 
