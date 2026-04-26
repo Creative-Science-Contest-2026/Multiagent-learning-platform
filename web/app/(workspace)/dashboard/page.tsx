@@ -88,33 +88,34 @@ export default function DashboardPage() {
   const cards = useMemo(
     () => [
       {
-        label: t("Sessions"),
-        value: totals?.total_sessions ?? 0,
-        icon: Activity,
+        label: t("Students with signals"),
+        value: insights?.students.length ?? 0,
+        icon: Users,
       },
       {
-        label: t("Assessments"),
+        label: t("Small-group actions"),
+        value: insights?.small_groups.length ?? 0,
+        icon: BookOpen,
+      },
+      {
+        label: t("Recent assessments"),
         value: totals?.assessments ?? 0,
         icon: PenLine,
       },
       {
-        label: t("Tutoring"),
-        value: totals?.tutoring_sessions ?? 0,
-        icon: Users,
-      },
-      {
-        label: t("Running"),
+        label: t("Active sessions"),
         value: totals?.running ?? 0,
-        icon: Loader2,
+        icon: Activity,
       },
     ],
-    [t, totals],
+    [insights, t, totals],
   );
   const activeFilterCount = [searchTerm, activityType, knowledgeBase, minScore].filter(Boolean).length;
   const nextActionLabel =
-    focusTopics.length > 0
+    insights?.students?.[0]?.recommended_actions?.[0]?.rationale ??
+    (focusTopics.length > 0
       ? t("Review the weakest topics first")
-      : t("Open the latest session and confirm the student is ready for the next pack");
+      : t("Open the latest session and confirm the student is ready for the next pack"));
   const recentActivity = overview?.recent_activity ?? [];
   const knowledgePackActivity = overview?.knowledge_packs ?? [];
 
@@ -125,13 +126,13 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-                {t("Teacher Dashboard")}
+                {t("Teacher Workflow")}
               </p>
               <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
-                {t("Class activity")}
+                {t("Observed, diagnosed, and ready for action")}
               </h1>
               <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-[var(--muted-foreground)]">
-                {t("Review recent assessments, tutoring sessions, and Knowledge Pack usage.")}
+                {t("Review observed facts first, then inspect diagnosis and next-step recommendations for each student or group.")}
               </p>
             </div>
             <Link
@@ -169,6 +170,8 @@ export default function DashboardPage() {
             </div>
           </div>
         </header>
+
+        <TeacherInsightPanel insights={insights} />
 
         <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between gap-3">
@@ -397,8 +400,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </section>
-
-        <TeacherInsightPanel insights={insights} />
 
         <section className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <div>

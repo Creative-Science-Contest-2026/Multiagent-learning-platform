@@ -30,15 +30,15 @@ Rules:
 
 ### Assignment
 
-- Owner: Codex
-- Machine: `MacBook-Air-cua-Loc.local`
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: `L2_SPEC_RUNTIME_ASSEMBLY`
-- Status: In progress
-- Branch: `pod-a/spec-runtime-assembly`
-- Task packet: `docs/superpowers/tasks/2026-04-26-lane-2-spec-runtime-assembly.md`
-- Owned files: `deeptutor/services/runtime_policy/`, `deeptutor/services/prompt/`, `deeptutor/runtime/orchestrator.py`, `deeptutor/capabilities/chat.py`, `deeptutor/capabilities/deep_question.py`, `tests/services/runtime_policy/`, `tests/core/test_capabilities_runtime.py`, `tests/services/test_prompt_manager.py`, `docs/superpowers/pr-notes/*`
-- PR: `#139` (Ready)
+- Owner: GitHub Copilot (GPT-5.3-Codex)
+- Machine: macOS
+- Worktree: .worktrees/lane2
+- Task: L5_TEACHER_INSIGHT_UI
+- Status: in-progress
+- Branch: pod-a/teacher-insight-ui
+- Task packet: docs/superpowers/tasks/2026-04-26-lane-5-teacher-insight-ui.md
+- Owned files: web/app/(workspace)/dashboard/page.tsx; web/app/(workspace)/dashboard/student/page.tsx; web/components/dashboard/TeacherInsightPanel.tsx; web/components/dashboard/*; web/lib/dashboard-api.ts
+- PR: (draft, not opened yet)
 - Last update: 2026-04-26
-- Next action: Resolve the latest `origin/main` sync, push the branch, then merge PR `#139` once GitHub recalculates mergeability.
-- Blocker: None
+- Next action: Finish lane docs/handoff, open the Draft PR, and verify the new dashboard flow on CI.
+- Blocker: none
