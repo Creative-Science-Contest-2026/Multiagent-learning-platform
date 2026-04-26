@@ -33,12 +33,12 @@ Rules:
 - Owner: Codex
 - Machine: `MacBook-Air-cua-Loc.local`
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/lane6`
-- Task: `OPS_EVIDENCE_RECAPTURE_DASHBOARD_AGENTS`
-- Status: Ready for review
-- Branch: `docs/evidence-dashboard-agents-recapture`
-- Task packet: `docs/superpowers/tasks/2026-04-26-dashboard-agents-evidence-recapture.md`
-- Owned files: `docs/contest/screenshots/*`, `docs/contest/EVIDENCE_CHECKLIST.md`, `docs/contest/VALIDATION_REPORT.md`, `docs/contest/DEMO_SCRIPT.md`, `docs/contest/README.md`, `docs/contest/SUBMISSION_PACKAGE.md`, `docs/superpowers/tasks/2026-04-26-dashboard-agents-evidence-recapture.md`, `docs/superpowers/pr-notes/*`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/EXECUTION_QUEUE.md`, `ai_first/daily/2026-04-26.md`
-- PR: `#147` (Draft)
+- Task: `OPS_POST_147_EVIDENCE_SYNC`
+- Status: In progress
+- Branch: `docs/post-147-evidence-merge-sync`
+- Task packet: `docs/superpowers/tasks/2026-04-26-post-147-evidence-merge-sync.md`
+- Owned files: `ai_first/EXECUTION_QUEUE.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-26.md`, `docs/superpowers/tasks/2026-04-26-post-147-evidence-merge-sync.md`, `docs/superpowers/pr-notes/*`
+- PR: not opened yet
 - Last update: 2026-04-26
-- Next action: Wait for CI on PR `#147`, then merge if green under the docs auto-merge policy.
+- Next action: Sync the compact mirrors after merged PR `#147`, then open a tiny docs PR to leave `main` pointing at the remaining human-only steps.
 - Blocker: None
