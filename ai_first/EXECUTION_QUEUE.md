@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#148 [OPS-SYNC] docs(ai-first): sync queue after evidence merge`
+- Latest feature-risk merge: `#151 [R1] feat(runtime-policy): add bounded tutor spec binding proof`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Lane 3 (`2026-04-26-lane-3-observation-student-state`) merged to `main` through PR `#140`.
@@ -16,6 +16,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Lane 6 (`2026-04-26-lane-6-evaluation-evidence-readiness`) merged to `main` through PR `#145`.
 - Dashboard and `/agents` evidence recapture merged to `main` through PR `#147`.
 - Post-147 evidence merge sync merged to `main` through PR `#148`.
+- Risk Lane 1 runtime binding proof merged to `main` through PR `#151`.
 - Latest smoke result: the 2026-04-26 scripted-reset smoke pass succeeded in lane 6 (`docs/evaluation-evidence-readiness`) against current `main` behavior.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -23,13 +24,14 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- No active AI implementation task remains.
-- Current purpose: keep the repository in a correct wait state for final human review, optional video, and submission sign-off.
+- No active AI implementation task remains on `main`.
+- The contest repo now also has six merged risk-hardening lane packets for judge/voter attack-surface defense.
 
 ## Next recommended task
 
-- Human review of the submission package, IP commitment, and optional video decision is now the shortest remaining path.
-- If a new AI-only task is needed, create a fresh packet from `main` instead of reusing a merged lane or stale branch.
+- If the team wants to continue AI-owned product hardening, start `R2_DIAGNOSIS_CREDIBILITY` from `docs/superpowers/tasks/2026-04-26-risk-lane-2-diagnosis-credibility.md`.
+- If not, the shortest remaining non-code path is still human review of the submission package, IP commitment, and optional video decision.
+- Any new AI task should start from a fresh branch/worktree off `main`, not from a merged lane branch.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
@@ -44,7 +46,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None currently. The repository is waiting on human-only submission work.
+- None currently. The next AI-owned work is optional risk-hardening, not a blocker for the already-validated MVP path.
 
 ## Human-review blockers
 
