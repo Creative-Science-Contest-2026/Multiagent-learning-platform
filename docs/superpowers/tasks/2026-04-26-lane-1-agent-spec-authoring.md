@@ -81,3 +81,5 @@ Create the teacher-facing authoring layer for the Markdown Agent Spec Pack witho
 - This is Session = Lane 1.
 - Read `docs/superpowers/specs/2026-04-26-contest-mvp-hybrid-lanes-design.md` before implementation.
 - Coordinate with Lane 2 only through explicit file/API contracts, not by shared unstated assumptions.
+- Current implementation path: `web/app/(workspace)/agents/page.tsx` now hosts a dedicated spec-pack authoring tab backed by `/api/v1/agent-specs`.
+- Storage contract: save current Markdown files under `data/user/workspace/agent_specs/<agent_id>/` and snapshot each save into `versions/vNNNN/`.

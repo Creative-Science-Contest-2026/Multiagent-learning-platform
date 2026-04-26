@@ -40,6 +40,10 @@ flowchart TD
 
   Project --> Product["Contest MVP Product Layer"]
   Product --> TeacherWorkspace["Teacher Workspace"]
+  TeacherWorkspace --> AgentSpecAuthoring["Agent Spec Authoring"]
+  AgentSpecAuthoring --> AgentSpecUI["/agents authoring tab"]
+  AgentSpecAuthoring --> AgentSpecAPI["/api/v1/agent-specs"]
+  AgentSpecAuthoring --> AgentSpecStorage["Versioned Markdown spec packs"]
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
   KnowledgePack --> KPVersions["Versioned teacher-pack metadata: current_version + version_history"]
@@ -129,6 +133,7 @@ flowchart TD
   Data --> Memory["data/memory"]
   Data --> Settings["data/user/settings"]
   Data --> Workspace["data/user/workspace"]
+  Workspace --> AgentSpecWorkspace["agent_specs/<agent_id>/ + versions/"]
 
   Project --> AIFirst["AI-first Operating Layer"]
   AIFirst --> OperatingPrompt["ai_first/AI_OPERATING_PROMPT.md"]

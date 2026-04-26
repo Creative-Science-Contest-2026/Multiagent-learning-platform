@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import dynamic from "next/dynamic";
 import { apiUrl } from "@/lib/api";
+import SpecPackAuthoringTab from "@/components/agents/SpecPackAuthoringTab";
 
 const MarkdownRenderer = dynamic(() => import("@/components/common/MarkdownRenderer"), {
   ssr: false,
@@ -43,7 +44,7 @@ interface SoulTemplate {
   content: string;
 }
 
-type Tab = "bots" | "profiles" | "souls";
+type Tab = "specs" | "bots" | "profiles" | "souls";
 
 const BOT_FILES = ["SOUL.md", "USER.md", "TOOLS.md", "AGENTS.md", "HEARTBEAT.md"] as const;
 type BotFile = (typeof BOT_FILES)[number];
@@ -56,7 +57,7 @@ export default function AgentsPage() {
   const [bots, setBots] = useState<BotInfo[]>([]);
   const [souls, setSouls] = useState<SoulTemplate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<Tab>("bots");
+  const [activeTab, setActiveTab] = useState<Tab>("specs");
   const [toast, setToast] = useState("");
 
   useEffect(() => {
@@ -96,7 +97,7 @@ export default function AgentsPage() {
             <p className="mt-1 text-[13px] text-[var(--primary)] animate-fade-in">{toast}</p>
           ) : (
             <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-              {t("Manage your in-process TutorBot instances")}
+              {t("Author teacher-defined spec packs, then manage in-process TutorBot instances when needed")}
             </p>
           )}
         </div>
@@ -104,6 +105,7 @@ export default function AgentsPage() {
         {/* Tabs */}
         <div className="mb-6 flex items-center gap-1 border-b border-[var(--border)]/50 pb-3">
           {([
+            { key: "specs" as Tab, label: t("Spec Packs"), icon: FileText },
             { key: "bots" as Tab, label: t("Bots"), icon: Bot },
             { key: "profiles" as Tab, label: t("Profiles"), icon: FileText },
             { key: "souls" as Tab, label: t("Souls"), icon: Heart },
@@ -127,7 +129,9 @@ export default function AgentsPage() {
           })}
         </div>
 
-        {activeTab === "bots" ? (
+        {activeTab === "specs" ? (
+          <SpecPackAuthoringTab onToast={setToast} />
+        ) : activeTab === "bots" ? (
           <BotsTab
             bots={bots}
             souls={souls}
@@ -269,7 +273,9 @@ function BotsTab({
                 className="w-full rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--ring)] placeholder:text-[var(--muted-foreground)]/40"
               />
               {botId && (
-                <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">ID: {botId}</p>
+                <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
+                  {t("ID")}: {botId}
+                </p>
               )}
             </div>
             <div>
@@ -763,7 +769,7 @@ function SoulsTab({
               />
               {newName.trim() && (
                 <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
-                  ID: {newName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}
+                  {t("ID")}: {newName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}
                 </p>
               )}
             </div>
