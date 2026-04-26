@@ -37,7 +37,7 @@ Before submission, quickly verify:
 
 - screenshots are clear and contain no private data
 - `docs/contest/VALIDATION_REPORT.md` still matches the intended demo environment
-- hybrid authoring claims stay calibrated: `/agents` authoring can be shown, but live `agent_spec_id` runtime binding is only claimed when freshly verified
+- hybrid authoring claims stay calibrated: `/agents` authoring can be shown, and bounded automated proof now exists for the unified Tutor turn path; do not rewrite that as universal live binding across every entry point
 - optional video is either not required or has been recorded separately using `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
 
 ### 4. Final package sign-off

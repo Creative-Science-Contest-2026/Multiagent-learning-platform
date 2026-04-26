@@ -18,7 +18,7 @@ Before the learning loop, optionally show a short teacher-authoring proof on `/a
 2. Show structured sections (`IDENTITY`, `SOUL`, `RULES`) and free-form markdown sections.
 3. Export the spec pack.
 
-Do not claim that every live turn is already bound to a selected `agent_spec_id` unless that exact path is re-verified in the current smoke run.
+You may claim bounded proof that the unified Tutor turn path can bind `config.agent_spec_id` and change runtime behavior between two contrasting spec packs. Do not expand that into a claim about every entry point unless the broader path is re-verified in the current smoke run.
 
 ## Demo Path
 
@@ -104,4 +104,4 @@ Evidence to capture:
 - Use one consistent sample topic across all screens.
 - If an external LLM provider is unavailable, explain the unavailable credential and show the local validation report instead of inventing evidence.
 - After the demo, open `VALIDATION_REPORT.md` to show exact commands and known limitations.
-- If you include the hybrid authoring check, keep it under one minute and treat it as authoring proof unless runtime binding is re-verified in this environment.
+- If you include the hybrid authoring check, keep it under one minute. The safe claim is: authoring is visible in UI, and the current repository also contains bounded automated proof that the unified Tutor turn path changes behavior across two contrasting spec packs.

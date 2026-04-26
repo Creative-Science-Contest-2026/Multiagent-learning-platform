@@ -14,7 +14,7 @@ Hybrid proof calibration:
 
 - Teacher authoring capability on `/agents` is part of the merged product story.
 - Contest evidence-loop proof remains anchored to smoke-backed Knowledge Pack -> assessment -> tutor -> dashboard artifacts.
-- Do not claim universal live turn-time binding of `agent_spec_id` unless that path is re-verified in the target demo environment.
+- You may claim bounded automated proof that the unified Tutor turn path accepts `config.agent_spec_id` and changes behavior across two contrasting spec packs. Do not expand that into universal live turn-time binding unless broader paths are re-verified in the target demo environment.
 
 Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/competition/pitch-notes.md).
 

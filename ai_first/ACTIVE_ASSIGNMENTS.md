@@ -32,13 +32,13 @@ Rules:
 
 - Owner: Codex
 - Machine: `MacBook-Air-cua-Loc.local`
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: `RISK_HARDENING_LANE_PACKETS`
-- Status: In progress
-- Branch: `docs/judge-risk-hardening-lanes`
-- Task packet: `docs/superpowers/tasks/2026-04-26-risk-lane-1-runtime-binding-proof.md` through `docs/superpowers/tasks/2026-04-26-risk-lane-6-claim-calibration-and-pilot.md`
-- Owned files: `docs/superpowers/tasks/2026-04-26-risk-lane-*.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-26.md`
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/runtime-binding-proof`
+- Task: `R1_RUNTIME_BINDING_PROOF`
+- Status: Ready for draft PR
+- Branch: `pod-a/runtime-binding-proof`
+- Task packet: `docs/superpowers/tasks/2026-04-26-risk-lane-1-runtime-binding-proof.md`
+- Owned files: `deeptutor/services/runtime_policy/`, `deeptutor/services/prompt/`, `deeptutor/core/capabilities/`, `deeptutor/services/session/turn_runtime.py` if needed, `tests/services/runtime_policy/`, `tests/core/`, `docs/contest/`, `docs/superpowers/pr-notes/*`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-26.md`
 - PR:
 - Last update: 2026-04-26
-- Next action: Finish the six risk-hardening lane packets, then hand them off for one-session-per-lane execution.
+- Next action: Commit, push, and open the draft PR for bounded runtime-binding proof review.
 - Blocker: None

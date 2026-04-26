@@ -5,8 +5,10 @@ from types import SimpleNamespace
 import pytest
 
 from deeptutor.core.stream import StreamEvent, StreamEventType
+from deeptutor.services.agent_spec.service import AgentSpecService
 from deeptutor.services.session.sqlite_store import SQLiteSessionStore
 from deeptutor.services.session.turn_runtime import TurnRuntimeManager
+from deeptutor.services.runtime_policy import compiler as runtime_policy_compiler
 
 
 async def _noop_refresh(**_kwargs):
@@ -447,3 +449,101 @@ async def test_turn_runtime_injects_memory_and_refreshes_after_completion(
     assert captured["conversation_history"] == []
     assert captured["conversation_context_text"] == "Recent chat summary"
     assert refresh_calls[0]["assistant_message"] == "Stored reply"
+
+
+@pytest.mark.asyncio
+async def test_turn_runtime_passes_agent_spec_id_for_live_chat_policy_binding(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+    captured: dict[str, object] = {}
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="strict-fractions",
+        display_name="Strict Fractions",
+        structured={
+            "identity": {
+                "agent_name": "Strict Fractions",
+                "subject": "Mathematics",
+                "grade_band": "Grade 6",
+                "tone": "Strict and concise",
+                "primary_language": "English",
+                "persona_summary": "A teacher-defined tutor for precise fraction practice.",
+            },
+            "soul": {
+                "teaching_philosophy": "Require justification before correction.",
+                "when_student_wrong": "Ask the student to explain the misconception first.",
+                "when_student_stuck": "Give a minimal hint only after the student states a plan.",
+                "encouragement_style": "Calm and demanding.",
+            },
+            "rules": {
+                "do_not_solve_directly": "yes",
+                "max_session_minutes": "20",
+                "hint_policy": "One hint after a student attempt.",
+                "escalation_rule": "Escalate only after the student justifies a retry.",
+                "guardrails": "Never provide the final answer without a student attempt.",
+            },
+        },
+    )
+
+    class FakeContextBuilder:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        async def build(self, **_kwargs):
+            return SimpleNamespace(
+                conversation_history=[],
+                conversation_summary="",
+                context_text="",
+                token_count=0,
+                budget=0,
+            )
+
+    class FakePipeline:
+        def __init__(self, language: str = "en") -> None:
+            captured["language"] = language
+
+        async def run(self, context, stream) -> None:
+            captured["config_overrides"] = dict(context.config_overrides)
+            captured["memory_context"] = context.memory_context
+            await stream.content(
+                "First, explain which denominator you would build and why.",
+                source="chat",
+                stage="responding",
+            )
+
+    monkeypatch.setattr("deeptutor.services.llm.config.get_llm_config", lambda: SimpleNamespace())
+    monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
+    monkeypatch.setattr(
+        "deeptutor.services.memory.get_memory_service",
+        lambda: SimpleNamespace(build_memory_context=lambda: "", refresh_from_turn=_noop_refresh),
+    )
+    monkeypatch.setattr("deeptutor.capabilities.chat.AgenticChatPipeline", FakePipeline)
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    _session, turn = await runtime.start_turn(
+        {
+            "type": "start_turn",
+            "content": "Can you just solve 5/6 - 1/2 for me?",
+            "session_id": None,
+            "capability": "chat",
+            "tools": [],
+            "knowledge_bases": [],
+            "attachments": [],
+            "language": "en",
+            "config": {
+                "agent_spec_id": "strict-fractions",
+            },
+        }
+    )
+
+    events = []
+    async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
+        events.append(event)
+
+    assert captured["config_overrides"]["agent_spec_id"] == "strict-fractions"
+    assert "Teacher Spec Reference:\nstrict-fractions" in str(captured["memory_context"])
+    assert "Require justification before correction." in str(captured["memory_context"])
+    assert events[-1]["metadata"]["status"] == "completed"

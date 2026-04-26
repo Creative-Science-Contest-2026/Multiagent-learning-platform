@@ -21,6 +21,8 @@ _RUNTIME_ONLY_KEYS = {"_persist_user_message", "followup_question_context"}
 class ChatRequestConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    agent_spec_id: str = ""
+
 
 class DeepSolveRequestConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
