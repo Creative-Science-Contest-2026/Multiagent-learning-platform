@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T17:14:24Z",
+    "last_updated": "2026-04-26T17:24:57Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -1254,7 +1254,7 @@
       "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
-      "notes": "Session A started on 2026-04-27 from branch pod-a/intervention-assignment-flow. Scope is a bounded teacher-facing assignment/remediation shell built on top of F101 teacher actions."
+      "notes": "Draft PR #170 is open on branch pod-a/intervention-assignment-flow. The branch adds linked intervention assignments on top of F101 teacher actions."
     },
     {
       "id": "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
