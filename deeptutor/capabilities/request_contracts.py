@@ -28,6 +28,7 @@ class DeepSolveRequestConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     detailed_answer: bool = True
+    agent_spec_id: str = ""
 
 
 class DeepQuestionRequestConfig(BaseModel):
@@ -42,6 +43,7 @@ class DeepQuestionRequestConfig(BaseModel):
     preference: str = ""
     paper_path: str = ""
     max_questions: int = Field(default=10, ge=1, le=100)
+    agent_spec_id: str = ""
 
 
 class VisualizeRequestConfig(BaseModel):

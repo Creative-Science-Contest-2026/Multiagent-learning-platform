@@ -14,6 +14,7 @@ from deeptutor.capabilities.chat import ChatCapability
 from deeptutor.capabilities.deep_question import DeepQuestionCapability
 from deeptutor.capabilities.deep_research import DeepResearchCapability
 from deeptutor.capabilities.deep_solve import DeepSolveCapability
+from deeptutor.capabilities.request_contracts import validate_capability_config
 from deeptutor.core.context import Attachment, UnifiedContext
 from deeptutor.core.stream import StreamEvent, StreamEventType
 from deeptutor.core.stream_bus import StreamBus
@@ -101,40 +102,44 @@ def test_turn_runtime_skips_tutoring_observations_for_non_chat_capability() -> N
     assert rows == []
 
 
-def test_turn_runtime_builds_tutoring_observations_for_chat_capability() -> None:
-    rows = _build_tutoring_observations(
-        capability="chat",
-        session_id="session-1",
-        student_id="student-1",
-        user_message="I still get this wrong",
-        assistant_message="Hint: convert to a common denominator first.",
-        followup_question_context={
-            "question_id": "q_9",
-            "question": "Compute 5/6 - 1/2",
-            "is_correct": False,
+def test_validate_deep_question_request_config_accepts_agent_spec_id() -> None:
+    config = validate_capability_config(
+        "deep_question",
+        {
+            "mode": "custom",
+            "topic": "fractions",
+            "agent_spec_id": "strict-fractions",
         },
-        assistant_events=[{"timestamp": 1.0}, {"timestamp": 14.0}],
     )
 
-    assert len(rows) == 1
-    assert rows[0]["source"] == "tutoring"
-    assert rows[0]["student_id"] == "student-1"
-    assert rows[0]["question_id"] == "q_9"
-    assert rows[0]["is_correct"] is False
+    assert config["agent_spec_id"] == "strict-fractions"
+    assert config["topic"] == "fractions"
 
 
-def test_turn_runtime_skips_tutoring_observations_for_non_chat_capability() -> None:
-    rows = _build_tutoring_observations(
-        capability="deep_question",
-        session_id="session-2",
-        student_id="student-2",
-        user_message="generate quiz",
-        assistant_message="created",
-        followup_question_context=None,
-        assistant_events=[{"timestamp": 2.0}, {"timestamp": 4.0}],
+def test_validate_deep_solve_request_config_accepts_agent_spec_id() -> None:
+    config = validate_capability_config(
+        "deep_solve",
+        {
+            "detailed_answer": False,
+            "agent_spec_id": "strict-fractions",
+        },
     )
 
-    assert rows == []
+    assert config == {
+        "detailed_answer": False,
+        "agent_spec_id": "strict-fractions",
+    }
+
+
+def test_validate_deep_solve_request_config_rejects_unknown_fields() -> None:
+    with pytest.raises(ValueError, match="Invalid deep solve config"):
+        validate_capability_config(
+            "deep_solve",
+            {
+                "agent_spec_id": "strict-fractions",
+                "unexpected_flag": True,
+            },
+        )
 
 
 @pytest.mark.asyncio
@@ -506,6 +511,67 @@ async def test_deep_solve_capability_bridges_observation_and_retrieve_events(
 
 
 @pytest.mark.asyncio
+async def test_deep_solve_capability_resolves_runtime_policy_from_agent_spec_pack(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    captured: dict[str, Any] = {}
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="strict-fractions",
+        display_name="Strict Fractions",
+        structured={
+            "identity": {"agent_name": "Strict Fractions"},
+            "soul": {"teaching_philosophy": "Require justification before correction."},
+            "rules": {"guardrails": "Do not give final answers immediately."},
+            "workflow": {"step_sequence": "Ask for plan, then hint."},
+        },
+    )
+
+    class FakeMainSolver:
+        def __init__(self, **_kwargs: Any) -> None:
+            self.logger = SimpleNamespace(
+                logger=SimpleNamespace(addHandler=lambda *_: None, removeHandler=lambda *_: None)
+            )
+
+        async def ainit(self) -> None:
+            return None
+
+        async def solve(self, **kwargs: Any) -> dict[str, Any]:
+            captured["conversation_context"] = kwargs["conversation_context"]
+            return {
+                "final_answer": "Try finding a common denominator first.",
+                "output_dir": "/tmp/solve",
+                "metadata": {"steps": 1},
+            }
+
+    _install_module(monkeypatch, "deeptutor.agents.solve.main_solver", MainSolver=FakeMainSolver)
+    _install_module(
+        monkeypatch,
+        "deeptutor.services.llm.config",
+        get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    context = UnifiedContext(
+        user_message="solve 5/6 - 1/2",
+        enabled_tools=["rag"],
+        knowledge_bases=["fractions"],
+        language="en",
+        config_overrides={"agent_spec_id": "strict-fractions"},
+    )
+    events = await _collect_events(lambda bus: DeepSolveCapability().run(context, bus))
+
+    assert any(
+        event.type == StreamEventType.PROGRESS
+        and event.content == "Runtime policy slices assembled."
+        for event in events
+    )
+    assert "Teacher Runtime Policy:" in captured["conversation_context"]
+    assert "Require justification before correction." in captured["conversation_context"]
+
+
+@pytest.mark.asyncio
 async def test_deep_question_capability_uses_user_message_as_topic(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -567,6 +633,59 @@ async def test_deep_question_capability_uses_user_message_as_topic(
     assert any(event.type == StreamEventType.PROGRESS and event.stage == "ideation" for event in events)
     result_event = next(event for event in events if event.type == StreamEventType.RESULT)
     assert "Question 1" in result_event.metadata["response"]
+
+
+@pytest.mark.asyncio
+async def test_deep_question_capability_resolves_runtime_policy_from_agent_spec_pack(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    captured: dict[str, Any] = {}
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="strict-fractions",
+        display_name="Strict Fractions",
+        structured={
+            "identity": {"agent_name": "Strict Fractions"},
+            "assessment": {"question_quality_bar": "Require justification prompts."},
+            "rules": {"guardrails": "Do not reveal final answers in stems."},
+        },
+    )
+
+    class FakeCoordinator:
+        def __init__(self, **_kwargs: Any) -> None:
+            self._callback = None
+
+        def set_ws_callback(self, callback) -> None:
+            self._callback = callback
+
+        async def generate_from_topic(self, **kwargs: Any) -> dict[str, Any]:
+            captured["preference"] = kwargs["preference"]
+            if self._callback is not None:
+                await self._callback({"type": "idea_round", "message": "ideas"})
+            return {"results": []}
+
+    _install_module(
+        monkeypatch,
+        "deeptutor.agents.question.coordinator",
+        AgentCoordinator=FakeCoordinator,
+    )
+    _install_module(
+        monkeypatch,
+        "deeptutor.services.llm.config",
+        get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    context = UnifiedContext(
+        user_message="compare fractions",
+        config_overrides={"mode": "custom", "agent_spec_id": "strict-fractions"},
+        language="en",
+    )
+    await _collect_events(lambda bus: DeepQuestionCapability().run(context, bus))
+
+    assert "Teacher Assessment Runtime Policy:" in captured["preference"]
+    assert "Strict Fractions" in captured["preference"]
 
 
 @pytest.mark.asyncio
