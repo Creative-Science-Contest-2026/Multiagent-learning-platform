@@ -19,6 +19,10 @@ flowchart TD
   Runtime --> ToolRegistry["ToolRegistry"]
   Runtime --> CapabilityRegistry["CapabilityRegistry"]
   Runtime --> StreamBus["StreamBus"]
+  Runtime --> RuntimePolicy["Runtime Policy Assembly"]
+  RuntimePolicy --> PolicyCompiler["services/runtime_policy/compiler.py"]
+  RuntimePolicy --> PolicySlices["SOUL/RULES/WORKFLOW/ASSESSMENT/KNOWLEDGE"]
+  RuntimePolicy --> SourcePriority["teacher_kb > curriculum_excerpt > teacher_rules > llm_prior_knowledge"]
 
   ToolRegistry --> Tools["Built-in Tools"]
   Tools --> RagTool["rag"]
@@ -31,6 +35,8 @@ flowchart TD
   Capabilities --> Chat["chat"]
   Capabilities --> DeepSolve["deep_solve"]
   Capabilities --> DeepQuestion["deep_question"]
+  RuntimePolicy --> Chat
+  RuntimePolicy --> DeepQuestion
 
   Project --> Product["Contest MVP Product Layer"]
   Product --> TeacherWorkspace["Teacher Workspace"]

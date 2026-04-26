@@ -20,7 +20,10 @@ from deeptutor.core.stream_bus import StreamBus
 
 
 def _install_module(monkeypatch: pytest.MonkeyPatch, fullname: str, **attrs: Any) -> types.ModuleType:
-    __import__("src")
+    try:
+        __import__("src")
+    except ModuleNotFoundError:
+        pass
     parts = fullname.split(".")
     for idx in range(1, len(parts)):
         pkg_name = ".".join(parts[:idx])
@@ -73,6 +76,7 @@ async def test_chat_capability_streams_content_and_geogebra_context(
             captured["process"] = {
                 "message": f"{context.user_message}\nGGB commands",
                 "enabled_tools": list(context.enabled_tools or []),
+                "memory_context": context.memory_context,
             }
             await stream.tool_call(
                 "geogebra_analysis",
@@ -98,6 +102,14 @@ async def test_chat_capability_streams_content_and_geogebra_context(
         knowledge_bases=["demo-kb"],
         language="en",
         attachments=[Attachment(type="image", base64="ZmFrZQ==", filename="img.png")],
+        metadata={
+            "teacher_spec": {
+                "SOUL": "Coach with encouragement.",
+                "RULES": "Keep explanations concise.",
+                "WORKFLOW": "Explain then practice.",
+                "KNOWLEDGE": "Use kb_preferred retrieval first.",
+            }
+        },
     )
 
     capability = ChatCapability()
@@ -107,6 +119,8 @@ async def test_chat_capability_streams_content_and_geogebra_context(
     assert any(event.type == StreamEventType.SOURCES for event in events)
     assert any(event.type == StreamEventType.CONTENT and "assistant output" in event.content for event in events)
     assert "GGB commands" in captured["process"]["message"]
+    assert "Teacher Runtime Policy:" in captured["process"]["memory_context"]
+    assert "teacher_kb > curriculum_excerpt > teacher_rules > llm_prior_knowledge" in captured["process"]["memory_context"]
 
 
 @pytest.mark.asyncio
@@ -294,11 +308,19 @@ async def test_deep_question_capability_uses_user_message_as_topic(
         user_message="linear algebra fundamentals",
         config_overrides={},
         language="en",
+        metadata={
+            "teacher_spec": {
+                "ASSESSMENT": "Focus each item on one concept.",
+                "RULES": "Avoid trick wording.",
+                "WORKFLOW": "Progress from basic to applied questions.",
+            }
+        },
     )
     capability = DeepQuestionCapability()
     events = await _collect_events(lambda bus: capability.run(context, bus))
 
     assert captured["topic_call"]["user_topic"] == "linear algebra fundamentals"
+    assert "Teacher Assessment Runtime Policy:" in captured["topic_call"]["preference"]
     assert any(event.type == StreamEventType.PROGRESS and event.stage == "ideation" for event in events)
     result_event = next(event for event in events if event.type == StreamEventType.RESULT)
     assert "Question 1" in result_event.metadata["response"]
