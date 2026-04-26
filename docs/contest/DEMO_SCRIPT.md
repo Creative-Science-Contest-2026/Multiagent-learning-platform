@@ -55,7 +55,9 @@ Steps:
 2. Select or reference the demo Knowledge Pack.
 3. Set subject and quiz parameters.
 4. Generate the assessment.
-5. Review generated questions and common-mistake feedback.
+5. Show that the generated assessment is treated as a draft requiring teacher review.
+6. Review generated questions and common-mistake feedback.
+7. Explain that a teacher can approve, edit, or reject before student-facing reuse.
 
 Evidence to capture:
 
@@ -105,3 +107,4 @@ Evidence to capture:
 - If an external LLM provider is unavailable, explain the unavailable credential and show the local validation report instead of inventing evidence.
 - After the demo, open `VALIDATION_REPORT.md` to show exact commands and known limitations.
 - If you include the hybrid authoring check, keep it under one minute. The safe claim is: authoring is visible in UI, and the current repository also contains bounded automated proof that the unified Tutor turn path changes behavior across two contrasting spec packs.
+- For assessment safety, the safe claim is: teacher review is the primary quality gate, not hidden model infallibility.

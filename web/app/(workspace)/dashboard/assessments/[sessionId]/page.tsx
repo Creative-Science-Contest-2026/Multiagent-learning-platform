@@ -190,6 +190,28 @@ export default function AssessmentReviewPage() {
           </div>
         </section>
 
+        <section className="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 shadow-sm dark:border-amber-900/40 dark:bg-amber-950/20">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-800 dark:text-amber-300">
+            {t("Teacher Review Safety Gate")}
+          </div>
+          <p className="mt-2 text-[14px] leading-6 text-amber-900 dark:text-amber-100">
+            {t(
+              "This assessment should be teacher-reviewed before student-facing reuse. Use this screen to confirm question wording, distractor quality, and explanation clarity rather than assuming the AI output is ready to publish unchanged.",
+            )}
+          </p>
+          <div className="mt-3 grid gap-2 text-[13px] text-amber-900 dark:text-amber-200 md:grid-cols-3">
+            <div className="rounded-xl border border-amber-200/70 bg-white/60 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/20">
+              {t("1. Review question wording")}
+            </div>
+            <div className="rounded-xl border border-amber-200/70 bg-white/60 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/20">
+              {t("2. Check answer and distractor quality")}
+            </div>
+            <div className="rounded-xl border border-amber-200/70 bg-white/60 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/20">
+              {t("3. Approve, edit, or reject before reuse")}
+            </div>
+          </div>
+        </section>
+
         <ProgressIndicator
           totalQuestions={review.summary.total_questions}
           correctCount={review.summary.correct_count}

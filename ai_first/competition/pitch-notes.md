@@ -10,7 +10,7 @@ Teachers have learning materials but limited time to convert them into personali
 
 ## Solution
 
-The platform turns teacher-owned materials into Knowledge Packs, generates assessments, supports student tutoring, and gives teachers a simple dashboard. Its diagnosis and recommendation layer is designed as rule-assisted and teacher-reviewed, so the teacher stays responsible for intervention decisions.
+The platform turns teacher-owned materials into Knowledge Packs, generates assessments, supports student tutoring, and gives teachers a simple dashboard. Assessment generation is framed as a draft-plus-review workflow, and the diagnosis layer is rule-assisted and teacher-reviewed, so the teacher stays responsible for both content quality and intervention decisions.
 
 ## Why now
 
