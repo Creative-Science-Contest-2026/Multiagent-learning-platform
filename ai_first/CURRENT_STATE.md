@@ -30,8 +30,8 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 - Latest merged docs/control-plane PR: `#148 [OPS-SYNC] docs(ai-first): sync queue after evidence merge`
 - Current branch for this sync: none required on `main`
-- Product MVP path status: the core contest flow, the Wave 1 evidence spine, lane 1-6 roadmap slices, and the refreshed dashboard plus `/agents` screenshot evidence are all merged to `main`.
-- Current purpose: hold a correct terminal wait state while the remaining submission work is human review, optional video, and final sign-off.
+- Product MVP path status: the core contest flow, the Wave 1 evidence spine, lane 1-6 roadmap slices, and the refreshed dashboard plus `/agents` screenshot evidence are all merged to `main` as a validated prototype.
+- Current purpose: hold a correct terminal wait state while the remaining submission work is human review, optional video, final sign-off, or any explicitly opened risk-hardening docs lane.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -68,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off. Start a new AI task only if a fresh packet is opened from `main`.
+Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off unless a fresh packet is explicitly opened from `main`.
 
 ## Autonomous Merge Policy
 

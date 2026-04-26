@@ -17,6 +17,8 @@ Hybrid proof calibration:
 - You may claim bounded automated proof that the unified Tutor turn path accepts `config.agent_spec_id` and changes behavior across two contrasting spec packs. Do not expand that into universal live turn-time binding unless broader paths are re-verified in the target demo environment.
 - Diagnosis claims should stay at: rule-assisted, confidence-tagged, teacher-reviewed hypothesis layer. Do not present the diagnosis engine as a benchmarked autonomous assessor.
 - Assessment claims should stay at: AI can draft questions and feedback, but teacher review is the primary safety gate before student-facing reuse.
+- Overall product framing should stay at: validated prototype, not school-scale deployment.
+- Architecture framing should stay at: agent-native today, prepared for deeper multi-agent role separation later.
 
 Teacher-value shorthand for Q&A:
 
@@ -38,6 +40,7 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 | Screenshot bundle | Ready | [`screenshots/`](./screenshots/) |
 | Demo-safe reset command | Ready | [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) |
 | Smoke procedure | Ready | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) |
+| Pilot / external feedback status | Ready | [`PILOT_STATUS.md`](./PILOT_STATUS.md) |
 | Contest rules summary | Ready | [`ai_first/competition/vnexpress-rules-summary.md`](../../ai_first/competition/vnexpress-rules-summary.md) |
 | Product description draft | Ready for human review | [`ai_first/competition/product-description.md`](../../ai_first/competition/product-description.md) |
 | Fork modifications note | Ready | [`ai_first/competition/fork-modifications.md`](../../ai_first/competition/fork-modifications.md) |
@@ -57,7 +60,7 @@ The latest smoke-backed refresh passed on 2026-04-26 after running the scripted 
 - dashboard evidence-first and `/agents` authoring screenshots were recaptured on 2026-04-26;
 - frontend production build with `NEXT_PUBLIC_API_BASE=http://localhost:8001`.
 
-Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` and `#128` for smoke-backed evidence, and `#99` plus `#130` for the screenshot bundle.
+Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` and `#128` for smoke-backed evidence, and `#99` plus `#130` for the screenshot bundle. This validation record supports a validated prototype claim. It does not, by itself, establish classroom deployment or outcome evidence.
 
 ## Human Review Checklist
 

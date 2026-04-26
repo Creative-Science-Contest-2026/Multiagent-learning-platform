@@ -4,6 +4,8 @@
 
 An AI-first learning platform where Vietnamese teachers turn their own materials into classroom-ready tutoring, practice, and follow-up insight without giving up control over how the AI teaches.
 
+Current status: validated prototype with smoke-backed demo evidence, not a deployed classroom system.
+
 ## Problem
 
 Teachers already have lesson materials and teaching instincts, but they do not have enough time to turn them into personalized practice, tutoring support, and follow-up decisions for each learner.
@@ -27,6 +29,8 @@ Dashboard actionability stories:
 ## Why now
 
 LLM agents, RAG, and AI-assisted content generation make it possible to reduce lesson preparation cost while keeping teachers in control of knowledge sources.
+
+Architecture direction: agent-native today, with future multi-agent role separation as a design direction rather than a current autonomy claim.
 
 ## MVP demo story
 

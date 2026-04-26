@@ -12,6 +12,8 @@ Education
 
 Multiagent Learning Platform is an AI-first learning platform that helps Vietnamese teachers turn their own teaching materials into reusable Knowledge Packs, draft assessments, support student tutoring, and review learning progress through one connected workflow while still deciding how the AI should teach.
 
+Current proof level: a validated prototype with contest-safe walkthrough validation, smoke-backed checks, and refreshed UI evidence.
+
 ## Problem
 
 Teachers often already have lesson materials, exercises, and teaching experience, but they do not have enough time to convert those resources into personalized practice, tutoring support, and progress tracking for each learner. Many AI tools also generate content without grounding it in teacher-approved materials, which makes classroom adoption harder.
@@ -50,9 +52,13 @@ Within that loop, diagnosis and recommendation outputs are positioned as evidenc
 
 The platform combines agent workflows, retrieval grounded in teacher-approved materials, assessment generation, tutoring, and dashboard review into one connected product path instead of isolated tools. Its practical novelty is not only “using AI,” but using AI while preserving teacher control over source content, teaching style, and evidence review.
 
+Its future direction can be described as multi-agent by design, because the architecture is prepared for stronger role separation later. The current merged product should still be described as an agent-native validated prototype rather than a full autonomous multi-agent deployment.
+
 ## Practical Applicability
 
 The current MVP already demonstrates the end-to-end classroom loop locally with demo-safe data and repeatable smoke validation. That makes it suitable for contest review, pilot demonstrations, and iterative deployment in education settings where reliability and explainability matter.
+
+This repository does not currently claim classroom outcome evidence or a scaled real-user pilot.
 
 ## Efficiency Impact
 

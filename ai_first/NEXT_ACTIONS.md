@@ -32,3 +32,4 @@ Use this file only as a compact queue mirror. Do not rely on it for the full ope
 1. Start new AI sessions from `main` only if a new task packet is explicitly opened.
 2. Use the matching packet before code edits.
 3. If no packet exists and the remaining work is human-only, stop instead of inventing a new AI lane.
+4. Keep contest wording at validated-prototype level unless a stronger repository artifact is added.
