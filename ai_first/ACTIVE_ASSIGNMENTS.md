@@ -28,17 +28,7 @@ Rules:
 
 ## Active
 
-### Assignment
-
-- Owner: Codex
-- Machine: `MacBook-Air-cua-Loc.local`
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: `L1_AGENT_SPEC_AUTHORING`
-- Status: In progress
-- Branch: `pod-a/agent-spec-authoring`
-- Task packet: `docs/superpowers/tasks/2026-04-26-lane-1-agent-spec-authoring.md`
-- Owned files: `web/app/(workspace)/agents/`, `web/components/agents/`, `web/lib/agent-spec-api.ts`, `deeptutor/api/routers/agent_specs.py`, `deeptutor/services/agent_spec/`, `tests/api/test_agent_specs_router.py`, `tests/services/agent_spec/`, `docs/superpowers/pr-notes/*`
-- PR: Not opened
-- Last update: 2026-04-26
-- Next action: Finish the teacher-facing Agent Spec Pack authoring slice, validate it, then open a draft PR.
-- Blocker: None
+- No active AI-owned lane is open right now.
+- Lane 1 (`L1_AGENT_SPEC_AUTHORING`) merged through PR `#136`.
+- Lane 2 (`L2_SPEC_RUNTIME_ASSEMBLY`) merged through PR `#135`.
+- Use the remaining lane packets (`lane-3` to `lane-6`) before starting new implementation sessions.
