@@ -1,6 +1,6 @@
 # Validation Report
 
-Last updated: 2026-04-25
+Last updated: 2026-04-26
 
 ## Scope
 
@@ -10,13 +10,14 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Evidence Freshness Status
 
-Latest smoke-backed refresh: 2026-04-25
+Latest smoke-backed refresh: 2026-04-26
 
 | Evidence group | Refresh mode | Status | Latest source |
 | --- | --- | --- | --- |
-| Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-25.md`. |
-| Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-25 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the fresh smoke worktree. |
+| Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-26.md`. |
+| Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-26 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the lane-6 worktree. |
 | Screenshot bundle | Browser capture after smoke when the UI changes | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass` against the current merged UI. |
+| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Stale | Lane 6 documented the hybrid proof path, but the contest screenshot bundle has not yet captured `/agents` authoring evidence. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
 Use these status values consistently:
@@ -30,27 +31,28 @@ Use these status values consistently:
 
 | Area | Command | Result |
 | --- | --- | --- |
-| Scripted demo reset | `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Passed on 2026-04-25; it recreated `contest-demo-quadratics`, `contest-assessment-demo`, and `contest-tutor-demo` in the fresh worktree. |
-| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed on 2026-04-25 with backend `online`, configured `gpt-4o-mini`, and local fallback search. |
-| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed on 2026-04-25; `contest-demo-quadratics` was present with demo-safe metadata and `sharing_status=demo`. |
-| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed on 2026-04-25 with one assessment, one tutoring session, and recent activity grounded in `contest-demo-quadratics`. |
-| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed on 2026-04-25 with assessment and tutor activity grounded in `contest-demo-quadratics`. |
-| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed on 2026-04-25 and returned `context_support` plus demo-safe Knowledge Pack references. |
-| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed on 2026-04-25 and returned `context_support` plus demo-safe Knowledge Pack references. |
-| Frontend production build | `cd web && npm ci && npm run build` | Passed on 2026-04-25 in the fresh smoke worktree, with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing multiple-lockfile warning. |
+| Scripted demo reset | `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Passed on 2026-04-26; it recreated `contest-demo-quadratics`, `contest-assessment-demo`, and `contest-tutor-demo` in the lane-6 worktree. |
+| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed on 2026-04-26 with backend `online`, configured `gpt-4.1`, embeddings not configured, and fallback search provider `duckduckgo`. |
+| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed on 2026-04-26; `contest-demo-quadratics` was present with demo-safe metadata and team-safe sharing status. |
+| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed on 2026-04-26 with recent activity including the contest assessment and tutor sessions grounded in `contest-demo-quadratics`. |
+| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed on 2026-04-26 with assessment and tutor activity grounded in `contest-demo-quadratics`. |
+| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed on 2026-04-26 and returned `context_support` plus demo-safe Knowledge Pack references. |
+| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed on 2026-04-26 and returned `context_support` plus demo-safe Knowledge Pack references. |
+| Frontend production build | `cd web && npm ci && npm run build` | Passed on 2026-04-26 in lane 6, with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing multiple-lockfile warning. |
 
 ## Current Known Limitations
 
 - Video evidence is deferred unless the final contest submission requires it.
 - The frontend build emits a Next.js warning about multiple lockfiles and inferred workspace root. The build still completes successfully.
 - Browser-backed screenshot refresh now works in a local worktree, but it still depends on a running backend and frontend plus demo-safe local data.
+- Runtime handoff from selected `agent_spec_id` through every live session-turn request path is not yet claimed as universally wired in this report. Treat `/agents` authoring as demonstrated UI/API capability unless a fresh smoke pass verifies full request-path binding.
 - Local provider-backed assessment generation was unavailable during the 2026-04-25 screenshot refresh because the configured model key was still a placeholder. The refreshed `07` and `08` screenshots therefore use demo-safe local session content in the worktree data store instead of a live provider response.
 - Provider-backed AI quality depends on configured model credentials. If credentials are unavailable during a demo, use the command validation and recorded UI flow as fallback evidence.
 - This report uses demo-safe descriptions only. Do not add real student data.
 
 ## Local Demo Run
 
-The latest smoke-backed evidence refresh used local demo data only:
+The latest smoke-backed evidence refresh used local demo data only (2026-04-26):
 
 - Reset: `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001`
 - Backend: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m deeptutor_cli.main serve --host 127.0.0.1 --port 8001`
@@ -60,9 +62,9 @@ The latest smoke-backed evidence refresh used local demo data only:
   - `contest-assessment-demo`
   - `contest-tutor-demo`
 - Screenshot refresh follow-up:
-  - browser capture run from `docs/t037-contest-screenshot-refresh-pass`
-  - refreshed files under `docs/contest/screenshots/`
-  - local demo-safe assistant content was seeded into `contest-assessment-demo` inside the worktree `data/` directory only
+  - no new screenshot recapture was performed in this smoke pass;
+  - existing screenshot bundle remains valid for the current core loop;
+  - hybrid `/agents` screenshot rows remain `Stale` until dedicated capture.
 
 Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
 
@@ -74,17 +76,17 @@ python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://lo
 
 The first backend attempt with `.venv/bin/python -m deeptutor.api.run_server` failed before binding because the reload configuration passed absolute `reload_excludes` paths to the installed `uvicorn`, which rejects non-relative glob patterns. The smoke run used the existing CLI server path with reload disabled instead.
 
-The first frontend build attempt failed in sandbox because Next.js could not fetch Google Fonts. Re-running the same build with network permission passed. The build still emits the existing multiple-lockfile warning.
+The frontend build in this smoke pass completed successfully. It still emits the existing multiple-lockfile warning.
 
 ## Smoke-backed Verification Record
 
-The 2026-04-25 scripted-reset smoke run verified the MVP path in the current merged state:
+The 2026-04-26 scripted-reset smoke run verified the MVP path in the current merged state:
 
 1. scripted reset recreated the demo-safe Knowledge Pack and assessment/tutor sessions in the fresh worktree;
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
-4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the new worktree;
-5. screenshot evidence was refreshed on 2026-04-25 after the merged UI changes from `T044`, `T045`, and `T046`.
+4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the lane-6 worktree;
+5. screenshot bundle status stayed `Current` for the core loop, while hybrid `/agents` screenshots stayed `Stale` pending dedicated capture.
 
 ## Manual Verification Template
 
@@ -126,3 +128,5 @@ Complete this section when the local app is running.
 rg -n "evidence refresh|smoke|validation|screenshot|video|Current|Stale|Blocked" docs/contest docs/superpowers/tasks docs/superpowers/pr-notes ai_first
 git diff --check
 ```
+
+6. When the hybrid authoring story is presented to reviewers, capture `/agents` authoring screenshots after a successful smoke cycle and move the hybrid rows from `Stale` to `Current`.

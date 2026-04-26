@@ -6,6 +6,15 @@ This folder is the entry point for VnExpress Sang kien Khoa hoc 2026 demo eviden
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
 
+## Hybrid Proof Scope
+
+This evidence bundle now supports a hybrid contest narrative:
+
+- Teacher authoring proof: the teacher can structure Agent Specs on `/agents` and export a spec pack.
+- Learning evidence-loop proof: Knowledge Pack -> assessment -> tutoring follow-up -> dashboard activity.
+
+Runtime wiring between a selected `agent_spec_id` and every live turn request is still treated as a known limitation unless explicitly re-verified by smoke.
+
 ## Evidence Files
 
 - [`SUBMISSION_PACKAGE.md`](./SUBMISSION_PACKAGE.md): compact final review path for contest submission.
@@ -18,8 +27,10 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ## Current Status
 
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
-- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-25 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
+- Teacher Agent Spec authoring UI/API and runtime policy assembly contracts are merged on `main` and documented as hybrid-proof context.
+- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-26 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
 - Screenshot evidence is captured in [`screenshots/`](./screenshots/) and is current again after the refreshed `T037` re-run merged on 2026-04-25.
+- Hybrid `/agents` screenshots are intentionally marked `Stale` until a dedicated recapture run is completed.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 
 ## Evidence Refresh Rules

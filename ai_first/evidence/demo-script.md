@@ -6,6 +6,14 @@ Show one reliable end-to-end learning loop:
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher views dashboard.
 
+Optional hybrid add-on before Scene 1:
+
+- open `/agents` to show teacher Agent Spec authoring;
+- show structured `IDENTITY`, `SOUL`, and `RULES` sections;
+- export a spec pack.
+
+Keep this claim scoped to authoring proof unless the current smoke run verifies full turn-time runtime binding.
+
 ## Scene 1: Teacher creates Knowledge Pack
 
 - Open Teacher or Knowledge page.

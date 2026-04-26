@@ -32,13 +32,13 @@ Rules:
 
 - Owner: Codex
 - Machine: `MacBook-Air-cua-Loc.local`
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: `L2_SPEC_RUNTIME_ASSEMBLY`
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/lane6`
+- Task: `L6_EVALUATION_EVIDENCE_READINESS`
 - Status: In progress
-- Branch: `pod-a/spec-runtime-assembly`
-- Task packet: `docs/superpowers/tasks/2026-04-26-lane-2-spec-runtime-assembly.md`
-- Owned files: `deeptutor/services/runtime_policy/`, `deeptutor/services/prompt/`, `deeptutor/runtime/orchestrator.py`, `deeptutor/capabilities/chat.py`, `deeptutor/capabilities/deep_question.py`, `tests/services/runtime_policy/`, `tests/core/test_capabilities_runtime.py`, `tests/services/test_prompt_manager.py`, `docs/superpowers/pr-notes/*`
-- PR: `#139` (Ready)
+- Branch: `docs/evaluation-evidence-readiness`
+- Task packet: `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`
+- Owned files: `docs/contest/`, `ai_first/evidence/`, `docs/superpowers/pr-notes/`, `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`, `ai_first/EXECUTION_QUEUE.md`, `ai_first/daily/2026-04-26.md`, `ai_first/CURRENT_STATE.md`, `ai_first/NEXT_ACTIONS.md`
+- PR: Not opened
 - Last update: 2026-04-26
-- Next action: Resolve the latest `origin/main` sync, push the branch, then merge PR `#139` once GitHub recalculates mergeability.
+- Next action: Refresh contest evidence docs for the hybrid authoring plus evidence-loop demo and calibrate known limitations.
 - Blocker: None

@@ -18,20 +18,29 @@ Refresh these only when the UI changed or when the latest smoke-backed validatio
 | Dashboard | Summary cards visible | Browser capture | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `05-dashboard-summary-and-activity.png`. |
 | Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Browser capture | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `05-dashboard-summary-and-activity.png`. |
 
+## Hybrid Proof Screenshots
+
+Use this section to calibrate claims when showing teacher authoring plus evidence loop in one demo.
+
+| Area | Evidence | Refresh mode | Status | Notes |
+| --- | --- | --- | --- | --- |
+| Agent Specs authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections visible on `/agents` | Browser capture | Stale | Route and feature are merged, but this screenshot is not yet part of the contest bundle. Capture only after a successful smoke-backed refresh cycle. |
+| Agent Specs authoring | Export action visible from authoring tab | Browser capture | Stale | Keep claim scoped to authoring/export proof unless runtime binding is re-verified. |
+
 ## Required Command Evidence
 
 Refresh these automatically after every successful smoke pass.
 
 | Command | Refresh mode | Status | Source |
 | --- | --- | --- | --- |
-| `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed on 2026-04-25; see `VALIDATION_REPORT.md`. |
-| `cd web && npm ci && npm run build` | Auto after smoke | Current | Passed on 2026-04-25 in the fresh smoke worktree, with the existing lockfile warning. |
+| `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
+| `cd web && npm ci && npm run build` | Auto after smoke | Current | Passed on 2026-04-26 in lane 6, with the existing lockfile warning. |
 
 ## Optional Video
 
@@ -60,7 +69,8 @@ Video status follows the same freshness states:
 | Criterion | Status | Notes |
 | --- | --- | --- |
 | Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
+| Hybrid authoring plus evidence-loop claim is calibrated | Passed | Hybrid authoring is documented with explicit pending-capture and runtime-binding caveats. |
 | Product commands have smoke-backed validation evidence | Passed | See `VALIDATION_REPORT.md`. |
-| Screenshots are captured and linked | Passed | The screenshot bundle was refreshed on 2026-04-25 against the current merged UI. |
+| Screenshots are captured and linked | Passed with pending hybrid capture | Core screenshot bundle is current from 2026-04-25; `/agents` hybrid screenshots remain `Stale` until recaptured. |
 | Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |
 | No secrets or private data in evidence | Passed | Screenshots use demo-safe Knowledge Pack and session data. |

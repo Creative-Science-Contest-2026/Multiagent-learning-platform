@@ -1,13 +1,13 @@
 # Next Actions
 
-Last updated: 2026-04-25
+Last updated: 2026-04-26
 
 This file is a compatibility snapshot. The authoritative action list lives in `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Immediate
 
-1. Keep the merged screenshot bundle and evidence-doc updates from PR `#130` as the current contest evidence baseline.
-2. Refresh the compact mirrors after the merged screenshot lane so they no longer describe that lane as active.
+1. Complete lane 6 (`L6_EVALUATION_EVIDENCE_READINESS`) docs updates for hybrid-proof demo flow and evidence calibration.
+2. Keep `docs/contest/VALIDATION_REPORT.md` and `docs/contest/EVIDENCE_CHECKLIST.md` aligned on what is `Current` versus what is still pending recapture.
 3. Treat any future smoke failure as the next product task before opening another polish slice.
 4. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new lane or docs sync.
 5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, smoke passes, screenshot refreshes, lane changes, and blocker changes.

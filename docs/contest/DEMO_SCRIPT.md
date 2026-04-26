@@ -10,6 +10,16 @@ Use this script to present the MVP in the same order as the project goal.
 4. Open the web workspace in a browser.
 5. Use demo-safe sample content. Do not use private student data.
 
+## Hybrid Presenter Check
+
+Before the learning loop, optionally show a short teacher-authoring proof on `/agents`:
+
+1. Open Agent Specs authoring.
+2. Show structured sections (`IDENTITY`, `SOUL`, `RULES`) and free-form markdown sections.
+3. Export the spec pack.
+
+Do not claim that every live turn is already bound to a selected `agent_spec_id` unless that exact path is re-verified in the current smoke run.
+
 ## Demo Path
 
 ### 1. Teacher Creates A Knowledge Pack
@@ -91,3 +101,4 @@ Evidence to capture:
 - Use one consistent sample topic across all screens.
 - If an external LLM provider is unavailable, explain the unavailable credential and show the local validation report instead of inventing evidence.
 - After the demo, open `VALIDATION_REPORT.md` to show exact commands and known limitations.
+- If you include the hybrid authoring check, keep it under one minute and treat it as authoring proof unless runtime binding is re-verified in this environment.
