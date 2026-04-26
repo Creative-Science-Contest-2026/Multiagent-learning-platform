@@ -1,5 +1,7 @@
 # Feature Pod Task: <feature name>
 
+Task ID:
+Commit tag:
 Owner:
 Branch:
 GitHub Issue:

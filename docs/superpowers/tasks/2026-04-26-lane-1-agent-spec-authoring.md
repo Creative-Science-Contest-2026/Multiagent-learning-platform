@@ -1,5 +1,7 @@
 # Feature Pod Task: Lane 1 Agent Spec Authoring
 
+Task ID: `L1_AGENT_SPEC_AUTHORING`
+Commit tag: `L1`
 Owner: Session-specific
 Branch: `pod-a/agent-spec-authoring`
 GitHub Issue:

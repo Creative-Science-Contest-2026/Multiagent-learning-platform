@@ -1,5 +1,7 @@
 # Feature Pod Task: Lane 2 Spec Runtime Assembly
 
+Task ID: `L2_SPEC_RUNTIME_ASSEMBLY`
+Commit tag: `L2`
 Owner: Session-specific
 Branch: `pod-a/spec-runtime-assembly`
 GitHub Issue:

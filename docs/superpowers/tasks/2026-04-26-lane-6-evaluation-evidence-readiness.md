@@ -1,5 +1,7 @@
 # Feature Pod Task: Lane 6 Evaluation, Evidence, and Contest Readiness
 
+Task ID: `L6_EVALUATION_EVIDENCE_READINESS`
+Commit tag: `L6`
 Owner: Session-specific
 Branch: `docs/evaluation-evidence-readiness`
 GitHub Issue:
