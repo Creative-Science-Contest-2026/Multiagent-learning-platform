@@ -28,20 +28,17 @@ Rules:
 
 ## Active
 
-- No active AI-owned lane is open right now.
-- Use the six lane packets under `docs/superpowers/tasks/2026-04-26-lane-*.md` before starting any new session.
-
 ### Assignment
 
 - Owner: Codex
 - Machine: `MacBook-Air-cua-Loc.local`
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: `SIX_LANE_SESSION_PACKETS`
+- Task: `L1_AGENT_SPEC_AUTHORING`
 - Status: In progress
-- Branch: `docs/six-lane-session-packets`
-- Task packet: None
-- Owned files: `ai_first/AI_OPERATING_PROMPT.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/EXECUTION_QUEUE.md`, `ai_first/CURRENT_STATE.md`, `ai_first/NEXT_ACTIONS.md`, `ai_first/daily/2026-04-26.md`, `docs/superpowers/tasks/2026-04-26-lane-*.md`, `docs/superpowers/pr-notes/*`
+- Branch: `pod-a/agent-spec-authoring`
+- Task packet: `docs/superpowers/tasks/2026-04-26-lane-1-agent-spec-authoring.md`
+- Owned files: `web/app/(workspace)/agents/`, `web/components/agents/`, `web/lib/agent-spec-api.ts`, `deeptutor/api/routers/agent_specs.py`, `deeptutor/services/agent_spec/`, `tests/api/test_agent_specs_router.py`, `tests/services/agent_spec/`, `docs/superpowers/pr-notes/*`
 - PR: Not opened
 - Last update: 2026-04-26
-- Next action: Create six session-ready lane packets and refresh the AI-first control plane so workers can route themselves safely.
+- Next action: Finish the teacher-facing Agent Spec Pack authoring slice, validate it, then open a draft PR.
 - Blocker: None
