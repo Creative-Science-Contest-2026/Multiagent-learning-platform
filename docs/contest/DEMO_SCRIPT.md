@@ -93,6 +93,8 @@ Steps:
 
 Evidence to capture:
 
+- Screenshot of the structured `/agents` authoring tab.
+- Screenshot of the visible export action for the saved spec pack.
 - Screenshot of the evidence-first teacher insight overview.
 - Screenshot of recent activity with Knowledge Pack context below the insight workflow.
 

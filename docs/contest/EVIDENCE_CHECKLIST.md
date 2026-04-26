@@ -15,8 +15,8 @@ Refresh these only when the UI changed or when the latest smoke-backed validatio
 | Assessment | Common-mistake or feedback guidance visible | Browser capture | Current | Refreshed on 2026-04-25 with demo-safe local session content in the screenshot worktree; see `08-assessment-common-mistakes.png`. |
 | Tutor Agent | Student asks a follow-up question | Browser capture | Current | Refreshed on 2026-04-25; the student turn is visible in `06-tutor-agent-answer.png`. |
 | Tutor Agent | Tutor response with learning context | Browser capture | Current | Refreshed on 2026-04-25; the tutor answer is visible in `06-tutor-agent-answer.png`. |
-| Dashboard | Evidence-first teacher insight overview visible | Browser capture | Stale | Lane 5 changed `/dashboard` after the 2026-04-25 capture set. Recapture before claiming the new workflow visually. |
-| Dashboard | Recent activity still visible below the teacher insight workflow | Browser capture | Stale | The old `05-dashboard-summary-and-activity.png` no longer represents the current overview hierarchy after Lane 5. |
+| Dashboard | Evidence-first teacher insight overview visible | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `05-dashboard-evidence-first-overview.png`. |
+| Dashboard | Recent activity still visible below the teacher insight workflow | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `09-dashboard-recent-activity-evidence-first.png`. |
 
 ## Hybrid Proof Screenshots
 
@@ -24,8 +24,8 @@ Use this section to calibrate claims when showing teacher authoring plus evidenc
 
 | Area | Evidence | Refresh mode | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Agent Specs authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections visible on `/agents` | Browser capture | Stale | Route and feature are merged, but this screenshot is not yet part of the contest bundle. Capture only after a successful smoke-backed refresh cycle. |
-| Agent Specs authoring | Export action visible from authoring tab | Browser capture | Stale | Keep claim scoped to authoring/export proof unless runtime binding is re-verified. |
+| Agent Specs authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections visible on `/agents` | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `10-agents-spec-pack-authoring.png`. Keep the claim scoped to authoring proof. |
+| Agent Specs authoring | Export action visible from authoring tab | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `11-agents-spec-pack-export.png`. Runtime binding remains a separate verification concern. |
 
 ## Required Command Evidence
 
@@ -71,6 +71,6 @@ Video status follows the same freshness states:
 | Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
 | Hybrid authoring plus evidence-loop claim is calibrated | Passed | Hybrid authoring is documented with explicit pending-capture and runtime-binding caveats. |
 | Product commands have smoke-backed validation evidence | Passed | See `VALIDATION_REPORT.md`. |
-| Screenshots are captured and linked | Passed with pending dashboard + hybrid recapture | Knowledge, assessment, and tutor screenshots are current from 2026-04-25; dashboard and `/agents` rows remain `Stale` until recaptured. |
+| Screenshots are captured and linked | Passed | Knowledge, assessment, tutor, dashboard, and `/agents` authoring screenshots are current as of the 2026-04-26 recapture run. |
 | Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |
 | No secrets or private data in evidence | Passed | Screenshots use demo-safe Knowledge Pack and session data. |

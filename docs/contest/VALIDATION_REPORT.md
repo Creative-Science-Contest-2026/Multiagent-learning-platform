@@ -16,8 +16,8 @@ Latest smoke-backed refresh: 2026-04-26
 | --- | --- | --- | --- |
 | Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-26.md`. |
 | Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-26 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the lane-6 worktree. |
-| Screenshot bundle | Browser capture after smoke when the UI changes | Stale | Knowledge, assessment, and tutor screenshots still reflect the core loop, but Lane 5 changed the teacher dashboard workflow after the 2026-04-25 capture set. |
-| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Stale | Lane 6 documented the hybrid proof path, but the contest screenshot bundle has not yet captured `/agents` authoring evidence. |
+| Screenshot bundle | Browser capture after smoke when the UI changes | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`, including the Lane 5 evidence-first dashboard workflow. |
+| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; keep claims bounded to authoring/export proof unless runtime binding is re-verified. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
 Use these status values consistently:
@@ -62,10 +62,10 @@ The latest smoke-backed evidence refresh used local demo data only (2026-04-26):
   - `contest-assessment-demo`
   - `contest-tutor-demo`
 - Screenshot refresh follow-up:
-  - no new screenshot recapture was performed in this smoke pass;
-- existing screenshot bundle remains valid for Knowledge Pack, assessment, and tutor screens;
-- dashboard screenshots now require recapture because Lane 5 changed the teacher insight workflow after the 2026-04-25 capture set;
-- hybrid `/agents` screenshot rows remain `Stale` until dedicated capture.
+  - browser-backed recapture completed on 2026-04-26 for the dashboard evidence-first workflow and `/agents` authoring proof;
+  - Knowledge Pack, assessment, and tutor screenshots remain valid from the 2026-04-25 refresh;
+  - dashboard screenshots now point to the new evidence-first workflow captures;
+  - hybrid `/agents` screenshot rows are current, but runtime-binding claims remain intentionally limited.
 
 Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
 
@@ -87,7 +87,7 @@ The 2026-04-26 scripted-reset smoke run verified the MVP path in the current mer
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
 4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the lane-6 worktree;
-5. smoke-backed command evidence stayed `Current`, while browser-captured dashboard and hybrid `/agents` rows now remain `Stale` pending dedicated recapture.
+5. smoke-backed command evidence stayed `Current`, and browser-captured dashboard plus hybrid `/agents` rows were refreshed on 2026-04-26 against the current merged UI.
 
 ## Manual Verification Template
 
@@ -102,7 +102,10 @@ Complete this section when the local app is running.
 | Review feedback | Common-mistake or guidance output is visible | Passed with demo-safe local session content | [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png) |
 | Ask Tutor Agent follow-up | Student prompt is visible before the tutor answer | Passed with seeded demo response | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
 | Review tutor answer | Tutor responds to student question with learning context | Passed with seeded demo response | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
-| Open Dashboard | Recent assessment and tutoring activity appears | Passed | [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png) |
+| Open Dashboard | Evidence-first teacher workflow is visible | Passed | [`05-dashboard-evidence-first-overview.png`](./screenshots/05-dashboard-evidence-first-overview.png) |
+| Review dashboard recent activity | Assessment and tutoring activity still appears below the workflow | Passed | [`09-dashboard-recent-activity-evidence-first.png`](./screenshots/09-dashboard-recent-activity-evidence-first.png) |
+| Open `/agents` authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections are visible | Passed | [`10-agents-spec-pack-authoring.png`](./screenshots/10-agents-spec-pack-authoring.png) |
+| Show `/agents` export action | Export is visible from the authoring tab | Passed | [`11-agents-spec-pack-export.png`](./screenshots/11-agents-spec-pack-export.png) |
 
 ## PR Evidence Links
 
@@ -130,4 +133,4 @@ rg -n "evidence refresh|smoke|validation|screenshot|video|Current|Stale|Blocked"
 git diff --check
 ```
 
-6. When the hybrid authoring story is presented to reviewers, capture `/agents` authoring screenshots after a successful smoke cycle and move the hybrid rows from `Stale` to `Current`.
+6. If the hybrid authoring UI changes again, recapture `/agents` authoring screenshots after a successful smoke cycle and update the freshness state accordingly.
