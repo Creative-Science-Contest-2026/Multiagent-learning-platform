@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-25T15:35:00Z",
+    "last_updated": "2026-04-26T12:30:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 43
@@ -83,10 +83,14 @@
         "backend": "deeptutor/api/routers/marketplace.py - new endpoint /import/{pack_name}",
         "api_client": "web/lib/marketplace-api.ts - add importMarketplacePack function"
       },
-      "affected_features": ["Marketplace Browse & Import"],
+      "affected_features": [
+        "Marketplace Browse & Import"
+      ],
       "complexity": "High",
       "estimated_hours": 4,
-      "dependencies": ["Knowledge Pack Manager API"],
+      "dependencies": [
+        "Knowledge Pack Manager API"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #44 with follow-up fixes #48 and #49. Import flow clones marketplace packs into imported KBs and registers them in kb_config."
     },
@@ -101,10 +105,15 @@
         "backend": "deeptutor/api/routers/dashboard.py - add assessment analytics endpoint",
         "database": "Extend assessment_results schema with analysis data"
       },
-      "affected_features": ["Student Learning Experience", "Assessment Review"],
+      "affected_features": [
+        "Student Learning Experience",
+        "Assessment Review"
+      ],
       "complexity": "High",
       "estimated_hours": 6,
-      "dependencies": ["Assessment Generation API"],
+      "dependencies": [
+        "Assessment Generation API"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #44. Assessment review now includes backend analysis, topic signals, and richer frontend progress summaries."
     },
@@ -118,10 +127,14 @@
         "frontend": "web/components/chat/ChatComposer.tsx, ChatMessageList.tsx",
         "display": "Show KB badges near tutor messages or in session header"
       },
-      "affected_features": ["Student Tutor Workspace"],
+      "affected_features": [
+        "Student Tutor Workspace"
+      ],
       "complexity": "Medium",
       "estimated_hours": 2,
-      "dependencies": ["Chat Context System"],
+      "dependencies": [
+        "Chat Context System"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #44. KB context badges render in chat from request snapshot knowledgeBases."
     },
@@ -135,10 +148,14 @@
         "frontend": "web/app/(workspace)/knowledge - add sharing settings panel",
         "backend": "deeptutor/api/routers/knowledge.py - extend update endpoint with sharing_status"
       },
-      "affected_features": ["Knowledge Pack Management"],
+      "affected_features": [
+        "Knowledge Pack Management"
+      ],
       "complexity": "Medium",
       "estimated_hours": 3,
-      "dependencies": ["Knowledge Manager API"],
+      "dependencies": [
+        "Knowledge Manager API"
+      ],
       "status": "completed",
       "notes": "Verified on 2026-04-20 as already implemented on main. Evidence: tests/api/test_knowledge_router.py passed (11 tests) and web/app/(utility)/knowledge/page.tsx builds successfully with the teacher metadata/sharing edit flow already present."
     },
@@ -152,10 +169,14 @@
         "frontend": "web/app/(utility)/marketplace/page.tsx - add modal component",
         "api": "GET /api/v1/marketplace/{pack_name}/preview"
       },
-      "affected_features": ["Marketplace Browse"],
+      "affected_features": [
+        "Marketplace Browse"
+      ],
       "complexity": "Medium",
       "estimated_hours": 3,
-      "dependencies": ["Marketplace API"],
+      "dependencies": [
+        "Marketplace API"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #52. Marketplace now supports compact preview before import."
     },
@@ -169,10 +190,14 @@
         "frontend": "web/app/(workspace)/dashboard/student - new page",
         "backend": "deeptutor/api/routers/dashboard.py - GET /student-progress endpoint"
       },
-      "affected_features": ["Student Dashboard"],
+      "affected_features": [
+        "Student Dashboard"
+      ],
       "complexity": "High",
       "estimated_hours": 5,
-      "dependencies": ["Assessment Analytics"],
+      "dependencies": [
+        "Assessment Analytics"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #54. Student dashboard now exposes /dashboard/student and GET /api/v1/dashboard/student-progress."
     },
@@ -186,10 +211,15 @@
         "backend": "deeptutor/services/assessment - new recommendation service",
         "api": "POST /api/v1/assessment/recommend"
       },
-      "affected_features": ["Student Learning Experience"],
+      "affected_features": [
+        "Student Learning Experience"
+      ],
       "complexity": "High",
       "estimated_hours": 6,
-      "dependencies": ["LLM Service", "Assessment Analytics"],
+      "dependencies": [
+        "LLM Service",
+        "Assessment Analytics"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #56. Assessment recommendation API now exposes POST /api/v1/assessment/recommend with deterministic next-topic suggestions."
     },
@@ -204,10 +234,14 @@
         "backend": "deeptutor/api/routers/marketplace.py - new endpoints for ratings",
         "database": "Add marketplace_ratings table"
       },
-      "affected_features": ["Marketplace"],
+      "affected_features": [
+        "Marketplace"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["Database Schema"],
+      "dependencies": [
+        "Database Schema"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #58. Marketplace now supports lightweight ratings and review submission."
     },
@@ -221,10 +255,14 @@
         "frontend": "web/app/(workspace)/dashboard - add filter panel",
         "api": "GET /api/v1/dashboard/sessions with query filters"
       },
-      "affected_features": ["Teacher Dashboard"],
+      "affected_features": [
+        "Teacher Dashboard"
+      ],
       "complexity": "Low",
       "estimated_hours": 2,
-      "dependencies": ["Dashboard API"],
+      "dependencies": [
+        "Dashboard API"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #60. Teacher dashboard now supports API-backed activity filtering."
     },
@@ -238,10 +276,15 @@
         "backend": "deeptutor/agents/*/prompts/vi/ - create Vietnamese YAML files",
         "system": "deeptutor/services/prompt/manager.py - already supports vi fallback chain"
       },
-      "affected_features": ["Vietnamese i18n", "All AI Agents"],
+      "affected_features": [
+        "Vietnamese i18n",
+        "All AI Agents"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["i18n System"],
+      "dependencies": [
+        "i18n System"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #62. Added Vietnamese prompt variants for the MVP prompt families and prompt-manager regression coverage."
     },
@@ -255,10 +298,14 @@
         "frontend": "web/app/(utility)/marketplace - add sort dropdown",
         "api": "GET /api/v1/marketplace/list - add sort_by parameter"
       },
-      "affected_features": ["Marketplace Browse"],
+      "affected_features": [
+        "Marketplace Browse"
+      ],
       "complexity": "Low",
       "estimated_hours": 1.5,
-      "dependencies": ["Marketplace API"],
+      "dependencies": [
+        "Marketplace API"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #64. Marketplace now supports API-backed sorting by popularity, recency, rating, and objective count."
     },
@@ -272,10 +319,14 @@
         "frontend": "web/app/(workspace)/dashboard/assessments - add Export PDF button",
         "backend": "deeptutor/api/routers/dashboard.py - new endpoint /sessions/{id}/export-pdf"
       },
-      "affected_features": ["Assessment Review"],
+      "affected_features": [
+        "Assessment Review"
+      ],
       "complexity": "Medium",
       "estimated_hours": 3,
-      "dependencies": ["PDF Generation Library"],
+      "dependencies": [
+        "PDF Generation Library"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #66. Assessment review pages now support backend-generated PDF export."
     },
@@ -289,10 +340,14 @@
         "frontend": "web/app/(workspace)/dashboard - session replay component",
         "display": "Timeline view of user messages and tutor responses with timestamps"
       },
-      "affected_features": ["Teacher Dashboard"],
+      "affected_features": [
+        "Teacher Dashboard"
+      ],
       "complexity": "Medium",
       "estimated_hours": 3,
-      "dependencies": ["Session Storage"],
+      "dependencies": [
+        "Session Storage"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #68. Teacher dashboard now links tutoring activity to a replay timeline page backed by the existing dashboard detail endpoint."
     },
@@ -306,10 +361,14 @@
         "frontend": "web/components/ErrorBoundary.tsx - extend",
         "pages": "marketplace, assessment review, dashboard"
       },
-      "affected_features": ["App Stability"],
+      "affected_features": [
+        "App Stability"
+      ],
       "complexity": "Low",
       "estimated_hours": 2,
-      "dependencies": ["React"],
+      "dependencies": [
+        "React"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #44. Marketplace and assessment review routes now have explicit error boundaries."
     },
@@ -323,10 +382,14 @@
         "frontend": "web/lib/marketplace-api.ts - add caching layer",
         "hooks": "useMarketplacePacks custom hook with stale-while-revalidate"
       },
-      "affected_features": ["Marketplace Performance"],
+      "affected_features": [
+        "Marketplace Performance"
+      ],
       "complexity": "Low",
       "estimated_hours": 2,
-      "dependencies": ["SWR or React Query"],
+      "dependencies": [
+        "SWR or React Query"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #70. Marketplace browsing now reuses cached list responses and progressive load-more pagination."
     },
@@ -340,10 +403,16 @@
         "backend": "deeptutor/api/routers - new /teams endpoint",
         "frontend": "web/app/(workspace) - team management UI"
       },
-      "affected_features": ["Knowledge Pack Sharing", "Collaboration"],
+      "affected_features": [
+        "Knowledge Pack Sharing",
+        "Collaboration"
+      ],
       "complexity": "High",
       "estimated_hours": 6,
-      "dependencies": ["User Management", "Access Control"],
+      "dependencies": [
+        "User Management",
+        "Access Control"
+      ],
       "status": "completed",
       "notes": "Verified on 2026-04-25: knowledge router and UI already persist and display team members / pending invites, with coverage in tests/api/test_knowledge_router.py and tests/knowledge/test_kb_metadata_normalization.py."
     },
@@ -357,10 +426,14 @@
         "backend": "deeptutor/agents/question - add difficulty tracking",
         "api": "Store difficulty ratings and adjust next question"
       },
-      "affected_features": ["Question Generation"],
+      "affected_features": [
+        "Question Generation"
+      ],
       "complexity": "High",
       "estimated_hours": 5,
-      "dependencies": ["Question Analytics"],
+      "dependencies": [
+        "Question Analytics"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #74. MVP slice implemented adaptive difficulty inference from recent quiz performance context before template generation."
     },
@@ -373,10 +446,14 @@
       "scope": {
         "frontend": "web/app/(utility)/marketplace - responsive Tailwind adjustments"
       },
-      "affected_features": ["Marketplace UX"],
+      "affected_features": [
+        "Marketplace UX"
+      ],
       "complexity": "Low",
       "estimated_hours": 1,
-      "dependencies": ["Tailwind CSS"],
+      "dependencies": [
+        "Tailwind CSS"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #76. Mobile/tablet marketplace layout now has safer filters, card spacing, CTA layout, and preview modal scrolling."
     },
@@ -390,10 +467,14 @@
         "frontend": "web/app/(workspace)/dashboard - analytics tab",
         "backend": "deeptutor/api/routers/dashboard.py - analytics endpoints"
       },
-      "affected_features": ["Teacher Dashboard"],
+      "affected_features": [
+        "Teacher Dashboard"
+      ],
       "complexity": "High",
       "estimated_hours": 8,
-      "dependencies": ["Analytics Service"],
+      "dependencies": [
+        "Analytics Service"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #78. Dashboard overview now includes teacher-facing engagement, assessment trend, and learning signal analytics."
     },
@@ -407,10 +488,14 @@
         "backend": "deeptutor/api/main.py - add rate limit middleware",
         "config": "Configure limits per endpoint"
       },
-      "affected_features": ["API Security"],
+      "affected_features": [
+        "API Security"
+      ],
       "complexity": "Medium",
       "estimated_hours": 2,
-      "dependencies": ["FastAPI Middleware"],
+      "dependencies": [
+        "FastAPI Middleware"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #44 and follow-up PR #49. API middleware now enforces per-policy rate limits with isolated buckets."
     },
@@ -424,10 +509,14 @@
         "backend": "deeptutor/api/routers/marketplace.py - full-text search logic",
         "database": "Add full-text search index if using database"
       },
-      "affected_features": ["Marketplace Browse"],
+      "affected_features": [
+        "Marketplace Browse"
+      ],
       "complexity": "Medium",
       "estimated_hours": 3,
-      "dependencies": ["Search Service"],
+      "dependencies": [
+        "Search Service"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #80. Marketplace search now matches broader metadata/objective text and is wired through the list API."
     },
@@ -441,10 +530,14 @@
         "backend": "deeptutor/api/routers/question - track time per question",
         "storage": "Store question_duration in assessment_results"
       },
-      "affected_features": ["Assessment Review"],
+      "affected_features": [
+        "Assessment Review"
+      ],
       "complexity": "Low",
       "estimated_hours": 2,
-      "dependencies": ["Assessment Schema"],
+      "dependencies": [
+        "Assessment Schema"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #82. Assessment review now records optional per-question duration_seconds inside the existing [Quiz Performance] transcript and surfaces total/average/per-question timing without a new storage table."
     },
@@ -458,10 +551,15 @@
         "backend": "deeptutor/agents/tutorbot - add follow-up generation",
         "api": "Extend tutor response with suggested questions"
       },
-      "affected_features": ["Student Tutoring"],
+      "affected_features": [
+        "Student Tutoring"
+      ],
       "complexity": "Medium",
       "estimated_hours": 3,
-      "dependencies": ["LLM Service", "Tutor Agent"],
+      "dependencies": [
+        "LLM Service",
+        "Tutor Agent"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #84. The tutoring chat pipeline can now emit a visible 'Follow-up questions:' section and parse the same section back into result.followup_questions metadata without changing the chat route."
     },
@@ -475,10 +573,14 @@
         "backend": "deeptutor/knowledge - add versioning support",
         "database": "Track version history and changelog"
       },
-      "affected_features": ["Knowledge Pack Management"],
+      "affected_features": [
+        "Knowledge Pack Management"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["Database Schema"],
+      "dependencies": [
+        "Database Schema"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #86. Lightweight version metadata now records current_version and version_history for teacher-pack metadata updates in the knowledge config flow."
     },
@@ -492,10 +594,15 @@
         "backend": "deeptutor/services - new learning_path service",
         "api": "GET /api/v1/learning-paths/{pack_id}"
       },
-      "affected_features": ["Student Learning Experience"],
+      "affected_features": [
+        "Student Learning Experience"
+      ],
       "complexity": "High",
       "estimated_hours": 6,
-      "dependencies": ["Knowledge Graph", "Prerequisite Metadata"],
+      "dependencies": [
+        "Knowledge Graph",
+        "Prerequisite Metadata"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #89. Student progress now exposes a deterministic suggested_learning_path sequence built from weak topics and knowledge-pack learning objectives."
     },
@@ -509,10 +616,14 @@
         "frontend": "web/app/(utility)/marketplace - add multi-select mode",
         "api": "POST /api/v1/marketplace/import-batch"
       },
-      "affected_features": ["Marketplace"],
+      "affected_features": [
+        "Marketplace"
+      ],
       "complexity": "Low",
       "estimated_hours": 2,
-      "dependencies": ["Import Implementation"],
+      "dependencies": [
+        "Import Implementation"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #91. Marketplace now supports batch import through a shared single-pack import helper plus multi-select UI."
     },
@@ -526,10 +637,16 @@
         "frontend": "Service Worker for offline caching",
         "storage": "Local IndexedDB for pack content"
       },
-      "affected_features": ["Marketplace", "Assessment"],
+      "affected_features": [
+        "Marketplace",
+        "Assessment"
+      ],
       "complexity": "High",
       "estimated_hours": 6,
-      "dependencies": ["Service Worker", "IndexedDB"],
+      "dependencies": [
+        "Service Worker",
+        "IndexedDB"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #93. Imported packs now have a browser-local offline manifest fallback and loaded quiz results can queue sync until the browser reconnects."
     },
@@ -543,12 +660,18 @@
         "docs": "docs/contest/VALIDATION_REPORT.md, docs/contest/EVIDENCE_CHECKLIST.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
         "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
       },
-      "affected_features": ["Contest Evidence", "AI-first Control Plane"],
+      "affected_features": [
+        "Contest Evidence",
+        "AI-first Control Plane"
+      ],
       "complexity": "Low",
       "estimated_hours": 2,
-      "dependencies": ["T035 merged to main", "scripts/contest/reset_demo_data.py"],
+      "dependencies": [
+        "T035 merged to main",
+        "scripts/contest/reset_demo_data.py"
+      ],
       "status": "completed",
-      "notes": "Merged to main through PR #96. Re-run on 2026-04-25 after T044-T051 merged: command-backed smoke evidence is current again and screenshot evidence remains explicitly stale pending recapture."
+      "notes": "Merged to main through PR #96. Command-backed contest smoke evidence is refreshed to 2026-04-24 and screenshot evidence is explicitly marked stale pending recapture."
     },
     {
       "id": "T037_CONTEST_SCREENSHOT_REFRESH",
@@ -561,12 +684,18 @@
         "docs": "docs/contest/EVIDENCE_CHECKLIST.md, docs/contest/VALIDATION_REPORT.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
         "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
       },
-      "affected_features": ["Contest Evidence", "AI-first Control Plane"],
+      "affected_features": [
+        "Contest Evidence",
+        "AI-first Control Plane"
+      ],
       "complexity": "Low",
       "estimated_hours": 2,
-      "dependencies": ["T036 merged to main", "Fresh screenshot capture path"],
+      "dependencies": [
+        "T036 merged to main",
+        "Fresh screenshot capture path"
+      ],
       "status": "completed",
-      "notes": "Merged to main through PR #99. Re-run on 2026-04-25 after T044-T051 changed contest-facing UI: the screenshot bundle was refreshed again in docs lane `docs/t037-contest-screenshot-refresh-pass`, and evidence docs now mark screenshots current against the latest merged UI."
+      "notes": "Merged to main through PR #99. Contest screenshot evidence was refreshed to current on 2026-04-24 and linked docs now point at the latest screenshot bundle."
     },
     {
       "id": "T038_CONTEST_SUBMISSION_FRESHNESS_SYNC",
@@ -578,10 +707,16 @@
         "docs": "docs/contest/README.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
         "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-24.md"
       },
-      "affected_features": ["Contest Evidence", "Submission Docs", "AI-first Control Plane"],
+      "affected_features": [
+        "Contest Evidence",
+        "Submission Docs",
+        "AI-first Control Plane"
+      ],
       "complexity": "Low",
       "estimated_hours": 1.5,
-      "dependencies": ["T037 merged to main"],
+      "dependencies": [
+        "T037 merged to main"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #101. Contest-facing README and submission package now reflect the latest 2026-04-24 smoke and screenshot evidence state."
     },
@@ -595,10 +730,15 @@
         "docs": "ai_first/competition/submission-checklist.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
         "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
       },
-      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "affected_features": [
+        "Contest Submission Docs",
+        "AI-first Control Plane"
+      ],
       "complexity": "Low",
       "estimated_hours": 1.5,
-      "dependencies": ["T038 merged to main"],
+      "dependencies": [
+        "T038 merged to main"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #103. The final submission checklist now distinguishes AI-verifiable items from human-only review items."
     },
@@ -612,10 +752,16 @@
         "docs": "ai_first/competition/product-description.md, ai_first/competition/submission-checklist.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
         "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
       },
-      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "affected_features": [
+        "Contest Submission Docs",
+        "AI-first Control Plane"
+      ],
       "complexity": "Low",
       "estimated_hours": 1.5,
-      "dependencies": ["T039 merged to main", "ai_first/competition/pitch-notes.md"],
+      "dependencies": [
+        "T039 merged to main",
+        "ai_first/competition/pitch-notes.md"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #105. Added ai_first/competition/product-description.md and linked it into the submission package/checklist."
     },
@@ -629,10 +775,17 @@
         "docs": "ai_first/competition/fork-modifications.md, ai_first/competition/submission-checklist.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
         "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
       },
-      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "affected_features": [
+        "Contest Submission Docs",
+        "AI-first Control Plane"
+      ],
       "complexity": "Low",
       "estimated_hours": 1.0,
-      "dependencies": ["T040 merged to main", "README.md", "ai_first/competition/product-description.md"],
+      "dependencies": [
+        "T040 merged to main",
+        "README.md",
+        "ai_first/competition/product-description.md"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #107. Added ai_first/competition/fork-modifications.md and wired it into the submission package/checklist."
     },
@@ -646,10 +799,17 @@
         "docs": "docs/contest/HUMAN_REVIEW_HANDOFF.md, docs/contest/SUBMISSION_PACKAGE.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
         "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
       },
-      "affected_features": ["Contest Submission Docs", "AI-first Control Plane"],
+      "affected_features": [
+        "Contest Submission Docs",
+        "AI-first Control Plane"
+      ],
       "complexity": "Low",
       "estimated_hours": 1.0,
-      "dependencies": ["T041 merged to main", "docs/contest/SUBMISSION_PACKAGE.md", "ai_first/competition/submission-checklist.md"],
+      "dependencies": [
+        "T041 merged to main",
+        "docs/contest/SUBMISSION_PACKAGE.md",
+        "ai_first/competition/submission-checklist.md"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #109. Added docs/contest/HUMAN_REVIEW_HANDOFF.md and linked the final manual review path from the submission package."
     },
@@ -663,10 +823,18 @@
         "docs": "docs/contest/VIDEO_CAPTURE_RUNBOOK.md, docs/contest/EVIDENCE_CHECKLIST.md, docs/contest/SUBMISSION_PACKAGE.md, docs/contest/HUMAN_REVIEW_HANDOFF.md, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
         "control_plane": "ai_first/AI_OPERATING_PROMPT.md, ai_first/EXECUTION_QUEUE.md, ai_first/TASK_REGISTRY.json, ai_first/daily/2026-04-25.md"
       },
-      "affected_features": ["Contest Evidence", "Submission Docs", "AI-first Control Plane"],
+      "affected_features": [
+        "Contest Evidence",
+        "Submission Docs",
+        "AI-first Control Plane"
+      ],
       "complexity": "Low",
       "estimated_hours": 1.0,
-      "dependencies": ["T042 merged to main", "docs/contest/DEMO_SCRIPT.md", "docs/contest/HUMAN_REVIEW_HANDOFF.md"],
+      "dependencies": [
+        "T042 merged to main",
+        "docs/contest/DEMO_SCRIPT.md",
+        "docs/contest/HUMAN_REVIEW_HANDOFF.md"
+      ],
       "status": "completed",
       "notes": "Merged to main through PR #113. Added docs/contest/VIDEO_CAPTURE_RUNBOOK.md and linked it into contest evidence/submission docs without marking video as captured."
     },
@@ -680,12 +848,19 @@
         "frontend": "web/app/(utility)/marketplace/page.tsx, web/app/(utility)/knowledge/page.tsx, web/app/(workspace)/dashboard/page.tsx, web/app/(workspace)/dashboard/student/page.tsx, web/app/(workspace)/dashboard/assessments/[sessionId]/page.tsx, web/app/(workspace)/dashboard/sessions/[sessionId]/page.tsx",
         "locales": "web/locales/vi/app.json, web/locales/vi/common.json"
       },
-      "affected_features": ["Contest MVP Screens", "Vietnamese UI", "Teacher and Student Workflow"],
+      "affected_features": [
+        "Contest MVP Screens",
+        "Vietnamese UI",
+        "Teacher and Student Workflow"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["Current contest MVP screens on main", "Existing locale loader"],
+      "dependencies": [
+        "Current contest MVP screens on main",
+        "Existing locale loader"
+      ],
       "status": "completed",
-      "notes": "Merged to main through PR #122. Localized contest-facing marketplace, knowledge, and dashboard screens and expanded Vietnamese coverage for the MVP flow."
+      "notes": "Merged to main through PR #122 as Lane 1 Vietnamese coverage pass."
     },
     {
       "id": "T045_MARKETPLACE_KNOWLEDGE_POLISH",
@@ -696,12 +871,19 @@
       "scope": {
         "frontend": "web/app/(utility)/marketplace/page.tsx, web/app/(utility)/marketplace/error.tsx, web/app/(utility)/knowledge/page.tsx"
       },
-      "affected_features": ["Marketplace", "Knowledge Pack Management", "Contest Demo UX"],
+      "affected_features": [
+        "Marketplace",
+        "Knowledge Pack Management",
+        "Contest Demo UX"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["T044 started or completed", "Current marketplace and knowledge UI on main"],
+      "dependencies": [
+        "T044 started or completed",
+        "Current marketplace and knowledge UI on main"
+      ],
       "status": "completed",
-      "notes": "Merged to main through PR #124. Polished marketplace and knowledge-pack teacher screens without widening backend scope."
+      "notes": "Merged to main through PR #124 as Lane 1 marketplace/knowledge polish pass."
     },
     {
       "id": "T046_DASHBOARD_REVIEW_POLISH",
@@ -712,12 +894,19 @@
       "scope": {
         "frontend": "web/app/(workspace)/dashboard/page.tsx, web/app/(workspace)/dashboard/student/page.tsx, web/app/(workspace)/dashboard/assessments/[sessionId]/page.tsx, web/app/(workspace)/dashboard/sessions/[sessionId]/page.tsx, web/components/assessment/LearningJourneySummary.tsx, web/components/assessment/ProgressIndicator.tsx"
       },
-      "affected_features": ["Teacher Dashboard", "Assessment Review", "Session Replay"],
+      "affected_features": [
+        "Teacher Dashboard",
+        "Assessment Review",
+        "Session Replay"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["T044 started or completed", "Current dashboard UI contracts on main"],
+      "dependencies": [
+        "T044 started or completed",
+        "Current dashboard UI contracts on main"
+      ],
       "status": "completed",
-      "notes": "Merged to main through PR #125. Improved dashboard, assessment review, and replay readability while keeping existing contracts intact."
+      "notes": "Merged to main through PR #125 as Lane 1 dashboard/review polish pass."
     },
     {
       "id": "T047_CONTEST_FLOW_OPERATING_HYGIENE_REFRESH",
@@ -729,12 +918,17 @@
         "control_plane": "ai_first/ACTIVE_ASSIGNMENTS.md, ai_first/EXECUTION_QUEUE.md, ai_first/AI_OPERATING_PROMPT.md, ai_first/CURRENT_STATE.md, ai_first/NEXT_ACTIONS.md, ai_first/daily/2026-04-25.md",
         "registry": "ai_first/TASK_REGISTRY.json"
       },
-      "affected_features": ["AI-first Control Plane", "Parallel Execution Hygiene"],
+      "affected_features": [
+        "AI-first Control Plane",
+        "Parallel Execution Hygiene"
+      ],
       "complexity": "Low",
       "estimated_hours": 1.5,
-      "dependencies": ["Approved spec docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md"],
+      "dependencies": [
+        "Approved spec docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md"
+      ],
       "status": "completed",
-      "notes": "Completed by the post-lane control-plane sync after the two-lane experiment finished. Queue, prompt, snapshots, and assignments now reflect the merged lane results."
+      "notes": "Completed as operating hygiene bootstrap for the lane experiment and merged to main."
     },
     {
       "id": "T048_PARALLEL_LANE_TASK_PACKET_SET",
@@ -745,12 +939,18 @@
       "scope": {
         "docs": "docs/superpowers/tasks/2026-04-25-T044-contest-vietnamese-coverage.md, docs/superpowers/tasks/2026-04-25-T045-marketplace-knowledge-polish.md, docs/superpowers/tasks/2026-04-25-T046-dashboard-review-polish.md, docs/superpowers/tasks/2026-04-25-T047-contest-operating-hygiene-refresh.md, docs/superpowers/tasks/2026-04-25-T048-parallel-lane-task-packets.md, docs/superpowers/tasks/2026-04-25-T049-metadata-depth-pass.md, docs/superpowers/tasks/2026-04-25-T050-dashboard-insight-depth.md, docs/superpowers/tasks/2026-04-25-T051-session-context-quality-pass.md, docs/superpowers/pr-notes/2026-04-25-t047-t048-two-lane-rollout.md"
       },
-      "affected_features": ["AI-first Control Plane", "Parallel Task Contracts"],
+      "affected_features": [
+        "AI-first Control Plane",
+        "Parallel Task Contracts"
+      ],
       "complexity": "Low",
       "estimated_hours": 2.0,
-      "dependencies": ["T047 started", "Approved spec docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md"],
+      "dependencies": [
+        "T047 started",
+        "Approved spec docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md"
+      ],
       "status": "completed",
-      "notes": "Completed on the docs rollout branch before implementation began. The lane packets and rollout note were then exercised by T044 through T051."
+      "notes": "Completed as lane packet and rollout contract setup and merged to main."
     },
     {
       "id": "T049_METADATA_DEPTH_PASS",
@@ -763,10 +963,17 @@
         "api_client": "web/lib/knowledge-api.ts, web/lib/marketplace-api.ts",
         "tests": "tests/api/test_knowledge_router.py, tests/api/test_marketplace_router.py, tests/knowledge/test_kb_metadata_normalization.py"
       },
-      "affected_features": ["Knowledge Pack Management", "Marketplace Preview", "Teacher Metadata Flow"],
+      "affected_features": [
+        "Knowledge Pack Management",
+        "Marketplace Preview",
+        "Teacher Metadata Flow"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["T048 packet set complete", "Current metadata contracts on main"],
+      "dependencies": [
+        "T048 packet set complete",
+        "Current metadata contracts on main"
+      ],
       "status": "completed",
       "notes": "Lane 2 bounded depth slice. It should add contract depth without forcing simultaneous Lane 1 page rewrites."
     },
@@ -781,12 +988,18 @@
         "api_client": "web/lib/dashboard-api.ts",
         "tests": "tests/api/test_dashboard_router.py, tests/api/test_session_review_router.py"
       },
-      "affected_features": ["Teacher Dashboard", "Assessment Review"],
+      "affected_features": [
+        "Teacher Dashboard",
+        "Assessment Review"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["T048 packet set complete", "Current dashboard and review routes on main"],
+      "dependencies": [
+        "T048 packet set complete",
+        "Current dashboard and review routes on main"
+      ],
       "status": "completed",
-      "notes": "Merged to main through PR #123. Added bounded dashboard insight depth and additive TypeScript client support."
+      "notes": "Merged to main through PR #123 as Lane 2 dashboard insight depth pass."
     },
     {
       "id": "T051_SESSION_CONTEXT_QUALITY_PASS",
@@ -799,40 +1012,67 @@
         "api_client": "web/lib/session-api.ts",
         "tests": "tests/api/test_assessment_router.py, tests/api/test_session_review_router.py, tests/agents/chat/test_agentic_followup_prompts.py"
       },
-      "affected_features": ["Student Tutor Workspace", "Assessment Review", "Session Replay"],
+      "affected_features": [
+        "Student Tutor Workspace",
+        "Assessment Review",
+        "Session Replay"
+      ],
       "complexity": "Medium",
       "estimated_hours": 4,
-      "dependencies": ["T048 packet set complete", "Current session and tutoring flows on main"],
+      "dependencies": [
+        "T048 packet set complete",
+        "Current session and tutoring flows on main"
+      ],
       "status": "completed",
-      "notes": "Merged to main through PR #126. Added additive session context support to session/review payloads and tutoring result metadata."
+      "notes": "Merged on origin/main (branch pod-b/t051-session-context-quality). Lane 2 does not need to claim this work; registry updated to reflect remote merge."
     }
   ],
   "github_issues_template": {
     "marketplace_import": {
       "title": "[MVP] Implement Marketplace Pack Import Functionality",
       "body": "**Priority:** Critical (P1)\\n\\n**Description:**\\nReplace placeholder import logic in Marketplace page. Currently shows success message but doesn't actually copy pack to user workspace.\\n\\n**Acceptance Criteria:**\\n- [ ] Import button triggers actual pack copying\\n- [ ] Pack metadata, documents, and config copied to knowledge_bases\\n- [ ] Success/error feedback shown to user\\n- [ ] Imported pack appears in user's Knowledge Pack list\\n\\n**Implementation:**\\n- Backend: Add POST /api/v1/marketplace/import/{pack_name} endpoint\\n- Frontend: Update handleImportPack function\\n- API Client: Add importMarketplacePack function",
-      "labels": ["marketplace", "mvp", "critical", "backend", "frontend"],
+      "labels": [
+        "marketplace",
+        "mvp",
+        "critical",
+        "backend",
+        "frontend"
+      ],
       "assignee": "auto",
       "milestone": "MVP Feature Pack 3 Extended"
     },
     "assessment_feedback": {
       "title": "[MVP] Enhance Assessment Review with Detailed Feedback",
       "body": "**Priority:** Critical (P2)\\n\\n**Description:**\\nAdd detailed analysis breakdown, topic-based performance, and personalized learning recommendations to assessment review page.\\n\\n**Acceptance Criteria:**\\n- [ ] Show performance breakdown by topic\\n- [ ] Display learning recommendations based on incorrect answers\\n- [ ] Add topic mastery visualization\\n- [ ] Suggest next learning steps\\n\\n**Implementation:**\\n- Backend: Create /api/v1/dashboard/assessment-analysis endpoint\\n- Frontend: Extend ProgressIndicator component with analysis section",
-      "labels": ["assessment", "mvp", "critical", "backend", "frontend"],
+      "labels": [
+        "assessment",
+        "mvp",
+        "critical",
+        "backend",
+        "frontend"
+      ],
       "assignee": "auto",
       "milestone": "MVP Feature Pack 3 Extended"
     },
     "kb_context_badges": {
       "title": "[MVP] Add KB Context Display in Tutoring Session",
       "body": "**Priority:** High (P3)\\n\\n**Description:**\\nDisplay active knowledge base context badges in student tutoring session to show learning sources.\\n\\n**Acceptance Criteria:**\\n- [ ] KB badges shown in chat interface\\n- [ ] Clear indication of which pack question comes from\\n- [ ] Consistent styling with rest of UI\\n\\n**Implementation:**\\n- Extract KB context from UnifiedContext\\n- Add visual badges to ChatMessageList",
-      "labels": ["ux", "mvp", "frontend"],
+      "labels": [
+        "ux",
+        "mvp",
+        "frontend"
+      ],
       "assignee": "auto",
       "milestone": "MVP Feature Pack 3 Extended"
     },
     "vietnamese_prompts": {
       "title": "[MVP] Add Vietnamese Language Prompts",
       "body": "**Priority:** High (P10)\\n\\n**Description:**\\nCreate Vietnamese language variants for all LLM prompts to complete i18n support.\\n\\n**Acceptance Criteria:**\\n- [ ] Vietnamese prompts for solve agent\\n- [ ] Vietnamese prompts for question generation\\n- [ ] Vietnamese prompts for tutoring\\n- [ ] Fallback chain works (vi -> en)\\n\\n**Implementation:**\\n- Create deeptutor/agents/*/prompts/vi/ directories\\n- Translate prompt YAML files",
-      "labels": ["i18n", "mvp", "backend"],
+      "labels": [
+        "i18n",
+        "mvp",
+        "backend"
+      ],
       "assignee": "auto",
       "milestone": "MVP Feature Pack 3 Extended"
     }
@@ -876,31 +1116,89 @@
     ]
   },
   "dependency_graph": {
-    "T009": ["Knowledge Manager API exists"],
-    "T010": ["Assessment Generation API", "Question Analytics"],
-    "T011": ["Chat Context System"],
-    "T012": ["Knowledge Manager API"],
-    "T013": ["Marketplace API", "T009"],
-    "T015": ["T010", "LLM Service"],
-    "T024": ["User Management", "Access Control"],
-    "T027": ["Analytics Service"],
-    "T033": ["Knowledge Graph", "Prerequisite Metadata"],
-    "T035": ["T009 (batch import)", "Service Worker"]
+    "T009": [
+      "Knowledge Manager API exists"
+    ],
+    "T010": [
+      "Assessment Generation API",
+      "Question Analytics"
+    ],
+    "T011": [
+      "Chat Context System"
+    ],
+    "T012": [
+      "Knowledge Manager API"
+    ],
+    "T013": [
+      "Marketplace API",
+      "T009"
+    ],
+    "T015": [
+      "T010",
+      "LLM Service"
+    ],
+    "T024": [
+      "User Management",
+      "Access Control"
+    ],
+    "T027": [
+      "Analytics Service"
+    ],
+    "T033": [
+      "Knowledge Graph",
+      "Prerequisite Metadata"
+    ],
+    "T035": [
+      "T009 (batch import)",
+      "Service Worker"
+    ]
   },
   "milestones": {
     "MVP_PHASE_1": {
       "title": "Critical Path Tasks (Next 2 weeks)",
-      "tasks": ["T009", "T010", "T011", "T012", "T018", "T022"],
+      "tasks": [
+        "T009",
+        "T010",
+        "T011",
+        "T012",
+        "T018",
+        "T022"
+      ],
       "target_date": "2026-05-04"
     },
     "MVP_PHASE_2": {
       "title": "High Priority Features (Weeks 3-4)",
-      "tasks": ["T013", "T014", "T015", "T016", "T017", "T019", "T020", "T021", "T023", "T028"],
+      "tasks": [
+        "T013",
+        "T014",
+        "T015",
+        "T016",
+        "T017",
+        "T019",
+        "T020",
+        "T021",
+        "T023",
+        "T028"
+      ],
       "target_date": "2026-05-18"
     },
     "MVP_PHASE_3": {
       "title": "Medium Priority & Polish (Weeks 5+)",
-      "tasks": ["T024", "T025", "T026", "T027", "T029", "T030", "T031", "T032", "T033", "T034", "T035", "T036", "T037"],
+      "tasks": [
+        "T024",
+        "T025",
+        "T026",
+        "T027",
+        "T029",
+        "T030",
+        "T031",
+        "T032",
+        "T033",
+        "T034",
+        "T035",
+        "T036",
+        "T037"
+      ],
       "target_date": "2026-06-01"
     }
   }
