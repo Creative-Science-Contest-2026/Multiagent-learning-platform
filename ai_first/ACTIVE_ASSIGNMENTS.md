@@ -28,17 +28,6 @@ Rules:
 
 ## Active
 
-### Assignment
+No active AI implementation task.
 
-- Owner: Codex
-- Machine: local desktop
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/teacher-value-prop`
-- Task: `R4_TEACHER_VALUE_PROP`
-- Status: in progress
-- Branch: `pod-a/teacher-value-prop`
-- Task packet: `docs/superpowers/tasks/2026-04-26-risk-lane-4-teacher-value-prop.md`
-- Owned files: `docs/contest/`, `ai_first/competition/`, `/web/app/(workspace)/agents/` copy only, `/web/components/agents/` copy only, task packet, PR note
-- PR:
-- Last update: 2026-04-26
-- Next action: rewrite `/agents` and contest copy in teacher-benefit language, then validate and open Draft PR
-- Blocker: none
+Recommended next AI-owned task: open `docs/superpowers/tasks/2026-04-26-risk-lane-5-dashboard-actionability.md` from a fresh branch/worktree if the team wants to continue hardening judge-risk defenses.

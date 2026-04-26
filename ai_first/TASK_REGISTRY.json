@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T16:35:00Z",
+    "last_updated": "2026-04-26T17:05:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 49
@@ -60,10 +60,8 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "R4_TEACHER_VALUE_PROP"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1130,8 +1128,8 @@
         "L1_AGENT_SPEC_AUTHORING",
         "L5_TEACHER_INSIGHT_UI"
       ],
-      "status": "in-progress",
-      "notes": "Active on branch pod-a/teacher-value-prop. This lane reframes `/agents`, pitch copy, and contest docs around teacher outcomes rather than architecture jargon."
+      "status": "completed",
+      "notes": "Merged to main through PR #157. `/agents` and contest copy now explain Agent Specs and dashboard value in teacher-benefit language with concrete use cases and behavior-diff framing."
     },
     {
       "id": "R5_DASHBOARD_ACTIONABILITY",
