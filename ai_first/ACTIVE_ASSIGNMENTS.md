@@ -28,6 +28,17 @@ Rules:
 
 ## Active
 
-No active AI implementation task.
+### Assignment
 
-Recommended next AI-owned task: open `docs/superpowers/tasks/2026-04-26-risk-lane-2-diagnosis-credibility.md` from a fresh branch/worktree if the team wants to keep hardening judge-risk defenses.
+- Owner: Codex
+- Machine: `MacBook-Air-cua-Loc.local`
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/diagnosis-credibility`
+- Task: `R2_DIAGNOSIS_CREDIBILITY`
+- Status: Ready for draft PR
+- Branch: `pod-a/diagnosis-credibility`
+- Task packet: `docs/superpowers/tasks/2026-04-26-risk-lane-2-diagnosis-credibility.md`
+- Owned files: `deeptutor/services/evidence/`, `tests/services/evidence/`, `docs/contest/`, `ai_first/competition/`, `docs/superpowers/tasks/2026-04-26-risk-lane-2-diagnosis-credibility.md`, `docs/superpowers/pr-notes/*`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-26.md`
+- PR:
+- Last update: 2026-04-26
+- Next action: Commit, push, and open the draft PR for diagnosis credibility review.
+- Blocker: None

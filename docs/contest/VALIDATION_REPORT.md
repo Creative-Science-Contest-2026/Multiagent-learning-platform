@@ -46,6 +46,7 @@ Use these status values consistently:
 - The frontend build emits a Next.js warning about multiple lockfiles and inferred workspace root. The build still completes successfully.
 - Browser-backed screenshot refresh now works in a local worktree, but it still depends on a running backend and frontend plus demo-safe local data.
 - Runtime handoff from `config.agent_spec_id` through the unified live Tutor turn path now has bounded automated proof in repository tests, including a visible behavior difference between two spec packs. This report still does not claim universal wiring across every possible entry point.
+- Diagnosis credibility is grounded in deterministic rules plus teacher review framing. This report does not claim benchmark accuracy numbers for diagnosis or recommendation quality.
 - Local provider-backed assessment generation was unavailable during the 2026-04-25 screenshot refresh because the configured model key was still a placeholder. The refreshed `07` and `08` screenshots therefore use demo-safe local session content in the worktree data store instead of a live provider response.
 - Provider-backed AI quality depends on configured model credentials. If credentials are unavailable during a demo, use the command validation and recorded UI flow as fallback evidence.
 - This report uses demo-safe descriptions only. Do not add real student data.
@@ -89,6 +90,7 @@ The 2026-04-26 scripted-reset smoke run verified the MVP path in the current mer
 4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the lane-6 worktree;
 5. smoke-backed command evidence stayed `Current`, and browser-captured dashboard plus hybrid `/agents` rows were refreshed on 2026-04-26 against the current merged UI;
 6. focused automated tests now prove the unified Tutor turn path can accept `config.agent_spec_id`, assemble the matching runtime policy, and produce a deterministic behavior difference between two contrasting spec packs without claiming full entry-point coverage.
+7. diagnosis credibility is supported by focused rule-based cases in repository tests and a reviewer-facing case-study packet in `DIAGNOSIS_CASE_STUDIES.md`, not by fabricated accuracy metrics.
 
 ## Manual Verification Template
 
