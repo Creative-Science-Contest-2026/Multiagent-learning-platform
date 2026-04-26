@@ -8,7 +8,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 One-line pitch:
 
-An AI-first learning platform where Vietnamese teachers create Knowledge Packs and teaching skills, then AI Tutor Agents help students learn, practice, and improve from teacher-approved materials.
+An AI-first learning platform where Vietnamese teachers turn their own materials into tutoring, practice, and follow-up insight while staying in control of how the AI teaches.
 
 Hybrid proof calibration:
 
@@ -17,6 +17,13 @@ Hybrid proof calibration:
 - You may claim bounded automated proof that the unified Tutor turn path accepts `config.agent_spec_id` and changes behavior across two contrasting spec packs. Do not expand that into universal live turn-time binding unless broader paths are re-verified in the target demo environment.
 - Diagnosis claims should stay at: rule-assisted, confidence-tagged, teacher-reviewed hypothesis layer. Do not present the diagnosis engine as a benchmarked autonomous assessor.
 - Assessment claims should stay at: AI can draft questions and feedback, but teacher review is the primary safety gate before student-facing reuse.
+
+Teacher-value shorthand for Q&A:
+
+- `IDENTITY` = who this tutor is for.
+- `SOUL` = how this tutor teaches and encourages.
+- `RULES` = what this tutor is not allowed to do.
+- Dashboard value = which student or small group needs what next.
 
 Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/competition/pitch-notes.md).
 

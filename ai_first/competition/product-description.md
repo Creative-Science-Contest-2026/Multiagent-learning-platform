@@ -10,7 +10,7 @@ Education
 
 ## Short Description
 
-Multiagent Learning Platform is an AI-first learning platform that helps Vietnamese teachers turn their own teaching materials into reusable Knowledge Packs, generate assessments, support student tutoring, and review learning progress through one connected workflow.
+Multiagent Learning Platform is an AI-first learning platform that helps Vietnamese teachers turn their own teaching materials into reusable Knowledge Packs, draft assessments, support student tutoring, and review learning progress through one connected workflow while still deciding how the AI should teach.
 
 ## Problem
 
@@ -22,7 +22,13 @@ The platform keeps teachers in control of the source knowledge. A teacher create
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
 
-Within that loop, diagnosis and recommendation outputs are positioned as evidence-backed, confidence-tagged, teacher-reviewed hypotheses rather than autonomous final judgments.
+Within that loop, diagnosis and recommendation outputs are positioned as evidence-backed, confidence-tagged, teacher-reviewed hypotheses rather than autonomous final judgments. The `/agents` flow adds one more teacher-control layer: the teacher can decide who the tutor is for, how it should respond when students are wrong or stuck, and which classroom guardrails it must respect.
+
+## Concrete Teacher Use Cases
+
+1. A lower-secondary math teacher can set a calmer tone, simpler language, and stronger hint scaffolding for students who lose confidence quickly.
+2. An exam-prep teacher can set a more demanding style that asks students to justify each step before the tutor gives another hint.
+3. After class, a teacher can review the dashboard to see which students need individual follow-up and which small group should revisit the same misconception together.
 
 ## Main Capabilities in the Current MVP
 
@@ -42,7 +48,7 @@ Within that loop, diagnosis and recommendation outputs are positioned as evidenc
 
 ## Innovation
 
-The platform combines agent workflows, retrieval grounded in teacher-approved materials, assessment generation, tutoring, and dashboard review into one connected product path instead of isolated tools. Its practical novelty is not only “using AI,” but using AI while preserving teacher control over source content and evidence.
+The platform combines agent workflows, retrieval grounded in teacher-approved materials, assessment generation, tutoring, and dashboard review into one connected product path instead of isolated tools. Its practical novelty is not only “using AI,” but using AI while preserving teacher control over source content, teaching style, and evidence review.
 
 ## Practical Applicability
 
@@ -52,7 +58,7 @@ The current MVP already demonstrates the end-to-end classroom loop locally with 
 
 - Reduces manual work needed to turn teaching materials into assessments.
 - Gives students immediate tutoring support based on the same approved knowledge source.
-- Gives teachers a faster feedback loop through dashboard activity and assessment review.
+- Gives teachers a faster feedback loop through dashboard activity, assessment review, and next-step intervention suggestions.
 
 ## Development Potential
 

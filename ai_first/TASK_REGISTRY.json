@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T14:40:00Z",
+    "last_updated": "2026-04-26T16:35:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 49
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 44,
+      "count": 46,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -53,14 +53,16 @@
         "T049_METADATA_DEPTH_PASS",
         "T050_DASHBOARD_INSIGHT_DEPTH",
         "T051_SESSION_CONTEXT_QUALITY_PASS",
-        "R1_RUNTIME_BINDING_PROOF"
+        "R1_RUNTIME_BINDING_PROOF",
+        "R2_DIAGNOSIS_CREDIBILITY",
+        "R3_ASSESSMENT_SAFETY"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "R2_DIAGNOSIS_CREDIBILITY"
+        "R4_TEACHER_VALUE_PROP"
       ]
     },
     "blocked": {
@@ -70,10 +72,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 4,
+      "count": 2,
       "tasks": [
-        "R3_ASSESSMENT_SAFETY",
-        "R4_TEACHER_VALUE_PROP",
         "R5_DASHBOARD_ACTIONABILITY",
         "R6_CLAIM_CALIBRATION_PILOT"
       ]
@@ -1081,8 +1081,8 @@
         "L3_OBSERVATION_STUDENT_STATE",
         "L4_DIAGNOSIS_RECOMMENDATION"
       ],
-      "status": "in-progress",
-      "notes": "Active on branch pod-a/diagnosis-credibility. Draft PR #153 adds teacher-review notes, abstain reasoning, and diagnosis case studies."
+      "status": "completed",
+      "notes": "Merged to main through PR #153. Diagnosis outputs now carry teacher-review notes, abstain reasoning, and judge-facing case studies."
     },
     {
       "id": "R3_ASSESSMENT_SAFETY",
@@ -1106,8 +1106,8 @@
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
         "T015_ASSESSMENT_RECOMMENDATIONS"
       ],
-      "status": "not-started",
-      "notes": "Session-ready risk lane packet exists under docs/superpowers/tasks/2026-04-26-risk-lane-3-assessment-safety.md."
+      "status": "completed",
+      "notes": "Merged to main through PR #155. Assessment flows and contest docs now make teacher review the explicit safety gate before student-facing reuse."
     },
     {
       "id": "R4_TEACHER_VALUE_PROP",
@@ -1130,8 +1130,8 @@
         "L1_AGENT_SPEC_AUTHORING",
         "L5_TEACHER_INSIGHT_UI"
       ],
-      "status": "not-started",
-      "notes": "Session-ready risk lane packet exists under docs/superpowers/tasks/2026-04-26-risk-lane-4-teacher-value-prop.md."
+      "status": "in-progress",
+      "notes": "Active on branch pod-a/teacher-value-prop. This lane reframes `/agents`, pitch copy, and contest docs around teacher outcomes rather than architecture jargon."
     },
     {
       "id": "R5_DASHBOARD_ACTIONABILITY",
