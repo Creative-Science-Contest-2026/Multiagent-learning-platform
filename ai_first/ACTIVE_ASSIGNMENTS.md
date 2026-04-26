@@ -28,5 +28,17 @@ Rules:
 
 ## Active
 
-- No active AI implementation task is currently assigned on `main`.
-- The next product work should start from a fresh Session A or Session B branch/worktree after the human or AI loop selects the next future-backlog task.
+### Assignment
+
+- Owner: Codex Session A
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
+- Task: `F102_INTERVENTION_ASSIGNMENT_FLOW`
+- Status: `design-in-progress`
+- Branch: `pod-a/intervention-assignment-flow`
+- Task packet: `docs/superpowers/tasks/2026-04-26-two-session-future-backlog.md` (`Session A`, task `F102`)
+- Owned files: `web/components/dashboard/`, `web/app/(workspace)/dashboard/`, `web/app/(workspace)/dashboard/student/`, `web/lib/dashboard-api.ts`, `deeptutor/api/routers/dashboard.py`, bounded `deeptutor/services/evidence/`, related dashboard tests/docs`
+- PR: `Not opened yet`
+- Last update: `2026-04-27T00:14:15+0700`
+- Next action: `Write F102 design/spec for a bounded intervention-assignment shell built on top of teacher actions.`
+- Blocker: `None`
