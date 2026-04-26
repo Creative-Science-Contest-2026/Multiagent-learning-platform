@@ -28,8 +28,17 @@ Rules:
 
 ## Active
 
-- No active AI-owned lane is open right now.
-- Lane 1 (`L1_AGENT_SPEC_AUTHORING`) merged through PR `#136`.
-- Lane 2 (`L2_SPEC_RUNTIME_ASSEMBLY`) merged through PR `#135`.
-- Lane 3 (`L3_OBSERVATION_STUDENT_STATE`) merged through PR `#140`.
-- Use the remaining lane packets (`lane-4` to `lane-6`) before starting new implementation sessions.
+### Assignment
+
+- Owner: GitHub Copilot (GPT-5.3-Codex)
+- Machine: macOS
+- Worktree: .worktrees/lane2
+- Task: L4_DIAGNOSIS_RECOMMENDATION
+- Status: in-progress
+- Branch: pod-a/diagnosis-recommendation
+- Task packet: docs/superpowers/tasks/2026-04-26-lane-4-diagnosis-recommendation.md
+- Owned files: deeptutor/services/evidence/diagnosis.py; deeptutor/services/evidence/teacher_insights.py; deeptutor/api/routers/assessment.py; deeptutor/api/routers/dashboard.py; tests/services/evidence/test_diagnosis.py; tests/api/test_assessment_router.py; tests/api/test_dashboard_router.py
+- PR: (draft, not opened yet)
+- Last update: 2026-04-26
+- Next action: Implement expanded diagnosis taxonomy, deterministic action ranking, and abstain behavior; then update router tests.
+- Blocker: none
