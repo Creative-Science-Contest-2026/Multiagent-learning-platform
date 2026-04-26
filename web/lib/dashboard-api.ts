@@ -237,10 +237,40 @@ export async function getDashboardActivityDetail(entryId: string): Promise<Dashb
   return expectJson<DashboardActivityDetail>(response);
 }
 
+export interface TeacherInsightStudent {
+  student_id: string;
+  observed: {
+    topic: string;
+    miss_count: number;
+    avg_latency_seconds: number;
+  } | null;
+  student_state?: {
+    support_level: string;
+    confidence_trend: string;
+  } | null;
+  inferred: Array<{
+    diagnosis_type: string;
+    confidence_tag: string;
+    topic: string;
+    evidence: string[];
+  }>;
+  recommended_actions: Array<{
+    action_id: string;
+    action_type: string;
+    target_student_ids: string[];
+    topic: string;
+    rationale: string;
+  }>;
+}
+
 export interface DashboardInsights {
-  analytics: DashboardOverview["analytics"];
-  at_risk_topics: StudentProgressTopic[];
-  recommendations: string[];
+  students: TeacherInsightStudent[];
+  small_groups: Array<{
+    topic: string;
+    diagnosis_type: string;
+    student_ids: string[];
+    recommended_action: string;
+  }>;
 }
 
 export interface DashboardInsightsFilters {

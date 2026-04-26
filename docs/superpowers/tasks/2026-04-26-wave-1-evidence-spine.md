@@ -34,6 +34,7 @@ Implement the first end-to-end `Observed -> Inferred -> Recommended Action` spin
 - `web/components/dashboard/TeacherInsightPanel.tsx`
 - `web/lib/dashboard-api.ts`
 - `web/app/(workspace)/dashboard/page.tsx`
+- `ai_first/architecture/MAIN_SYSTEM_MAP.md`
 - `ai_first/ACTIVE_ASSIGNMENTS.md`
 - `ai_first/daily/2026-04-26.md`
 - `docs/superpowers/pr-notes/2026-04-26-wave-1-evidence-spine.md`

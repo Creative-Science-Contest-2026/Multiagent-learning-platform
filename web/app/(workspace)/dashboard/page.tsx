@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Activity, ArrowRight, BookOpen, CheckCircle2, Filter, Loader2, PenLine, Search, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { TeacherInsightPanel } from "@/components/dashboard/TeacherInsightPanel";
 import {
+  getDashboardInsights,
   getDashboardOverview,
   type DashboardActivity,
+  type DashboardInsights,
   type DashboardOverview,
   type DashboardOverviewFilters,
 } from "@/lib/dashboard-api";
@@ -37,7 +40,7 @@ function scoreDeltaTone(value: number): string {
 export default function DashboardPage() {
   const { t } = useTranslation();
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [insights, setInsights] = useState<DashboardInsights | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activityType, setActivityType] = useState("");
@@ -56,24 +59,27 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    getDashboardOverview(50, filters)
-      .then((data) => {
+    Promise.all([
+      getDashboardOverview(50, filters),
+      getDashboardInsights(50, { knowledge_base: filters.knowledge_base }),
+    ])
+      .then(([overviewData, insightData]) => {
         if (!cancelled) {
-          setOverview(data);
+          setOverview(overviewData);
+          setInsights(insightData);
           setError(null);
         }
       })
       .catch((err) => {
         if (!cancelled) setError(err instanceof Error ? err.message : String(err));
       })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+      .finally(() => undefined);
     return () => {
       cancelled = true;
     };
   }, [filters]);
+
+  const loading = overview === null;
 
   const totals = overview?.totals;
   const analytics = overview?.analytics;
@@ -391,6 +397,8 @@ export default function DashboardPage() {
             </div>
           </div>
         </section>
+
+        <TeacherInsightPanel insights={insights} />
 
         <section className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <div>
