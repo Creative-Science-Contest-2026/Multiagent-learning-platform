@@ -196,6 +196,21 @@ class AgentSpecService:
         files = self._read_current_files(paths.root)
         return self._build_payload(agent_id, metadata, files)
 
+    def get_pack_version(self, agent_id: str, version: int) -> dict[str, object]:
+        normalized_agent_id = self._validate_agent_id(agent_id)
+        paths = self._get_paths(normalized_agent_id)
+        version_dir = paths.versions_dir / f"v{int(version):04d}"
+        metadata_file = version_dir / "metadata.json"
+        if not metadata_file.exists():
+            raise FileNotFoundError(f"{normalized_agent_id}@v{int(version):04d}")
+
+        metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
+        files = {
+            filename: (version_dir / filename).read_text(encoding="utf-8")
+            for filename in SPEC_FILES
+        }
+        return self._build_payload(normalized_agent_id, metadata, files)
+
     def create_pack(
         self,
         *,

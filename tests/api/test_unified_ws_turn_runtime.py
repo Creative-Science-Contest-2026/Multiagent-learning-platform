@@ -568,6 +568,117 @@ async def test_turn_runtime_passes_agent_spec_id_for_live_chat_policy_binding(
 
 
 @pytest.mark.asyncio
+async def test_turn_runtime_pins_agent_spec_version_per_session(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+    captured: list[str] = []
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            "identity": {"agent_name": "Fraction Coach"},
+            "soul": {"teaching_philosophy": "Version one philosophy."},
+            "rules": {"guardrails": "Version one guardrails."},
+        },
+    )
+
+    class FakeContextBuilder:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        async def build(self, **_kwargs):
+            return SimpleNamespace(
+                conversation_history=[],
+                conversation_summary="",
+                context_text="",
+                token_count=0,
+                budget=0,
+            )
+
+    class FakePipeline:
+        def __init__(self, language: str = "en") -> None:
+            captured.append(f"lang={language}")
+
+        async def run(self, context, stream) -> None:
+            captured.append(str(context.memory_context))
+            captured.append(str(context.metadata.get("session_preferences", {})))
+            await stream.content("Pinned response", source="chat", stage="responding")
+
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
+    monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
+    monkeypatch.setattr(
+        "deeptutor.services.memory.get_memory_service",
+        lambda: SimpleNamespace(build_memory_context=lambda: "", refresh_from_turn=_noop_refresh),
+    )
+    monkeypatch.setattr("deeptutor.capabilities.chat.AgenticChatPipeline", FakePipeline)
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    session, turn = await runtime.start_turn(
+        {
+            "type": "start_turn",
+            "content": "Help me with fractions",
+            "session_id": None,
+            "capability": "chat",
+            "tools": [],
+            "knowledge_bases": [],
+            "attachments": [],
+            "language": "en",
+            "config": {
+                "agent_spec_id": "fraction-coach",
+            },
+        }
+    )
+
+    async for _event in runtime.subscribe_turn(turn["id"], after_seq=0):
+        pass
+
+    persisted = await store.get_session(session["id"])
+    assert persisted is not None
+    assert "agent_spec_pin" in captured[-1]
+    assert persisted["preferences"]["agent_spec_pin"]["agent_spec_id"] == "fraction-coach"
+    assert persisted["preferences"]["agent_spec_pin"]["version"] == 1
+
+    service.save_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            "identity": {"agent_name": "Fraction Coach"},
+            "soul": {"teaching_philosophy": "Version two philosophy."},
+            "rules": {"guardrails": "Version two guardrails."},
+        },
+    )
+
+    _session, second_turn = await runtime.start_turn(
+        {
+            "type": "start_turn",
+            "content": "Help me again",
+            "session_id": session["id"],
+            "capability": "chat",
+            "tools": [],
+            "knowledge_bases": [],
+            "attachments": [],
+            "language": "en",
+            "config": {},
+        }
+    )
+
+    async for _event in runtime.subscribe_turn(second_turn["id"], after_seq=0):
+        pass
+
+    memory_contexts = [entry for entry in captured if "Teacher Runtime Policy:" in entry]
+    assert "Version one philosophy." in memory_contexts[0]
+    assert "Version one philosophy." in memory_contexts[1]
+    assert "Version two philosophy." not in memory_contexts[1]
+
+
+@pytest.mark.asyncio
 async def test_turn_runtime_passes_agent_spec_id_for_deep_question_policy_binding(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,

@@ -94,3 +94,27 @@ def test_export_pack_archive_contains_all_markdown_files(tmp_path) -> None:
     assert "fraction-coach/IDENTITY.md" in names
     assert "fraction-coach/SOUL.md" in names
     assert "fraction-coach/MARKETPLACE.md" in names
+
+
+def test_get_pack_version_reads_historical_snapshot(tmp_path) -> None:
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured=_sample_structured(),
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion one.\n"},
+    )
+    service.save_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured=_sample_structured(),
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion two.\n"},
+    )
+
+    version_one = service.get_pack_version("fraction-coach", 1)
+    version_two = service.get_pack_version("fraction-coach", 2)
+
+    assert "Version two." not in version_one["files"]["WORKFLOW.md"]
+    assert "Version two." in version_two["files"]["WORKFLOW.md"]
+    assert version_one["version"] == 1
+    assert version_two["version"] == 2
