@@ -38,7 +38,7 @@ Rules:
 - Branch: `pod-a/spec-runtime-assembly`
 - Task packet: `docs/superpowers/tasks/2026-04-26-lane-2-spec-runtime-assembly.md`
 - Owned files: `deeptutor/services/runtime_policy/`, `deeptutor/services/prompt/`, `deeptutor/runtime/orchestrator.py`, `deeptutor/capabilities/chat.py`, `deeptutor/capabilities/deep_question.py`, `tests/services/runtime_policy/`, `tests/core/test_capabilities_runtime.py`, `tests/services/test_prompt_manager.py`, `docs/superpowers/pr-notes/*`
-- PR: `#139` (Draft)
+- PR: `#139` (Ready)
 - Last update: 2026-04-26
-- Next action: Resolve merge sync, push the updated Lane 2 branch, then wait for CI on PR `#139`.
+- Next action: Resolve the latest `origin/main` sync, push the branch, then merge PR `#139` once GitHub recalculates mergeability.
 - Blocker: None
