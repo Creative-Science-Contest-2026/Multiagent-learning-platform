@@ -79,3 +79,8 @@ Keep the merged screenshot evidence state reflected in the compact mirrors and c
 ## Mirror Policy
 
 Use this file only as a compact status mirror. Do not rely on it for the full operating contract. For a human-friendly quick start, read `ai_first/USAGE_GUIDE.md`.
+## 2026-04-26
+
+- `main` now includes the Wave 1 evidence spine from PR `#132`.
+- The Contest MVP+ roadmap is now decomposed into six session-ready lane packets under `docs/superpowers/tasks/2026-04-26-lane-*.md`.
+- In multi-session mode, `ai_first/AI_OPERATING_PROMPT.md` is expected to route AI workers through those packets and ask the human to resolve conflicts or ambiguity.

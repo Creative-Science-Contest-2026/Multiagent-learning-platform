@@ -25,7 +25,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
 - Latest product status: Knowledge Pack, marketplace import, batch marketplace import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment generation and review insights, student tutoring context, KB context badges, Teacher Dashboard, Vietnamese MVP prompt variants, contest-facing Vietnamese UI coverage, marketplace sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, marketplace and knowledge-screen polish, dashboard/review polish, dashboard insight depth, metadata depth, session context quality, assessment adaptive difficulty, teacher analytics, assessment PDF export, tutoring session replay, route error boundaries, API rate limiting, teacher invitation metadata, assessment time tracking, tutor follow-up prompts, knowledge-pack version metadata, contest evidence screenshots, contest submission-package sync, checklist evidence alignment, contest product-description drafting, and contest fork-modifications documentation are merged into `main`.
-- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, `ai_first/ACTIVE_ASSIGNMENTS.md` is the active coordination board, the 2026-04-25 smoke/evidence refresh is merged, and the 2026-04-25 screenshot-refresh re-run is merged through PR `#130`.
+- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, `ai_first/ACTIVE_ASSIGNMENTS.md` is the active coordination board, the Wave 1 evidence spine is merged through PR `#132`, and the six-lane Contest MVP+ roadmap now has session-ready task packets under `docs/superpowers/tasks/2026-04-26-lane-*.md`.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -84,6 +84,18 @@ Before edits:
 - Keep task packets current with owned files and do-not-touch scope before parallel work begins.
 - Do not split one feature across two people unless it has been decomposed into separate task packets with separate ownership.
 - Treat `ai_first/ACTIVE_ASSIGNMENTS.md` as the short-term coordination memory for active work.
+- For the current Contest MVP+ split, prefer `1 session = 1 lane = 1 branch = 1 PR`.
+- If the human provides only this file as context, this file must still tell the AI how to choose or validate a lane before editing.
+
+## Session triage rules
+
+- When the human says they are splitting work into sessions, first check whether a lane-specific task packet already exists in `docs/superpowers/tasks/2026-04-26-lane-*.md`.
+- If a matching lane packet exists, treat that packet as the execution contract and stay inside its owned files.
+- If two candidate lane packets could both apply, stop and ask the human which session owns the task before editing.
+- If another active session already owns the relevant files or worktree area, stop and ask the human to resolve the conflict.
+- If the requested work spans more than one lane, do not silently proceed across boundaries; ask the human whether to narrow scope or update the task packets first.
+- When uncertain, recommend the safest lane or recommend creating a new packet rather than guessing.
+- Prefer concrete recommendations such as branch names, worktree paths, and likely owning lane when reporting ambiguity.
 
 ## Same-machine parallel rules
 
@@ -221,3 +233,4 @@ When starting a new feature or fix:
 13. Keep `docs/superpowers/tasks/` populated with current Feature Pod task packets before implementation starts.
 14. Mirror only the minimal status needed into `ai_first/CURRENT_STATE.md` and `ai_first/NEXT_ACTIONS.md`.
 15. Use the approved docs/AI-first operating layer to drive feature pods, PRs, autonomous completion, and evidence.
+16. When the repo is in multi-session mode, route AI workers through the lane-specific task packets first and ask the human to resolve any detected session overlap or contract ambiguity.
