@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T17:28:08Z",
+    "last_updated": "2026-04-26T17:38:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 52,
+      "count": 53,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -61,7 +61,8 @@
         "R6_CLAIM_CALIBRATION_PILOT",
         "F101_TEACHER_ACTION_EXECUTION_LOOP",
         "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
-        "F102_INTERVENTION_ASSIGNMENT_FLOW"
+        "F102_INTERVENTION_ASSIGNMENT_FLOW",
+        "F114_SPEC_VERSION_PINNING_PER_SESSION"
       ]
     },
     "in_progress": {
@@ -1559,10 +1560,10 @@
       "dependencies": [
         "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "runtime-policy",
-      "notes": "Best done before provenance surfaces so later teacher-facing traces can reference stable spec versions."
+      "notes": "Merged to main through PR #169. Learning sessions now persist and reuse exact Agent Spec version pins so later runtime policy assembly remains reproducible across turns."
     },
     {
       "id": "F115_RUNTIME_POLICY_AUDIT_TRACE",
