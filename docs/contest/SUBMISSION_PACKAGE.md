@@ -15,6 +15,7 @@ Hybrid proof calibration:
 - Teacher authoring capability on `/agents` is part of the merged product story.
 - Contest evidence-loop proof remains anchored to smoke-backed Knowledge Pack -> assessment -> tutor -> dashboard artifacts.
 - You may claim bounded automated proof that the unified Tutor turn path accepts `config.agent_spec_id` and changes behavior across two contrasting spec packs. Do not expand that into universal live turn-time binding unless broader paths are re-verified in the target demo environment.
+- Diagnosis claims should stay at: rule-assisted, confidence-tagged, teacher-reviewed hypothesis layer. Do not present the diagnosis engine as a benchmarked autonomous assessor.
 
 Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/competition/pitch-notes.md).
 
@@ -25,6 +26,7 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 | Demo script | Ready | [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md) |
 | Smoke-backed validation | Ready | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
 | Evidence checklist | Ready | [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md) |
+| Diagnosis credibility cases | Ready | [`DIAGNOSIS_CASE_STUDIES.md`](./DIAGNOSIS_CASE_STUDIES.md) |
 | Screenshot bundle | Ready | [`screenshots/`](./screenshots/) |
 | Demo-safe reset command | Ready | [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) |
 | Smoke procedure | Ready | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) |

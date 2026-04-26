@@ -36,6 +36,7 @@ class DiagnosisRecord(TypedDict):
     confidence_tag: ConfidenceTag
     topic: str
     evidence: list[str]
+    teacher_review_note: str
 
 
 class RecommendationRecord(TypedDict):
@@ -49,3 +50,4 @@ class RecommendationRecord(TypedDict):
     target_student_ids: list[str]
     topic: str
     rationale: str
+    teacher_review_note: str

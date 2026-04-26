@@ -22,13 +22,15 @@ The platform keeps teachers in control of the source knowledge. A teacher create
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
 
+Within that loop, diagnosis and recommendation outputs are positioned as evidence-backed, confidence-tagged, teacher-reviewed hypotheses rather than autonomous final judgments.
+
 ## Main Capabilities in the Current MVP
 
 1. Knowledge Pack management for teacher-owned learning materials and metadata.
 2. Marketplace import and batch import for reusable packs.
 3. AI-generated assessments with review insights, timing metrics, and export support.
 4. Tutor Agent sessions with context badges, follow-up prompts, and replay support.
-5. Teacher dashboard analytics for recent activity and student-facing learning progress.
+5. Teacher dashboard analytics for recent activity, student-facing learning progress, and teacher-reviewable diagnosis/recommendation signals.
 6. Contest-ready evidence bundle with smoke-backed validation, screenshots, and demo-safe reset workflow.
 
 ## Why It Is Useful in Vietnam

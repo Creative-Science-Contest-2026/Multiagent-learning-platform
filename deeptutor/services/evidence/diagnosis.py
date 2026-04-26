@@ -17,6 +17,8 @@ ACTION_PRIORITY = {
     "small_group_support": 3,
 }
 
+DIAGNOSIS_POLICY = "rule_assisted_teacher_review"
+
 
 def _confidence_tag(
     *,
@@ -165,6 +167,9 @@ def _build_ranked_actions(
                 "target_student_ids": [student_id],
                 "topic": topic,
                 "rationale": item["rationale"],
+                "teacher_review_note": (
+                    f"Teacher should confirm that {action_type} matches the student's actual misconception before intervention."
+                ),
             }
         )
     return deduped
@@ -179,6 +184,8 @@ def build_student_diagnosis(
     if not observations:
         return {
             "student_id": student_id,
+            "diagnosis_policy": DIAGNOSIS_POLICY,
+            "teacher_review_required": True,
             "observed": None,
             "student_state": student_state,
             "inferred": [],
@@ -226,6 +233,9 @@ def build_student_diagnosis(
                     f"support_level={_support_level(dominant_rows)}",
                     f"contradiction_ratio={round(contradiction_ratio, 2)}",
                 ],
+                "teacher_review_note": (
+                    "Use this diagnosis as a teacher-reviewable hypothesis grounded in observed signals, not as an autonomous final judgment."
+                ),
             }
         ]
         actions = _build_ranked_actions(
@@ -238,11 +248,18 @@ def build_student_diagnosis(
 
     return {
         "student_id": student_id,
+        "diagnosis_policy": DIAGNOSIS_POLICY,
+        "teacher_review_required": True,
         "observed": {
             "topic": dominant_topic,
             "miss_count": miss_count,
             "evidence_count": evidence_count,
             "abstained": abstain,
+            "abstain_reason": (
+                "Evidence is too weak or too mixed for a confident diagnosis."
+                if abstain
+                else ""
+            ),
             "avg_latency_seconds": round(sum(avg_latency_values) / len(avg_latency_values))
             if avg_latency_values
             else 0,
