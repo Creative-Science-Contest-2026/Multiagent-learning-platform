@@ -28,5 +28,17 @@ Rules:
 
 ## Active
 
-- No active AI implementation task is currently assigned on `main`.
-- The next product work should start from a fresh Session A or Session B branch/worktree after the human or AI loop selects the next future-backlog task.
+### Assignment
+
+- Owner: Codex Session B
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-runtime-binding-coverage`
+- Task: `F114_SPEC_VERSION_PINNING_PER_SESSION`
+- Status: `planning`
+- Branch: `pod-b/spec-version-pinning`
+- Task packet: `docs/superpowers/tasks/2026-04-27-f114-spec-version-pinning-per-session.md`
+- Owned files: `deeptutor/services/agent_spec/`, `deeptutor/services/session/`, `deeptutor/services/runtime_policy/`, bounded tests/docs
+- PR: `Not opened yet`
+- Last update: `2026-04-27T00:10:00+0700`
+- Next action: `Use the new F114 design and implementation plan to start the bounded session-pinning implementation.`
+- Blocker: `None`
