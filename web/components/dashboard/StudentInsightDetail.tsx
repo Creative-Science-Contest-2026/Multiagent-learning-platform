@@ -1,7 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
-import type { TeacherInsightStudent } from "@/lib/dashboard-api";
+import {
+  type TeacherActionRecord,
+  type TeacherActionStatus,
+  type TeacherInsightStudent,
+  updateTeacherActionStatus,
+} from "@/lib/dashboard-api";
 
 function formatLatency(seconds: number | undefined): string | null {
   if (seconds == null) return null;
@@ -16,6 +22,8 @@ export function StudentInsightDetail({
   student: TeacherInsightStudent | null;
   t: (value: string, options?: Record<string, string | number>) => string;
 }) {
+  const [teacherActions, setTeacherActions] = useState<TeacherActionRecord[]>(student?.teacher_actions ?? []);
+
   const diagnosis = student?.inferred[0];
   const recommendation = student?.recommended_actions[0];
 
@@ -110,6 +118,56 @@ export function StudentInsightDetail({
               <div>{t("Support level: {{value}}", { value: student.student_state.support_level })}</div>
             ) : null}
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm xl:col-span-2">
+        <InsightSectionLabel
+          eyebrow={t("Teacher actions")}
+          title={
+            teacherActions.length
+              ? t("{{count}} recorded actions", { count: teacherActions.length })
+              : t("No actions yet")
+          }
+        />
+        <div className="mt-4 space-y-3">
+          {teacherActions.length ? (
+            teacherActions.map((action) => (
+              <div key={action.id} className="rounded-2xl bg-[var(--muted)]/50 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div className="text-[13px] font-medium text-[var(--foreground)]">{action.action_type}</div>
+                    <div className="mt-1 text-[12px] text-[var(--muted-foreground)]">{action.topic}</div>
+                  </div>
+                  <select
+                    value={action.status}
+                    onChange={async (e) => {
+                      const updated = await updateTeacherActionStatus(
+                        action.id,
+                        e.target.value as TeacherActionStatus,
+                      );
+                      setTeacherActions((current) =>
+                        current.map((row) => (row.id === updated.id ? updated : row)),
+                      );
+                    }}
+                    className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[12px] text-[var(--foreground)]"
+                  >
+                    <option value="planned">{t("planned")}</option>
+                    <option value="done">{t("done")}</option>
+                    <option value="dismissed">{t("dismissed")}</option>
+                  </select>
+                </div>
+                <div className="mt-3 text-[13px] text-[var(--foreground)]">{action.teacher_instruction}</div>
+                <div className="mt-2 text-[11px] text-[var(--muted-foreground)]">
+                  {t("Priority: {{priority}}", { priority: action.priority })}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="rounded-2xl bg-[var(--muted)]/50 p-4 text-[13px] text-[var(--muted-foreground)]">
+              {t("Create a teacher action from the dashboard overview to track a concrete remediation move here.")}
+            </div>
+          )}
         </div>
       </section>
     </section>

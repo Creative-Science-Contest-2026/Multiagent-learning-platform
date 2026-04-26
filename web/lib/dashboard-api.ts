@@ -261,6 +261,31 @@ export interface TeacherInsightStudent {
     topic: string;
     rationale: string;
   }>;
+  teacher_actions?: TeacherActionRecord[];
+}
+
+export type TeacherActionType =
+  | "reteach_concept"
+  | "scaffolded_practice"
+  | "review_prerequisite"
+  | "small_group_remediation";
+
+export type TeacherActionStatus = "draft" | "planned" | "done" | "dismissed";
+
+export type TeacherActionPriority = "low" | "medium" | "high";
+
+export interface TeacherActionRecord {
+  id: string;
+  target_type: "student" | "small_group";
+  target_id: string;
+  source_recommendation_id: string;
+  action_type: TeacherActionType;
+  topic: string;
+  teacher_instruction: string;
+  priority: TeacherActionPriority;
+  status: TeacherActionStatus;
+  created_at: number;
+  updated_at: number;
 }
 
 export interface DashboardInsights {
@@ -270,6 +295,8 @@ export interface DashboardInsights {
     diagnosis_type: string;
     student_ids: string[];
     recommended_action: string;
+    target_id?: string;
+    teacher_action?: TeacherActionRecord | null;
   }>;
 }
 
@@ -278,6 +305,16 @@ export interface DashboardInsightsFilters {
   start_ts?: number;
   end_ts?: number;
   cohort?: string;
+}
+
+export interface CreateTeacherActionRequest {
+  target_type: "student" | "small_group";
+  target_id: string;
+  source_recommendation_id: string;
+  action_type: TeacherActionType;
+  topic: string;
+  teacher_instruction: string;
+  priority: TeacherActionPriority;
 }
 
 /**
@@ -297,4 +334,27 @@ export async function getDashboardInsights(
     cache: "no-store",
   });
   return expectJson<DashboardInsights>(response);
+}
+
+export async function createTeacherAction(
+  payload: CreateTeacherActionRequest,
+): Promise<TeacherActionRecord> {
+  const response = await fetch(apiUrl("/api/v1/dashboard/teacher-actions"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<TeacherActionRecord>(response);
+}
+
+export async function updateTeacherActionStatus(
+  actionId: string,
+  status: TeacherActionStatus,
+): Promise<TeacherActionRecord> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/teacher-actions/${actionId}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
+  return expectJson<TeacherActionRecord>(response);
 }

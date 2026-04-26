@@ -5,15 +5,35 @@ from typing import Any
 
 import fitz
 from fastapi import APIRouter, HTTPException, Response
+from pydantic import BaseModel
 
 from deeptutor.services.assessment import build_assessment_analysis
 from deeptutor.services.evidence.diagnosis import build_student_diagnosis
 from deeptutor.services.evidence.extractor import extract_observations_from_review
+from deeptutor.services.evidence.teacher_actions import (
+    create_teacher_action,
+    list_teacher_actions,
+    update_teacher_action_status,
+)
 from deeptutor.services.evidence.teacher_insights import build_teacher_insights_payload
 from deeptutor.services.learning_path import build_suggested_learning_path
 from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
 
 router = APIRouter()
+
+
+class TeacherActionCreateRequest(BaseModel):
+    target_type: str
+    target_id: str
+    source_recommendation_id: str
+    action_type: str
+    topic: str
+    teacher_instruction: str
+    priority: str
+
+
+class TeacherActionStatusUpdateRequest(BaseModel):
+    status: str
 
 
 def _activity_type(capability: str) -> str:
@@ -512,7 +532,43 @@ async def get_dashboard_insights(
             )
         )
 
-    return build_teacher_insights_payload(student_payloads=student_payloads)
+    teacher_actions = list_teacher_actions(store)
+    return build_teacher_insights_payload(
+        student_payloads=student_payloads,
+        teacher_actions=teacher_actions,
+    )
+
+
+@router.post("/teacher-actions")
+async def create_dashboard_teacher_action(payload: TeacherActionCreateRequest) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return create_teacher_action(
+            store,
+            target_type=payload.target_type,
+            target_id=payload.target_id,
+            source_recommendation_id=payload.source_recommendation_id,
+            action_type=payload.action_type,
+            topic=payload.topic,
+            teacher_instruction=payload.teacher_instruction,
+            priority=payload.priority,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.patch("/teacher-actions/{action_id}")
+async def update_dashboard_teacher_action(
+    action_id: str,
+    payload: TeacherActionStatusUpdateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return update_teacher_action_status(store, action_id, status=payload.status)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="teacher action not found") from exc
 
 
 @router.get("/{entry_id}")

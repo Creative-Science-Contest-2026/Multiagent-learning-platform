@@ -21,12 +21,31 @@ def _top_action(payload: dict[str, Any]) -> dict[str, Any] | None:
     return actions[0]
 
 
+def _student_actions(student_id: str, actions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows = [
+        action
+        for action in actions
+        if action.get("target_type") == "student" and action.get("target_id") == student_id
+    ]
+    return sorted(rows, key=lambda row: row.get("updated_at", 0), reverse=True)
+
+
+def _small_group_target_id(topic: str, diagnosis_type: str, source_action_type: str) -> str:
+    return f"{topic}::{diagnosis_type}::{source_action_type}"
+
+
 def build_teacher_insights_payload(
     *,
     student_payloads: list[dict[str, Any]],
+    teacher_actions: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    teacher_actions = teacher_actions or []
     grouped: dict[tuple[str, str, str], list[tuple[str, int]]] = defaultdict(list)
+    students: list[dict[str, Any]] = []
     for payload in student_payloads:
+        row = dict(payload)
+        row["teacher_actions"] = _student_actions(str(payload.get("student_id") or "unknown"), teacher_actions)
+        students.append(row)
         inferred = _top_inferred(payload)
         action = _top_action(payload)
         if not inferred or not action:
@@ -52,6 +71,15 @@ def build_teacher_insights_payload(
         if avg_confidence < 1.0:
             continue
         student_ids = sorted({sid for sid, _score in rows})
+        target_id = _small_group_target_id(topic, diagnosis_type, action_type)
+        matching_group_action = next(
+            (
+                action
+                for action in teacher_actions
+                if action.get("target_type") == "small_group" and action.get("target_id") == target_id
+            ),
+            None,
+        )
         small_groups.append(
             {
                 "topic": topic,
@@ -60,6 +88,8 @@ def build_teacher_insights_payload(
                 "recommended_action": "small_group_support",
                 "source_action_type": action_type,
                 "confidence_tag": "high" if avg_confidence >= 2.5 else "medium",
+                "target_id": target_id,
+                "teacher_action": matching_group_action,
             }
         )
 
@@ -68,6 +98,6 @@ def build_teacher_insights_payload(
     )
 
     return {
-        "students": student_payloads,
+        "students": students,
         "small_groups": small_groups,
     }
