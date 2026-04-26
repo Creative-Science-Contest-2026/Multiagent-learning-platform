@@ -180,6 +180,32 @@ def _format_followup_question_context(context: dict[str, Any], language: str = "
     return "\n".join(lines).strip()
 
 
+def _build_tutoring_observations(
+    *,
+    capability: str,
+    session_id: str,
+    student_id: str,
+    user_message: str,
+    assistant_message: str,
+    followup_question_context: dict[str, Any] | None,
+    assistant_events: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    if capability != "chat":
+        return []
+    if not user_message.strip() and not assistant_message.strip():
+        return []
+    from deeptutor.services.evidence.extractor import extract_observations_from_tutoring_turn
+
+    return extract_observations_from_tutoring_turn(
+        session_id=session_id,
+        student_id=student_id,
+        user_message=user_message,
+        assistant_message=assistant_message,
+        followup_question_context=followup_question_context,
+        turn_events=assistant_events,
+    )
+
+
 @dataclass
 class _LiveSubscriber:
     queue: asyncio.Queue[dict[str, Any]]
@@ -331,6 +357,7 @@ class TurnRuntimeManager:
         session_id = execution.session_id
         capability_name = execution.capability
         turn_id = execution.turn_id
+        student_id = str(payload.get("student_id") or session_id or "unknown")
         attachments = []
         attachment_records = []
         assistant_events: list[dict[str, Any]] = []
@@ -524,6 +551,20 @@ class TurnRuntimeManager:
                 capability=capability_name,
                 events=assistant_events,
             )
+            tutoring_observations = _build_tutoring_observations(
+                capability=capability_name,
+                session_id=session_id,
+                student_id=student_id,
+                user_message=raw_user_content,
+                assistant_message=assistant_content,
+                followup_question_context=followup_question_context,
+                assistant_events=assistant_events,
+            )
+            if tutoring_observations:
+                await self.store.save_observations(tutoring_observations)
+                state_rollup = await self.store.build_student_state_rollup(student_id)
+                if state_rollup:
+                    await self.store.upsert_student_state(student_id, state_rollup)
             await self.store.update_turn_status(turn_id, "completed")
             try:
                 await memory_service.refresh_from_turn(
