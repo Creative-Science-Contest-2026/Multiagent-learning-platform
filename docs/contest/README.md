@@ -29,8 +29,8 @@ Runtime wiring between a selected `agent_spec_id` and every live turn request is
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
 - Teacher Agent Spec authoring UI/API and runtime policy assembly contracts are merged on `main` and documented as hybrid-proof context.
 - The latest scripted-reset smoke-backed MVP verification passed on 2026-04-26 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
-- Screenshot evidence is captured in [`screenshots/`](./screenshots/), but the dashboard rows are now `Stale` because Lane 5 changed the teacher insight workflow after the refreshed `T037` re-run on 2026-04-25.
-- Hybrid `/agents` screenshots are intentionally marked `Stale` until a dedicated recapture run is completed.
+- Screenshot evidence is captured in [`screenshots/`](./screenshots/), including the 2026-04-26 dashboard evidence-first refresh and the `/agents` authoring proof refresh.
+- Hybrid `/agents` screenshots are now current, but the claim remains bounded to authoring and export proof unless runtime binding is re-verified.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 
 ## Evidence Refresh Rules
@@ -62,7 +62,10 @@ Run [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) first when local demo data may 
 - [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png)
 - [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png)
 - [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png)
-- [`05-dashboard-summary-and-activity.png`](./screenshots/05-dashboard-summary-and-activity.png)
+- [`05-dashboard-evidence-first-overview.png`](./screenshots/05-dashboard-evidence-first-overview.png)
+- [`09-dashboard-recent-activity-evidence-first.png`](./screenshots/09-dashboard-recent-activity-evidence-first.png)
+- [`10-agents-spec-pack-authoring.png`](./screenshots/10-agents-spec-pack-authoring.png)
+- [`11-agents-spec-pack-export.png`](./screenshots/11-agents-spec-pack-export.png)
 
 ## Evidence Flow
 
