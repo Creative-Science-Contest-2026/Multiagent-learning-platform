@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
+import time
 from pathlib import Path
 
 import pytest
@@ -78,6 +79,7 @@ async def test_sqlite_store_persists_observations_and_student_state(tmp_path: Pa
             "repeated_mistakes": ["fractions subtraction"],
             "support_level": "guided",
             "confidence_trend": "down",
+            "recency_summary": {"total_observations": 1},
         },
     )
 
@@ -89,3 +91,66 @@ async def test_sqlite_store_persists_observations_and_student_state(tmp_path: Pa
     assert state is not None
     assert state["support_level"] == "guided"
     assert state["confidence_trend"] == "down"
+    assert state["recency_summary"]["total_observations"] == 1
+
+
+@pytest.mark.asyncio
+async def test_sqlite_store_builds_recency_aware_student_state_rollup(tmp_path: Path) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    now = time.time()
+
+    await store.save_observations(
+        [
+            {
+                "observation_id": "obs_recent_1",
+                "session_id": "sess-1",
+                "student_id": "student-rollup",
+                "source": "assessment",
+                "topic": "fractions subtraction",
+                "question_id": "q1",
+                "is_correct": False,
+                "latency_seconds": 28,
+                "hint_count": 2,
+                "retry_count": 1,
+                "dominant_error": "needs_scaffold",
+                "created_at": now - 600,
+            },
+            {
+                "observation_id": "obs_recent_2",
+                "session_id": "sess-1",
+                "student_id": "student-rollup",
+                "source": "tutoring",
+                "topic": "fractions subtraction",
+                "question_id": "q2",
+                "is_correct": False,
+                "latency_seconds": 35,
+                "hint_count": 2,
+                "retry_count": 2,
+                "dominant_error": "needs_scaffold",
+                "created_at": now - 1200,
+            },
+            {
+                "observation_id": "obs_old",
+                "session_id": "sess-1",
+                "student_id": "student-rollup",
+                "source": "assessment",
+                "topic": "algebra equations",
+                "question_id": "q3",
+                "is_correct": False,
+                "latency_seconds": 45,
+                "hint_count": 1,
+                "retry_count": 0,
+                "dominant_error": "concept_gap",
+                "created_at": now - (40 * 24 * 60 * 60),
+            },
+        ]
+    )
+
+    rollup = await store.build_student_state_rollup("student-rollup")
+
+    assert rollup is not None
+    assert rollup["repeated_mistakes"][0] == "fractions subtraction"
+    assert rollup["support_level"] in {"guided", "intensive"}
+    assert rollup["confidence_trend"] in {"up", "flat", "down"}
+    assert rollup["recency_summary"]["total_observations"] == 3
+    assert rollup["recency_summary"]["bucket_counts"]["last_24h"] >= 2

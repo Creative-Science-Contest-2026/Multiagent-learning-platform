@@ -107,8 +107,35 @@ class ContextBuilder:
     def _recent_budget(self, budget: int) -> int:
         return max(128, budget - self._summary_budget(budget))
 
-    def _build_history(self, summary: str, messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    @staticmethod
+    def _format_student_state_context(state: dict[str, Any] | None) -> str:
+        if not state:
+            return ""
+        repeated = ", ".join(state.get("repeated_mistakes") or []) or "none"
+        support = str(state.get("support_level") or "independent")
+        trend = str(state.get("confidence_trend") or "flat")
+        recency = state.get("recency_summary") if isinstance(state.get("recency_summary"), dict) else {}
+        bucket_counts = recency.get("bucket_counts") if isinstance(recency, dict) else {}
+        last_24h = int((bucket_counts or {}).get("last_24h", 0))
+        last_7d = int((bucket_counts or {}).get("last_7d", 0))
+        recent_incorrect = int((recency or {}).get("recent_incorrect", 0))
+        return (
+            "Student state snapshot:\n"
+            f"- repeated_mistakes: {repeated}\n"
+            f"- support_level: {support}\n"
+            f"- confidence_trend: {trend}\n"
+            f"- recency_summary: last_24h={last_24h}, last_7d={last_7d}, recent_incorrect={recent_incorrect}"
+        )
+
+    def _build_history(
+        self,
+        summary: str,
+        messages: list[dict[str, Any]],
+        student_state_context: str = "",
+    ) -> list[dict[str, Any]]:
         history: list[dict[str, Any]] = []
+        if student_state_context.strip():
+            history.append({"role": "system", "content": student_state_context.strip()})
         cleaned_summary = summary.strip()
         if cleaned_summary:
             history.append({"role": "system", "content": cleaned_summary})
@@ -308,6 +335,10 @@ class ContextBuilder:
         if session is None:
             return ContextBuildResult([], "", "", [], 0, self._history_budget(llm_config))
 
+        student_state_context = self._format_student_state_context(
+            await self.store.get_student_state(session_id)
+        )
+
         budget = self._history_budget(llm_config)
         summary_budget = self._summary_budget(budget)
         recent_budget = self._recent_budget(budget)
@@ -316,7 +347,7 @@ class ContextBuilder:
         summary_up_to_msg_id = int(session.get("summary_up_to_msg_id", 0) or 0)
         unsummarized = [item for item in messages if int(item.get("id", 0) or 0) > summary_up_to_msg_id]
 
-        current_history = self._build_history(stored_summary, unsummarized)
+        current_history = self._build_history(stored_summary, unsummarized, student_state_context)
         current_tokens = count_tokens(build_history_text(current_history))
         if current_tokens <= budget:
             return ContextBuildResult(
@@ -360,7 +391,7 @@ class ContextBuilder:
             await self.store.update_summary(session_id, new_summary, up_to_msg_id)
             stored_summary = new_summary
 
-        final_history = self._build_history(stored_summary, recent_messages)
+        final_history = self._build_history(stored_summary, recent_messages, student_state_context)
         while len(final_history) > 1 and count_tokens(build_history_text(final_history)) > budget:
             summary_prefix = 1 if final_history and final_history[0].get("role") == "system" else 0
             if len(final_history) <= summary_prefix + 1:
