@@ -1,38 +1,28 @@
-# PR Architecture Note: Lane 2 Spec Runtime Assembly
+# PR Note: Lane 2 Spec Runtime Assembly
 
 ## Summary
 
-This PR introduces a shared runtime policy assembly contract so tutoring and assessment flows consume the same teacher-spec policy slices at runtime.
+- extend `runtime_policy` so runtime can resolve an authored spec pack by `agent_spec_id` and normalize it into explicit policy slices
+- add a prompt-manager helper for deterministic runtime policy prompt assembly instead of ad hoc string concatenation
+- keep tutoring and assessment on the same runtime contract while preserving legacy behavior when no teacher policy is present
 
-## Architectural changes
-
-- Add shared runtime policy compiler under `deeptutor/services/runtime_policy/`.
-- Compile explicit policy slices (`SOUL`, `RULES`, `WORKFLOW`, `ASSESSMENT`, `KNOWLEDGE`) with deterministic source priority.
-- Inject compiled runtime policy in orchestrator before capability execution.
-- Apply assembled policy context in both `chat` and `deep_question` capabilities.
-- Emit runtime debug metadata for assembled slice visibility.
+## Architecture
 
 ```mermaid
-flowchart TD
-  TeacherSpec["Teacher Spec Pack"] --> Compiler["Runtime Policy Compiler"]
-  SessionState["Session State"] --> Compiler
-  StudentState["Student State"] --> Compiler
-
-  Compiler --> Contract["Compiled Runtime Policy Contract"]
-  Contract --> ChatCap["chat capability"]
-  Contract --> QuestionCap["deep_question capability"]
-
-  Contract --> Debug["Debug slices: applied/missing"]
-  Contract --> Priority["Source priority enforcement"]
+flowchart LR
+  Spec["Agent Spec Pack"] --> Compiler["runtime_policy compiler"]
+  KB["Knowledge Pack metadata"] --> Compiler
+  Compiler --> Contract["Compiled runtime policy"]
+  Contract --> Chat["chat capability"]
+  Contract --> Quiz["deep_question capability"]
+  Contract --> Debug["runtime debug metadata"]
 ```
-
-## Main system map status
-
-- `ai_first/architecture/MAIN_SYSTEM_MAP.md` updated in this PR.
 
 ## Validation
 
-- `pytest tests/services/runtime_policy/test_compiler.py -vv`
-- `pytest tests/core/test_capabilities_runtime.py::test_chat_capability_streams_content_and_geogebra_context -vv -s`
-- `pytest tests/core/test_capabilities_runtime.py::test_deep_question_capability_uses_user_message_as_topic -vv`
+- `pytest tests/services/runtime_policy/test_compiler.py tests/services/test_prompt_manager.py tests/core/test_capabilities_runtime.py::test_chat_capability_streams_content_and_geogebra_context tests/core/test_capabilities_runtime.py::test_chat_capability_resolves_runtime_policy_from_agent_spec_pack tests/core/test_capabilities_runtime.py::test_deep_question_capability_uses_user_message_as_topic tests/core/test_capabilities_runtime.py::test_deep_question_capability_uses_single_call_followup_agent -q`
 - `git diff --check`
+
+## Main System Map
+
+- Updated `ai_first/architecture/MAIN_SYSTEM_MAP.md` for the shared runtime-policy compiler boundary.

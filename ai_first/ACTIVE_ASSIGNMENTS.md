@@ -33,12 +33,12 @@ Rules:
 - Owner: Codex
 - Machine: `MacBook-Air-cua-Loc.local`
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: `L1_AGENT_SPEC_AUTHORING`
+- Task: `L2_SPEC_RUNTIME_ASSEMBLY`
 - Status: In progress
-- Branch: `pod-a/agent-spec-authoring`
-- Task packet: `docs/superpowers/tasks/2026-04-26-lane-1-agent-spec-authoring.md`
-- Owned files: `web/app/(workspace)/agents/`, `web/components/agents/`, `web/lib/agent-spec-api.ts`, `deeptutor/api/routers/agent_specs.py`, `deeptutor/services/agent_spec/`, `tests/api/test_agent_specs_router.py`, `tests/services/agent_spec/`, `docs/superpowers/pr-notes/*`
+- Branch: `pod-a/spec-runtime-assembly`
+- Task packet: `docs/superpowers/tasks/2026-04-26-lane-2-spec-runtime-assembly.md`
+- Owned files: `deeptutor/services/runtime_policy/`, `deeptutor/services/prompt/`, `deeptutor/runtime/orchestrator.py`, `deeptutor/capabilities/chat.py`, `deeptutor/capabilities/deep_question.py`, `tests/services/runtime_policy/`, `tests/core/test_capabilities_runtime.py`, `tests/services/test_prompt_manager.py`, `docs/superpowers/pr-notes/*`
 - PR: Not opened
 - Last update: 2026-04-26
-- Next action: Finish the teacher-facing Agent Spec Pack authoring slice, validate it, then open a draft PR.
+- Next action: Compile teacher-defined spec packs into a shared runtime policy contract for tutoring and assessment flows.
 - Blocker: None
