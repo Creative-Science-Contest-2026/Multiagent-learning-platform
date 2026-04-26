@@ -18,6 +18,12 @@ Teacher-facing use cases:
 2. A grade 10 teacher can make the tutor more Socratic, push for reasoning steps, and escalate when students keep repeating the same mistake.
 3. A teacher reviewing the dashboard can spot which students need remediation now and which small group should revisit the same misconception together.
 
+Dashboard actionability stories:
+
+1. Repeated misses on one topic -> teacher move: reteach one prerequisite with one scaffolded example.
+2. Fast but inconsistent answers -> teacher move: ask for one reasoning step before another hint.
+3. Shared misconception cluster -> teacher move: pull one remediation mini-group before the next assessment.
+
 ## Why now
 
 LLM agents, RAG, and AI-assisted content generation make it possible to reduce lesson preparation cost while keeping teachers in control of knowledge sources.

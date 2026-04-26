@@ -48,6 +48,12 @@ The repository now includes bounded proof that the unified live turn path can ca
 2. A teacher can draft an assessment from a Knowledge Pack, review it, then reuse the same knowledge source during tutoring.
 3. A teacher can move from observed errors to a recommended next action instead of reading raw activity logs alone.
 
+## Dashboard Story Cards
+
+1. A student misses several items on one topic and needs repeated support, so the teacher move is to reteach one prerequisite with one more scaffolded example.
+2. A student answers quickly but inconsistently, so the teacher move is to slow the next check and require one reasoning step before another hint.
+3. A small group shares the same misconception, so the teacher move is to pull them into one remediation mini-group before the next assessment.
+
 ## Evidence Refresh Rules
 
 Run [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) first when local demo data may be stale, then run [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md), then refresh evidence using these rules:
