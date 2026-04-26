@@ -22,7 +22,7 @@ Teacher-value framing for presenters:
 - `RULES` lets a teacher keep classroom boundaries such as no direct answers, hint limits, or escalation expectations.
 - The dashboard is not only reporting activity; it helps the teacher decide what to reteach, who needs follow-up, and which students can be grouped around the same misconception.
 
-The repository now includes bounded proof that the unified live turn path can carry `config.agent_spec_id` into Tutor runtime policy assembly and produce a visible behavior difference between two spec packs. Do not expand that claim into universal coverage across every entry point unless a fresh smoke run verifies those additional paths.
+The repository now includes bounded proof that the unified live turn paths for `chat`, `deep_question`, and `deep_solve` can carry `config.agent_spec_id` into runtime policy assembly. Do not expand that claim into universal coverage across every capability or entry point unless a fresh verification run proves those additional paths.
 
 The current product can be described as `agent-native` today and `multi-agent by design` as a future role-separation direction. Do not describe the current merged repository as a fully autonomous multi-agent deployment.
 
@@ -44,7 +44,7 @@ The current product can be described as `agent-native` today and `multi-agent by
 - Diagnosis and recommendation outputs are framed as rule-assisted, confidence-tagged, teacher-reviewed hypotheses rather than benchmarked autonomous judgments.
 - The latest scripted-reset smoke-backed MVP verification passed on 2026-04-26 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
 - Screenshot evidence is captured in [`screenshots/`](./screenshots/), including the 2026-04-26 dashboard evidence-first refresh and the `/agents` authoring proof refresh.
-- Hybrid `/agents` screenshots are current, and the codebase now also carries automated bounded runtime-binding proof for the unified Tutor turn path. Keep the claim narrower than universal entry-point coverage.
+- Hybrid `/agents` screenshots are current, and the codebase now also carries automated bounded runtime-binding proof for the unified `chat`, `deep_question`, and `deep_solve` turn paths. Keep the claim narrower than universal entry-point coverage.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 - No pilot evidence is currently bundled; the strongest current proof is structured walkthrough validation plus smoke-backed and screenshot-backed artifacts.
 

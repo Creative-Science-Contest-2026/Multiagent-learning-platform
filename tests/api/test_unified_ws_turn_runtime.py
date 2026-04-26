@@ -57,7 +57,10 @@ async def test_turn_runtime_replays_events_and_materializes_messages(
             )
             yield StreamEvent(type=StreamEventType.DONE, source="chat")
 
-    monkeypatch.setattr("deeptutor.services.llm.config.get_llm_config", lambda: SimpleNamespace())
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", FakeOrchestrator)
     monkeypatch.setattr(
@@ -138,7 +141,10 @@ async def test_turn_runtime_passes_deep_question_subject_config(
             )
             yield StreamEvent(type=StreamEventType.DONE, source="deep_question")
 
-    monkeypatch.setattr("deeptutor.services.llm.config.get_llm_config", lambda: SimpleNamespace())
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", FakeOrchestrator)
     monkeypatch.setattr(
@@ -220,7 +226,10 @@ async def test_turn_runtime_bootstraps_question_followup_context_once(
             )
             yield StreamEvent(type=StreamEventType.DONE, source="chat")
 
-    monkeypatch.setattr("deeptutor.services.llm.config.get_llm_config", lambda: SimpleNamespace())
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", FakeOrchestrator)
     monkeypatch.setattr(
@@ -335,7 +344,10 @@ async def test_turn_runtime_persists_deep_research_session_preference(
             )
             yield StreamEvent(type=StreamEventType.DONE, source="deep_research")
 
-    monkeypatch.setattr("deeptutor.services.llm.config.get_llm_config", lambda: SimpleNamespace())
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", FakeOrchestrator)
     monkeypatch.setattr(
@@ -417,7 +429,10 @@ async def test_turn_runtime_injects_memory_and_refreshes_after_completion(
         refresh_calls.append(kwargs)
         return None
 
-    monkeypatch.setattr("deeptutor.services.llm.config.get_llm_config", lambda: SimpleNamespace())
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", FakeOrchestrator)
     monkeypatch.setattr(
@@ -514,7 +529,10 @@ async def test_turn_runtime_passes_agent_spec_id_for_live_chat_policy_binding(
                 stage="responding",
             )
 
-    monkeypatch.setattr("deeptutor.services.llm.config.get_llm_config", lambda: SimpleNamespace())
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
@@ -546,4 +564,181 @@ async def test_turn_runtime_passes_agent_spec_id_for_live_chat_policy_binding(
     assert captured["config_overrides"]["agent_spec_id"] == "strict-fractions"
     assert "Teacher Spec Reference:\nstrict-fractions" in str(captured["memory_context"])
     assert "Require justification before correction." in str(captured["memory_context"])
+    assert events[-1]["metadata"]["status"] == "completed"
+
+
+@pytest.mark.asyncio
+async def test_turn_runtime_passes_agent_spec_id_for_deep_question_policy_binding(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+    captured: dict[str, object] = {}
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="strict-fractions",
+        display_name="Strict Fractions",
+        structured={
+            "identity": {"agent_name": "Strict Fractions"},
+            "assessment": {"question_quality_bar": "Require justification prompts."},
+            "rules": {"guardrails": "Do not reveal final answers in stems."},
+        },
+    )
+
+    class FakeContextBuilder:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        async def build(self, **_kwargs):
+            return SimpleNamespace(
+                conversation_history=[],
+                conversation_summary="",
+                context_text="",
+                token_count=0,
+                budget=0,
+            )
+
+    class FakeCoordinator:
+        def __init__(self, **_kwargs) -> None:
+            self._callback = None
+
+        def set_ws_callback(self, callback) -> None:
+            self._callback = callback
+
+        async def generate_from_topic(self, **kwargs):
+            captured["preference"] = kwargs["preference"]
+            if self._callback is not None:
+                await self._callback({"type": "idea_round", "message": "ideas"})
+            return {"results": []}
+
+    import sys
+    import types
+
+    llm_module = types.ModuleType("deeptutor.services.llm.config")
+    llm_module.get_llm_config = lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1")
+    monkeypatch.setitem(sys.modules, "deeptutor.services.llm.config", llm_module)
+    monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
+    monkeypatch.setattr(
+        "deeptutor.services.memory.get_memory_service",
+        lambda: SimpleNamespace(build_memory_context=lambda: "", refresh_from_turn=_noop_refresh),
+    )
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    module = types.ModuleType("deeptutor.agents.question.coordinator")
+    module.AgentCoordinator = FakeCoordinator
+    monkeypatch.setitem(sys.modules, "deeptutor.agents.question.coordinator", module)
+
+    _session, turn = await runtime.start_turn(
+        {
+            "type": "start_turn",
+            "content": "make a quiz",
+            "session_id": None,
+            "capability": "deep_question",
+            "tools": ["rag"],
+            "knowledge_bases": ["math-pack"],
+            "attachments": [],
+            "language": "en",
+            "config": {
+                "mode": "custom",
+                "topic": "compare fractions",
+                "agent_spec_id": "strict-fractions",
+            },
+        }
+    )
+
+    events = []
+    async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
+        events.append(event)
+
+    assert "Teacher Assessment Runtime Policy:" in str(captured["preference"])
+    assert "Strict Fractions" in str(captured["preference"])
+    assert events[-1]["metadata"]["status"] == "completed"
+
+
+@pytest.mark.asyncio
+async def test_turn_runtime_passes_agent_spec_id_for_deep_solve_policy_binding(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+    captured: dict[str, object] = {}
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="strict-fractions",
+        display_name="Strict Fractions",
+        structured={
+            "identity": {"agent_name": "Strict Fractions"},
+            "soul": {"teaching_philosophy": "Require justification before correction."},
+            "rules": {"guardrails": "Do not give final answers immediately."},
+        },
+    )
+
+    class FakeContextBuilder:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        async def build(self, **_kwargs):
+            return SimpleNamespace(
+                conversation_history=[],
+                conversation_summary="",
+                context_text="",
+                token_count=0,
+                budget=0,
+            )
+
+    class FakeSolver:
+        def __init__(self, **_kwargs) -> None:
+            self.logger = SimpleNamespace(
+                logger=SimpleNamespace(addHandler=lambda *_: None, removeHandler=lambda *_: None)
+            )
+
+        async def ainit(self) -> None:
+            return None
+
+        async def solve(self, **kwargs):
+            captured["conversation_context"] = kwargs["conversation_context"]
+            return {"final_answer": "Start by naming the denominator you want to build."}
+
+    import sys
+    import types
+
+    llm_module = types.ModuleType("deeptutor.services.llm.config")
+    llm_module.get_llm_config = lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1")
+    monkeypatch.setitem(sys.modules, "deeptutor.services.llm.config", llm_module)
+    monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
+    monkeypatch.setattr(
+        "deeptutor.services.memory.get_memory_service",
+        lambda: SimpleNamespace(build_memory_context=lambda: "", refresh_from_turn=_noop_refresh),
+    )
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    module = types.ModuleType("deeptutor.agents.solve.main_solver")
+    module.MainSolver = FakeSolver
+    monkeypatch.setitem(sys.modules, "deeptutor.agents.solve.main_solver", module)
+
+    _session, turn = await runtime.start_turn(
+        {
+            "type": "start_turn",
+            "content": "Can you solve 5/6 - 1/2 for me?",
+            "session_id": None,
+            "capability": "deep_solve",
+            "tools": ["rag"],
+            "knowledge_bases": ["math-pack"],
+            "attachments": [],
+            "language": "en",
+            "config": {
+                "detailed_answer": False,
+                "agent_spec_id": "strict-fractions",
+            },
+        }
+    )
+
+    events = []
+    async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
+        events.append(event)
+
+    assert "Teacher Runtime Policy:" in str(captured["conversation_context"])
+    assert "Require justification before correction." in str(captured["conversation_context"])
     assert events[-1]["metadata"]["status"] == "completed"
