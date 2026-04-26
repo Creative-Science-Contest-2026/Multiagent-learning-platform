@@ -34,11 +34,11 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
 - Task: `F102_INTERVENTION_ASSIGNMENT_FLOW`
-- Status: `design-in-progress`
+- Status: `review-prep`
 - Branch: `pod-a/intervention-assignment-flow`
-- Task packet: `docs/superpowers/tasks/2026-04-26-two-session-future-backlog.md` (`Session A`, task `F102`)
+- Task packet: `docs/superpowers/tasks/2026-04-27-f102-intervention-assignment-flow.md`
 - Owned files: `web/components/dashboard/`, `web/app/(workspace)/dashboard/`, `web/app/(workspace)/dashboard/student/`, `web/lib/dashboard-api.ts`, `deeptutor/api/routers/dashboard.py`, bounded `deeptutor/services/evidence/`, related dashboard tests/docs`
 - PR: `Not opened yet`
 - Last update: `2026-04-27T00:14:15+0700`
-- Next action: `Write F102 design/spec for a bounded intervention-assignment shell built on top of teacher actions.`
+- Next action: `Commit the validated implementation, open a Draft PR, and wait for CI before moving to ready-review.`
 - Blocker: `None`

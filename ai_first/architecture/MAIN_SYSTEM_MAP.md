@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-26
+Last updated: 2026-04-27
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -99,10 +99,14 @@ flowchart TD
   TeacherAnalytics --> DifficultySignals["Learning signals: focus topics + strong areas"]
   TeacherInsights --> InsightsAPI["GET /api/v1/dashboard/insights"]
   TeacherInsights --> TeacherActionAPI["POST/PATCH /api/v1/dashboard/teacher-actions"]
+  TeacherInsights --> InterventionAssignmentAPI["POST/PATCH /api/v1/dashboard/intervention-assignments"]
   InsightsAPI --> DiagnosisEngine
   InsightsAPI --> SmallGroupRecommendations["Small-group recommendation clusters"]
   InsightsAPI --> TeacherActions["Teacher action records"]
+  InsightsAPI --> InterventionAssignments["Intervention assignment records"]
   TeacherActionAPI --> TeacherActions
+  TeacherActions --> InterventionAssignmentAPI
+  InterventionAssignmentAPI --> InterventionAssignments
   TeacherDashboard --> StudentDashboard["Student Progress Dashboard"]
   TeacherDashboard --> AssessmentReview["Assessment Review Drill-down"]
   StudentDashboard --> StudentRoute["/dashboard/student"]
@@ -111,6 +115,7 @@ flowchart TD
   StudentDashboard --> TopicSignals["Focus topics + mastered topics"]
   StudentDashboard --> LearningPathSignals["Suggested learning path sequence"]
   StudentDashboard --> TeacherActionDetail["Teacher actions section + status updates"]
+  StudentDashboard --> AssignmentDetail["Intervention assignments section + status updates"]
   LearningPathSignals --> PathEngine["Deterministic learning-path helper"]
   PathEngine --> FocusTopicInputs["Focus topics from assessment analysis"]
   PathEngine --> ObjectiveInputs["Knowledge-pack learning_objectives metadata"]

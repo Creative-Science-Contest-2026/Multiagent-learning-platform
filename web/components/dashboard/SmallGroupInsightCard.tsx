@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { InterventionAssignmentComposer } from "@/components/dashboard/InterventionAssignmentComposer";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
 import { TeacherActionComposer } from "@/components/dashboard/TeacherActionComposer";
-import type { DashboardInsights, TeacherActionRecord } from "@/lib/dashboard-api";
+import type { DashboardInsights, InterventionAssignmentRecord, TeacherActionRecord } from "@/lib/dashboard-api";
 
 type SmallGroupInsight = DashboardInsights["small_groups"][number];
 
@@ -15,6 +16,9 @@ export function SmallGroupInsightCard({
   t: (value: string, options?: Record<string, string | number>) => string;
 }) {
   const [teacherAction, setTeacherAction] = useState<TeacherActionRecord | null>(group.teacher_action ?? null);
+  const [interventionAssignment, setInterventionAssignment] = useState<InterventionAssignmentRecord | null>(
+    group.intervention_assignment ?? null,
+  );
 
   return (
     <article className="rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
@@ -54,6 +58,16 @@ export function SmallGroupInsightCard({
           />
         </div>
         {teacherAction ? (
+          <div className="mt-3">
+            <InterventionAssignmentComposer
+              triggerLabel={t("Convert to assignment")}
+              teacherAction={teacherAction}
+              onCreated={(record) => setInterventionAssignment(record)}
+              t={t}
+            />
+          </div>
+        ) : null}
+        {teacherAction ? (
           <div className="mt-3 rounded-2xl bg-white/70 p-3 text-[12px] text-emerald-900/80">
             <div className="font-medium">{teacherAction.action_type}</div>
             <div className="mt-1">{teacherAction.teacher_instruction}</div>
@@ -62,6 +76,15 @@ export function SmallGroupInsightCard({
                 status: teacherAction.status,
                 priority: teacherAction.priority,
               })}
+            </div>
+          </div>
+        ) : null}
+        {interventionAssignment ? (
+          <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+            <div className="font-medium">{interventionAssignment.assignment_type}</div>
+            <div className="mt-1">{interventionAssignment.title}</div>
+            <div className="mt-2 text-[11px] text-emerald-900/70">
+              {t("Assignment status: {{status}}", { status: interventionAssignment.status })}
             </div>
           </div>
         ) : null}

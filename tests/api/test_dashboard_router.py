@@ -673,6 +673,242 @@ async def test_dashboard_teacher_action_status_update_round_trip(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_intervention_assignment_create_round_trip(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {"student_id": "student-a", "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        recommendation_id = insights["students"][0]["recommended_actions"][0]["action_id"]
+        teacher_action = client.post(
+            "/api/v1/dashboard/teacher-actions",
+            json={
+                "target_type": "student",
+                "target_id": "student-a",
+                "source_recommendation_id": recommendation_id,
+                "action_type": "reteach_concept",
+                "topic": "fractions subtraction",
+                "teacher_instruction": "Reteach fractions subtraction with one visual model.",
+                "priority": "high",
+            },
+        ).json()
+
+        create_resp = client.post(
+            "/api/v1/dashboard/intervention-assignments",
+            json={
+                "teacher_action_id": teacher_action["id"],
+                "assignment_type": "reteach_session",
+                "title": "Reteach fractions subtraction",
+                "teacher_note": "Model the denominator alignment step once before guided practice.",
+                "practice_note": "Use one visual bar model and one scaffolded equation.",
+            },
+        )
+
+        assert create_resp.status_code == 200
+        created = create_resp.json()
+        assert created["teacher_action_id"] == teacher_action["id"]
+        assert created["target_type"] == "student"
+        assert created["status"] == "planned"
+
+
+@pytest.mark.asyncio
+async def test_dashboard_intervention_assignment_attaches_to_student_payload(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {"student_id": "student-a", "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        recommendation_id = insights["students"][0]["recommended_actions"][0]["action_id"]
+        teacher_action = client.post(
+            "/api/v1/dashboard/teacher-actions",
+            json={
+                "target_type": "student",
+                "target_id": "student-a",
+                "source_recommendation_id": recommendation_id,
+                "action_type": "scaffolded_practice",
+                "topic": "fractions subtraction",
+                "teacher_instruction": "Give one scaffolded practice item before independent work.",
+                "priority": "medium",
+            },
+        ).json()
+
+        created = client.post(
+            "/api/v1/dashboard/intervention-assignments",
+            json={
+                "teacher_action_id": teacher_action["id"],
+                "assignment_type": "practice_set",
+                "title": "Scaffolded fractions practice",
+                "teacher_note": "Start with one worked example, then one guided problem.",
+                "practice_note": "Keep denominators under 8 for this round.",
+            },
+        ).json()
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_student = next(row for row in refreshed["students"] if row["student_id"] == "student-a")
+        assert refreshed_student["intervention_assignments"][0]["id"] == created["id"]
+        assert refreshed_student["intervention_assignments"][0]["assignment_type"] == "practice_set"
+
+
+@pytest.mark.asyncio
+async def test_dashboard_group_intervention_assignment_summary_attaches_to_group_card(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    for sid, student_id, answer in [
+        ("student-a-session", "student-a", "1/5"),
+        ("student-b-session", "student-b", "1/6"),
+    ]:
+        await _seed_session(
+            store,
+            session_id=sid,
+            capability="deep_question",
+            message="Generate a quiz on fractions",
+            knowledge_bases=["fractions-pack"],
+        )
+        await store.update_session_preferences(
+            sid,
+            {"student_id": student_id, "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+        )
+        await store.add_message(
+            sid,
+            "user",
+            f"[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: {answer} (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+            capability="deep_question",
+        )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        group = insights["small_groups"][0]
+        teacher_action = client.post(
+            "/api/v1/dashboard/teacher-actions",
+            json={
+                "target_type": "small_group",
+                "target_id": group["target_id"],
+                "source_recommendation_id": f"group:{group['topic']}:{group['diagnosis_type']}",
+                "action_type": "small_group_remediation",
+                "topic": group["topic"],
+                "teacher_instruction": "Pull the students into one mini-group reteach.",
+                "priority": "high",
+            },
+        ).json()
+
+        created = client.post(
+            "/api/v1/dashboard/intervention-assignments",
+            json={
+                "teacher_action_id": teacher_action["id"],
+                "assignment_type": "small_group_activity",
+                "title": "Fractions mini-group reteach",
+                "teacher_note": "Run one 10-minute mini-group on equivalent denominators.",
+                "practice_note": "End with two shared practice items.",
+            },
+        ).json()
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_group = refreshed["small_groups"][0]
+        assert refreshed_group["intervention_assignment"]["id"] == created["id"]
+        assert refreshed_group["intervention_assignment"]["assignment_type"] == "small_group_activity"
+
+
+@pytest.mark.asyncio
+async def test_dashboard_intervention_assignment_status_update_round_trip(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {"student_id": "student-a", "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        recommendation_id = insights["students"][0]["recommended_actions"][0]["action_id"]
+        teacher_action = client.post(
+            "/api/v1/dashboard/teacher-actions",
+            json={
+                "target_type": "student",
+                "target_id": "student-a",
+                "source_recommendation_id": recommendation_id,
+                "action_type": "review_prerequisite",
+                "topic": "fractions subtraction",
+                "teacher_instruction": "Review equivalent fractions before the next attempt.",
+                "priority": "medium",
+            },
+        ).json()
+
+        created = client.post(
+            "/api/v1/dashboard/intervention-assignments",
+            json={
+                "teacher_action_id": teacher_action["id"],
+                "assignment_type": "prerequisite_review",
+                "title": "Equivalent fractions review",
+                "teacher_note": "Start with one equivalence check and one denominator match task.",
+                "practice_note": "Avoid mixed numbers in this first pass.",
+            },
+        ).json()
+
+        update_resp = client.patch(
+            f"/api/v1/dashboard/intervention-assignments/{created['id']}",
+            json={"status": "done"},
+        )
+
+        assert update_resp.status_code == 200
+        assert update_resp.json()["status"] == "done"
+
+
+@pytest.mark.asyncio
 async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

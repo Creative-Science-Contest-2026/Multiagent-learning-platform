@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
 import {
+  type InterventionAssignmentRecord,
+  type InterventionAssignmentStatus,
   type TeacherActionRecord,
   type TeacherActionStatus,
   type TeacherInsightStudent,
+  updateInterventionAssignmentStatus,
   updateTeacherActionStatus,
 } from "@/lib/dashboard-api";
 
@@ -23,6 +26,9 @@ export function StudentInsightDetail({
   t: (value: string, options?: Record<string, string | number>) => string;
 }) {
   const [teacherActions, setTeacherActions] = useState<TeacherActionRecord[]>(student?.teacher_actions ?? []);
+  const [interventionAssignments, setInterventionAssignments] = useState<InterventionAssignmentRecord[]>(
+    student?.intervention_assignments ?? [],
+  );
 
   const diagnosis = student?.inferred[0];
   const recommendation = student?.recommended_actions[0];
@@ -166,6 +172,55 @@ export function StudentInsightDetail({
           ) : (
             <div className="rounded-2xl bg-[var(--muted)]/50 p-4 text-[13px] text-[var(--muted-foreground)]">
               {t("Create a teacher action from the dashboard overview to track a concrete remediation move here.")}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm xl:col-span-2">
+        <InsightSectionLabel
+          eyebrow={t("Intervention assignments")}
+          title={
+            interventionAssignments.length
+              ? t("{{count}} recorded assignments", { count: interventionAssignments.length })
+              : t("No assignments yet")
+          }
+        />
+        <div className="mt-4 space-y-3">
+          {interventionAssignments.length ? (
+            interventionAssignments.map((assignment) => (
+              <div key={assignment.id} className="rounded-2xl bg-[var(--muted)]/50 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div className="text-[13px] font-medium text-[var(--foreground)]">{assignment.assignment_type}</div>
+                    <div className="mt-1 text-[12px] text-[var(--muted-foreground)]">{assignment.title}</div>
+                  </div>
+                  <select
+                    value={assignment.status}
+                    onChange={async (e) => {
+                      const updated = await updateInterventionAssignmentStatus(
+                        assignment.id,
+                        e.target.value as InterventionAssignmentStatus,
+                      );
+                      setInterventionAssignments((current) =>
+                        current.map((row) => (row.id === updated.id ? updated : row)),
+                      );
+                    }}
+                    className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[12px] text-[var(--foreground)]"
+                  >
+                    <option value="planned">{t("planned")}</option>
+                    <option value="done">{t("done")}</option>
+                    <option value="dismissed">{t("dismissed")}</option>
+                  </select>
+                </div>
+                <div className="mt-3 text-[12px] text-[var(--muted-foreground)]">{assignment.topic}</div>
+                <div className="mt-3 text-[13px] text-[var(--foreground)]">{assignment.teacher_note}</div>
+                <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">{assignment.practice_note}</div>
+              </div>
+            ))
+          ) : (
+            <div className="rounded-2xl bg-[var(--muted)]/50 p-4 text-[13px] text-[var(--muted-foreground)]">
+              {t("Convert a teacher action into an intervention assignment from the dashboard overview to track a concrete remediation shell here.")}
             </div>
           )}
         </div>
