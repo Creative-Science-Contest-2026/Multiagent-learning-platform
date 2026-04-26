@@ -80,3 +80,5 @@ Compile teacher policy into a predictable runtime contract shared by tutoring an
 - This is Session = Lane 2.
 - Coordinate with Lane 1 through documented compiled-pack format only.
 - Coordinate with Lanes 3-5 through explicit `Teacher Spec / Student State / Session State` boundaries.
+- Implemented runtime entry points now accept teacher policy through `teacher_spec`, `teacher_spec_compiled`, or `agent_spec_id` when those values are already present on the runtime context.
+- Runtime prompt assembly now uses explicit named sections and keeps legacy behavior unchanged when no teacher policy is present.

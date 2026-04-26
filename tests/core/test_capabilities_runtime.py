@@ -17,6 +17,8 @@ from deeptutor.capabilities.deep_solve import DeepSolveCapability
 from deeptutor.core.context import Attachment, UnifiedContext
 from deeptutor.core.stream import StreamEvent, StreamEventType
 from deeptutor.core.stream_bus import StreamBus
+from deeptutor.services.agent_spec.service import AgentSpecService
+from deeptutor.services.runtime_policy import compiler as runtime_policy_compiler
 from deeptutor.services.session.turn_runtime import _build_tutoring_observations
 
 
@@ -61,6 +63,42 @@ async def _collect_events(run_coro) -> list[StreamEvent]:
     await bus.close()
     await consumer
     return events
+
+
+def test_turn_runtime_builds_tutoring_observations_for_chat_capability() -> None:
+    rows = _build_tutoring_observations(
+        capability="chat",
+        session_id="session-1",
+        student_id="student-1",
+        user_message="I still get this wrong",
+        assistant_message="Hint: convert to a common denominator first.",
+        followup_question_context={
+            "question_id": "q_9",
+            "question": "Compute 5/6 - 1/2",
+            "is_correct": False,
+        },
+        assistant_events=[{"timestamp": 1.0}, {"timestamp": 14.0}],
+    )
+
+    assert len(rows) == 1
+    assert rows[0]["source"] == "tutoring"
+    assert rows[0]["student_id"] == "student-1"
+    assert rows[0]["question_id"] == "q_9"
+    assert rows[0]["is_correct"] is False
+
+
+def test_turn_runtime_skips_tutoring_observations_for_non_chat_capability() -> None:
+    rows = _build_tutoring_observations(
+        capability="deep_question",
+        session_id="session-2",
+        student_id="student-2",
+        user_message="generate quiz",
+        assistant_message="created",
+        followup_question_context=None,
+        assistant_events=[{"timestamp": 2.0}, {"timestamp": 4.0}],
+    )
+
+    assert rows == []
 
 
 def test_turn_runtime_builds_tutoring_observations_for_chat_capability() -> None:
@@ -158,6 +196,65 @@ async def test_chat_capability_streams_content_and_geogebra_context(
     assert "GGB commands" in captured["process"]["message"]
     assert "Teacher Runtime Policy:" in captured["process"]["memory_context"]
     assert "teacher_kb > curriculum_excerpt > teacher_rules > llm_prior_knowledge" in captured["process"]["memory_context"]
+
+
+@pytest.mark.asyncio
+async def test_chat_capability_resolves_runtime_policy_from_agent_spec_pack(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    captured: dict[str, Any] = {}
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            "identity": {
+                "agent_name": "Fraction Coach",
+                "subject": "Mathematics",
+                "grade_band": "Grade 6",
+                "tone": "Warm and direct",
+                "primary_language": "Vietnamese",
+                "persona_summary": "A teacher-defined tutor for fraction practice.",
+            },
+            "soul": {
+                "teaching_philosophy": "Use evidence before intervention.",
+                "when_student_wrong": "Diagnose the misconception before correcting.",
+                "when_student_stuck": "Offer one scaffold at a time.",
+                "encouragement_style": "Calm and specific.",
+            },
+            "rules": {
+                "do_not_solve_directly": "yes",
+                "max_session_minutes": "25",
+                "hint_policy": "One hint at a time.",
+                "escalation_rule": "Escalate after repeated confusion.",
+                "guardrails": "Never finish the answer for the student.",
+            },
+        },
+    )
+
+    class FakePipeline:
+        def __init__(self, language: str = "en") -> None:
+            captured["language"] = language
+
+        async def run(self, context: UnifiedContext, stream: StreamBus) -> None:
+            captured["memory_context"] = context.memory_context
+            await stream.content("assistant output", source="chat", stage="responding")
+
+    monkeypatch.setattr("deeptutor.capabilities.chat.AgenticChatPipeline", FakePipeline)
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    context = UnifiedContext(
+        user_message="help me compare fractions",
+        language="en",
+        metadata={"agent_spec_id": "fraction-coach"},
+    )
+    events = await _collect_events(lambda bus: ChatCapability().run(context, bus))
+
+    assert any(event.type == StreamEventType.CONTENT for event in events)
+    assert "[IDENTITY]" in captured["memory_context"]
+    assert "Fraction Coach" in captured["memory_context"]
+    assert "Teacher Spec Reference:\nfraction-coach" in captured["memory_context"]
 
 
 @pytest.mark.asyncio
@@ -439,8 +536,7 @@ async def test_deep_question_capability_uses_single_call_followup_agent(
     capability = DeepQuestionCapability()
     events = await _collect_events(lambda bus: capability.run(context, bus))
 
-    assert "Why was my answer wrong?" in captured["process"]["user_message"]
-    assert "Teacher Assessment Runtime Policy:" in captured["process"]["user_message"]
+    assert captured["process"]["user_message"] == "Why was my answer wrong?"
     assert (
         captured["process"]["history_context"]
         == "User previously asked for a simpler explanation."

@@ -28,9 +28,17 @@ Rules:
 
 ## Active
 
-- No active AI-owned lane is open right now.
-- Lane 1 (`L1_AGENT_SPEC_AUTHORING`) merged through PR `#136`.
-- Lane 2 (`L2_SPEC_RUNTIME_ASSEMBLY`) merged through PR `#135`.
-- Lane 3 (`L3_OBSERVATION_STUDENT_STATE`) merged through PR `#140`.
-- Lane 4 (`L4_DIAGNOSIS_RECOMMENDATION`) merged through PR `#142`.
-- Use the remaining lane packets (`lane-5` to `lane-6`) before starting new implementation sessions.
+### Assignment
+
+- Owner: Codex
+- Machine: `MacBook-Air-cua-Loc.local`
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
+- Task: `L2_SPEC_RUNTIME_ASSEMBLY`
+- Status: In progress
+- Branch: `pod-a/spec-runtime-assembly`
+- Task packet: `docs/superpowers/tasks/2026-04-26-lane-2-spec-runtime-assembly.md`
+- Owned files: `deeptutor/services/runtime_policy/`, `deeptutor/services/prompt/`, `deeptutor/runtime/orchestrator.py`, `deeptutor/capabilities/chat.py`, `deeptutor/capabilities/deep_question.py`, `tests/services/runtime_policy/`, `tests/core/test_capabilities_runtime.py`, `tests/services/test_prompt_manager.py`, `docs/superpowers/pr-notes/*`
+- PR: `#139` (Ready)
+- Last update: 2026-04-26
+- Next action: Resolve the latest `origin/main` sync, push the branch, then merge PR `#139` once GitHub recalculates mergeability.
+- Blocker: None
