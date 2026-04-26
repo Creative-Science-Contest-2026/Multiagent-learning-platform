@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T18:20:00Z",
+    "last_updated": "2026-04-26T16:28:43Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 49
+    "total_tasks": 73
   },
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 48,
+      "count": 49,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -56,6 +56,7 @@
         "R1_RUNTIME_BINDING_PROOF",
         "R2_DIAGNOSIS_CREDIBILITY",
         "R3_ASSESSMENT_SAFETY",
+        "R4_TEACHER_VALUE_PROP",
         "R5_DASHBOARD_ACTIONABILITY",
         "R6_CLAIM_CALIBRATION_PILOT"
       ]
@@ -72,8 +73,33 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 0,
-      "tasks": []
+      "count": 24,
+      "tasks": [
+        "F101_TEACHER_ACTION_EXECUTION_LOOP",
+        "F102_INTERVENTION_ASSIGNMENT_FLOW",
+        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
+        "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
+        "F105_CLASS_INTERVENTION_QUEUE",
+        "F106_STUDENT_INSIGHT_TIMELINE",
+        "F107_INTERVENTION_HISTORY_VIEW",
+        "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
+        "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
+        "F110_TEACHER_OVERRIDE_LOG",
+        "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
+        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
+        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
+        "F114_SPEC_VERSION_PINNING_PER_SESSION",
+        "F115_RUNTIME_POLICY_AUDIT_TRACE",
+        "F116_STUDENT_MODEL_ENRICHMENT",
+        "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
+        "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
+        "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
+        "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
+        "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
+        "F122_PILOT_FEEDBACK_INGESTION_PATH",
+        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
+        "F124_EVIDENCE_AUTOMATION_REFRESH"
+      ]
     }
   },
   "tasks": [
@@ -1177,6 +1203,625 @@
       ],
       "status": "completed",
       "notes": "Merged to main through PR #161. Contest-facing docs, compatibility snapshots, and the new PILOT_STATUS artifact now calibrate current proof, future direction, and explicit no-pilot-yet status."
+    },
+    {
+      "id": "F101_TEACHER_ACTION_EXECUTION_LOOP",
+      "category": "Future Expansion",
+      "priority": 50,
+      "title": "Teacher Action Execution Loop",
+      "description": "Turn dashboard recommendations into explicit teacher moves that can be executed, tracked, and revisited.",
+      "scope": {
+        "frontend": "web/components/dashboard/, web/app/(workspace)/dashboard/",
+        "backend": "deeptutor/api/routers/dashboard.py and related evidence services if needed",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Teacher Workflow"
+      ],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": [
+        "R5_DASHBOARD_ACTIONABILITY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-workflow",
+      "notes": "First recommended task for a new teacher-facing session after the contest MVP closes."
+    },
+    {
+      "id": "F102_INTERVENTION_ASSIGNMENT_FLOW",
+      "category": "Future Expansion",
+      "priority": 51,
+      "title": "Intervention Assignment Flow",
+      "description": "Let teachers convert a recommendation into a follow-up activity, remediation assignment, or bounded next-step task.",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard/, web/components/dashboard/",
+        "backend": "deeptutor/api/routers/dashboard.py, deeptutor/services/evidence/",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Teacher Workflow",
+        "Intervention Tracking"
+      ],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": [
+        "F101_TEACHER_ACTION_EXECUTION_LOOP"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-workflow",
+      "notes": "Should stay teacher-facing first; richer outcome tracking can follow in Session B."
+    },
+    {
+      "id": "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
+      "category": "Future Expansion",
+      "priority": 52,
+      "title": "Recommendation Acknowledgement And Status",
+      "description": "Track whether a teacher accepted, deferred, dismissed, or completed a recommendation so the dashboard reflects real workflow state.",
+      "scope": {
+        "frontend": "web/components/dashboard/, web/app/(workspace)/dashboard/",
+        "backend": "deeptutor/api/routers/dashboard.py and supporting dashboard services",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Teacher Workflow"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "F101_TEACHER_ACTION_EXECUTION_LOOP"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-workflow",
+      "notes": "Can run alongside F102 once the base teacher-action contract exists."
+    },
+    {
+      "id": "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
+      "category": "Future Expansion",
+      "priority": 53,
+      "title": "Small-Group Management Surface",
+      "description": "Promote small-group recommendations into teacher-managed group objects with lightweight actions and revisitable group context.",
+      "scope": {
+        "frontend": "web/components/dashboard/, web/app/(workspace)/dashboard/student/",
+        "backend": "deeptutor/api/routers/dashboard.py if a bounded group object API is required",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Small-Group Recommendations"
+      ],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": [
+        "R5_DASHBOARD_ACTIONABILITY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-workflow",
+      "notes": "Depends on the existing grouped-card pattern but not on full class-roster infrastructure yet."
+    },
+    {
+      "id": "F105_CLASS_INTERVENTION_QUEUE",
+      "category": "Future Expansion",
+      "priority": 54,
+      "title": "Class Intervention Queue",
+      "description": "Show an ordered queue of unresolved teacher actions across students and groups so the dashboard behaves more like a working classroom console.",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard/, web/components/dashboard/",
+        "backend": "deeptutor/api/routers/dashboard.py and evidence aggregation helpers if needed",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Teacher Workflow",
+        "Classroom Operations"
+      ],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": [
+        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-insight",
+      "notes": "Benefits from class roster work later, but can start as a queue over current student/group signals."
+    },
+    {
+      "id": "F106_STUDENT_INSIGHT_TIMELINE",
+      "category": "Future Expansion",
+      "priority": 55,
+      "title": "Student Insight Timeline",
+      "description": "Deepen the student detail surface with an evidence-first timeline instead of a single-session snapshot.",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard/student/, web/components/dashboard/",
+        "backend": "deeptutor/api/routers/dashboard.py and session-history shaping code if needed",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Student Dashboard",
+        "Teacher Insights"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "R5_DASHBOARD_ACTIONABILITY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-insight",
+      "notes": "Should stay evidence-first and avoid adding frontend-only diagnosis logic."
+    },
+    {
+      "id": "F107_INTERVENTION_HISTORY_VIEW",
+      "category": "Future Expansion",
+      "priority": 56,
+      "title": "Intervention History View",
+      "description": "Let teachers inspect what interventions were previously attempted and what happened next for a student or small group.",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard/student/, web/components/dashboard/",
+        "backend": "deeptutor/api/routers/dashboard.py plus intervention-history data shaping",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Teacher Workflow",
+        "Intervention Tracking"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "F102_INTERVENTION_ASSIGNMENT_FLOW"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-insight",
+      "notes": "Pairs naturally with F120 later, but does not require outcome scoring on day one."
+    },
+    {
+      "id": "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
+      "category": "Future Expansion",
+      "priority": 57,
+      "title": "Diagnosis Feedback Capture",
+      "description": "Capture teacher feedback on whether a diagnosis was helpful, wrong, or incomplete so the system can learn from bounded supervision.",
+      "scope": {
+        "frontend": "web/components/dashboard/, web/app/(workspace)/dashboard/student/",
+        "backend": "deeptutor/api/routers/dashboard.py, deeptutor/services/evidence/",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Diagnosis Engine",
+        "Teacher Dashboard",
+        "Teacher Quality Control"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "R2_DIAGNOSIS_CREDIBILITY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-quality-control",
+      "notes": "Keep the first slice simple: structured feedback labels plus optional teacher note."
+    },
+    {
+      "id": "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
+      "category": "Future Expansion",
+      "priority": 58,
+      "title": "Recommendation Feedback Capture",
+      "description": "Capture whether recommended teacher moves were practical, relevant, or too generic so recommendation quality can be improved over time.",
+      "scope": {
+        "frontend": "web/components/dashboard/, web/app/(workspace)/dashboard/",
+        "backend": "deeptutor/api/routers/dashboard.py and recommendation feedback storage helpers",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Recommendation Engine",
+        "Teacher Quality Control"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-quality-control",
+      "notes": "Useful before deeper recommendation-engine expansion because it adds real teacher signal."
+    },
+    {
+      "id": "F110_TEACHER_OVERRIDE_LOG",
+      "category": "Future Expansion",
+      "priority": 59,
+      "title": "Teacher Override Log",
+      "description": "Record when teachers override AI framing or choose a different pedagogical move so the product does not lose human judgment context.",
+      "scope": {
+        "frontend": "web/app/(workspace)/dashboard/, web/components/dashboard/",
+        "backend": "deeptutor/api/routers/dashboard.py and teacher-feedback persistence helpers",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Teacher Quality Control",
+        "Intervention Tracking"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": [
+        "F108_DIAGNOSIS_FEEDBACK_CAPTURE"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-quality-control",
+      "notes": "Can share storage patterns with diagnosis and recommendation feedback."
+    },
+    {
+      "id": "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
+      "category": "Future Expansion",
+      "priority": 60,
+      "title": "Assessment Review Rubric Controls",
+      "description": "Strengthen the teacher review step with structured rubric controls instead of generic approve-or-edit behavior only.",
+      "scope": {
+        "frontend": "web/components/assessment/, web/app/(workspace)/dashboard/assessments/",
+        "backend": "deeptutor/api/routers/assessment.py and review-state helpers if needed",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Assessment Review",
+        "Teacher Quality Control"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "R3_ASSESSMENT_SAFETY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-quality-control",
+      "notes": "Should keep the assessment flow teacher-reviewed without claiming automated quality guarantees."
+    },
+    {
+      "id": "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
+      "category": "Future Expansion",
+      "priority": 61,
+      "title": "Provenance And Reason Trace Surfaces",
+      "description": "Expose bounded provenance and rationale traces for teacher-facing trust without overclaiming full explainability.",
+      "scope": {
+        "frontend": "web/components/dashboard/, web/app/(workspace)/agents/",
+        "backend": "deeptutor/services/runtime_policy/, deeptutor/services/evidence/, related read-only APIs",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/, docs/contest/*.md"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Agent Specs",
+        "Trust Surfaces"
+      ],
+      "complexity": "High",
+      "estimated_hours": 7,
+      "dependencies": [
+        "R1_RUNTIME_BINDING_PROOF",
+        "R2_DIAGNOSIS_CREDIBILITY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-teacher-facing",
+      "layer": "teacher-quality-control",
+      "notes": "Should consume bounded traces produced by Session B rather than invent frontend-only explanations."
+    },
+    {
+      "id": "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
+      "category": "Future Expansion",
+      "priority": 62,
+      "title": "Capability-Wide Runtime Binding Coverage",
+      "description": "Extend runtime-binding proof and enforcement beyond the currently verified Tutor path into other shipped capability entry points.",
+      "scope": {
+        "backend": "deeptutor/capabilities/, deeptutor/services/runtime_policy/, deeptutor/services/session/turn_runtime.py",
+        "tests": "tests/core/, tests/api/test_unified_ws_turn_runtime.py, tests/services/runtime_policy/",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/, docs/contest/*.md as needed"
+      },
+      "affected_features": [
+        "Tutor Runtime Policy",
+        "Agent Specs",
+        "Capability Contracts"
+      ],
+      "complexity": "High",
+      "estimated_hours": 7,
+      "dependencies": [
+        "R1_RUNTIME_BINDING_PROOF"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "runtime-policy",
+      "notes": "First recommended task for a new runtime/data session after the contest MVP closes."
+    },
+    {
+      "id": "F114_SPEC_VERSION_PINNING_PER_SESSION",
+      "category": "Future Expansion",
+      "priority": 63,
+      "title": "Spec Version Pinning Per Session",
+      "description": "Pin each learning session to the exact teacher-spec version used at runtime so later debugging and trust review remain reproducible.",
+      "scope": {
+        "backend": "deeptutor/services/agent_spec/, deeptutor/services/session/, deeptutor/services/runtime_policy/",
+        "tests": "tests/services/agent_spec/, tests/services/runtime_policy/, session-related tests",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Agent Specs",
+        "Session Runtime",
+        "Runtime Policy Audit"
+      ],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": [
+        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "runtime-policy",
+      "notes": "Best done before provenance surfaces so later teacher-facing traces can reference stable spec versions."
+    },
+    {
+      "id": "F115_RUNTIME_POLICY_AUDIT_TRACE",
+      "category": "Future Expansion",
+      "priority": 64,
+      "title": "Runtime Policy Audit Trace",
+      "description": "Provide inspectable runtime policy slices for debugging, teacher-trust audits, and future claim calibration.",
+      "scope": {
+        "backend": "deeptutor/services/runtime_policy/, deeptutor/api/routers/agent_specs.py or a bounded debug route",
+        "tests": "tests/services/runtime_policy/, relevant API tests",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/, docs/contest/*.md if claims change"
+      },
+      "affected_features": [
+        "Runtime Policy",
+        "Agent Specs",
+        "Trust Surfaces"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "runtime-policy",
+      "notes": "This is the backend half of future provenance UI work but should stand on its own."
+    },
+    {
+      "id": "F116_STUDENT_MODEL_ENRICHMENT",
+      "category": "Future Expansion",
+      "priority": 65,
+      "title": "Student Model Enrichment",
+      "description": "Expand student state beyond thin recency summaries into richer mastery, support, and misconception fields.",
+      "scope": {
+        "backend": "deeptutor/services/evidence/, observation storage, student-state shaping code",
+        "tests": "tests/services/evidence/, dashboard and assessment API tests if payloads change",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/, ai_first/architecture/MAIN_SYSTEM_MAP.md if shared contracts change"
+      },
+      "affected_features": [
+        "Student State",
+        "Diagnosis Engine",
+        "Teacher Insights"
+      ],
+      "complexity": "High",
+      "estimated_hours": 7,
+      "dependencies": [
+        "R2_DIAGNOSIS_CREDIBILITY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "student-model",
+      "notes": "This should remain conservative and evidence-backed rather than turning into an opaque mastery score engine."
+    },
+    {
+      "id": "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
+      "category": "Future Expansion",
+      "priority": 66,
+      "title": "Confidence Calibration Refinement",
+      "description": "Make confidence tags more stable and better tied to evidence density, recency, and signal consistency.",
+      "scope": {
+        "backend": "deeptutor/services/evidence/, confidence-tag helpers, dashboard payload shaping",
+        "tests": "tests/services/evidence/, tests/api/test_dashboard_router.py, tests/api/test_assessment_router.py",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Diagnosis Engine",
+        "Teacher Insights",
+        "Student State"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "F116_STUDENT_MODEL_ENRICHMENT"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "student-model",
+      "notes": "Should preserve the current teacher-review framing rather than presenting confidence as objective truth."
+    },
+    {
+      "id": "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
+      "category": "Future Expansion",
+      "priority": 67,
+      "title": "Misconception Taxonomy Expansion",
+      "description": "Grow diagnosis categories beyond the narrow MVP taxonomy so more classroom-relevant misconception patterns can be represented.",
+      "scope": {
+        "backend": "deeptutor/services/evidence/, diagnosis taxonomy helpers, action-selection logic",
+        "tests": "tests/services/evidence/test_diagnosis.py and bounded dashboard/assessment slices",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/, docs/contest/*.md if examples change"
+      },
+      "affected_features": [
+        "Diagnosis Engine",
+        "Recommendation Engine",
+        "Teacher Insights"
+      ],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": [
+        "F116_STUDENT_MODEL_ENRICHMENT"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "student-model",
+      "notes": "A broader taxonomy should still keep abstain paths available when evidence is weak."
+    },
+    {
+      "id": "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
+      "category": "Future Expansion",
+      "priority": 68,
+      "title": "Abstain And Weak-Evidence Refinement",
+      "description": "Improve the system's ability to hold back recommendations when evidence is too thin, stale, or conflicting.",
+      "scope": {
+        "backend": "deeptutor/services/evidence/, dashboard and assessment recommendation shaping",
+        "tests": "tests/services/evidence/, tests/api/test_dashboard_router.py, tests/api/test_assessment_router.py",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/, docs/contest/*.md if external wording changes"
+      },
+      "affected_features": [
+        "Diagnosis Engine",
+        "Recommendation Engine",
+        "Teacher Trust"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "R2_DIAGNOSIS_CREDIBILITY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "student-model",
+      "notes": "Can begin before the full enriched student model, but should benefit from it later."
+    },
+    {
+      "id": "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
+      "category": "Future Expansion",
+      "priority": 69,
+      "title": "Intervention Effectiveness Tracking",
+      "description": "Measure whether interventions appear to help and feed that signal back into teacher insight quality without pretending to prove causal impact.",
+      "scope": {
+        "backend": "deeptutor/services/evidence/, dashboard services, intervention-state persistence",
+        "tests": "tests/services/evidence/, tests/api/test_dashboard_router.py, bounded intervention tests",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/, ai_first/architecture/MAIN_SYSTEM_MAP.md if shared contracts change"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Student State",
+        "Intervention Tracking"
+      ],
+      "complexity": "High",
+      "estimated_hours": 7,
+      "dependencies": [
+        "F102_INTERVENTION_ASSIGNMENT_FLOW",
+        "F116_STUDENT_MODEL_ENRICHMENT"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "student-model",
+      "notes": "This is the main cross-session convergence task between teacher workflow and runtime/data depth."
+    },
+    {
+      "id": "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
+      "category": "Future Expansion",
+      "priority": 70,
+      "title": "Class Roster And Group Foundation",
+      "description": "Add minimal class roster and class ownership primitives needed for true classroom workflows beyond a contest demo dashboard.",
+      "scope": {
+        "backend": "teacher metadata storage, dashboard ownership contracts, potential new class-management endpoints",
+        "frontend": "bounded teacher-facing surfaces only if needed for roster verification",
+        "docs": "docs/superpowers/tasks/, docs/superpowers/pr-notes/, ai_first/architecture/MAIN_SYSTEM_MAP.md"
+      },
+      "affected_features": [
+        "Teacher Workspace",
+        "Teacher Dashboard",
+        "Classroom Operations"
+      ],
+      "complexity": "High",
+      "estimated_hours": 7,
+      "dependencies": [],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "validation-ops",
+      "notes": "This establishes classroom primitives but should stay minimal until a stronger operations slice is explicitly opened."
+    },
+    {
+      "id": "F122_PILOT_FEEDBACK_INGESTION_PATH",
+      "category": "Future Expansion",
+      "priority": 71,
+      "title": "Pilot Feedback Ingestion Path",
+      "description": "Prepare a bounded place to store future external walkthrough or pilot feedback honestly without overstating what current evidence proves.",
+      "scope": {
+        "backend": "bounded feedback storage or metadata path if implemented",
+        "docs": "docs/contest/, ai_first/competition/, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "ops": "pilot-status and review handoff surfaces"
+      },
+      "affected_features": [
+        "Contest Evidence",
+        "Pilot Feedback",
+        "Validation Ops"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": [
+        "R6_CLAIM_CALIBRATION_PILOT"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "validation-ops",
+      "notes": "Should preserve the current explicit no-pilot-yet stance until real external feedback exists."
+    },
+    {
+      "id": "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
+      "category": "Future Expansion",
+      "priority": 72,
+      "title": "Casepack And Evaluation Dataset Expansion",
+      "description": "Grow judge-safe case studies into a reusable validation pack for future model, dashboard, and recommendation checks.",
+      "scope": {
+        "backend": "seeded evidence or casepack helpers only if a bounded format is needed",
+        "docs": "docs/contest/, ai_first/evidence/, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "tests": "validation-oriented evidence tests if dataset automation is added"
+      },
+      "affected_features": [
+        "Validation Evidence",
+        "Diagnosis Engine",
+        "Teacher Insights"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "R2_DIAGNOSIS_CREDIBILITY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "validation-ops",
+      "notes": "Provides stronger repeatable fixtures for later automation and model-quality work."
+    },
+    {
+      "id": "F124_EVIDENCE_AUTOMATION_REFRESH",
+      "category": "Future Expansion",
+      "priority": 73,
+      "title": "Evidence Automation Refresh",
+      "description": "Automate more of the smoke, screenshot, and evidence-refresh path so the validated-prototype claim stays easier to maintain over time.",
+      "scope": {
+        "scripts": "demo/evidence refresh helpers, smoke runbooks, or bounded tooling",
+        "docs": "docs/contest/, ai_first/evidence/, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "tests": "script validation or smoke wrappers if automation is added"
+      },
+      "affected_features": [
+        "Validation Evidence",
+        "Demo Operations",
+        "Contest Maintenance"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime-data",
+      "layer": "validation-ops",
+      "notes": "This should improve repeatability without changing the product's proof level by itself."
     }
   ],
   "github_issues_template": {

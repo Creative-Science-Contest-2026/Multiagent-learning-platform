@@ -31,13 +31,13 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Latest merged docs/control-plane PR: `#148 [OPS-SYNC] docs(ai-first): sync queue after evidence merge`
 - Current branch for this sync: none required on `main`
 - Product MVP path status: the core contest flow, the Wave 1 evidence spine, lane 1-6 roadmap slices, and the refreshed dashboard plus `/agents` screenshot evidence are all merged to `main` as a validated prototype.
-- Current purpose: hold a correct terminal wait state while the remaining submission work is human review, optional video, final sign-off, or any explicitly opened risk-hardening docs lane.
+- Current purpose: hold a correct terminal wait state while the remaining submission work is human review, optional video, final sign-off, or any explicitly opened future backlog packet from `main`.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
 
-- Latest completed spec: `docs/superpowers/specs/2026-04-25-two-lane-contest-mvp-polish-design.md`
-- Latest completed rollout plan: `docs/superpowers/plans/2026-04-25-two-lane-contest-mvp-polish-rollout.md`
+- Latest completed spec: `docs/superpowers/specs/2026-04-26-two-session-future-backlog-design.md`
+- Latest completed rollout plan: `docs/superpowers/plans/2026-04-26-two-session-future-backlog.md`
 
 ## Known Worktree Notes
 
@@ -59,7 +59,7 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: none
+- Current open task packet: none active by default; use `docs/superpowers/tasks/2026-04-26-two-session-future-backlog.md` if new AI product work is explicitly opened from `main`
 - Current open GitHub issue:
 - Latest completed smoke run result: the 2026-04-26 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
 - Recently completed merged work: dashboard and `/agents` screenshot evidence merged through PR `#147`, followed by queue/control-plane sync in PR `#148`.
@@ -68,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off unless a fresh packet is explicitly opened from `main`.
+Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off unless a fresh packet is explicitly opened from `main`. If new AI product work is requested after that, start from the `F101-F124` future backlog and the two-session startup packet.
 
 ## Autonomous Merge Policy
 
@@ -85,3 +85,4 @@ Use this file only as a compact status mirror. Do not rely on it for the full op
 - The Contest MVP+ roadmap is now decomposed into six session-ready lane packets under `docs/superpowers/tasks/2026-04-26-lane-*.md`.
 - In multi-session mode, `ai_first/AI_OPERATING_PROMPT.md` is expected to route AI workers through those packets and ask the human to resolve conflicts or ambiguity.
 - Contest screenshot evidence is current after PR `#147`, and the control-plane wait-state sync merged in PR `#148`.
+- A long-range `F101-F124` future backlog is now recorded in `ai_first/TASK_REGISTRY.json`, with a two-session coordination packet at `docs/superpowers/tasks/2026-04-26-two-session-future-backlog.md`.
