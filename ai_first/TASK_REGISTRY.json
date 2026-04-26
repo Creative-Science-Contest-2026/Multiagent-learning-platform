@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T12:30:00Z",
+    "last_updated": "2026-04-26T14:40:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 43
+    "total_tasks": 49
   },
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 43,
+      "count": 44,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -52,13 +52,16 @@
         "T048_PARALLEL_LANE_TASK_PACKET_SET",
         "T049_METADATA_DEPTH_PASS",
         "T050_DASHBOARD_INSIGHT_DEPTH",
-        "T051_SESSION_CONTEXT_QUALITY_PASS"
+        "T051_SESSION_CONTEXT_QUALITY_PASS",
+        "R1_RUNTIME_BINDING_PROOF"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "R2_DIAGNOSIS_CREDIBILITY"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -67,8 +70,13 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 0,
-      "tasks": []
+      "count": 4,
+      "tasks": [
+        "R3_ASSESSMENT_SAFETY",
+        "R4_TEACHER_VALUE_PROP",
+        "R5_DASHBOARD_ACTIONABILITY",
+        "R6_CLAIM_CALIBRATION_PILOT"
+      ]
     }
   },
   "tasks": [
@@ -1025,6 +1033,153 @@
       ],
       "status": "completed",
       "notes": "Merged on origin/main (branch pod-b/t051-session-context-quality). Lane 2 does not need to claim this work; registry updated to reflect remote merge."
+    },
+    {
+      "id": "R1_RUNTIME_BINDING_PROOF",
+      "category": "Risk Hardening",
+      "priority": 44,
+      "title": "Bounded Runtime Binding Proof For Tutor Specs",
+      "description": "Prove that teacher-authored Agent Specs affect live Tutor behavior through the unified turn path without overclaiming universal entry-point coverage.",
+      "scope": {
+        "backend": "deeptutor/capabilities/request_contracts.py, deeptutor/services/runtime_policy/, deeptutor/services/session/turn_runtime.py",
+        "tests": "tests/core/test_capabilities_runtime.py, tests/api/test_unified_ws_turn_runtime.py, tests/services/runtime_policy/test_compiler.py",
+        "docs": "docs/contest/*.md, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Tutor Runtime Policy",
+        "Agent Specs",
+        "Contest Claim Calibration"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "L1_AGENT_SPEC_AUTHORING",
+        "L2_SPEC_RUNTIME_ASSEMBLY"
+      ],
+      "status": "completed",
+      "notes": "Merged to main through PR #151. Added bounded proof that config.agent_spec_id can drive unified Tutor runtime behavior across contrasting spec packs."
+    },
+    {
+      "id": "R2_DIAGNOSIS_CREDIBILITY",
+      "category": "Risk Hardening",
+      "priority": 45,
+      "title": "Diagnosis Credibility And Teacher Review Framing",
+      "description": "Strengthen diagnosis trustworthiness by making outputs explicitly rule-assisted, confidence-tagged, abstain-capable, and teacher-reviewed, backed by demo-safe case studies.",
+      "scope": {
+        "backend": "deeptutor/services/evidence/",
+        "tests": "tests/services/evidence/test_diagnosis.py, tests/api/test_assessment_router.py, tests/api/test_dashboard_router.py",
+        "docs": "docs/contest/*.md, ai_first/competition/*.md, docs/superpowers/pr-notes/"
+      },
+      "affected_features": [
+        "Diagnosis Engine",
+        "Teacher Dashboard",
+        "Contest Defense Materials"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "L3_OBSERVATION_STUDENT_STATE",
+        "L4_DIAGNOSIS_RECOMMENDATION"
+      ],
+      "status": "in-progress",
+      "notes": "Active on branch pod-a/diagnosis-credibility. Draft PR #153 adds teacher-review notes, abstain reasoning, and diagnosis case studies."
+    },
+    {
+      "id": "R3_ASSESSMENT_SAFETY",
+      "category": "Risk Hardening",
+      "priority": 46,
+      "title": "Assessment Safety And Teacher Approval Proof",
+      "description": "Make the teacher review step and assessment quality-control framing explicit so generated assessments are presented as supervised rather than autonomous classroom output.",
+      "scope": {
+        "backend": "deeptutor/api/routers/assessment.py, related assessment services as needed",
+        "tests": "tests/api/test_assessment_router.py and bounded assessment slices",
+        "docs": "docs/contest/*.md, ai_first/competition/*.md"
+      },
+      "affected_features": [
+        "Assessment Generation",
+        "Assessment Review",
+        "Contest Demo Story"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "T010_ASSESSMENT_FEEDBACK_DETAILS",
+        "T015_ASSESSMENT_RECOMMENDATIONS"
+      ],
+      "status": "not-started",
+      "notes": "Session-ready risk lane packet exists under docs/superpowers/tasks/2026-04-26-risk-lane-3-assessment-safety.md."
+    },
+    {
+      "id": "R4_TEACHER_VALUE_PROP",
+      "category": "Risk Hardening",
+      "priority": 47,
+      "title": "Teacher Value Proposition Hardening",
+      "description": "Clarify why Agent Specs and the teacher dashboard matter to real teachers, with benefit-first wording and bounded demos rather than architecture-heavy explanations.",
+      "scope": {
+        "docs": "docs/contest/*.md, ai_first/competition/*.md, docs/superpowers/pr-notes/",
+        "ui_copy": "teacher-facing wording only if a bounded update is needed"
+      },
+      "affected_features": [
+        "Agent Specs",
+        "Teacher Dashboard",
+        "Contest Pitch"
+      ],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": [
+        "L1_AGENT_SPEC_AUTHORING",
+        "L5_TEACHER_INSIGHT_UI"
+      ],
+      "status": "not-started",
+      "notes": "Session-ready risk lane packet exists under docs/superpowers/tasks/2026-04-26-risk-lane-4-teacher-value-prop.md."
+    },
+    {
+      "id": "R5_DASHBOARD_ACTIONABILITY",
+      "category": "Risk Hardening",
+      "priority": 48,
+      "title": "Dashboard Actionability Story Cards",
+      "description": "Turn the teacher dashboard into clearer intervention narratives by preparing student and small-group story cards tied directly to observed and inferred signals.",
+      "scope": {
+        "backend": "deeptutor/services/evidence/ and dashboard payloads only if needed",
+        "tests": "dashboard-focused evidence tests if payloads change",
+        "docs": "docs/contest/*.md, ai_first/competition/*.md"
+      },
+      "affected_features": [
+        "Teacher Dashboard",
+        "Teacher Insights",
+        "Contest Demo Story"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "L5_TEACHER_INSIGHT_UI",
+        "R2_DIAGNOSIS_CREDIBILITY"
+      ],
+      "status": "not-started",
+      "notes": "Session-ready risk lane packet exists under docs/superpowers/tasks/2026-04-26-risk-lane-5-dashboard-actionability.md."
+    },
+    {
+      "id": "R6_CLAIM_CALIBRATION_PILOT",
+      "category": "Risk Hardening",
+      "priority": 49,
+      "title": "Claim Calibration And Pilot Evidence",
+      "description": "Keep contest claims honest and defensible by aligning product wording, evidence language, and any pilot-style validation notes with the repository's actual proof level.",
+      "scope": {
+        "docs": "docs/contest/*.md, ai_first/competition/*.md, ai_first/EXECUTION_QUEUE.md, ai_first/ACTIVE_ASSIGNMENTS.md"
+      },
+      "affected_features": [
+        "Contest Submission Package",
+        "Human Review Handoff",
+        "Pitch Materials"
+      ],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": [
+        "R1_RUNTIME_BINDING_PROOF",
+        "R2_DIAGNOSIS_CREDIBILITY"
+      ],
+      "status": "not-started",
+      "notes": "Session-ready risk lane packet exists under docs/superpowers/tasks/2026-04-26-risk-lane-6-claim-calibration-and-pilot.md."
     }
   ],
   "github_issues_template": {
