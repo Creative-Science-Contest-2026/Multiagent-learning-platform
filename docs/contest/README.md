@@ -13,6 +13,13 @@ This evidence bundle now supports a hybrid contest narrative:
 - Teacher authoring proof: the teacher can structure Agent Specs on `/agents` and export a spec pack.
 - Learning evidence-loop proof: Knowledge Pack -> assessment -> tutoring follow-up -> dashboard activity.
 
+Teacher-value framing for presenters:
+
+- `IDENTITY` lets a teacher choose who the tutor is for: subject, grade band, tone, and language.
+- `SOUL` lets a teacher decide how the tutor reacts when a student is wrong, stuck, or discouraged.
+- `RULES` lets a teacher keep classroom boundaries such as no direct answers, hint limits, or escalation expectations.
+- The dashboard is not only reporting activity; it helps the teacher decide what to reteach, who needs follow-up, and which students can be grouped around the same misconception.
+
 The repository now includes bounded proof that the unified live turn path can carry `config.agent_spec_id` into Tutor runtime policy assembly and produce a visible behavior difference between two spec packs. Do not expand that claim into universal coverage across every entry point unless a fresh smoke run verifies those additional paths.
 
 ## Evidence Files
@@ -34,6 +41,12 @@ The repository now includes bounded proof that the unified live turn path can ca
 - Screenshot evidence is captured in [`screenshots/`](./screenshots/), including the 2026-04-26 dashboard evidence-first refresh and the `/agents` authoring proof refresh.
 - Hybrid `/agents` screenshots are current, and the codebase now also carries automated bounded runtime-binding proof for the unified Tutor turn path. Keep the claim narrower than universal entry-point coverage.
 - Video capture is optional and deferred to avoid storing large media in the repository.
+
+## Judge-Friendly Use Cases
+
+1. A teacher can create one tutoring style for a lower-confidence class and another for an exam-prep class without changing the underlying lesson materials.
+2. A teacher can draft an assessment from a Knowledge Pack, review it, then reuse the same knowledge source during tutoring.
+3. A teacher can move from observed errors to a recommended next action instead of reading raw activity logs alone.
 
 ## Evidence Refresh Rules
 

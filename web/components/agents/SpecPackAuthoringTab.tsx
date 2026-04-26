@@ -195,10 +195,10 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
-              {t("Spec Packs")}
+              {t("Class tutoring setup")}
             </p>
             <h2 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
-              {t("Teacher-defined agents")}
+              {t("Shape how the tutor teaches this class")}
             </h2>
           </div>
           <button
@@ -253,11 +253,14 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
           <div className="mb-4 flex items-center justify-between gap-4">
             <div>
               <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
-                {t("Hybrid narrow")}
+                {t("Teacher controls")}
               </p>
               <h2 className="mt-1 text-[18px] font-semibold text-[var(--foreground)]">
-                {t("Structured authoring for IDENTITY, SOUL, and RULES")}
+                {t("Choose class fit, support style, and guardrails")}
               </h2>
+              <p className="mt-2 max-w-[680px] text-[13px] text-[var(--muted-foreground)]">
+                {t("IDENTITY sets who this tutor is for, SOUL shapes how it responds when students are wrong or stuck, and RULES keep help within your classroom boundaries.")}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -298,7 +301,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
 
         <StructuredSection
           title={t("IDENTITY.md")}
-          description={t("Define the role, subject, and language of the teaching agent.")}
+          description={t("Choose the subject, student level, tone, and language students will experience.")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <LabeledInput label={t("Agent name")} value={draft.structured.identity.agent_name} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, identity: { ...current.structured.identity, agent_name: value } } }))} />
@@ -312,7 +315,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
 
         <StructuredSection
           title={t("SOUL.md")}
-          description={t("Capture the teaching philosophy and failure-response style.")}
+          description={t("Decide how the tutor encourages, scaffolds, and responds when a student is wrong or losing confidence.")}
         >
           <LabeledTextarea label={t("Teaching philosophy")} rows={4} value={draft.structured.soul.teaching_philosophy} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, soul: { ...current.structured.soul, teaching_philosophy: value } } }))} />
           <LabeledTextarea label={t("When the student is wrong")} rows={4} value={draft.structured.soul.when_student_wrong} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, soul: { ...current.structured.soul, when_student_wrong: value } } }))} />
@@ -322,7 +325,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
 
         <StructuredSection
           title={t("RULES.md")}
-          description={t("Add operating guardrails without baking runtime logic into the UI.")}
+          description={t("Set clear classroom boundaries such as hint limits, session expectations, and when the tutor should escalate.")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <LabeledInput label={t("Do not solve directly")} value={draft.structured.rules.do_not_solve_directly} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, rules: { ...current.structured.rules, do_not_solve_directly: value } } }))} />
@@ -341,6 +344,9 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
             <h3 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
               {t("Manual editing for the remaining files")}
             </h3>
+            <p className="mt-2 text-[13px] text-[var(--muted-foreground)]">
+              {t("Use these files when you want to define curriculum priorities, assessment signals, remediation flow, knowledge policy, or sharing metadata in your own words.")}
+            </p>
           </div>
           <div className="mb-3 flex flex-wrap gap-2">
             {MANUAL_FILES.map((filename) => (
@@ -377,7 +383,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
       <aside className="space-y-4">
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
           <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
-            {t("Runtime summary")}
+            {t("Teacher-facing summary")}
           </p>
           <h3 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
             {draft.display_name || t("Unsaved spec pack")}
@@ -386,7 +392,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
             <SummaryRow label={t("Subject")} value={draft.structured.identity.subject} />
             <SummaryRow label={t("Language")} value={draft.structured.identity.primary_language} />
             <SummaryRow label={t("Tone")} value={draft.structured.identity.tone} />
-            <SummaryRow label={t("Session rule")} value={runtimeSummary.join(" • ")} />
+            <SummaryRow label={t("What students will feel")} value={runtimeSummary.join(" • ")} />
             <SummaryRow label={t("Version")} value={draft.version > 0 ? `v${draft.version}` : t("New")} />
           </div>
         </div>

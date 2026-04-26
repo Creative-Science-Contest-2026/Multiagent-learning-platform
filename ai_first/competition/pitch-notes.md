@@ -2,15 +2,21 @@
 
 ## One-line pitch
 
-An AI-first learning platform where Vietnamese teachers create Knowledge Packs and teaching skills, then AI Tutor Agents help students learn, practice, and improve from those teacher-approved materials.
+An AI-first learning platform where Vietnamese teachers turn their own materials into classroom-ready tutoring, practice, and follow-up insight without giving up control over how the AI teaches.
 
 ## Problem
 
-Teachers have learning materials but limited time to convert them into personalized practice, tutoring, and progress tracking.
+Teachers already have lesson materials and teaching instincts, but they do not have enough time to turn them into personalized practice, tutoring support, and follow-up decisions for each learner.
 
 ## Solution
 
-The platform turns teacher-owned materials into Knowledge Packs, generates assessments, supports student tutoring, and gives teachers a simple dashboard. Assessment generation is framed as a draft-plus-review workflow, and the diagnosis layer is rule-assisted and teacher-reviewed, so the teacher stays responsible for both content quality and intervention decisions.
+The platform turns teacher-owned materials into Knowledge Packs, drafts assessments for teacher review, supports student tutoring, and gives teachers an evidence-first dashboard. Teachers can also set the tutor's class fit, support style, and guardrails on `/agents`, so the system adapts to how they want students to be helped, not just what content is covered.
+
+Teacher-facing use cases:
+
+1. A grade 6 teacher can make the tutor explain more gently, use simpler language, and avoid giving final answers too quickly.
+2. A grade 10 teacher can make the tutor more Socratic, push for reasoning steps, and escalate when students keep repeating the same mistake.
+3. A teacher reviewing the dashboard can spot which students need remediation now and which small group should revisit the same misconception together.
 
 ## Why now
 
@@ -22,3 +28,10 @@ LLM agents, RAG, and AI-assisted content generation make it possible to reduce l
 2. Teacher generates questions from the pack.
 3. Student studies with Tutor Agent grounded in the pack.
 4. Teacher views dashboard evidence and teacher-reviewable diagnosis suggestions.
+
+Behavior-diff story for judges:
+
+- `IDENTITY` changes who the tutor is serving: subject, grade band, tone, and language.
+- `SOUL` changes how the tutor reacts when a student is wrong, stuck, or discouraged.
+- `RULES` changes the classroom boundaries: for example, whether the tutor should withhold direct answers, how much hinting is allowed, and when to stop or escalate.
+- The same student question can therefore receive a more encouraging scaffolded response in one class setup and a more Socratic push-back in another, without changing the underlying source material.

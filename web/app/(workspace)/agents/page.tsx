@@ -97,7 +97,7 @@ export default function AgentsPage() {
             <p className="mt-1 text-[13px] text-[var(--primary)] animate-fade-in">{toast}</p>
           ) : (
             <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-              {t("Author teacher-defined spec packs, then manage in-process TutorBot instances when needed")}
+              {t("Set how this class tutor explains, encourages, and gives hints before students start learning")}
             </p>
           )}
         </div>
