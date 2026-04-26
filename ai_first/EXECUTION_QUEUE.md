@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest feature-risk merge: `#153 [R2] feat(evidence): strengthen diagnosis credibility framing`
+- Latest feature-risk merge: `#155 [R3] feat(assessment): surface teacher review safety gate`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Lane 3 (`2026-04-26-lane-3-observation-student-state`) merged to `main` through PR `#140`.
@@ -18,6 +18,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Post-147 evidence merge sync merged to `main` through PR `#148`.
 - Risk Lane 1 runtime binding proof merged to `main` through PR `#151`.
 - Risk Lane 2 diagnosis credibility merged to `main` through PR `#153`.
+- Risk Lane 3 assessment safety merged to `main` through PR `#155`.
 - Latest smoke result: the 2026-04-26 scripted-reset smoke pass succeeded in lane 6 (`docs/evaluation-evidence-readiness`) against current `main` behavior.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -30,7 +31,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Next recommended task
 
-- If the team wants to continue AI-owned product hardening, start `R3_ASSESSMENT_SAFETY` from `docs/superpowers/tasks/2026-04-26-risk-lane-3-assessment-safety.md`.
+- If the team wants to continue AI-owned product hardening, start `R4_TEACHER_VALUE_PROP` from `docs/superpowers/tasks/2026-04-26-risk-lane-4-teacher-value-prop.md`.
 - If not, the shortest remaining non-code path is still human review of the submission package, IP commitment, and optional video decision.
 - Any new AI task should start from a fresh branch/worktree off `main`, not from a merged lane branch.
 
