@@ -34,11 +34,11 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-runtime-binding-coverage`
 - Task: `F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE`
-- Status: `draft-pr`
+- Status: `ready-review`
 - Branch: `pod-b/runtime-binding-coverage`
 - Task packet: `docs/superpowers/specs/2026-04-26-f113-capability-wide-runtime-binding-coverage-design.md`
 - Owned files: `deeptutor/capabilities/`, `deeptutor/services/runtime_policy/`, `deeptutor/services/session/turn_runtime.py`, bounded tests/docs
 - PR: `https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/pull/164`
 - Last update: `2026-04-27T00:00:00+0700`
-- Next action: `Wait for CI and review on Draft PR #164, then address any blockers before marking ready.`
+- Next action: `Wait for CI and review on PR #164, then address any blockers before merge.`
 - Blocker: `None`
