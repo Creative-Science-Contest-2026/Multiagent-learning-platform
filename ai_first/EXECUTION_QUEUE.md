@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest feature-risk merge: `#165 [F101] feat(dashboard): add teacher action execution loop`
+- Latest feature-risk merge: `#170 [F102] feat(dashboard): add intervention assignment flow`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Lane 3 (`2026-04-26-lane-3-observation-student-state`) merged to `main` through PR `#140`.
@@ -25,6 +25,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Future backlog Session B task `F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE` merged to `main` through PR `#164`.
 - Future backlog Session A task `F101_TEACHER_ACTION_EXECUTION_LOOP` merged to `main` through PR `#165`.
 - Post-`F113` control-plane sync merged to `main` through PR `#167`, but it left stale Session A state that this repair PR removes.
+- Future backlog Session A task `F102_INTERVENTION_ASSIGNMENT_FLOW` merged to `main` through PR `#170`.
 - Latest smoke result: the 2026-04-26 scripted-reset smoke pass succeeded in lane 6 (`docs/evaluation-evidence-readiness`) against current `main` behavior.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -37,8 +38,8 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Next recommended task
 
-- After `F101` and `F113`, the preferred next pair from the future backlog packet is:
-  - Session A: `F102_INTERVENTION_ASSIGNMENT_FLOW` or `F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS`
+- After `F101`, `F102`, and `F113`, the preferred next pair from the future backlog packet is:
+  - Session A: `F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS` or `F107_INTERVENTION_HISTORY_VIEW`
   - Session B: `F114_SPEC_VERSION_PINNING_PER_SESSION` or `F116_STUDENT_MODEL_ENRICHMENT`
 - Any new AI task should start from a fresh branch/worktree off `main`, not from a merged lane branch.
 
@@ -55,7 +56,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None currently. The next AI-owned work is the post-contest future backlog, but no session is active by default after the `F101` and `F113` merges.
+- None currently. The next AI-owned work is the post-contest future backlog, but no session is active by default after the `F101`, `F102`, and `F113` merges.
 
 ## Human-review blockers
 
