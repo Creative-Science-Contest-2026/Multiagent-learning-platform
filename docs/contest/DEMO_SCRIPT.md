@@ -10,6 +10,16 @@ Use this script to present the MVP in the same order as the project goal.
 4. Open the web workspace in a browser.
 5. Use demo-safe sample content. Do not use private student data.
 
+## Hybrid Presenter Check
+
+Before the learning loop, optionally show a short teacher-authoring proof on `/agents`:
+
+1. Open Agent Specs authoring.
+2. Show structured sections (`IDENTITY`, `SOUL`, `RULES`) and free-form markdown sections.
+3. Export the spec pack.
+
+Do not claim that every live turn is already bound to a selected `agent_spec_id` unless that exact path is re-verified in the current smoke run.
+
 ## Demo Path
 
 ### 1. Teacher Creates A Knowledge Pack
@@ -76,14 +86,15 @@ Goal: show that the teacher can review recent assessment and tutoring activity.
 Steps:
 
 1. Open the Dashboard page.
-2. Confirm totals for sessions, assessments, tutoring, and running activity.
-3. Confirm recent activity distinguishes assessment and tutoring sessions.
-4. Confirm Knowledge Pack references appear when sessions used a selected pack.
+2. Confirm the teacher insight cards show `Observed`, `Inferred`, and `Recommended Action`.
+3. Confirm small-group recommendation cards are visible when grouped signals exist.
+4. Confirm recent activity still distinguishes assessment and tutoring sessions.
+5. Confirm Knowledge Pack references appear when sessions used a selected pack.
 
 Evidence to capture:
 
-- Screenshot of the Dashboard summary cards.
-- Screenshot of recent activity with Knowledge Pack context.
+- Screenshot of the evidence-first teacher insight overview.
+- Screenshot of recent activity with Knowledge Pack context below the insight workflow.
 
 ## Presenter Notes
 
@@ -91,3 +102,4 @@ Evidence to capture:
 - Use one consistent sample topic across all screens.
 - If an external LLM provider is unavailable, explain the unavailable credential and show the local validation report instead of inventing evidence.
 - After the demo, open `VALIDATION_REPORT.md` to show exact commands and known limitations.
+- If you include the hybrid authoring check, keep it under one minute and treat it as authoring proof unless runtime binding is re-verified in this environment.

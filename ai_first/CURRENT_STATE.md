@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-04-25
+Last updated: 2026-04-26
 
 This file is a compatibility snapshot. The authoritative operating instructions live in `ai_first/AI_OPERATING_PROMPT.md`.
 
@@ -28,10 +28,10 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Latest merged docs/control-plane PR: `#129 docs: clean up control plane after smoke refresh`
-- Current branch for this sync: `docs/post-130-screenshot-sync`
-- Product MVP path status: Knowledge Pack, assessment, tutor, dashboard, marketplace, offline, analytics, contest evidence, submission docs, optional video runbook, two-person collaboration workflow, and the full two-lane contest MVP polish experiment are merged to `main`.
-- Current purpose: clear the stale post-merge lane status and keep the merged evidence state visible.
+- Latest merged docs/control-plane PR: `#139 [L2] feat(runtime): compile teacher policy blocks into prompt assembly`
+- Current branch for this sync: `docs/evaluation-evidence-readiness`
+- Product MVP path status: core contest flow plus Wave 1 evidence spine and lane 1-4 contracts are merged to `main`; lane 6 is documenting hybrid-proof readiness and evidence calibration.
+- Current purpose: keep contest evidence docs aligned with the merged hybrid teacher-authoring plus evidence-loop story without claiming unverified runtime behavior.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -59,16 +59,16 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-25-post-130-screenshot-sync.md`
+- Current open task packet: `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`
 - Current open GitHub issue:
-- Latest completed smoke run result: the 2026-04-25 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
+- Latest completed smoke run result: the 2026-04-26 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
 - Recently completed merged work: the screenshot bundle refresh re-run merged on 2026-04-25 through PR `#130`, and evidence docs now mark screenshots `Current`.
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Keep the merged screenshot evidence state reflected in the compact mirrors and contest entry docs.
+Complete lane 6 docs/evidence updates and record calibrated hybrid-proof limitations in the contest artifacts.
 
 ## Autonomous Merge Policy
 

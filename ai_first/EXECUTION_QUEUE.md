@@ -12,22 +12,22 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Lane 3 (`2026-04-26-lane-3-observation-student-state`) merged to `main` through PR `#140`.
 - Lane 4 (`2026-04-26-lane-4-diagnosis-recommendation`) merged to `main` through PR `#142`.
-- Latest smoke result: the 2026-04-25 scripted-reset smoke pass succeeded against current `main`.
+- Latest smoke result: the 2026-04-26 scripted-reset smoke pass succeeded in lane 6 (`docs/evaluation-evidence-readiness`) against current `main` behavior.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
 - Core MVP path in `main` now also includes the Wave 1 evidence spine: structured observations, student-state persistence, assessment diagnosis, and teacher insight payloads on top of the earlier marketplace, assessment, tutor, dashboard, offline, analytics, evidence, and submission flows.
 
 ## Active queue
 
-- No active AI-owned implementation lane is open right now.
-- Current purpose: prepare clean multi-session execution from `main` using one lane packet per session.
+- Lane 6 (`docs/evaluation-evidence-readiness`) is in progress for docs/evidence alignment.
+- Current purpose: keep contest evidence and readiness docs aligned with the merged hybrid flow while avoiding overclaims.
 
 ## Next recommended task
 
-Create or use one session per lane from `main` with these packets:
+Complete the active lane and then continue with remaining packetized work from `main`:
 
-1. `docs/superpowers/tasks/2026-04-26-lane-5-teacher-insight-ui.md`
-2. `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`
+1. `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md` (current session)
+2. `docs/superpowers/tasks/2026-04-26-lane-5-teacher-insight-ui.md` (if still open after lane 6 handoff)
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
