@@ -14,6 +14,7 @@ from typing import Any
 
 from deeptutor.core.stream import StreamEvent, StreamEventType
 from deeptutor.services.path_service import get_path_service
+from deeptutor.services.runtime_policy import compiler as runtime_policy_compiler
 from deeptutor.services.session.sqlite_store import SQLiteSessionStore, get_sqlite_session_store
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,35 @@ def _clip_text(value: str, limit: int = 4000) -> str:
     if len(text) <= limit:
         return text
     return text[:limit].rstrip() + "\n...[truncated]"
+
+
+async def _ensure_agent_spec_pin(
+    store: SQLiteSessionStore,
+    session_id: str,
+    request_config: dict[str, Any],
+) -> dict[str, Any]:
+    session = await store.get_session(session_id)
+    preferences = dict((session or {}).get("preferences") or {})
+    existing_pin = preferences.get("agent_spec_pin")
+    if isinstance(existing_pin, dict):
+        return preferences
+
+    agent_spec_id = str(request_config.get("agent_spec_id") or "").strip()
+    if not agent_spec_id:
+        return preferences
+
+    try:
+        pack = runtime_policy_compiler.get_agent_spec_service().get_pack(agent_spec_id)
+    except FileNotFoundError:
+        return preferences
+
+    preferences["agent_spec_pin"] = {
+        "agent_spec_id": str(pack.get("agent_id") or agent_spec_id),
+        "version": int(pack.get("version") or 1),
+        "updated_at": str(pack.get("updated_at") or ""),
+    }
+    await store.update_session_preferences(session_id, {"agent_spec_pin": preferences["agent_spec_pin"]})
+    return preferences
 
 
 def _extract_followup_question_context(
@@ -259,6 +289,11 @@ class TurnRuntimeManager:
                 "language": str(payload.get("language") or "en"),
             },
         )
+        await _ensure_agent_spec_pin(
+            self.store,
+            session["id"],
+            dict(payload.get("config", {}) or {}),
+        )
         turn = await self.store.create_turn(session["id"], capability=capability)
         execution = _TurnExecution(
             turn_id=turn["id"],
@@ -415,6 +450,11 @@ class TurnRuntimeManager:
             )
             memory_service = get_memory_service()
             memory_context = memory_service.build_memory_context()
+            session_preferences = await _ensure_agent_spec_pin(
+                self.store,
+                session_id,
+                request_config,
+            )
 
             if notebook_references:
                 referenced_records = notebook_manager.get_records_by_references(notebook_references)
@@ -531,6 +571,12 @@ class TurnRuntimeManager:
                     "notebook_references": notebook_references,
                     "history_references": history_references,
                     "memory_context": memory_context,
+                    "session_preferences": session_preferences,
+                    "agent_spec_pin": (
+                        session_preferences.get("agent_spec_pin")
+                        if isinstance(session_preferences.get("agent_spec_pin"), dict)
+                        else {}
+                    ),
                 },
             )
 

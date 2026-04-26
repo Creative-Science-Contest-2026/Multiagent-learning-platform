@@ -154,3 +154,30 @@ async def test_sqlite_store_builds_recency_aware_student_state_rollup(tmp_path: 
     assert rollup["confidence_trend"] in {"up", "flat", "down"}
     assert rollup["recency_summary"]["total_observations"] == 3
     assert rollup["recency_summary"]["bucket_counts"]["last_24h"] >= 2
+
+
+@pytest.mark.asyncio
+async def test_sqlite_store_persists_agent_spec_pin_in_session_preferences(tmp_path: Path) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    session = await store.create_session(title="Pinned session")
+
+    updated = await store.update_session_preferences(
+        session["id"],
+        {
+            "agent_spec_pin": {
+                "agent_spec_id": "fraction-coach",
+                "version": 2,
+                "updated_at": "2026-04-27T00:00:00Z",
+            }
+        },
+    )
+
+    detail = await store.get_session(session["id"])
+
+    assert updated is True
+    assert detail is not None
+    assert detail["preferences"]["agent_spec_pin"] == {
+        "agent_spec_id": "fraction-coach",
+        "version": 2,
+        "updated_at": "2026-04-27T00:00:00Z",
+    }

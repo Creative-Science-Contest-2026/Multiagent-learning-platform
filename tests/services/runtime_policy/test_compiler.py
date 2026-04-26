@@ -113,3 +113,49 @@ def test_runtime_policy_reads_teacher_kb_context_from_metadata(monkeypatch) -> N
     assert "Knowledge Pack: algebra-pack" in payload["teacher_kb_context"]
     assert payload["sources"]["KNOWLEDGE_BASE"] == "knowledge_base.algebra-pack.metadata"
     assert payload["slices"]["CURRICULUM"].startswith("Knowledge Pack: algebra-pack")
+
+
+def test_runtime_policy_prefers_pinned_agent_spec_version(monkeypatch, tmp_path) -> None:
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            "identity": {"agent_name": "Fraction Coach"},
+            "soul": {"teaching_philosophy": "Version one philosophy."},
+            "rules": {"guardrails": "Version one guardrails."},
+        },
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion one.\n"},
+    )
+    service.save_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            "identity": {"agent_name": "Fraction Coach"},
+            "soul": {"teaching_philosophy": "Version two philosophy."},
+            "rules": {"guardrails": "Version two guardrails."},
+        },
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion two.\n"},
+    )
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    context = UnifiedContext(
+        metadata={
+            "agent_spec_id": "fraction-coach",
+            "session_preferences": {
+                "agent_spec_pin": {
+                    "agent_spec_id": "fraction-coach",
+                    "version": 1,
+                    "updated_at": "2026-04-27T00:00:00Z",
+                }
+            },
+        }
+    )
+    policy = ensure_runtime_policy(context, "chat")
+    payload = policy.to_dict()
+
+    assert payload["agent_spec_id"] == "fraction-coach"
+    assert payload["agent_spec_version"] == 1
+    assert "Version one philosophy." in payload["slices"]["SOUL"]
+    assert "Version two philosophy." not in payload["slices"]["SOUL"]
+    assert payload["debug"]["agent_spec_version"] == 1

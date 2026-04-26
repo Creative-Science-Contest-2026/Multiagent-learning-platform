@@ -36,6 +36,7 @@ class RuntimePolicy:
 
     capability: str
     agent_spec_id: str
+    agent_spec_version: int | None
     slices: dict[str, str]
     sources: dict[str, str]
     knowledge_policy: str
@@ -50,6 +51,7 @@ class RuntimePolicy:
         return {
             "capability": self.capability,
             "agent_spec_id": self.agent_spec_id,
+            "agent_spec_version": self.agent_spec_version,
             "slices": dict(self.slices),
             "sources": dict(self.sources),
             "knowledge_policy": self.knowledge_policy,
@@ -62,6 +64,7 @@ class RuntimePolicy:
                 "missing_slices": missing,
                 "slice_sources": dict(self.sources),
                 "agent_spec_id": self.agent_spec_id,
+                "agent_spec_version": self.agent_spec_version,
                 "has_teacher_kb_context": bool(self.teacher_kb_context.strip()),
             },
         }
@@ -74,6 +77,11 @@ def ensure_runtime_policy(context: UnifiedContext, capability: str) -> RuntimePo
         return RuntimePolicy(
             capability=str(existing.get("capability") or capability),
             agent_spec_id=str(existing.get("agent_spec_id") or ""),
+            agent_spec_version=(
+                int(existing["agent_spec_version"])
+                if existing.get("agent_spec_version") is not None
+                else None
+            ),
             slices={k: str(v or "") for k, v in dict(existing.get("slices") or {}).items()},
             sources={k: str(v or "") for k, v in dict(existing.get("sources") or {}).items()},
             knowledge_policy=str(existing.get("knowledge_policy") or DEFAULT_KNOWLEDGE_POLICY),
@@ -147,12 +155,18 @@ def _compile_runtime_policy(context: UnifiedContext, capability: str) -> Runtime
 
     knowledge_policy = _resolve_knowledge_policy(teacher_spec, slices)
     agent_spec_id = str(teacher_spec.get("agent_spec_id") or "")
+    agent_spec_version = (
+        int(teacher_spec["agent_spec_version"])
+        if teacher_spec.get("agent_spec_version") is not None
+        else None
+    )
     teacher_kb_context, teacher_kb_source = _build_teacher_kb_context(context)
     if teacher_kb_source:
         sources.setdefault("KNOWLEDGE_BASE", teacher_kb_source)
     return RuntimePolicy(
         capability=capability,
         agent_spec_id=agent_spec_id,
+        agent_spec_version=agent_spec_version,
         slices=slices,
         sources=sources,
         knowledge_policy=knowledge_policy,
@@ -176,6 +190,20 @@ def _get_teacher_spec(context: UnifiedContext) -> dict[str, Any]:
             normalized = _normalize_teacher_spec(candidate)
             if normalized:
                 return normalized
+
+    pin = _resolve_agent_spec_pin(context)
+    if pin:
+        pinned_agent_id = str(pin.get("agent_spec_id") or "").strip()
+        pinned_version = pin.get("version")
+        if pinned_agent_id and pinned_version is not None:
+            try:
+                pack = get_agent_spec_service().get_pack_version(
+                    pinned_agent_id,
+                    int(pinned_version),
+                )
+            except FileNotFoundError:
+                return {}
+            return _normalize_teacher_spec(_pack_to_teacher_spec(pack))
 
     agent_spec_id = _resolve_agent_spec_id(context)
     if agent_spec_id:
@@ -235,10 +263,24 @@ def _resolve_agent_spec_id(context: UnifiedContext) -> str:
     return ""
 
 
+def _resolve_agent_spec_pin(context: UnifiedContext) -> dict[str, Any] | None:
+    candidates = [
+        context.metadata.get("agent_spec_pin"),
+        (context.metadata.get("session_preferences") or {}).get("agent_spec_pin")
+        if isinstance(context.metadata.get("session_preferences"), dict)
+        else None,
+    ]
+    for candidate in candidates:
+        if isinstance(candidate, dict):
+            return candidate
+    return None
+
+
 def _pack_to_teacher_spec(pack: dict[str, Any]) -> dict[str, Any]:
     files = dict(pack.get("files") or {})
     compiled: dict[str, Any] = {
         "agent_spec_id": str(pack.get("agent_id") or ""),
+        "agent_spec_version": pack.get("version"),
         "knowledge_policy": str((pack.get("summary") or {}).get("knowledge_policy") or ""),
     }
     for filename, slice_name in SPEC_FILE_TO_SLICE.items():

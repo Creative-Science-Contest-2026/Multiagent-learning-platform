@@ -2,7 +2,7 @@
 
 - Task ID: `F114_SPEC_VERSION_PINNING_PER_SESSION`
 - Commit tag: `F114`
-- Status: `Planning`
+- Status: `In Progress`
 - Branch recommendation: `pod-b/spec-version-pinning`
 
 ## Goal
@@ -32,3 +32,9 @@ Pin each learning session to the exact teacher-spec version first resolved at ru
 - pin by exact spec version or version snapshot metadata, not by mutable latest pack lookup
 - avoid changing teacher-facing flows in the same branch
 - keep the first persisted session contract inspectable and testable
+
+## Session Notes
+
+- Runtime scope stays bounded to Agent Spec storage, session preferences, runtime-policy compilation, and unified turn runtime.
+- Session pins use `preferences.agent_spec_pin = {agent_spec_id, version, updated_at}`.
+- No teacher-facing dashboard or `/agents` UX files are part of this packet.
