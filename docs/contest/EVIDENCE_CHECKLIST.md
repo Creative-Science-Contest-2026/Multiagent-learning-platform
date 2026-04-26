@@ -24,8 +24,8 @@ Use this section to calibrate claims when showing teacher authoring plus evidenc
 
 | Area | Evidence | Refresh mode | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Agent Specs authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections visible on `/agents` | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `10-agents-spec-pack-authoring.png`. Keep the claim scoped to authoring proof. |
-| Agent Specs authoring | Export action visible from authoring tab | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `11-agents-spec-pack-export.png`. Runtime binding remains a separate verification concern. |
+| Agent Specs authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections visible on `/agents` | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `10-agents-spec-pack-authoring.png`. Pair with the bounded runtime-binding test proof when discussing live Tutor behavior. |
+| Agent Specs authoring | Export action visible from authoring tab | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `11-agents-spec-pack-export.png`. Live runtime impact is now supported by automated bounded proof for the unified Tutor turn path. |
 
 ## Required Command Evidence
 
@@ -69,7 +69,7 @@ Video status follows the same freshness states:
 | Criterion | Status | Notes |
 | --- | --- | --- |
 | Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
-| Hybrid authoring plus evidence-loop claim is calibrated | Passed | Hybrid authoring is documented with explicit pending-capture and runtime-binding caveats. |
+| Hybrid authoring plus evidence-loop claim is calibrated | Passed | Hybrid authoring is documented with bounded runtime-binding proof for the unified Tutor turn path and still avoids universal entry-point claims. |
 | Product commands have smoke-backed validation evidence | Passed | See `VALIDATION_REPORT.md`. |
 | Screenshots are captured and linked | Passed | Knowledge, assessment, tutor, dashboard, and `/agents` authoring screenshots are current as of the 2026-04-26 recapture run. |
 | Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |

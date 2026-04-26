@@ -17,7 +17,7 @@ Latest smoke-backed refresh: 2026-04-26
 | Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-26.md`. |
 | Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-26 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the lane-6 worktree. |
 | Screenshot bundle | Browser capture after smoke when the UI changes | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`, including the Lane 5 evidence-first dashboard workflow. |
-| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; keep claims bounded to authoring/export proof unless runtime binding is re-verified. |
+| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; combine these with the bounded runtime-binding automated proof before claiming live Tutor behavior impact. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
 Use these status values consistently:
@@ -45,7 +45,7 @@ Use these status values consistently:
 - Video evidence is deferred unless the final contest submission requires it.
 - The frontend build emits a Next.js warning about multiple lockfiles and inferred workspace root. The build still completes successfully.
 - Browser-backed screenshot refresh now works in a local worktree, but it still depends on a running backend and frontend plus demo-safe local data.
-- Runtime handoff from selected `agent_spec_id` through every live session-turn request path is not yet claimed as universally wired in this report. Treat `/agents` authoring as demonstrated UI/API capability unless a fresh smoke pass verifies full request-path binding.
+- Runtime handoff from `config.agent_spec_id` through the unified live Tutor turn path now has bounded automated proof in repository tests, including a visible behavior difference between two spec packs. This report still does not claim universal wiring across every possible entry point.
 - Local provider-backed assessment generation was unavailable during the 2026-04-25 screenshot refresh because the configured model key was still a placeholder. The refreshed `07` and `08` screenshots therefore use demo-safe local session content in the worktree data store instead of a live provider response.
 - Provider-backed AI quality depends on configured model credentials. If credentials are unavailable during a demo, use the command validation and recorded UI flow as fallback evidence.
 - This report uses demo-safe descriptions only. Do not add real student data.
@@ -65,7 +65,7 @@ The latest smoke-backed evidence refresh used local demo data only (2026-04-26):
   - browser-backed recapture completed on 2026-04-26 for the dashboard evidence-first workflow and `/agents` authoring proof;
   - Knowledge Pack, assessment, and tutor screenshots remain valid from the 2026-04-25 refresh;
   - dashboard screenshots now point to the new evidence-first workflow captures;
-  - hybrid `/agents` screenshot rows are current, but runtime-binding claims remain intentionally limited.
+  - hybrid `/agents` screenshot rows are current, and runtime-binding claims are now backed by bounded automated proof for the unified Tutor turn path rather than authoring-only wording.
 
 Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
 
@@ -87,7 +87,8 @@ The 2026-04-26 scripted-reset smoke run verified the MVP path in the current mer
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
 4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the lane-6 worktree;
-5. smoke-backed command evidence stayed `Current`, and browser-captured dashboard plus hybrid `/agents` rows were refreshed on 2026-04-26 against the current merged UI.
+5. smoke-backed command evidence stayed `Current`, and browser-captured dashboard plus hybrid `/agents` rows were refreshed on 2026-04-26 against the current merged UI;
+6. focused automated tests now prove the unified Tutor turn path can accept `config.agent_spec_id`, assemble the matching runtime policy, and produce a deterministic behavior difference between two contrasting spec packs without claiming full entry-point coverage.
 
 ## Manual Verification Template
 

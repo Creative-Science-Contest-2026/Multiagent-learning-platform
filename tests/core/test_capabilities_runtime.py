@@ -258,6 +258,115 @@ async def test_chat_capability_resolves_runtime_policy_from_agent_spec_pack(
 
 
 @pytest.mark.asyncio
+async def test_chat_capability_shows_behavior_diff_across_two_agent_specs(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    outputs: list[dict[str, str]] = []
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="strict-fractions",
+        display_name="Strict Fractions",
+        structured={
+            "identity": {
+                "agent_name": "Strict Fractions",
+                "subject": "Mathematics",
+                "grade_band": "Grade 6",
+                "tone": "Strict and concise",
+                "primary_language": "English",
+                "persona_summary": "A teacher-defined tutor for precise fraction work.",
+            },
+            "soul": {
+                "teaching_philosophy": "Require justification before correction.",
+                "when_student_wrong": "Ask the student to name the misconception before helping.",
+                "when_student_stuck": "Give the smallest scaffold possible.",
+                "encouragement_style": "Calm and demanding.",
+            },
+            "rules": {
+                "do_not_solve_directly": "yes",
+                "max_session_minutes": "20",
+                "hint_policy": "One hint after a student attempt.",
+                "escalation_rule": "Escalate only after the student justifies a retry.",
+                "guardrails": "Never provide the final answer without a student attempt.",
+            },
+        },
+    )
+    service.create_pack(
+        agent_id="supportive-fractions",
+        display_name="Supportive Fractions",
+        structured={
+            "identity": {
+                "agent_name": "Supportive Fractions",
+                "subject": "Mathematics",
+                "grade_band": "Grade 6",
+                "tone": "Warm and encouraging",
+                "primary_language": "English",
+                "persona_summary": "A teacher-defined tutor for supportive fraction coaching.",
+            },
+            "soul": {
+                "teaching_philosophy": "Lower the emotional barrier before correction.",
+                "when_student_wrong": "Acknowledge effort, then offer a starter scaffold.",
+                "when_student_stuck": "Offer one concrete first step quickly.",
+                "encouragement_style": "Warm and specific.",
+            },
+            "rules": {
+                "do_not_solve_directly": "yes",
+                "max_session_minutes": "20",
+                "hint_policy": "Offer a starter hint immediately after confusion.",
+                "escalation_rule": "Escalate after two failed hints.",
+                "guardrails": "Never shame the student for a wrong answer.",
+            },
+        },
+    )
+
+    class FakePipeline:
+        def __init__(self, language: str = "en") -> None:
+            self.language = language
+
+        async def run(self, context: UnifiedContext, stream: StreamBus) -> None:
+            memory = context.memory_context
+            if "Require justification before correction." in memory:
+                response = "Before we compute anything, tell me which denominator you would build and why."
+            elif "Lower the emotional barrier before correction." in memory:
+                response = "You're close. Let's start with one gentle step: what common denominator do 6 and 2 share?"
+            else:
+                response = "Let's try the next step together."
+            outputs.append(
+                {
+                    "agent_spec_id": str(context.metadata.get("runtime_policy", {}).get("agent_spec_id") or ""),
+                    "memory_context": memory,
+                    "response": response,
+                }
+            )
+            await stream.content(response, source="chat", stage="responding")
+
+    monkeypatch.setattr("deeptutor.capabilities.chat.AgenticChatPipeline", FakePipeline)
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    strict_context = UnifiedContext(
+        user_message="Can you solve 5/6 - 1/2 for me?",
+        language="en",
+        metadata={"agent_spec_id": "strict-fractions"},
+    )
+    supportive_context = UnifiedContext(
+        user_message="Can you solve 5/6 - 1/2 for me?",
+        language="en",
+        metadata={"agent_spec_id": "supportive-fractions"},
+    )
+
+    strict_events = await _collect_events(lambda bus: ChatCapability().run(strict_context, bus))
+    supportive_events = await _collect_events(lambda bus: ChatCapability().run(supportive_context, bus))
+
+    assert any(event.type == StreamEventType.CONTENT for event in strict_events)
+    assert any(event.type == StreamEventType.CONTENT for event in supportive_events)
+    assert outputs[0]["agent_spec_id"] == "strict-fractions"
+    assert outputs[1]["agent_spec_id"] == "supportive-fractions"
+    assert outputs[0]["response"] != outputs[1]["response"]
+    assert "Require justification before correction." in outputs[0]["memory_context"]
+    assert "Lower the emotional barrier before correction." in outputs[1]["memory_context"]
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("enabled_tools", "knowledge_bases", "expected_tools", "expected_kb", "expected_disable"),
     [

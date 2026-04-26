@@ -13,7 +13,7 @@ This evidence bundle now supports a hybrid contest narrative:
 - Teacher authoring proof: the teacher can structure Agent Specs on `/agents` and export a spec pack.
 - Learning evidence-loop proof: Knowledge Pack -> assessment -> tutoring follow-up -> dashboard activity.
 
-Runtime wiring between a selected `agent_spec_id` and every live turn request is still treated as a known limitation unless explicitly re-verified by smoke.
+The repository now includes bounded proof that the unified live turn path can carry `config.agent_spec_id` into Tutor runtime policy assembly and produce a visible behavior difference between two spec packs. Do not expand that claim into universal coverage across every entry point unless a fresh smoke run verifies those additional paths.
 
 ## Evidence Files
 
@@ -30,7 +30,7 @@ Runtime wiring between a selected `agent_spec_id` and every live turn request is
 - Teacher Agent Spec authoring UI/API and runtime policy assembly contracts are merged on `main` and documented as hybrid-proof context.
 - The latest scripted-reset smoke-backed MVP verification passed on 2026-04-26 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
 - Screenshot evidence is captured in [`screenshots/`](./screenshots/), including the 2026-04-26 dashboard evidence-first refresh and the `/agents` authoring proof refresh.
-- Hybrid `/agents` screenshots are now current, but the claim remains bounded to authoring and export proof unless runtime binding is re-verified.
+- Hybrid `/agents` screenshots are current, and the codebase now also carries automated bounded runtime-binding proof for the unified Tutor turn path. Keep the claim narrower than universal entry-point coverage.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 
 ## Evidence Refresh Rules
