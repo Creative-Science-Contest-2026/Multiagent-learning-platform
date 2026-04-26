@@ -71,8 +71,8 @@ flowchart TD
   AssessmentBuilder --> AssessmentDiagnosisAPI["GET /api/v1/assessment/diagnosis/{session_id}"]
   AssessmentRecommendAPI --> RecommendEngine["Assessment Recommendation Engine"]
   RecommendEngine --> AssessmentSignals["Weak topics + score trend + KB context"]
-  AssessmentDiagnosisAPI --> EvidenceExtractor["Observation extractor from quiz review"]
-  EvidenceExtractor --> ObservationStore["SQLite observations + student_states"]
+  AssessmentDiagnosisAPI --> EvidenceExtractor["Observation extractor (assessment + tutoring runtime)"]
+  EvidenceExtractor --> ObservationStore["SQLite observations + student_states (+ recency rollups)"]
   ObservationStore --> DiagnosisEngine["Rule-first diagnosis + action selection"]
   AdaptiveDifficulty --> QuizHistory["[Quiz Performance] session context"]
   AdaptiveDifficulty --> DeepQuestion

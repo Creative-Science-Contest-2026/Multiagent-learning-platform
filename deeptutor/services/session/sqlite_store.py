@@ -5,6 +5,7 @@ SQLite-backed unified chat session store.
 from __future__ import annotations
 
 import asyncio
+from collections import Counter
 import json
 import os
 import sqlite3
@@ -169,6 +170,7 @@ class SQLiteSessionStore:
                     repeated_mistakes_json TEXT NOT NULL DEFAULT '[]',
                     support_level TEXT NOT NULL DEFAULT 'independent',
                     confidence_trend TEXT NOT NULL DEFAULT 'flat',
+                    recency_summary_json TEXT NOT NULL DEFAULT '{}',
                     updated_at REAL NOT NULL
                 );
                 """
@@ -177,6 +179,13 @@ class SQLiteSessionStore:
             if "preferences_json" not in columns:
                 conn.execute(
                     "ALTER TABLE sessions ADD COLUMN preferences_json TEXT DEFAULT '{}'"
+                )
+            student_state_columns = {
+                row[1] for row in conn.execute("PRAGMA table_info(student_states)").fetchall()
+            }
+            if "recency_summary_json" not in student_state_columns:
+                conn.execute(
+                    "ALTER TABLE student_states ADD COLUMN recency_summary_json TEXT NOT NULL DEFAULT '{}'"
                 )
             conn.commit()
 
@@ -515,7 +524,7 @@ class SQLiteSessionStore:
                         row["hint_count"],
                         row["retry_count"],
                         row["dominant_error"] or "",
-                        now,
+                        float(row.get("created_at") or now),
                     )
                     for row in observations
                 ],
@@ -531,12 +540,13 @@ class SQLiteSessionStore:
             conn.execute(
                 """
                 INSERT INTO student_states (
-                    student_id, repeated_mistakes_json, support_level, confidence_trend, updated_at
-                ) VALUES (?, ?, ?, ?, ?)
+                    student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?)
                 ON CONFLICT(student_id) DO UPDATE SET
                     repeated_mistakes_json = excluded.repeated_mistakes_json,
                     support_level = excluded.support_level,
                     confidence_trend = excluded.confidence_trend,
+                    recency_summary_json = excluded.recency_summary_json,
                     updated_at = excluded.updated_at
                 """,
                 (
@@ -544,6 +554,7 @@ class SQLiteSessionStore:
                     _json_dumps(state.get("repeated_mistakes", [])),
                     state.get("support_level", "independent"),
                     state.get("confidence_trend", "flat"),
+                    _json_dumps(state.get("recency_summary", {})),
                     now,
                 ),
             )
@@ -556,7 +567,7 @@ class SQLiteSessionStore:
         with self._connect() as conn:
             row = conn.execute(
                 """
-                SELECT student_id, repeated_mistakes_json, support_level, confidence_trend, updated_at
+                SELECT student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json, updated_at
                 FROM student_states
                 WHERE student_id = ?
                 """,
@@ -569,6 +580,7 @@ class SQLiteSessionStore:
             "repeated_mistakes": _json_loads(row["repeated_mistakes_json"], []),
             "support_level": row["support_level"],
             "confidence_trend": row["confidence_trend"],
+            "recency_summary": _json_loads(row["recency_summary_json"], {}),
             "updated_at": row["updated_at"],
         }
 
@@ -580,7 +592,7 @@ class SQLiteSessionStore:
             rows = conn.execute(
                 """
                 SELECT observation_id, session_id, student_id, source, topic, question_id, is_correct,
-                       latency_seconds, hint_count, retry_count, dominant_error
+                       latency_seconds, hint_count, retry_count, dominant_error, created_at
                 FROM observations
                 WHERE student_id = ?
                 ORDER BY created_at DESC
@@ -600,12 +612,122 @@ class SQLiteSessionStore:
                 "hint_count": row["hint_count"],
                 "retry_count": row["retry_count"],
                 "dominant_error": row["dominant_error"] or None,
+                "created_at": row["created_at"],
             }
             for row in rows
         ]
 
     async def list_observations(self, student_id: str) -> list[dict[str, Any]]:
         return await self._run(self._list_observations_sync, student_id)
+
+    @staticmethod
+    def _recency_bucket(age_seconds: float) -> str:
+        day = 24 * 60 * 60
+        if age_seconds <= day:
+            return "last_24h"
+        if age_seconds <= 7 * day:
+            return "last_7d"
+        if age_seconds <= 30 * day:
+            return "last_30d"
+        return "older"
+
+    def _build_student_state_rollup_sync(self, student_id: str, limit: int = 24) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT topic, is_correct, hint_count, retry_count, created_at
+                FROM observations
+                WHERE student_id = ?
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (student_id, max(1, int(limit))),
+            ).fetchall()
+        if not rows:
+            return None
+
+        now = time.time()
+        weighted_topic_misses: Counter[str] = Counter()
+        recent_rows = []
+        recency_counter: Counter[str] = Counter()
+        for row in rows:
+            topic = str(row["topic"] or "general")
+            is_correct = bool(row["is_correct"])
+            hint_count = int(row["hint_count"] or 0)
+            retry_count = int(row["retry_count"] or 0)
+            created_at = float(row["created_at"] or now)
+            age_seconds = max(0.0, now - created_at)
+            recency_counter[self._recency_bucket(age_seconds)] += 1
+
+            if not is_correct:
+                half_life_seconds = 7 * 24 * 60 * 60
+                weight = 2 ** (-age_seconds / half_life_seconds)
+                weighted_topic_misses[topic] += weight
+            recent_rows.append((is_correct, hint_count, retry_count))
+
+        repeated_mistakes = [
+            topic
+            for topic, _score in sorted(
+                weighted_topic_misses.items(),
+                key=lambda item: item[1],
+                reverse=True,
+            )[:3]
+        ]
+
+        recent_slice = recent_rows[: min(8, len(recent_rows))]
+        incorrect_recent = sum(1 for item in recent_slice if not item[0])
+        heavy_support_recent = sum(1 for item in recent_slice if item[1] >= 2 or item[2] >= 2)
+        if incorrect_recent >= 3 and heavy_support_recent >= 2:
+            support_level = "intensive"
+        elif incorrect_recent >= 1 or heavy_support_recent >= 1:
+            support_level = "guided"
+        else:
+            support_level = "independent"
+
+        chronological = list(reversed(recent_slice))
+        perf_scores: list[float] = []
+        for is_correct, hint_count, retry_count in chronological:
+            base = 1.0 if is_correct else -1.0
+            base -= 0.15 * min(3, hint_count)
+            base -= 0.1 * min(3, retry_count)
+            perf_scores.append(base)
+        split = max(1, len(perf_scores) // 2)
+        early_avg = sum(perf_scores[:split]) / split
+        late_len = max(1, len(perf_scores) - split)
+        late_avg = sum(perf_scores[split:]) / late_len
+        delta = late_avg - early_avg
+        if delta > 0.2:
+            confidence_trend = "up"
+        elif delta < -0.2:
+            confidence_trend = "down"
+        else:
+            confidence_trend = "flat"
+
+        recency_summary = {
+            "total_observations": len(rows),
+            "window_size": max(1, int(limit)),
+            "bucket_counts": {
+                "last_24h": recency_counter.get("last_24h", 0),
+                "last_7d": recency_counter.get("last_7d", 0),
+                "last_30d": recency_counter.get("last_30d", 0),
+                "older": recency_counter.get("older", 0),
+            },
+            "recent_incorrect": incorrect_recent,
+            "weighted_topic_misses": {
+                topic: round(score, 3) for topic, score in weighted_topic_misses.items()
+            },
+        }
+
+        return {
+            "student_id": student_id,
+            "repeated_mistakes": repeated_mistakes,
+            "support_level": support_level,
+            "confidence_trend": confidence_trend,
+            "recency_summary": recency_summary,
+        }
+
+    async def build_student_state_rollup(self, student_id: str, limit: int = 24) -> dict[str, Any] | None:
+        return await self._run(self._build_student_state_rollup_sync, student_id, limit)
 
     def _update_session_title_sync(self, session_id: str, title: str) -> bool:
         with self._connect() as conn:

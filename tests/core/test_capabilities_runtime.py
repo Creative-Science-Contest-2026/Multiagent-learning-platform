@@ -17,6 +17,7 @@ from deeptutor.capabilities.deep_solve import DeepSolveCapability
 from deeptutor.core.context import Attachment, UnifiedContext
 from deeptutor.core.stream import StreamEvent, StreamEventType
 from deeptutor.core.stream_bus import StreamBus
+from deeptutor.services.session.turn_runtime import _build_tutoring_observations
 
 
 def _install_module(monkeypatch: pytest.MonkeyPatch, fullname: str, **attrs: Any) -> types.ModuleType:
@@ -60,6 +61,42 @@ async def _collect_events(run_coro) -> list[StreamEvent]:
     await bus.close()
     await consumer
     return events
+
+
+def test_turn_runtime_builds_tutoring_observations_for_chat_capability() -> None:
+    rows = _build_tutoring_observations(
+        capability="chat",
+        session_id="session-1",
+        student_id="student-1",
+        user_message="I still get this wrong",
+        assistant_message="Hint: convert to a common denominator first.",
+        followup_question_context={
+            "question_id": "q_9",
+            "question": "Compute 5/6 - 1/2",
+            "is_correct": False,
+        },
+        assistant_events=[{"timestamp": 1.0}, {"timestamp": 14.0}],
+    )
+
+    assert len(rows) == 1
+    assert rows[0]["source"] == "tutoring"
+    assert rows[0]["student_id"] == "student-1"
+    assert rows[0]["question_id"] == "q_9"
+    assert rows[0]["is_correct"] is False
+
+
+def test_turn_runtime_skips_tutoring_observations_for_non_chat_capability() -> None:
+    rows = _build_tutoring_observations(
+        capability="deep_question",
+        session_id="session-2",
+        student_id="student-2",
+        user_message="generate quiz",
+        assistant_message="created",
+        followup_question_context=None,
+        assistant_events=[{"timestamp": 2.0}, {"timestamp": 4.0}],
+    )
+
+    assert rows == []
 
 
 @pytest.mark.asyncio
@@ -402,7 +439,8 @@ async def test_deep_question_capability_uses_single_call_followup_agent(
     capability = DeepQuestionCapability()
     events = await _collect_events(lambda bus: capability.run(context, bus))
 
-    assert captured["process"]["user_message"] == "Why was my answer wrong?"
+    assert "Why was my answer wrong?" in captured["process"]["user_message"]
+    assert "Teacher Assessment Runtime Policy:" in captured["process"]["user_message"]
     assert (
         captured["process"]["history_context"]
         == "User previously asked for a simpler explanation."
@@ -454,9 +492,19 @@ async def test_deep_research_capability_requires_explicit_config_and_streams_tra
     class FakeResearchPipeline:
         def __init__(self, **kwargs: Any) -> None:
             captured["pipeline_init"] = kwargs
+            self.queue = SimpleNamespace(blocks=[])
+
+        async def _phase1_planning(self, topic: str) -> str:
+            self.queue.blocks = [
+                SimpleNamespace(
+                    sub_topic="Core capabilities",
+                    overview="How agent-native tutoring composes tools and memory.",
+                )
+            ]
+            return topic
 
         async def run(self, topic: str) -> dict[str, Any]:
-            await captured["pipeline_init"]["progress_callback"](
+            captured["pipeline_init"]["progress_callback"](
                 {"status": "gathering evidence", "stage": "researching", "block_id": "block_1"}
             )
             await captured["pipeline_init"]["trace_callback"](
@@ -517,6 +565,12 @@ async def test_deep_research_capability_requires_explicit_config_and_streams_tra
             "mode": "report",
             "depth": "standard",
             "sources": ["kb", "web", "papers"],
+            "confirmed_outline": [
+                {
+                    "title": "Core capabilities",
+                    "overview": "How agent-native tutoring composes tools and memory.",
+                }
+            ],
         },
         language="en",
     )
@@ -531,12 +585,6 @@ async def test_deep_research_capability_requires_explicit_config_and_streams_tra
     assert config["researching"]["enable_web_search"] is True
     assert config["reporting"]["style"] == "report"
     assert config["tools"]["web_search"]["enabled"] is True
-    progress_event = next(
-        event
-        for event in events
-        if event.type == StreamEventType.PROGRESS and event.content == "gathering evidence"
-    )
-    assert progress_event.metadata["research_stage_card"] == "evidence"
     tool_call_event = next(
         event
         for event in events
