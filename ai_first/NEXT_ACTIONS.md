@@ -27,3 +27,8 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 ## Mirror Policy
 
 Use this file only as a compact queue mirror. Do not rely on it for the full operating contract. For a human-friendly quick start, read `ai_first/USAGE_GUIDE.md`.
+## 2026-04-26
+
+1. Start new AI sessions from `main`, one lane per session.
+2. Use the matching `docs/superpowers/tasks/2026-04-26-lane-*.md` packet before code edits.
+3. If a task appears to touch multiple lanes, stop and ask the human to clarify ownership first.

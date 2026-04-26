@@ -1,30 +1,35 @@
 # Execution Queue
 
-Last updated: 2026-04-25
+Last updated: 2026-04-26
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#130 docs: refresh contest screenshot evidence`
+- Latest merged PR: `#132 feat: add wave 1 evidence spine`
 - Latest smoke result: the 2026-04-25 scripted-reset smoke pass succeeded against current `main`.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
-- Core MVP path in `main` now also includes contest-facing Vietnamese UI coverage, marketplace and knowledge-screen polish, dashboard/review polish, deeper dashboard insight payloads, richer metadata contracts, and improved session context support on top of the earlier marketplace, assessment, tutor, dashboard, offline, analytics, evidence, and submission flows.
+- Core MVP path in `main` now also includes the Wave 1 evidence spine: structured observations, student-state persistence, assessment diagnosis, and teacher insight payloads on top of the earlier marketplace, assessment, tutor, dashboard, offline, analytics, evidence, and submission flows.
 
 ## Active queue
 
-- No active AI-owned implementation or docs lane is open right now.
-- Current purpose: keep the refreshed screenshot evidence visible and leave only human-only submission follow-ups explicit.
+- No active AI-owned implementation lane is open right now.
+- Current purpose: prepare clean multi-session execution from `main` using one lane packet per session.
 
 ## Next recommended task
 
-Review the remaining human-owned submission items:
+Create or use one session per lane from `main` with these packets:
 
-1. Keep the 2026-04-25 smoke and screenshot evidence bundle as the current repo-backed source of truth
-2. Decide whether an optional video artifact is required for final submission
-3. Complete the final human review items in the contest submission checklist
+1. `docs/superpowers/tasks/2026-04-26-lane-1-agent-spec-authoring.md`
+2. `docs/superpowers/tasks/2026-04-26-lane-2-spec-runtime-assembly.md`
+3. `docs/superpowers/tasks/2026-04-26-lane-3-observation-student-state.md`
+4. `docs/superpowers/tasks/2026-04-26-lane-4-diagnosis-recommendation.md`
+5. `docs/superpowers/tasks/2026-04-26-lane-5-teacher-insight-ui.md`
+6. `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`
+
+If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
 ## Status Update (2026-04-25)
 
