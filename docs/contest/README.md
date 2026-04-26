@@ -29,7 +29,7 @@ Runtime wiring between a selected `agent_spec_id` and every live turn request is
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
 - Teacher Agent Spec authoring UI/API and runtime policy assembly contracts are merged on `main` and documented as hybrid-proof context.
 - The latest scripted-reset smoke-backed MVP verification passed on 2026-04-26 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
-- Screenshot evidence is captured in [`screenshots/`](./screenshots/) and is current again after the refreshed `T037` re-run merged on 2026-04-25.
+- Screenshot evidence is captured in [`screenshots/`](./screenshots/), but the dashboard rows are now `Stale` because Lane 5 changed the teacher insight workflow after the refreshed `T037` re-run on 2026-04-25.
 - Hybrid `/agents` screenshots are intentionally marked `Stale` until a dedicated recapture run is completed.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 

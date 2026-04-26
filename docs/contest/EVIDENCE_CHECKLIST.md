@@ -15,8 +15,8 @@ Refresh these only when the UI changed or when the latest smoke-backed validatio
 | Assessment | Common-mistake or feedback guidance visible | Browser capture | Current | Refreshed on 2026-04-25 with demo-safe local session content in the screenshot worktree; see `08-assessment-common-mistakes.png`. |
 | Tutor Agent | Student asks a follow-up question | Browser capture | Current | Refreshed on 2026-04-25; the student turn is visible in `06-tutor-agent-answer.png`. |
 | Tutor Agent | Tutor response with learning context | Browser capture | Current | Refreshed on 2026-04-25; the tutor answer is visible in `06-tutor-agent-answer.png`. |
-| Dashboard | Summary cards visible | Browser capture | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `05-dashboard-summary-and-activity.png`. |
-| Dashboard | Recent activity includes assessment/tutoring distinction and Knowledge Pack reference | Browser capture | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `05-dashboard-summary-and-activity.png`. |
+| Dashboard | Evidence-first teacher insight overview visible | Browser capture | Stale | Lane 5 changed `/dashboard` after the 2026-04-25 capture set. Recapture before claiming the new workflow visually. |
+| Dashboard | Recent activity still visible below the teacher insight workflow | Browser capture | Stale | The old `05-dashboard-summary-and-activity.png` no longer represents the current overview hierarchy after Lane 5. |
 
 ## Hybrid Proof Screenshots
 
@@ -71,6 +71,6 @@ Video status follows the same freshness states:
 | Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
 | Hybrid authoring plus evidence-loop claim is calibrated | Passed | Hybrid authoring is documented with explicit pending-capture and runtime-binding caveats. |
 | Product commands have smoke-backed validation evidence | Passed | See `VALIDATION_REPORT.md`. |
-| Screenshots are captured and linked | Passed with pending hybrid capture | Core screenshot bundle is current from 2026-04-25; `/agents` hybrid screenshots remain `Stale` until recaptured. |
+| Screenshots are captured and linked | Passed with pending dashboard + hybrid recapture | Knowledge, assessment, and tutor screenshots are current from 2026-04-25; dashboard and `/agents` rows remain `Stale` until recaptured. |
 | Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |
 | No secrets or private data in evidence | Passed | Screenshots use demo-safe Knowledge Pack and session data. |

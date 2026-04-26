@@ -16,7 +16,7 @@ Latest smoke-backed refresh: 2026-04-26
 | --- | --- | --- | --- |
 | Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-26.md`. |
 | Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-26 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the lane-6 worktree. |
-| Screenshot bundle | Browser capture after smoke when the UI changes | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass` against the current merged UI. |
+| Screenshot bundle | Browser capture after smoke when the UI changes | Stale | Knowledge, assessment, and tutor screenshots still reflect the core loop, but Lane 5 changed the teacher dashboard workflow after the 2026-04-25 capture set. |
 | Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Stale | Lane 6 documented the hybrid proof path, but the contest screenshot bundle has not yet captured `/agents` authoring evidence. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
@@ -63,8 +63,9 @@ The latest smoke-backed evidence refresh used local demo data only (2026-04-26):
   - `contest-tutor-demo`
 - Screenshot refresh follow-up:
   - no new screenshot recapture was performed in this smoke pass;
-  - existing screenshot bundle remains valid for the current core loop;
-  - hybrid `/agents` screenshot rows remain `Stale` until dedicated capture.
+- existing screenshot bundle remains valid for Knowledge Pack, assessment, and tutor screens;
+- dashboard screenshots now require recapture because Lane 5 changed the teacher insight workflow after the 2026-04-25 capture set;
+- hybrid `/agents` screenshot rows remain `Stale` until dedicated capture.
 
 Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
 
@@ -86,7 +87,7 @@ The 2026-04-26 scripted-reset smoke run verified the MVP path in the current mer
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
 4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the lane-6 worktree;
-5. screenshot bundle status stayed `Current` for the core loop, while hybrid `/agents` screenshots stayed `Stale` pending dedicated capture.
+5. smoke-backed command evidence stayed `Current`, while browser-captured dashboard and hybrid `/agents` rows now remain `Stale` pending dedicated recapture.
 
 ## Manual Verification Template
 

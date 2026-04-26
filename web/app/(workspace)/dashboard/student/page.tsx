@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpen, Flame, LineChart, Loader2, Target } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { StudentInsightDetail } from "@/components/dashboard/StudentInsightDetail";
 import {
+  getDashboardInsights,
   getStudentProgress,
+  type DashboardInsights,
   type StudentProgressAssessment,
   type StudentProgressOverview,
   type StudentProgressPathStep,
@@ -217,19 +221,22 @@ function LearningPathCard({
   );
 }
 
-export default function StudentDashboardPage() {
+function StudentDashboardContent() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const studentId = searchParams.get("student") ?? "";
   const [overview, setOverview] = useState<StudentProgressOverview | null>(null);
+  const [insights, setInsights] = useState<DashboardInsights | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    getStudentProgress()
-      .then((data) => {
+    Promise.all([getStudentProgress(), getDashboardInsights(100)])
+      .then(([progressData, insightData]) => {
         if (!cancelled) {
-          setOverview(data);
+          setOverview(progressData);
+          setInsights(insightData);
           setError(null);
         }
       })
@@ -248,6 +255,7 @@ export default function StudentDashboardPage() {
   const focusTopics = overview?.focus_topics ?? [];
   const masteredTopics = overview?.mastered_topics ?? [];
   const suggestedPath = overview?.suggested_learning_path ?? [];
+  const activeStudent = insights?.students.find((row) => row.student_id === studentId) ?? null;
   const statCards = useMemo(
     () => [
       {
@@ -290,21 +298,21 @@ export default function StudentDashboardPage() {
             {t("Back to teacher dashboard")}
           </Link>
           <span className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-[12px] font-medium text-[var(--muted-foreground)]">
-            {t("Student Dashboard")}
+            {t("Student Detail")}
           </span>
         </div>
 
         <section className="rounded-[32px] border border-[var(--border)] bg-[var(--card)]/90 px-6 py-6 shadow-sm">
           <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-            {t("Learning progress")}
+            {t("Teacher Drill-down")}
           </p>
           <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <h1 className="text-[30px] font-semibold tracking-tight text-[var(--foreground)]">
-                {t("See the full learning arc, not just the latest quiz")}
+                {activeStudent?.student_id || t("Inspect evidence before deciding the next move")}
               </h1>
               <p className="mt-2 max-w-[720px] text-[14px] leading-6 text-[var(--muted-foreground)]">
-                {t("Track recent assessments, revisit weak topics, and spot where the student is building confidence.")}
+                {t("Review observed evidence first, then inspect diagnosis and the recommended next move.")}
               </p>
             </div>
             {loading && (
@@ -317,32 +325,36 @@ export default function StudentDashboardPage() {
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <div className="rounded-2xl bg-[var(--muted)]/50 px-4 py-3">
               <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
-                {t("Next Steps")}
+                {t("Recommended action")}
               </div>
               <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
-                {focusTopics.length > 0
-                  ? t("Review the weakest topic before assigning a harder pack")
-                  : t("No weak topics detected yet. The student is ready for a stretch goal.")}
+                {activeStudent?.recommended_actions[0]?.rationale ??
+                  (focusTopics.length > 0
+                    ? t("Review the weakest topic before assigning a harder pack")
+                    : t("No weak topics detected yet. The student is ready for a stretch goal."))}
               </div>
             </div>
             <div className="rounded-2xl bg-[var(--muted)]/50 px-4 py-3">
               <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
-                {t("Focus next")}
+                {t("Observed topic")}
               </div>
               <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
-                {focusTopics[0]?.topic || t("No weak topics detected yet.")}
+                {activeStudent?.observed?.topic || focusTopics[0]?.topic || t("No weak topics detected yet.")}
               </div>
             </div>
             <div className="rounded-2xl bg-[var(--muted)]/50 px-4 py-3">
               <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
-                {t("Suggested learning path")}
+                {t("Diagnosis")}
               </div>
               <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">
-                {suggestedPath[0]?.topic || t("No learning path suggestions yet. Complete an assessment or add pack objectives to unlock the next-step sequence.")}
+                {activeStudent?.inferred[0]?.diagnosis_type ||
+                  t("No diagnosis available. Complete an assessment or tutoring session to generate evidence.")}
               </div>
             </div>
           </div>
         </section>
+
+        <StudentInsightDetail student={activeStudent} t={t} />
 
         {error && (
           <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
@@ -416,5 +428,26 @@ export default function StudentDashboardPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function StudentDashboardPage() {
+  const { t } = useTranslation();
+
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-full bg-[radial-gradient(circle_at_top_left,_rgba(247,208,96,0.18),_transparent_32%),linear-gradient(180deg,_var(--background),_color-mix(in_oklab,_var(--background)_78%,_white))]">
+          <div className="mx-auto flex w-full max-w-[1120px] items-center justify-center px-6 py-16">
+            <div className="inline-flex items-center gap-2 text-[13px] text-[var(--muted-foreground)]">
+              <Loader2 size={14} className="animate-spin" />
+              {t("Loading student detail")}
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <StudentDashboardContent />
+    </Suspense>
   );
 }

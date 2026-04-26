@@ -76,3 +76,6 @@ Turn the merged Wave 1 teacher insight surface into a clearer teacher workflow t
 - This is Session = Lane 5.
 - Keep visual language aligned with existing dashboard patterns unless the human explicitly asks for redesign.
 - Treat backend payloads as contracts, not suggestions.
+- Implemented the evidence-first workflow without changing backend diagnosis semantics or router contracts.
+- `/dashboard/student` now uses the dashboard insight payload plus existing progress context; deeper evidence traces should be added in a future backend lane if needed.
+- Do not compensate for missing payload fields with frontend-only inference.

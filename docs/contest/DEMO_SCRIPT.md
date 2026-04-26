@@ -86,14 +86,15 @@ Goal: show that the teacher can review recent assessment and tutoring activity.
 Steps:
 
 1. Open the Dashboard page.
-2. Confirm totals for sessions, assessments, tutoring, and running activity.
-3. Confirm recent activity distinguishes assessment and tutoring sessions.
-4. Confirm Knowledge Pack references appear when sessions used a selected pack.
+2. Confirm the teacher insight cards show `Observed`, `Inferred`, and `Recommended Action`.
+3. Confirm small-group recommendation cards are visible when grouped signals exist.
+4. Confirm recent activity still distinguishes assessment and tutoring sessions.
+5. Confirm Knowledge Pack references appear when sessions used a selected pack.
 
 Evidence to capture:
 
-- Screenshot of the Dashboard summary cards.
-- Screenshot of recent activity with Knowledge Pack context.
+- Screenshot of the evidence-first teacher insight overview.
+- Screenshot of recent activity with Knowledge Pack context below the insight workflow.
 
 ## Presenter Notes
 

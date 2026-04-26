@@ -25,7 +25,7 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 | Demo script | Ready | [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md) |
 | Smoke-backed validation | Ready | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
 | Evidence checklist | Ready | [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md) |
-| Screenshot bundle | Ready | [`screenshots/`](./screenshots/) |
+| Screenshot bundle | Partially stale | [`screenshots/`](./screenshots/) |
 | Demo-safe reset command | Ready | [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) |
 | Smoke procedure | Ready | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) |
 | Contest rules summary | Ready | [`ai_first/competition/vnexpress-rules-summary.md`](../../ai_first/competition/vnexpress-rules-summary.md) |
@@ -44,6 +44,7 @@ The latest smoke-backed refresh passed on 2026-04-26 after running the scripted 
 - assessment session `contest-assessment-demo`;
 - tutor session `contest-tutor-demo`;
 - dashboard overview and recent activity including the contest sessions;
+- dashboard screenshot recapture is still required for the new evidence-first teacher workflow from Lane 5;
 - frontend production build with `NEXT_PUBLIC_API_BASE=http://localhost:8001`.
 
 Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` and `#128` for smoke-backed evidence, and `#99` plus `#130` for the screenshot bundle.
@@ -70,7 +71,7 @@ If the submission requires video, use [`VIDEO_CAPTURE_RUNBOOK.md`](./VIDEO_CAPTU
 - Hybrid authoring evidence for `/agents` is documented but still pending dedicated screenshot capture in the contest bundle.
 - The backend `deeptutor.api.run_server` path has a reload/absolute-pattern incompatibility with the installed `uvicorn`; latest smoke used the CLI server path with reload disabled.
 - Frontend build may need network access to fetch Google Fonts.
-- Core-loop screenshots are current as of the 2026-04-25 `T037` re-run; hybrid `/agents` screenshots remain pending dedicated recapture.
+- Knowledge, assessment, and tutor screenshots are current as of the 2026-04-25 `T037` re-run; dashboard and hybrid `/agents` screenshots remain pending dedicated recapture.
 
 ## Review Flow
 

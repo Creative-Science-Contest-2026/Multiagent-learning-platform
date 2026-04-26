@@ -40,5 +40,5 @@ Rules:
 - Owned files: `docs/contest/`, `ai_first/evidence/`, `docs/superpowers/pr-notes/`, `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`, `ai_first/EXECUTION_QUEUE.md`, `ai_first/daily/2026-04-26.md`, `ai_first/CURRENT_STATE.md`, `ai_first/NEXT_ACTIONS.md`
 - PR: `#145` (Draft)
 - Last update: 2026-04-26
-- Next action: Wait for review feedback and optionally capture hybrid `/agents` screenshots to upgrade remaining `Stale` rows.
+- Next action: Sync with `main`, mark dashboard screenshot rows stale after Lane 5, and keep hybrid `/agents` capture explicitly pending.
 - Blocker: None
