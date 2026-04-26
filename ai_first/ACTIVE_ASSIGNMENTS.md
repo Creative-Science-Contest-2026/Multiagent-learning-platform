@@ -34,11 +34,11 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-runtime-binding-coverage`
 - Task: `F114_SPEC_VERSION_PINNING_PER_SESSION`
-- Status: `in-progress`
+- Status: `ready-review`
 - Branch: `pod-b/spec-version-pinning`
 - Task packet: `docs/superpowers/tasks/2026-04-27-f114-spec-version-pinning-per-session.md`
 - Owned files: `deeptutor/services/agent_spec/`, `deeptutor/services/session/`, `deeptutor/services/runtime_policy/`, bounded tests/docs
-- PR: `Not opened yet`
-- Last update: `2026-04-27T00:27:00+0700`
-- Next action: `Write the bounded PR note, run final hygiene, and publish the Draft PR after implementation verification.`
+- PR: `#169 ready for review`
+- Last update: `2026-04-27T00:35:00+0700`
+- Next action: `Wait for CI and review on PR #169, then address only bounded F114 feedback.`
 - Blocker: `None`

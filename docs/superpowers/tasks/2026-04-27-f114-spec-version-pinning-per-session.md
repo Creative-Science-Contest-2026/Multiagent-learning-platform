@@ -2,7 +2,7 @@
 
 - Task ID: `F114_SPEC_VERSION_PINNING_PER_SESSION`
 - Commit tag: `F114`
-- Status: `In Progress`
+- Status: `Ready for Review`
 - Branch recommendation: `pod-b/spec-version-pinning`
 
 ## Goal
