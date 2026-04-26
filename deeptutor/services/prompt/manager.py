@@ -176,6 +176,34 @@ class PromptManager:
 
         return fallback
 
+    def build_runtime_policy_prompt(
+        self,
+        *,
+        title: str,
+        sections: list[tuple[str, str]],
+        source_priority: list[str] | None = None,
+        guardrail: str = "",
+        extra_blocks: list[str] | None = None,
+    ) -> str:
+        """Render explicit runtime policy sections into a predictable prompt block."""
+        blocks: list[str] = [title.strip()]
+        for label, content in sections:
+            cleaned = content.strip()
+            if not cleaned:
+                continue
+            blocks.append(f"[{label}]\n{cleaned}")
+
+        if source_priority:
+            blocks.append("Knowledge source priority:\n" + " > ".join(source_priority))
+
+        if extra_blocks:
+            blocks.extend(block.strip() for block in extra_blocks if block.strip())
+
+        if guardrail.strip():
+            blocks.append(f"Scope guardrail: {guardrail.strip()}")
+
+        return "\n\n".join(block for block in blocks if block.strip())
+
     def clear_cache(self, module_name: str | None = None) -> None:
         """
         Clear cached prompts.

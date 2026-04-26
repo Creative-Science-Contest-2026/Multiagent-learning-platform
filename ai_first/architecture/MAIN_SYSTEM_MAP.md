@@ -19,6 +19,7 @@ flowchart TD
   Runtime --> ToolRegistry["ToolRegistry"]
   Runtime --> CapabilityRegistry["CapabilityRegistry"]
   Runtime --> StreamBus["StreamBus"]
+  Runtime --> RuntimePolicy["Runtime Policy Compiler"]
   Runtime --> RuntimePolicy["Runtime Policy Assembly"]
   RuntimePolicy --> PolicyCompiler["services/runtime_policy/compiler.py"]
   RuntimePolicy --> PolicySlices["SOUL/RULES/WORKFLOW/ASSESSMENT/KNOWLEDGE"]
@@ -37,6 +38,9 @@ flowchart TD
   Capabilities --> DeepQuestion["deep_question"]
   RuntimePolicy --> Chat
   RuntimePolicy --> DeepQuestion
+  RuntimePolicy --> PolicyBoundary["Teacher Spec / Student State / Session State"]
+  RuntimePolicy --> Chat
+  RuntimePolicy --> DeepQuestion
 
   Project --> Product["Contest MVP Product Layer"]
   Product --> TeacherWorkspace["Teacher Workspace"]
@@ -44,6 +48,7 @@ flowchart TD
   AgentSpecAuthoring --> AgentSpecUI["/agents authoring tab"]
   AgentSpecAuthoring --> AgentSpecAPI["/api/v1/agent-specs"]
   AgentSpecAuthoring --> AgentSpecStorage["Versioned Markdown spec packs"]
+  AgentSpecStorage --> RuntimePolicy
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
   KnowledgePack --> KPVersions["Versioned teacher-pack metadata: current_version + version_history"]
