@@ -51,7 +51,24 @@ Before edits:
 - Do not remove Apache 2.0 license or upstream credit.
 - Do not modify lockfiles unless dependency changes require it.
 - Prefer small, reviewable commits.
+- Every commit must include the active task identifier from the task packet or task registry.
 - Do not broaden scope just because the repo contains more files; stay inside the task packet or bootstrap contract.
+
+## Commit message convention
+
+- Treat the task packet as the source of truth for commit tagging.
+- Every task packet should declare both a `Task ID` and a short `Commit tag`.
+- If the work maps to `ai_first/TASK_REGISTRY.json`, use that task's registry ID as the commit tag, such as `T010`.
+- If the work is a lane packet or operating/docs slice outside the registry, create a stable packet-local ID and short tag, such as `L3` or `OPS-COMMIT`.
+- Use this commit format: `<type>(<scope>): <summary> [<commit-tag>]`
+- Allowed `type` values: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`.
+- Keep `<summary>` imperative, specific, and easy to scan in `git log`.
+- Prefer one dominant task per commit. Include multiple tags only when one reviewable commit truly completes more than one owned task.
+- If no task packet or registry entry exposes a usable task identifier yet, stop and update the task packet first instead of inventing an ad hoc suffix.
+- Examples:
+  - `feat(evidence): add tutoring observation rollups [L3]`
+  - `docs(ai-first): define commit tagging convention [OPS-COMMIT]`
+  - `fix(dashboard): preserve recommendation confidence badge [T010]`
 
 ## AI-first operating rules
 
@@ -135,13 +152,14 @@ After opening or updating a PR, classify it before handing off:
 When starting work, do the following in order:
 
 1. Identify the active branch and task packet.
-2. Confirm owned files and do-not-touch files.
-3. Check whether the change is docs-only, workflow-only, or a runtime change.
-4. Read the minimum additional context needed.
-5. Make the smallest useful change.
-6. Run the relevant test or validation command.
-7. Update this file if the repo-level operating model changed.
-8. Update the daily log and handoff notes.
+2. Confirm the task ID and commit tag.
+3. Confirm owned files and do-not-touch files.
+4. Check whether the change is docs-only, workflow-only, or a runtime change.
+5. Read the minimum additional context needed.
+6. Make the smallest useful change.
+7. Run the relevant test or validation command.
+8. Update this file if the repo-level operating model changed.
+9. Update the daily log and handoff notes.
 
 ## Completion rules
 
@@ -198,6 +216,7 @@ When starting a new feature or fix:
 6. Link PR to issue
 7. Update JSON status → "in-progress" when starting
 8. Update JSON status → "completed" when merged to main
+9. Use the task packet or registry commit tag in every commit for that task
 
 ### Critical P1 Tasks (Block before contest submission)
 
@@ -211,6 +230,7 @@ When starting a new feature or fix:
 ### Integration with Existing Rules
 
 - Task packets created from TASK_REGISTRY inherit `Files:` field as owned-file contract
+- Task packets should expose a `Task ID` and `Commit tag` so the AI can commit without guessing
 - Every PR updates corresponding task status in JSON
 - Daily logs reference task IDs for tracking progress
 - Architecture changes trigger MAIN_SYSTEM_MAP.md updates per the task scope

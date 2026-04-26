@@ -1,5 +1,7 @@
 # Feature Pod Task: Lane 4 Diagnosis and Recommendation Engine
 
+Task ID: `L4_DIAGNOSIS_RECOMMENDATION`
+Commit tag: `L4`
 Owner: Session-specific
 Branch: `pod-a/diagnosis-recommendation`
 GitHub Issue:
