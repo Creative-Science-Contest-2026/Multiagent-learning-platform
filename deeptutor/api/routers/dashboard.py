@@ -499,15 +499,10 @@ async def get_dashboard_insights(
         observations = extract_observations_from_review(review)
         await store.save_observations(observations)
 
+        rollup = await store.build_student_state_rollup(student_id)
+        if rollup is not None:
+            await store.upsert_student_state(student_id, rollup)
         state = await store.get_student_state(student_id)
-        if state is None:
-            state = {
-                "student_id": student_id,
-                "repeated_mistakes": sorted({row["topic"] for row in observations if not row["is_correct"]}),
-                "support_level": "guided" if any(not row["is_correct"] for row in observations) else "independent",
-                "confidence_trend": "down" if any(not row["is_correct"] for row in observations) else "flat",
-            }
-            await store.upsert_student_state(student_id, state)
 
         student_payloads.append(
             build_student_diagnosis(

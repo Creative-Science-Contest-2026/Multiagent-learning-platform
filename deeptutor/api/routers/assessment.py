@@ -75,13 +75,9 @@ async def get_assessment_diagnosis(session_id: str):
     await store.save_observations(observations)
 
     student_id = review["student_id"]
-    state = {
-        "student_id": student_id,
-        "repeated_mistakes": sorted({row["topic"] for row in observations if not row["is_correct"]}),
-        "support_level": "guided" if any(not row["is_correct"] for row in observations) else "independent",
-        "confidence_trend": "down" if any(not row["is_correct"] for row in observations) else "flat",
-    }
-    await store.upsert_student_state(student_id, state)
+    rollup = await store.build_student_state_rollup(student_id)
+    if rollup is not None:
+        await store.upsert_student_state(student_id, rollup)
 
     return build_student_diagnosis(
         student_id=student_id,

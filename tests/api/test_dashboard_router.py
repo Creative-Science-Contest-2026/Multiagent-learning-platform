@@ -494,6 +494,8 @@ async def test_dashboard_insights_returns_students_and_small_groups(
     assert payload["students"][0]["student_id"] in {"student-a", "student-b"}
     assert payload["small_groups"][0]["topic"] == "fractions subtraction"
     assert sorted(payload["small_groups"][0]["student_ids"]) == ["student-a", "student-b"]
+    assert payload["small_groups"][0]["recommended_action"] == "small_group_support"
+    assert payload["small_groups"][0]["confidence_tag"] in {"medium", "high"}
 
 
 @pytest.mark.asyncio
