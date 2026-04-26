@@ -132,7 +132,7 @@ export default function DashboardPage() {
                 {t("Observed, diagnosed, and ready for action")}
               </h1>
               <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-[var(--muted-foreground)]">
-                {t("Review observed facts first, then inspect diagnosis and next-step recommendations for each student or group.")}
+                {t("Review observed facts first, then decide the clearest next classroom move for each student or group.")}
               </p>
             </div>
             <Link

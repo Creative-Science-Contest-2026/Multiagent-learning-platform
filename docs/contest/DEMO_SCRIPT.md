@@ -99,6 +99,10 @@ Steps:
 4. Confirm recent activity still distinguishes assessment and tutoring sessions.
 5. Confirm Knowledge Pack references appear when sessions used a selected pack.
 6. Explain one concrete teacher move, such as reteaching one concept to a small group or giving a gentler scaffold to one student next session.
+7. Reuse one of the prepared dashboard stories:
+   - repeated misses on one topic -> reteach one prerequisite with one scaffolded example
+   - quick but inconsistent answers -> ask for one reasoning step before another hint
+   - shared misconception cluster -> pull a remediation mini-group before the next check
 
 Evidence to capture:
 

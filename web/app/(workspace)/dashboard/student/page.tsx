@@ -312,7 +312,7 @@ function StudentDashboardContent() {
                 {activeStudent?.student_id || t("Inspect evidence before deciding the next move")}
               </h1>
               <p className="mt-2 max-w-[720px] text-[14px] leading-6 text-[var(--muted-foreground)]">
-                {t("Review observed evidence first, then inspect diagnosis and the recommended next move.")}
+                {t("Review observed evidence first, then inspect diagnosis and the clearest next classroom move.")}
               </p>
             </div>
             {loading && (

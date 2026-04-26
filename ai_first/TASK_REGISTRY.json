@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T17:05:00Z",
+    "last_updated": "2026-04-26T17:20:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 49
@@ -60,8 +60,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "R5_DASHBOARD_ACTIONABILITY"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -70,9 +72,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 2,
+      "count": 1,
       "tasks": [
-        "R5_DASHBOARD_ACTIONABILITY",
         "R6_CLAIM_CALIBRATION_PILOT"
       ]
     }
@@ -1153,8 +1154,8 @@
         "L5_TEACHER_INSIGHT_UI",
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
-      "notes": "Session-ready risk lane packet exists under docs/superpowers/tasks/2026-04-26-risk-lane-5-dashboard-actionability.md."
+      "status": "in-progress",
+      "notes": "Active on branch pod-a/dashboard-actionability. This lane tightens dashboard cards and contest artifacts around concrete teacher moves."
     },
     {
       "id": "R6_CLAIM_CALIBRATION_PILOT",
