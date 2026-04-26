@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
-import type { TeacherInsightStudent } from "@/lib/dashboard-api";
+import { TeacherActionComposer } from "@/components/dashboard/TeacherActionComposer";
+import type { TeacherActionRecord, TeacherInsightStudent } from "@/lib/dashboard-api";
 
 function formatLatency(seconds: number | undefined): string | null {
   if (seconds == null) return null;
@@ -20,6 +22,8 @@ export function StudentInsightCard({
 }) {
   const diagnosis = student.inferred[0];
   const recommendation = student.recommended_actions[0];
+  const [teacherActions, setTeacherActions] = useState<TeacherActionRecord[]>(student.teacher_actions ?? []);
+  const latestAction = teacherActions[0] ?? null;
 
   return (
     <article className="rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
@@ -93,6 +97,32 @@ export function StudentInsightCard({
               ? t("Why this move: {{reason}}", { reason: diagnosis.evidence[0] })
               : t("Why this move: based on the strongest recent learning signal.")}
           </div>
+          <div className="mt-3">
+            <TeacherActionComposer
+              triggerLabel={t("Create action")}
+              defaultPayload={{
+                target_type: "student",
+                target_id: student.student_id,
+                source_recommendation_id: recommendation?.action_id ?? `student:${student.student_id}`,
+                topic: recommendation?.topic ?? diagnosis?.topic ?? student.observed?.topic ?? "general",
+                defaultActionType: "reteach_concept",
+              }}
+              onCreated={(record) => setTeacherActions((current) => [record, ...current])}
+              t={t}
+            />
+          </div>
+          {latestAction ? (
+            <div className="mt-3 rounded-2xl bg-white/70 p-3 text-[12px] text-emerald-900/80">
+              <div className="font-medium">{latestAction.action_type}</div>
+              <div className="mt-1">{latestAction.teacher_instruction}</div>
+              <div className="mt-2 text-[11px] text-emerald-900/70">
+                {t("Status: {{status}} • Priority: {{priority}}", {
+                  status: latestAction.status,
+                  priority: latestAction.priority,
+                })}
+              </div>
+            </div>
+          ) : null}
         </section>
       </div>
     </article>
