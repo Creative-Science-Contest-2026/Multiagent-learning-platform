@@ -15,7 +15,7 @@ export function TeacherInsightPanel({
       <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
         <h2 className="text-[16px] font-semibold text-[var(--foreground)]">{t("Teacher insights")}</h2>
         <p className="mt-2 text-[13px] leading-6 text-[var(--muted-foreground)]">
-          {t("No structured evidence yet. Complete at least one assessment to unlock diagnosis and next-step actions.")}
+          {t("No structured evidence yet. Complete at least one assessment to unlock concrete teacher moves and next-step actions.")}
         </p>
       </section>
     );
@@ -27,7 +27,7 @@ export function TeacherInsightPanel({
         <div>
           <h2 className="text-[16px] font-semibold text-[var(--foreground)]">{t("Teacher insights")}</h2>
           <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-            {t("Clear evidence, diagnosis, and next-step actions for students and small groups.")}
+            {t("Review the strongest signals first, then act on the clearest next move for each student or small group.")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -53,7 +53,7 @@ export function TeacherInsightPanel({
               {t("Small-group recommendations")}
             </div>
             <p className="mt-2 text-[13px] text-[var(--muted-foreground)]">
-              {t("Use shared teaching actions to support multiple students with the same learning signal.")}
+              {t("Use one shared classroom move when multiple students need help with the same misconception.")}
             </p>
           </div>
 

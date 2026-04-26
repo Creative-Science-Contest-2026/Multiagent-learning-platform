@@ -83,8 +83,8 @@ export function StudentInsightDetail({
 
       <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
         <InsightSectionLabel
-          eyebrow={t("Recommended Action")}
-          title={recommendation?.action_type ?? t("No action")}
+          eyebrow={t("Teacher move")}
+          title={recommendation?.action_type ?? t("No next move")}
           toneClassName="text-emerald-700"
         >
           {t("Use this as the next teacher move, not as an automatic intervention.")}
@@ -93,6 +93,11 @@ export function StudentInsightDetail({
         <div className="mt-4 rounded-2xl bg-emerald-50 p-4">
           <div className="text-[14px] font-medium text-[var(--foreground)]">
             {recommendation?.rationale ?? t("No recommendation available")}
+          </div>
+          <div className="mt-3 text-[12px] text-emerald-900/80">
+            {diagnosis?.evidence?.[0]
+              ? t("Why this move: {{reason}}", { reason: diagnosis.evidence[0] })
+              : t("Why this move: based on the strongest recent learning signal.")}
           </div>
           <div className="mt-4 space-y-2 text-[12px] text-[var(--muted-foreground)]">
             <div>{t("Topic: {{topic}}", { topic: recommendation?.topic ?? diagnosis?.topic ?? t("Unknown") })}</div>
