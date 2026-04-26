@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#147 [OPS-EVIDENCE] docs(evidence): add dashboard and agents recapture packet`
+- Latest merged PR: `#148 [OPS-SYNC] docs(ai-first): sync queue after evidence merge`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Lane 3 (`2026-04-26-lane-3-observation-student-state`) merged to `main` through PR `#140`.
@@ -15,6 +15,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Lane 5 (`2026-04-26-lane-5-teacher-insight-ui`) merged to `main` through PR `#144`.
 - Lane 6 (`2026-04-26-lane-6-evaluation-evidence-readiness`) merged to `main` through PR `#145`.
 - Dashboard and `/agents` evidence recapture merged to `main` through PR `#147`.
+- Post-147 evidence merge sync merged to `main` through PR `#148`.
 - Latest smoke result: the 2026-04-26 scripted-reset smoke pass succeeded in lane 6 (`docs/evaluation-evidence-readiness`) against current `main` behavior.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -22,13 +23,13 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- No screenshot recapture lane remains open.
-- Current purpose: keep the repo aligned for final human review, optional video, and submission sign-off.
+- No active AI implementation task remains.
+- Current purpose: keep the repository in a correct wait state for final human review, optional video, and submission sign-off.
 
 ## Next recommended task
 
 - Human review of the submission package, IP commitment, and optional video decision is now the shortest remaining path.
-- If another AI-only task is needed, create a new packet from `main` instead of reusing the merged screenshot lane.
+- If a new AI-only task is needed, create a fresh packet from `main` instead of reusing a merged lane or stale branch.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
@@ -43,7 +44,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None currently for command-backed validation or screenshot evidence.
+- None currently. The repository is waiting on human-only submission work.
 
 ## Human-review blockers
 
