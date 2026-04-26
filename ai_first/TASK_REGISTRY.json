@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T16:56:43Z",
+    "last_updated": "2026-04-26T17:09:37Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 49,
+      "count": 51,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -58,15 +58,15 @@
         "R3_ASSESSMENT_SAFETY",
         "R4_TEACHER_VALUE_PROP",
         "R5_DASHBOARD_ACTIONABILITY",
-        "R6_CLAIM_CALIBRATION_PILOT"
+        "R6_CLAIM_CALIBRATION_PILOT",
+        "F101_TEACHER_ACTION_EXECUTION_LOOP",
+        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F101_TEACHER_ACTION_EXECUTION_LOOP"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -75,7 +75,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 23,
+      "count": 22,
       "tasks": [
         "F102_INTERVENTION_ASSIGNMENT_FLOW",
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
@@ -88,7 +88,6 @@
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
-        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
         "F114_SPEC_VERSION_PINNING_PER_SESSION",
         "F115_RUNTIME_POLICY_AUDIT_TRACE",
         "F116_STUDENT_MODEL_ENRICHMENT",
@@ -1225,10 +1224,10 @@
       "dependencies": [
         "R5_DASHBOARD_ACTIONABILITY"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
-      "notes": "First recommended task for a new teacher-facing session after the contest MVP closes."
+      "notes": "Merged to main through PR #165. Dashboard recommendations can now be converted into structured teacher actions for students and small groups, with status updates visible in student detail."
     },
     {
       "id": "F102_INTERVENTION_ASSIGNMENT_FLOW",
@@ -1534,10 +1533,10 @@
       "dependencies": [
         "R1_RUNTIME_BINDING_PROOF"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "runtime-policy",
-      "notes": "First recommended task for a new runtime/data session after the contest MVP closes."
+      "notes": "Merged to main through PR #164. Runtime-binding coverage now explicitly proves agent-spec propagation on the unified chat, deep_question, and deep_solve paths."
     },
     {
       "id": "F114_SPEC_VERSION_PINNING_PER_SESSION",
