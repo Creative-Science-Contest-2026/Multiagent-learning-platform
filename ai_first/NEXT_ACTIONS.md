@@ -6,12 +6,12 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Complete lane 6 (`L6_EVALUATION_EVIDENCE_READINESS`) docs updates for hybrid-proof demo flow and evidence calibration.
-2. Keep `docs/contest/VALIDATION_REPORT.md` and `docs/contest/EVIDENCE_CHECKLIST.md` aligned on what is `Current` versus what is still pending recapture.
+1. Complete human review of the submission package, IP commitment, and final product-description wording.
+2. Decide whether an optional contest video artifact is required.
 3. Treat any future smoke failure as the next product task before opening another polish slice.
-4. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new lane or docs sync.
-5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, smoke passes, screenshot refreshes, lane changes, and blocker changes.
-6. Review IP commitment, final product description wording, and optional video requirements in parallel with the remaining human-only submission work.
+4. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
+5. Keep `ai_first/EXECUTION_QUEUE.md` current only if a new AI-owned task is opened.
+6. If more AI work is requested, create a fresh task packet from `main` instead of reviving merged lanes.
 
 ## After Milestone 0
 
@@ -22,13 +22,13 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Human Review Needed
 
-- Review product scope changes, credential/deployment decisions, or PRs marked blocked by the AI worker.
+- Review IP commitment, product-description wording, optional video requirement, and final submission sign-off.
 
 ## Mirror Policy
 
 Use this file only as a compact queue mirror. Do not rely on it for the full operating contract. For a human-friendly quick start, read `ai_first/USAGE_GUIDE.md`.
 ## 2026-04-26
 
-1. Start new AI sessions from `main`, one lane per session.
-2. Use the matching `docs/superpowers/tasks/2026-04-26-lane-*.md` packet before code edits.
-3. If a task appears to touch multiple lanes, stop and ask the human to clarify ownership first.
+1. Start new AI sessions from `main` only if a new task packet is explicitly opened.
+2. Use the matching packet before code edits.
+3. If no packet exists and the remaining work is human-only, stop instead of inventing a new AI lane.

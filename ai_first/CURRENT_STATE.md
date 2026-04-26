@@ -28,10 +28,10 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 ## Active Branches and PRs
 
-- Latest merged docs/control-plane PR: `#139 [L2] feat(runtime): compile teacher policy blocks into prompt assembly`
-- Current branch for this sync: `docs/evaluation-evidence-readiness`
-- Product MVP path status: core contest flow plus Wave 1 evidence spine and lane 1-4 contracts are merged to `main`; lane 6 is documenting hybrid-proof readiness and evidence calibration.
-- Current purpose: keep contest evidence docs aligned with the merged hybrid teacher-authoring plus evidence-loop story without claiming unverified runtime behavior.
+- Latest merged docs/control-plane PR: `#148 [OPS-SYNC] docs(ai-first): sync queue after evidence merge`
+- Current branch for this sync: none required on `main`
+- Product MVP path status: the core contest flow, the Wave 1 evidence spine, lane 1-6 roadmap slices, and the refreshed dashboard plus `/agents` screenshot evidence are all merged to `main`.
+- Current purpose: hold a correct terminal wait state while the remaining submission work is human review, optional video, and final sign-off.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -59,16 +59,16 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`
+- Current open task packet: none
 - Current open GitHub issue:
 - Latest completed smoke run result: the 2026-04-26 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
-- Recently completed merged work: the screenshot bundle refresh re-run merged on 2026-04-25 through PR `#130`, and evidence docs now mark screenshots `Current`.
+- Recently completed merged work: dashboard and `/agents` screenshot evidence merged through PR `#147`, followed by queue/control-plane sync in PR `#148`.
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Complete lane 6 docs/evidence updates and record calibrated hybrid-proof limitations in the contest artifacts.
+Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off. Start a new AI task only if a fresh packet is opened from `main`.
 
 ## Autonomous Merge Policy
 
@@ -84,3 +84,4 @@ Use this file only as a compact status mirror. Do not rely on it for the full op
 - `main` now includes the Wave 1 evidence spine from PR `#132`.
 - The Contest MVP+ roadmap is now decomposed into six session-ready lane packets under `docs/superpowers/tasks/2026-04-26-lane-*.md`.
 - In multi-session mode, `ai_first/AI_OPERATING_PROMPT.md` is expected to route AI workers through those packets and ask the human to resolve conflicts or ambiguity.
+- Contest screenshot evidence is current after PR `#147`, and the control-plane wait-state sync merged in PR `#148`.
