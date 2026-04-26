@@ -28,6 +28,17 @@ Rules:
 
 ## Active
 
-No active AI implementation task.
+### Assignment
 
-Recommended next AI-owned task: none. The remaining path is human review of the submission package, IP commitment, optional video decision, and final sign-off unless a fresh packet is explicitly opened from `main`.
+- Owner: Codex Session B
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-runtime-binding-coverage`
+- Task: `F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE`
+- Status: `in-progress`
+- Branch: `pod-b/runtime-binding-coverage`
+- Task packet: `docs/superpowers/specs/2026-04-26-f113-capability-wide-runtime-binding-coverage-design.md`
+- Owned files: `deeptutor/capabilities/`, `deeptutor/services/runtime_policy/`, `deeptutor/services/session/turn_runtime.py`, bounded tests/docs
+- PR: `Draft, not opened yet`
+- Last update: `2026-04-26T23:46:46+0700`
+- Next action: `Implement request-contract widening and runtime-binding tests in the Session B worktree.`
+- Blocker: `None`

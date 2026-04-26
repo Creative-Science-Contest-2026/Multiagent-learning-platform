@@ -1224,7 +1224,7 @@
       "dependencies": [
         "R5_DASHBOARD_ACTIONABILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
       "notes": "First recommended task for a new teacher-facing session after the contest MVP closes."

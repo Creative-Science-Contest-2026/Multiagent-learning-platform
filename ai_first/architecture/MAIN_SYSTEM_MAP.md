@@ -37,10 +37,10 @@ flowchart TD
   Capabilities --> DeepSolve["deep_solve"]
   Capabilities --> DeepQuestion["deep_question"]
   RuntimePolicy --> Chat
+  RuntimePolicy --> DeepSolve
   RuntimePolicy --> DeepQuestion
   RuntimePolicy --> PolicyBoundary["Teacher Spec / Student State / Session State"]
-  RuntimePolicy --> Chat
-  RuntimePolicy --> DeepQuestion
+  RuntimePolicy --> TurnBinding["Bounded turn binding: chat + deep_question + deep_solve"]
 
   Project --> Product["Contest MVP Product Layer"]
   Product --> TeacherWorkspace["Teacher Workspace"]

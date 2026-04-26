@@ -14,6 +14,7 @@ from deeptutor.core.capability_protocol import BaseCapability, CapabilityManifes
 from deeptutor.core.context import UnifiedContext
 from deeptutor.core.stream_bus import StreamBus
 from deeptutor.core.trace import derive_trace_metadata, merge_trace_metadata
+from deeptutor.services.runtime_policy import ensure_runtime_policy, format_chat_system_context
 
 
 class DeepSolveCapability(BaseCapability):
@@ -29,6 +30,15 @@ class DeepSolveCapability(BaseCapability):
     async def run(self, context: UnifiedContext, stream: StreamBus) -> None:
         from deeptutor.agents.solve.main_solver import MainSolver
         from deeptutor.services.llm.config import get_llm_config
+
+        policy = ensure_runtime_policy(context, self.name)
+        policy_context = format_chat_system_context(policy)
+        await stream.progress(
+            message="Runtime policy slices assembled.",
+            source=self.name,
+            stage="planning",
+            metadata=context.metadata.get("runtime_policy", {}).get("debug", {}),
+        )
 
         llm_config = get_llm_config()
         detailed = context.config_overrides.get("detailed_answer", True)
@@ -242,13 +252,19 @@ class DeepSolveCapability(BaseCapability):
 
         solver._content_callback = _content_sink
 
+        conversation_context = str(
+            context.metadata.get("conversation_context_text", "") or ""
+        ).strip()
+        if policy_context:
+            conversation_context = "\n\n".join(
+                part for part in [policy_context, conversation_context] if part
+            ).strip()
+
         result = await solver.solve(
             question=context.user_message,
             verbose=False,
             detailed=detailed,
-            conversation_context=str(
-                context.metadata.get("conversation_context_text", "") or ""
-            ).strip(),
+            conversation_context=conversation_context,
         )
 
         final_answer = result.get("final_answer", "")
