@@ -7,8 +7,9 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest merged PR: `#135 feat(runtime): assemble teacher spec runtime policy contract [L2]`
-- Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) is now merged to `main`.
+- Latest merged PR: `#137 docs(ai-first): sync control-plane state after lane2 merge [OPS-COMMIT]`
+- Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
+- Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Latest smoke result: the 2026-04-25 scripted-reset smoke pass succeeded against current `main`.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -23,11 +24,10 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 Create or use one session per lane from `main` with these packets:
 
-1. `docs/superpowers/tasks/2026-04-26-lane-1-agent-spec-authoring.md`
-2. `docs/superpowers/tasks/2026-04-26-lane-3-observation-student-state.md`
-3. `docs/superpowers/tasks/2026-04-26-lane-4-diagnosis-recommendation.md`
-4. `docs/superpowers/tasks/2026-04-26-lane-5-teacher-insight-ui.md`
-5. `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`
+1. `docs/superpowers/tasks/2026-04-26-lane-3-observation-student-state.md`
+2. `docs/superpowers/tasks/2026-04-26-lane-4-diagnosis-recommendation.md`
+3. `docs/superpowers/tasks/2026-04-26-lane-5-teacher-insight-ui.md`
+4. `docs/superpowers/tasks/2026-04-26-lane-6-evaluation-evidence-readiness.md`
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
