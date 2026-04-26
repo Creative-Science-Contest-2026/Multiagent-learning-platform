@@ -18,6 +18,7 @@ from deeptutor.core.capability_protocol import BaseCapability, CapabilityManifes
 from deeptutor.core.context import UnifiedContext
 from deeptutor.core.stream_bus import StreamBus
 from deeptutor.core.trace import merge_trace_metadata
+from deeptutor.services.runtime_policy import ensure_runtime_policy, format_assessment_context
 
 
 class DeepQuestionCapability(BaseCapability):
@@ -34,6 +35,16 @@ class DeepQuestionCapability(BaseCapability):
         from deeptutor.agents.question.coordinator import AgentCoordinator
         from deeptutor.services.llm.config import get_llm_config
         from deeptutor.services.path_service import get_path_service
+
+        policy = ensure_runtime_policy(context, self.name)
+        assessment_policy_context = format_assessment_context(policy)
+        runtime_debug = context.metadata.get("runtime_policy", {}).get("debug", {})
+        await stream.progress(
+            message="Runtime policy slices assembled.",
+            source=self.name,
+            stage="ideation",
+            metadata=runtime_debug,
+        )
 
         llm_config = get_llm_config()
         kb_name = context.knowledge_bases[0] if context.knowledge_bases else None
@@ -58,7 +69,11 @@ class DeepQuestionCapability(BaseCapability):
             agent.set_trace_callback(self._build_trace_bridge(stream))
             async with stream.stage("generation", source=self.name):
                 answer = await agent.process(
-                    user_message=context.user_message,
+                    user_message=(
+                        f"{assessment_policy_context}\n\nUser request:\n{context.user_message}"
+                        if assessment_policy_context
+                        else context.user_message
+                    ),
                     question_context=followup_question_context,
                     history_context=str(
                         context.metadata.get("conversation_context_text", "") or ""
@@ -86,6 +101,10 @@ class DeepQuestionCapability(BaseCapability):
         preference = str(overrides.get("preference", "") or "")
         if subject:
             preference = "\n".join(part for part in [f"Subject: {subject}", preference] if part).strip()
+        if assessment_policy_context:
+            preference = "\n\n".join(
+                part for part in [assessment_policy_context, preference] if part
+            ).strip()
         history_context = str(
             context.metadata.get("conversation_context_text", "") or ""
         ).strip()

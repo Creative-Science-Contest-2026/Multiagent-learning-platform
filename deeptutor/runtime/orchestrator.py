@@ -19,6 +19,7 @@ from deeptutor.core.stream_bus import StreamBus
 from deeptutor.events.event_bus import Event, EventType, get_event_bus
 from deeptutor.runtime.registry.capability_registry import get_capability_registry
 from deeptutor.runtime.registry.tool_registry import get_tool_registry
+from deeptutor.services.runtime_policy import ensure_runtime_policy
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,7 @@ class ChatOrchestrator:
 
         async def _run() -> None:
             try:
+                ensure_runtime_policy(context, cap_name)
                 await capability.run(context, bus)
             except Exception as exc:
                 logger.error("Capability %s failed: %s", cap_name, exc, exc_info=True)
