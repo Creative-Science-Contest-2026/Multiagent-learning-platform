@@ -30,6 +30,21 @@ Rules:
 
 ### Assignment
 
+- Owner: Codex Session A
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
+- Task: `F101_TEACHER_ACTION_EXECUTION_LOOP`
+- Status: `in-progress`
+- Branch: `pod-a/teacher-action-loop`
+- Task packet: `docs/superpowers/tasks/2026-04-26-f101-teacher-action-execution-loop.md`
+- Owned files: `web/components/dashboard/`, `web/app/(workspace)/dashboard/`, `web/lib/dashboard-api.ts`, `deeptutor/api/routers/dashboard.py`, bounded `deeptutor/services/evidence/`, related dashboard tests/docs`
+- PR: `Draft, not opened yet`
+- Last update: `2026-04-26T23:56:00+0700`
+- Next action: `Implement teacher action create/read/update contract and attach action summaries back to dashboard insight payloads.`
+- Blocker: `None`
+
+### Assignment
+
 - Owner: Codex Session B
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-runtime-binding-coverage`
