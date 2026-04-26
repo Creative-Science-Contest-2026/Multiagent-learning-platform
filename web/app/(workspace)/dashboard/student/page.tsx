@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpen, Flame, LineChart, Loader2, Target } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -221,7 +221,7 @@ function LearningPathCard({
   );
 }
 
-export default function StudentDashboardPage() {
+function StudentDashboardContent() {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
   const studentId = searchParams.get("student") ?? "";
@@ -428,5 +428,26 @@ export default function StudentDashboardPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function StudentDashboardPage() {
+  const { t } = useTranslation();
+
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-full bg-[radial-gradient(circle_at_top_left,_rgba(247,208,96,0.18),_transparent_32%),linear-gradient(180deg,_var(--background),_color-mix(in_oklab,_var(--background)_78%,_white))]">
+          <div className="mx-auto flex w-full max-w-[1120px] items-center justify-center px-6 py-16">
+            <div className="inline-flex items-center gap-2 text-[13px] text-[var(--muted-foreground)]">
+              <Loader2 size={14} className="animate-spin" />
+              {t("Loading student detail")}
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <StudentDashboardContent />
+    </Suspense>
   );
 }
