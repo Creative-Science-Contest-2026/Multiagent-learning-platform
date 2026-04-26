@@ -28,6 +28,17 @@ Rules:
 
 ## Active
 
-No active AI implementation task.
+### Assignment
 
-Recommended next AI-owned task: open `docs/superpowers/tasks/2026-04-26-risk-lane-6-claim-calibration-and-pilot.md` from a fresh branch/worktree if the team wants to continue hardening judge-risk defenses.
+- Owner: Codex
+- Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/claim-calibration-pilot`
+- Task: `R6_CLAIM_CALIBRATION_PILOT`
+- Status: in progress
+- Branch: `docs/claim-calibration-pilot`
+- Task packet: `docs/superpowers/tasks/2026-04-26-risk-lane-6-claim-calibration-and-pilot.md`
+- Owned files: `docs/contest/`, `ai_first/competition/`, `ai_first/CURRENT_STATE.md`, `ai_first/NEXT_ACTIONS.md`, task packet, PR note
+- PR:
+- Last update: 2026-04-26
+- Next action: calibrate contest wording and add pilot-status artifact, then validate and open Draft PR
+- Blocker: none

@@ -2,6 +2,8 @@
 
 This folder is the entry point for VnExpress Sang kien Khoa hoc 2026 demo evidence.
 
+Current framing: this repository is a validated prototype with smoke-backed evidence and contest-safe walkthrough artifacts. It is not positioned as a deployed classroom system.
+
 ## MVP Story
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
@@ -22,12 +24,15 @@ Teacher-value framing for presenters:
 
 The repository now includes bounded proof that the unified live turn path can carry `config.agent_spec_id` into Tutor runtime policy assembly and produce a visible behavior difference between two spec packs. Do not expand that claim into universal coverage across every entry point unless a fresh smoke run verifies those additional paths.
 
+The current product can be described as `agent-native` today and `multi-agent by design` as a future role-separation direction. Do not describe the current merged repository as a fully autonomous multi-agent deployment.
+
 ## Evidence Files
 
 - [`SUBMISSION_PACKAGE.md`](./SUBMISSION_PACKAGE.md): compact final review path for contest submission.
 - [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md): step-by-step demo path for a reviewer or presenter.
 - [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md): required screenshots, optional video, and pass/fail evidence fields.
 - [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md): local validation commands, results, limitations, and remaining capture work.
+- [`PILOT_STATUS.md`](./PILOT_STATUS.md): explicit status of pilot or external-feedback evidence.
 - [`DIAGNOSIS_CASE_STUDIES.md`](./DIAGNOSIS_CASE_STUDIES.md): judge-facing diagnosis examples and teacher-review framing.
 - [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md): smoke lane used to verify the MVP path before any evidence refresh.
 - [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md): demo-safe data inventory and reset runbook before smoke/evidence refresh.
@@ -41,6 +46,7 @@ The repository now includes bounded proof that the unified live turn path can ca
 - Screenshot evidence is captured in [`screenshots/`](./screenshots/), including the 2026-04-26 dashboard evidence-first refresh and the `/agents` authoring proof refresh.
 - Hybrid `/agents` screenshots are current, and the codebase now also carries automated bounded runtime-binding proof for the unified Tutor turn path. Keep the claim narrower than universal entry-point coverage.
 - Video capture is optional and deferred to avoid storing large media in the repository.
+- No pilot evidence is currently bundled; the strongest current proof is structured walkthrough validation plus smoke-backed and screenshot-backed artifacts.
 
 ## Judge-Friendly Use Cases
 

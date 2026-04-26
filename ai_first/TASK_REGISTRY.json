@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T17:40:00Z",
+    "last_updated": "2026-04-26T18:05:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 49
@@ -61,8 +61,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "R6_CLAIM_CALIBRATION_PILOT"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -71,10 +73,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 1,
-      "tasks": [
-        "R6_CLAIM_CALIBRATION_PILOT"
-      ]
+      "count": 0,
+      "tasks": []
     }
   },
   "tasks": [
@@ -1176,8 +1176,8 @@
         "R1_RUNTIME_BINDING_PROOF",
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
-      "notes": "Session-ready risk lane packet exists under docs/superpowers/tasks/2026-04-26-risk-lane-6-claim-calibration-and-pilot.md."
+      "status": "in-progress",
+      "notes": "Active on branch docs/claim-calibration-pilot. This lane calibrates prototype claims and adds a pilot-status artifact."
     }
   ],
   "github_issues_template": {
