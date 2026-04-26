@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T17:24:57Z",
+    "last_updated": "2026-04-26T17:28:08Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 51,
+      "count": 52,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -60,15 +60,14 @@
         "R5_DASHBOARD_ACTIONABILITY",
         "R6_CLAIM_CALIBRATION_PILOT",
         "F101_TEACHER_ACTION_EXECUTION_LOOP",
-        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE"
+        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
+        "F102_INTERVENTION_ASSIGNMENT_FLOW"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F102_INTERVENTION_ASSIGNMENT_FLOW"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1251,10 +1250,10 @@
       "dependencies": [
         "F101_TEACHER_ACTION_EXECUTION_LOOP"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
-      "notes": "Draft PR #170 is open on branch pod-a/intervention-assignment-flow. The branch adds linked intervention assignments on top of F101 teacher actions."
+      "notes": "Merged to main through PR #170. Teachers can now convert teacher actions into linked intervention assignments for students and small groups inside the dashboard flow."
     },
     {
       "id": "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
