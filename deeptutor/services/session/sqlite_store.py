@@ -145,6 +145,32 @@ class SQLiteSessionStore:
 
                 CREATE INDEX IF NOT EXISTS idx_turn_events_turn_seq
                     ON turn_events(turn_id, seq);
+
+                CREATE TABLE IF NOT EXISTS observations (
+                    observation_id TEXT PRIMARY KEY,
+                    session_id TEXT NOT NULL,
+                    student_id TEXT NOT NULL,
+                    source TEXT NOT NULL,
+                    topic TEXT NOT NULL,
+                    question_id TEXT DEFAULT '',
+                    is_correct INTEGER NOT NULL,
+                    latency_seconds INTEGER,
+                    hint_count INTEGER NOT NULL DEFAULT 0,
+                    retry_count INTEGER NOT NULL DEFAULT 0,
+                    dominant_error TEXT DEFAULT '',
+                    created_at REAL NOT NULL
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_observations_student_created
+                    ON observations(student_id, created_at DESC);
+
+                CREATE TABLE IF NOT EXISTS student_states (
+                    student_id TEXT PRIMARY KEY,
+                    repeated_mistakes_json TEXT NOT NULL DEFAULT '[]',
+                    support_level TEXT NOT NULL DEFAULT 'independent',
+                    confidence_trend TEXT NOT NULL DEFAULT 'flat',
+                    updated_at REAL NOT NULL
+                );
                 """
             )
             columns = {row[1] for row in conn.execute("PRAGMA table_info(sessions)").fetchall()}
@@ -465,6 +491,121 @@ class SQLiteSessionStore:
 
     async def get_turn_events(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
         return await self._run(self._get_turn_events_sync, turn_id, after_seq)
+
+    def _save_observations_sync(self, observations: list[dict[str, Any]]) -> None:
+        now = time.time()
+        with self._connect() as conn:
+            conn.executemany(
+                """
+                INSERT OR REPLACE INTO observations (
+                    observation_id, session_id, student_id, source, topic, question_id,
+                    is_correct, latency_seconds, hint_count, retry_count, dominant_error, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    (
+                        row["observation_id"],
+                        row["session_id"],
+                        row["student_id"],
+                        row["source"],
+                        row["topic"],
+                        row["question_id"],
+                        1 if row["is_correct"] else 0,
+                        row["latency_seconds"],
+                        row["hint_count"],
+                        row["retry_count"],
+                        row["dominant_error"] or "",
+                        now,
+                    )
+                    for row in observations
+                ],
+            )
+            conn.commit()
+
+    async def save_observations(self, observations: list[dict[str, Any]]) -> None:
+        return await self._run(self._save_observations_sync, observations)
+
+    def _upsert_student_state_sync(self, student_id: str, state: dict[str, Any]) -> None:
+        now = time.time()
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO student_states (
+                    student_id, repeated_mistakes_json, support_level, confidence_trend, updated_at
+                ) VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(student_id) DO UPDATE SET
+                    repeated_mistakes_json = excluded.repeated_mistakes_json,
+                    support_level = excluded.support_level,
+                    confidence_trend = excluded.confidence_trend,
+                    updated_at = excluded.updated_at
+                """,
+                (
+                    student_id,
+                    _json_dumps(state.get("repeated_mistakes", [])),
+                    state.get("support_level", "independent"),
+                    state.get("confidence_trend", "flat"),
+                    now,
+                ),
+            )
+            conn.commit()
+
+    async def upsert_student_state(self, student_id: str, state: dict[str, Any]) -> None:
+        return await self._run(self._upsert_student_state_sync, student_id, state)
+
+    def _get_student_state_sync(self, student_id: str) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT student_id, repeated_mistakes_json, support_level, confidence_trend, updated_at
+                FROM student_states
+                WHERE student_id = ?
+                """,
+                (student_id,),
+            ).fetchone()
+        if row is None:
+            return None
+        return {
+            "student_id": row["student_id"],
+            "repeated_mistakes": _json_loads(row["repeated_mistakes_json"], []),
+            "support_level": row["support_level"],
+            "confidence_trend": row["confidence_trend"],
+            "updated_at": row["updated_at"],
+        }
+
+    async def get_student_state(self, student_id: str) -> dict[str, Any] | None:
+        return await self._run(self._get_student_state_sync, student_id)
+
+    def _list_observations_sync(self, student_id: str) -> list[dict[str, Any]]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT observation_id, session_id, student_id, source, topic, question_id, is_correct,
+                       latency_seconds, hint_count, retry_count, dominant_error
+                FROM observations
+                WHERE student_id = ?
+                ORDER BY created_at DESC
+                """,
+                (student_id,),
+            ).fetchall()
+        return [
+            {
+                "observation_id": row["observation_id"],
+                "session_id": row["session_id"],
+                "student_id": row["student_id"],
+                "source": row["source"],
+                "topic": row["topic"],
+                "question_id": row["question_id"],
+                "is_correct": bool(row["is_correct"]),
+                "latency_seconds": row["latency_seconds"],
+                "hint_count": row["hint_count"],
+                "retry_count": row["retry_count"],
+                "dominant_error": row["dominant_error"] or None,
+            }
+            for row in rows
+        ]
+
+    async def list_observations(self, student_id: str) -> list[dict[str, Any]]:
+        return await self._run(self._list_observations_sync, student_id)
 
     def _update_session_title_sync(self, session_id: str, title: str) -> bool:
         with self._connect() as conn:

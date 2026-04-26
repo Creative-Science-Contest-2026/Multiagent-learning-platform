@@ -7,6 +7,9 @@ import fitz
 from fastapi import APIRouter, HTTPException, Response
 
 from deeptutor.services.assessment import build_assessment_analysis
+from deeptutor.services.evidence.diagnosis import build_student_diagnosis
+from deeptutor.services.evidence.extractor import extract_observations_from_review
+from deeptutor.services.evidence.teacher_insights import build_teacher_insights_payload
 from deeptutor.services.learning_path import build_suggested_learning_path
 from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
 
@@ -458,29 +461,6 @@ async def get_student_progress(limit: int = 50):
     }
 
 
-def _build_teacher_insights(
-    activities: list[dict[str, Any]],
-    assessment_rows: list[dict[str, Any]],
-) -> dict[str, Any]:
-    analytics = _build_dashboard_analytics(activities, assessment_rows)
-    focus = analytics.get("learning_signals", {}).get("focus_topics", [])
-    recommendations: list[str] = []
-    avg = analytics.get("assessment_trend", {}).get("average_score_percent", 0)
-
-    if avg < 70:
-        recommendations.append("Schedule a targeted review for top focus topics.")
-    if analytics.get("assessment_trend", {}).get("score_delta", 0) < 0:
-        recommendations.append("Follow up with students from recent lower-scoring assessments.")
-    if not focus:
-        recommendations.append("No clear focus topics — consider a short diagnostic quiz.")
-
-    return {
-        "analytics": analytics,
-        "at_risk_topics": focus,
-        "recommendations": recommendations,
-    }
-
-
 @router.get("/insights")
 async def get_dashboard_insights(
     limit: int = 100,
@@ -489,47 +469,55 @@ async def get_dashboard_insights(
     start_ts: int | None = None,
     end_ts: int | None = None,
 ):
-    """Teacher-facing aggregated insights for a class or cohort.
-
-    This endpoint reuses existing activity aggregation and returns a compact
-    set of actionable signals and recommendations for teachers.
-    """
     store = get_sqlite_session_store()
     sessions = await store.list_sessions(limit=limit, offset=0)
-    activities = [await _activity_with_review(store, session) for session in sessions]
+    student_payloads: list[dict[str, Any]] = []
 
-    # Apply optional filters: knowledge_base and timestamp window
-    filtered_activities: list[dict[str, Any]] = []
-    for activity in activities:
-        if knowledge_base or cohort or start_ts or end_ts:
-            if not _matches_dashboard_filters(
-                activity, knowledge_base=knowledge_base, cohort=cohort
-            ):
-                continue
-            ts = activity.get("timestamp") or 0
-            if start_ts is not None and ts < start_ts:
-                continue
-            if end_ts is not None and ts > end_ts:
-                continue
-        filtered_activities.append(activity)
+    for session in sessions:
+        activity = await _activity_with_review(store, session)
+        if activity["type"] != "assessment":
+            continue
+        if not _matches_dashboard_filters(
+            activity,
+            knowledge_base=knowledge_base,
+            cohort=cohort,
+        ):
+            continue
+        ts = activity.get("timestamp") or 0
+        if start_ts is not None and ts < start_ts:
+            continue
+        if end_ts is not None and ts > end_ts:
+            continue
 
-    assessment_rows = [
-        {
-            "session_id": activity["id"],
-            "title": activity["title"],
-            "timestamp": activity["timestamp"],
-            "knowledge_bases": activity["knowledge_bases"],
-            "summary": activity.get("assessment_summary"),
-            "review_ref": activity.get("review_ref"),
-            "assessment_results": activity.get("assessment_summary") and (
-                extract_assessment_review(await store.get_session_with_messages(activity["id"])) or {}
-            ).get("results", []),
-        }
-        for activity in filtered_activities
-        if activity["type"] == "assessment" and activity.get("assessment_summary")
-    ]
+        detail = await store.get_session_with_messages(activity["id"])
+        review = extract_assessment_review(detail) if detail else None
+        if review is None:
+            continue
 
-    return _build_teacher_insights(filtered_activities, assessment_rows)
+        student_id = str((detail.get("preferences") or {}).get("student_id") or activity["id"])
+        review["student_id"] = student_id
+        observations = extract_observations_from_review(review)
+        await store.save_observations(observations)
+
+        state = await store.get_student_state(student_id)
+        if state is None:
+            state = {
+                "student_id": student_id,
+                "repeated_mistakes": sorted({row["topic"] for row in observations if not row["is_correct"]}),
+                "support_level": "guided" if any(not row["is_correct"] for row in observations) else "independent",
+                "confidence_trend": "down" if any(not row["is_correct"] for row in observations) else "flat",
+            }
+            await store.upsert_student_state(student_id, state)
+
+        student_payloads.append(
+            build_student_diagnosis(
+                student_id=student_id,
+                observations=observations,
+                student_state=state,
+            )
+        )
+
+    return build_teacher_insights_payload(student_payloads=student_payloads)
 
 
 @router.get("/{entry_id}")

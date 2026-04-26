@@ -149,3 +149,36 @@ async def test_assessment_recommend_returns_clean_empty_state_without_reviews(
     assert payload["recommended_topic"] is None
     assert payload["suggested_action"] == "complete-assessment"
     assert payload["history_summary"]["assessments_considered"] == 0
+
+
+@pytest.mark.asyncio
+async def test_assessment_diagnosis_endpoint_returns_structured_payload(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="assessment-recent",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.add_message(
+        "assessment-recent",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "2. [q2] Q: Solve fractions subtraction 5/6 - 1/3 -> Answered: 1/6 (Incorrect, correct: 1/2, time: 61s)\n"
+        "Score: 0/2 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/assessment/diagnosis/assessment-recent")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["student_id"] == "assessment-recent"
+    assert payload["inferred"][0]["diagnosis_type"] == "concept_gap"
+    assert payload["recommended_actions"][0]["topic"] == "fractions subtraction"
