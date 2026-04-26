@@ -1276,7 +1276,7 @@
       "dependencies": [
         "F101_TEACHER_ACTION_EXECUTION_LOOP"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
       "notes": "Can run alongside F102 once the base teacher-action contract exists."
