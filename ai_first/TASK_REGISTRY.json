@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T17:20:00Z",
+    "last_updated": "2026-04-26T17:40:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 49
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 46,
+      "count": 47,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -55,15 +55,14 @@
         "T051_SESSION_CONTEXT_QUALITY_PASS",
         "R1_RUNTIME_BINDING_PROOF",
         "R2_DIAGNOSIS_CREDIBILITY",
-        "R3_ASSESSMENT_SAFETY"
+        "R3_ASSESSMENT_SAFETY",
+        "R5_DASHBOARD_ACTIONABILITY"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "R5_DASHBOARD_ACTIONABILITY"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1154,8 +1153,8 @@
         "L5_TEACHER_INSIGHT_UI",
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "in-progress",
-      "notes": "Active on branch pod-a/dashboard-actionability. This lane tightens dashboard cards and contest artifacts around concrete teacher moves."
+      "status": "completed",
+      "notes": "Merged to main through PR #159. Dashboard cards and contest artifacts now frame recommendations as concrete teacher moves with visible reasons."
     },
     {
       "id": "R6_CLAIM_CALIBRATION_PILOT",

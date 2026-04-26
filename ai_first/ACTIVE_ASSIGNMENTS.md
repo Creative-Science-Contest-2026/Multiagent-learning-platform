@@ -28,17 +28,6 @@ Rules:
 
 ## Active
 
-### Assignment
+No active AI implementation task.
 
-- Owner: Codex
-- Machine: local desktop
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/dashboard-actionability`
-- Task: `R5_DASHBOARD_ACTIONABILITY`
-- Status: in progress
-- Branch: `pod-a/dashboard-actionability`
-- Task packet: `docs/superpowers/tasks/2026-04-26-risk-lane-5-dashboard-actionability.md`
-- Owned files: `web/app/(workspace)/dashboard/`, `web/components/dashboard/`, `web/lib/dashboard-api.ts`, `docs/contest/`, `ai_first/competition/`, task packet, PR note
-- PR:
-- Last update: 2026-04-26
-- Next action: tighten student and small-group cards around teacher moves, then update contest story artifacts
-- Blocker: none
+Recommended next AI-owned task: open `docs/superpowers/tasks/2026-04-26-risk-lane-6-claim-calibration-and-pilot.md` from a fresh branch/worktree if the team wants to continue hardening judge-risk defenses.
