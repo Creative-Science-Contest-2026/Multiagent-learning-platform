@@ -461,6 +461,17 @@ export default function QuizViewer({
         </div>
       </div>
 
+      <div className="border-b border-amber-200/70 bg-amber-50/80 px-4 py-3 text-[12px] text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200">
+        <div className="font-semibold uppercase tracking-[0.08em]">
+          {t("Teacher Review Safety Gate")}
+        </div>
+        <p className="mt-1 leading-relaxed">
+          {t(
+            "This generated assessment should be reviewed or edited by a teacher before it is reused in a student-facing flow.",
+          )}
+        </p>
+      </div>
+
       <div className="px-4 py-3">
         <div className="mb-2 flex flex-wrap items-center gap-1.5">
           <span className="rounded-md bg-[var(--muted)] px-1.5 py-0.5 text-[10px] font-medium uppercase text-[var(--muted-foreground)]">
@@ -589,6 +600,15 @@ export default function QuizViewer({
                 {t("Retry")}
               </button>
             </>
+          )}
+        </div>
+
+        <div className="mt-3 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[12px] text-[var(--muted-foreground)]">
+          <span className="font-medium text-[var(--foreground)]">
+            {t("Review cue")}:
+          </span>{" "}
+          {t(
+            "Check answer wording, distractor quality, and explanation clarity before sharing this assessment with students.",
           )}
         </div>
 

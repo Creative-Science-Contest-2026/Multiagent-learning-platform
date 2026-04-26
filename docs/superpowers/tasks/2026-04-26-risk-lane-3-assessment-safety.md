@@ -19,9 +19,9 @@ Make the teacher-review and quality-control layer around assessment generation o
 
 ## Owned files/modules
 
-- `web/app/(workspace)/assessment/`
+- `web/app/(workspace)/guide/`
+- `web/components/quiz/`
 - `web/app/(workspace)/dashboard/assessments/`
-- `web/lib/assessment-api.ts`
 - `docs/contest/`
 - `ai_first/competition/`
 - `docs/superpowers/tasks/2026-04-26-risk-lane-3-assessment-safety.md`
