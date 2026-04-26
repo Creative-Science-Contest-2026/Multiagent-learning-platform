@@ -28,5 +28,17 @@ Rules:
 
 ## Active
 
-- No active AI implementation task is currently assigned on `main`.
-- The next product work should start from a fresh Session A or Session B branch/worktree after the human or AI loop selects the next future-backlog task.
+### Assignment
+
+- Owner: Codex Session A
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
+- Task: `F102_INTERVENTION_ASSIGNMENT_FLOW`
+- Status: `draft-review`
+- Branch: `pod-a/intervention-assignment-flow`
+- Task packet: `docs/superpowers/tasks/2026-04-27-f102-intervention-assignment-flow.md`
+- Owned files: `web/components/dashboard/`, `web/app/(workspace)/dashboard/`, `web/app/(workspace)/dashboard/student/`, `web/lib/dashboard-api.ts`, `deeptutor/api/routers/dashboard.py`, bounded `deeptutor/services/evidence/`, related dashboard tests/docs`
+- PR: `https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/pull/170`
+- Last update: `2026-04-27T00:14:15+0700`
+- Next action: `Wait for CI on PR #170, then move to ready-review if checks stay green.`
+- Blocker: `None`

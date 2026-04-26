@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T17:09:37Z",
+    "last_updated": "2026-04-26T17:24:57Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -65,8 +65,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F102_INTERVENTION_ASSIGNMENT_FLOW"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -75,9 +77,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 22,
+      "count": 21,
       "tasks": [
-        "F102_INTERVENTION_ASSIGNMENT_FLOW",
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
@@ -1253,7 +1254,7 @@
       "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
-      "notes": "Should stay teacher-facing first; richer outcome tracking can follow in Session B."
+      "notes": "Draft PR #170 is open on branch pod-a/intervention-assignment-flow. The branch adds linked intervention assignments on top of F101 teacher actions."
     },
     {
       "id": "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",

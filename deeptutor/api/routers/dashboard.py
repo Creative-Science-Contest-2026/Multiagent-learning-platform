@@ -15,6 +15,11 @@ from deeptutor.services.evidence.teacher_actions import (
     list_teacher_actions,
     update_teacher_action_status,
 )
+from deeptutor.services.evidence.intervention_assignments import (
+    create_intervention_assignment,
+    list_intervention_assignments,
+    update_intervention_assignment_status,
+)
 from deeptutor.services.evidence.teacher_insights import build_teacher_insights_payload
 from deeptutor.services.learning_path import build_suggested_learning_path
 from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
@@ -33,6 +38,18 @@ class TeacherActionCreateRequest(BaseModel):
 
 
 class TeacherActionStatusUpdateRequest(BaseModel):
+    status: str
+
+
+class InterventionAssignmentCreateRequest(BaseModel):
+    teacher_action_id: str
+    assignment_type: str
+    title: str
+    teacher_note: str
+    practice_note: str
+
+
+class InterventionAssignmentStatusUpdateRequest(BaseModel):
     status: str
 
 
@@ -533,9 +550,11 @@ async def get_dashboard_insights(
         )
 
     teacher_actions = list_teacher_actions(store)
+    intervention_assignments = list_intervention_assignments(store)
     return build_teacher_insights_payload(
         student_payloads=student_payloads,
         teacher_actions=teacher_actions,
+        intervention_assignments=intervention_assignments,
     )
 
 
@@ -569,6 +588,40 @@ async def update_dashboard_teacher_action(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="teacher action not found") from exc
+
+
+@router.post("/intervention-assignments")
+async def create_dashboard_intervention_assignment(
+    payload: InterventionAssignmentCreateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return create_intervention_assignment(
+            store,
+            teacher_action_id=payload.teacher_action_id,
+            assignment_type=payload.assignment_type,
+            title=payload.title,
+            teacher_note=payload.teacher_note,
+            practice_note=payload.practice_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="teacher action not found") from exc
+
+
+@router.patch("/intervention-assignments/{assignment_id}")
+async def update_dashboard_intervention_assignment(
+    assignment_id: str,
+    payload: InterventionAssignmentStatusUpdateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return update_intervention_assignment_status(store, assignment_id, status=payload.status)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="intervention assignment not found") from exc
 
 
 @router.get("/{entry_id}")

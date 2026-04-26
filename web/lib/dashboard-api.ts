@@ -262,6 +262,7 @@ export interface TeacherInsightStudent {
     rationale: string;
   }>;
   teacher_actions?: TeacherActionRecord[];
+  intervention_assignments?: InterventionAssignmentRecord[];
 }
 
 export type TeacherActionType =
@@ -288,6 +289,29 @@ export interface TeacherActionRecord {
   updated_at: number;
 }
 
+export type InterventionAssignmentType =
+  | "practice_set"
+  | "reteach_session"
+  | "prerequisite_review"
+  | "small_group_activity";
+
+export type InterventionAssignmentStatus = "draft" | "planned" | "done" | "dismissed";
+
+export interface InterventionAssignmentRecord {
+  id: string;
+  teacher_action_id: string;
+  target_type: "student" | "small_group";
+  target_id: string;
+  assignment_type: InterventionAssignmentType;
+  topic: string;
+  title: string;
+  teacher_note: string;
+  practice_note: string;
+  status: InterventionAssignmentStatus;
+  created_at: number;
+  updated_at: number;
+}
+
 export interface DashboardInsights {
   students: TeacherInsightStudent[];
   small_groups: Array<{
@@ -297,6 +321,7 @@ export interface DashboardInsights {
     recommended_action: string;
     target_id?: string;
     teacher_action?: TeacherActionRecord | null;
+    intervention_assignment?: InterventionAssignmentRecord | null;
   }>;
 }
 
@@ -315,6 +340,14 @@ export interface CreateTeacherActionRequest {
   topic: string;
   teacher_instruction: string;
   priority: TeacherActionPriority;
+}
+
+export interface CreateInterventionAssignmentRequest {
+  teacher_action_id: string;
+  assignment_type: InterventionAssignmentType;
+  title: string;
+  teacher_note: string;
+  practice_note: string;
 }
 
 /**
@@ -357,4 +390,27 @@ export async function updateTeacherActionStatus(
     body: JSON.stringify({ status }),
   });
   return expectJson<TeacherActionRecord>(response);
+}
+
+export async function createInterventionAssignment(
+  payload: CreateInterventionAssignmentRequest,
+): Promise<InterventionAssignmentRecord> {
+  const response = await fetch(apiUrl("/api/v1/dashboard/intervention-assignments"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<InterventionAssignmentRecord>(response);
+}
+
+export async function updateInterventionAssignmentStatus(
+  assignmentId: string,
+  status: InterventionAssignmentStatus,
+): Promise<InterventionAssignmentRecord> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/intervention-assignments/${assignmentId}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
+  return expectJson<InterventionAssignmentRecord>(response);
 }

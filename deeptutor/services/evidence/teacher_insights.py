@@ -30,6 +30,15 @@ def _student_actions(student_id: str, actions: list[dict[str, Any]]) -> list[dic
     return sorted(rows, key=lambda row: row.get("updated_at", 0), reverse=True)
 
 
+def _student_assignments(student_id: str, assignments: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows = [
+        assignment
+        for assignment in assignments
+        if assignment.get("target_type") == "student" and assignment.get("target_id") == student_id
+    ]
+    return sorted(rows, key=lambda row: row.get("updated_at", 0), reverse=True)
+
+
 def _small_group_target_id(topic: str, diagnosis_type: str, source_action_type: str) -> str:
     return f"{topic}::{diagnosis_type}::{source_action_type}"
 
@@ -38,13 +47,19 @@ def build_teacher_insights_payload(
     *,
     student_payloads: list[dict[str, Any]],
     teacher_actions: list[dict[str, Any]] | None = None,
+    intervention_assignments: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     teacher_actions = teacher_actions or []
+    intervention_assignments = intervention_assignments or []
     grouped: dict[tuple[str, str, str], list[tuple[str, int]]] = defaultdict(list)
     students: list[dict[str, Any]] = []
     for payload in student_payloads:
         row = dict(payload)
         row["teacher_actions"] = _student_actions(str(payload.get("student_id") or "unknown"), teacher_actions)
+        row["intervention_assignments"] = _student_assignments(
+            str(payload.get("student_id") or "unknown"),
+            intervention_assignments,
+        )
         students.append(row)
         inferred = _top_inferred(payload)
         action = _top_action(payload)
@@ -80,6 +95,14 @@ def build_teacher_insights_payload(
             ),
             None,
         )
+        matching_group_assignment = next(
+            (
+                assignment
+                for assignment in intervention_assignments
+                if assignment.get("target_type") == "small_group" and assignment.get("target_id") == target_id
+            ),
+            None,
+        )
         small_groups.append(
             {
                 "topic": topic,
@@ -90,6 +113,7 @@ def build_teacher_insights_payload(
                 "confidence_tag": "high" if avg_confidence >= 2.5 else "medium",
                 "target_id": target_id,
                 "teacher_action": matching_group_action,
+                "intervention_assignment": matching_group_assignment,
             }
         )
 
