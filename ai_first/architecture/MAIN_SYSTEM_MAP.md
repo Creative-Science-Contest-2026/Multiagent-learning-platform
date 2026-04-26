@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-24
+Last updated: 2026-04-26
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -58,8 +58,12 @@ flowchart TD
   AssessmentBuilder --> QuizGrounding["Knowledge Pack Grounded Quiz Config"]
   AssessmentBuilder --> AdaptiveDifficulty["Adaptive Difficulty from Recent Quiz Performance"]
   AssessmentBuilder --> AssessmentRecommendAPI["POST /api/v1/assessment/recommend"]
+  AssessmentBuilder --> AssessmentDiagnosisAPI["GET /api/v1/assessment/diagnosis/{session_id}"]
   AssessmentRecommendAPI --> RecommendEngine["Assessment Recommendation Engine"]
   RecommendEngine --> AssessmentSignals["Weak topics + score trend + KB context"]
+  AssessmentDiagnosisAPI --> EvidenceExtractor["Observation extractor from quiz review"]
+  EvidenceExtractor --> ObservationStore["SQLite observations + student_states"]
+  ObservationStore --> DiagnosisEngine["Rule-first diagnosis + action selection"]
   AdaptiveDifficulty --> QuizHistory["[Quiz Performance] session context"]
   AdaptiveDifficulty --> DeepQuestion
   
@@ -74,9 +78,13 @@ flowchart TD
   TeacherDashboard --> DashboardSummary["Session Activity Summary"]
   DashboardSummary --> DashboardFilters["History filters: type + KB + search + min score"]
   DashboardSummary --> TeacherAnalytics["Teacher Analytics Signals"]
+  TeacherDashboard --> TeacherInsights["Teacher Insight Panel"]
   TeacherAnalytics --> EngagementSignals["Engagement: active days + streak + KB usage"]
   TeacherAnalytics --> AssessmentTrend["Assessment trend: average + latest + delta"]
   TeacherAnalytics --> DifficultySignals["Learning signals: focus topics + strong areas"]
+  TeacherInsights --> InsightsAPI["GET /api/v1/dashboard/insights"]
+  InsightsAPI --> DiagnosisEngine
+  InsightsAPI --> SmallGroupRecommendations["Small-group recommendation clusters"]
   TeacherDashboard --> StudentDashboard["Student Progress Dashboard"]
   TeacherDashboard --> AssessmentReview["Assessment Review Drill-down"]
   StudentDashboard --> StudentRoute["/dashboard/student"]

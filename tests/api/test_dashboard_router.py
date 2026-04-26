@@ -372,10 +372,9 @@ async def test_dashboard_insights_returns_teacher_recommendations(
 
     assert response.status_code == 200
     payload = response.json()
-    assert "analytics" in payload
-    assert "at_risk_topics" in payload
-    assert isinstance(payload["recommendations"], list)
-    assert len(payload["recommendations"]) >= 1
+    assert len(payload["students"]) == 2
+    assert payload["students"][0]["recommended_actions"]
+    assert payload["students"][0]["inferred"]
 
 
 @pytest.mark.asyncio
@@ -420,17 +419,81 @@ async def test_dashboard_insights_filters_by_knowledge_base_and_time(
         resp_all = client.get("/api/v1/dashboard/insights")
         assert resp_all.status_code == 200
         payload_all = resp_all.json()
-        assert payload_all["analytics"]["assessment_trend"]["assessments_completed"] == 2
+        assert len(payload_all["students"]) == 2
 
         resp_kb = client.get("/api/v1/dashboard/insights?knowledge_base=fractions-pack")
         assert resp_kb.status_code == 200
         payload_kb = resp_kb.json()
-        assert payload_kb["analytics"]["assessment_trend"]["assessments_completed"] == 1
+        assert len(payload_kb["students"]) == 1
 
         resp_time = client.get("/api/v1/dashboard/insights?start_ts=1710000000")
         assert resp_time.status_code == 200
         payload_time = resp_time.json()
-        assert payload_time["analytics"]["assessment_trend"]["assessments_completed"] == 1
+        assert len(payload_time["students"]) == 1
+
+
+@pytest.mark.asyncio
+async def test_dashboard_insights_returns_students_and_small_groups(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {
+            "student_id": "student-a",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    await _seed_session(
+        store,
+        session_id="student-b-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-b-session",
+        {
+            "student_id": "student-b",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-b-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 5/6 - 1/3 -> Answered: 1/6 (Incorrect, correct: 1/2, time: 52s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/insights")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["students"][0]["student_id"] in {"student-a", "student-b"}
+    assert payload["small_groups"][0]["topic"] == "fractions subtraction"
+    assert sorted(payload["small_groups"][0]["student_ids"]) == ["student-a", "student-b"]
 
 
 @pytest.mark.asyncio
