@@ -28,9 +28,17 @@ Rules:
 
 ## Active
 
-- No active AI-owned lane is open right now.
-- Lane 1 (`L1_AGENT_SPEC_AUTHORING`) merged through PR `#136`.
-- Lane 2 (`L2_SPEC_RUNTIME_ASSEMBLY`) merged through PR `#135`.
-- Lane 3 (`L3_OBSERVATION_STUDENT_STATE`) merged through PR `#140`.
-- Lane 4 (`L4_DIAGNOSIS_RECOMMENDATION`) merged through PR `#142`.
-- Use the remaining lane packets (`lane-5` to `lane-6`) before starting new implementation sessions.
+### Assignment
+
+- Owner: GitHub Copilot (GPT-5.3-Codex)
+- Machine: macOS
+- Worktree: .worktrees/lane2
+- Task: L5_TEACHER_INSIGHT_UI
+- Status: in-progress
+- Branch: pod-a/teacher-insight-ui
+- Task packet: docs/superpowers/tasks/2026-04-26-lane-5-teacher-insight-ui.md
+- Owned files: web/app/(workspace)/dashboard/page.tsx; web/app/(workspace)/dashboard/student/page.tsx; web/components/dashboard/TeacherInsightPanel.tsx; web/components/dashboard/*; web/lib/dashboard-api.ts
+- PR: (draft, not opened yet)
+- Last update: 2026-04-26
+- Next action: Finish lane docs/handoff, open the Draft PR, and verify the new dashboard flow on CI.
+- Blocker: none
