@@ -50,8 +50,8 @@ export function StudentInsightCard({
         <section className="rounded-2xl bg-[var(--muted)]/45 p-3">
           <InsightSectionLabel eyebrow={t("Observed")} title={student.observed?.topic ?? t("No recent evidence")} />
           <div className="mt-3 space-y-2 text-[12px] text-[var(--foreground)]">
-            <div>{t("Misses: {{count}}", { count: student.observed?.miss_count ?? 0 })}</div>
-            <div>{t("Latency: {{value}}", { value: formatLatency(student.observed?.avg_latency_seconds) ?? t("Unknown") })}</div>
+            <div>{t("Missed items: {{count}}", { count: student.observed?.miss_count ?? 0 })}</div>
+            <div>{t("Response time: {{value}}", { value: formatLatency(student.observed?.avg_latency_seconds) ?? t("Unknown") })}</div>
             {student.student_state?.support_level ? (
               <div>{t("Support: {{value}}", { value: student.student_state.support_level })}</div>
             ) : null}
@@ -82,12 +82,17 @@ export function StudentInsightCard({
 
         <section className="rounded-2xl bg-emerald-50 p-3">
           <InsightSectionLabel
-            eyebrow={t("Recommended Action")}
-            title={recommendation?.action_type ?? t("No action yet")}
+            eyebrow={t("Teacher move")}
+            title={recommendation?.action_type ?? t("No next move yet")}
             toneClassName="text-emerald-700"
           >
             {recommendation?.rationale ?? t("No recommendation available")}
           </InsightSectionLabel>
+          <div className="mt-3 text-[12px] text-emerald-900/80">
+            {diagnosis?.evidence?.[0]
+              ? t("Why this move: {{reason}}", { reason: diagnosis.evidence[0] })
+              : t("Why this move: based on the strongest recent learning signal.")}
+          </div>
         </section>
       </div>
     </article>
