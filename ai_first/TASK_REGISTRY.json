@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-26T17:38:00Z",
+    "last_updated": "2026-04-26T18:10:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -67,8 +67,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F115_RUNTIME_POLICY_AUDIT_TRACE"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -77,7 +79,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 21,
+      "count": 19,
       "tasks": [
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
@@ -89,8 +91,6 @@
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
-        "F114_SPEC_VERSION_PINNING_PER_SESSION",
-        "F115_RUNTIME_POLICY_AUDIT_TRACE",
         "F116_STUDENT_MODEL_ENRICHMENT",
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
         "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
@@ -1586,10 +1586,10 @@
       "dependencies": [
         "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "runtime-policy",
-      "notes": "This is the backend half of future provenance UI work but should stand on its own."
+      "notes": "Active on branch pod-b/runtime-policy-audit-trace. This stays as the backend half of future provenance UI work and exposes a bounded inspectable audit contract on top of runtime-policy compilation."
     },
     {
       "id": "F116_STUDENT_MODEL_ENRICHMENT",
