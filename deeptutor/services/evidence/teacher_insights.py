@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any
 
+from .intervention_effectiveness import summarize_intervention_effectiveness
+
 
 _CONFIDENCE_SCORE = {"high": 3, "medium": 2, "low": 1}
 
@@ -65,9 +67,11 @@ def _student_intervention_history(
     teacher_actions: list[dict[str, Any]],
     intervention_assignments: list[dict[str, Any]],
     diagnosis_feedback: dict[str, Any] | None,
+    observations: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     sequence = 0
+    observations = observations or []
 
     def add_row(row: dict[str, Any]) -> None:
         nonlocal sequence
@@ -116,7 +120,7 @@ def _student_intervention_history(
                     or "No assignment detail recorded."
                 ),
                 "status": str(assignment.get("status") or "unknown"),
-                "topic": "",
+                "topic": str(assignment.get("topic") or ""),
                 "source_id": str(assignment.get("id") or ""),
             }
         )
@@ -140,6 +144,11 @@ def _student_intervention_history(
 
     ordered = sorted(rows, key=lambda row: (row.get("timestamp", 0), row.get("_sequence", 0)), reverse=True)
     for row in ordered:
+        if row.get("item_type") in {"teacher_action", "intervention_assignment"}:
+            row["effectiveness_summary"] = summarize_intervention_effectiveness(
+                intervention=row,
+                observations=observations,
+            )
         row.pop("_sequence", None)
     return ordered
 
@@ -194,12 +203,14 @@ def build_teacher_insights_payload(
     recommendation_acks: list[dict[str, Any]] | None = None,
     recommendation_feedback: list[dict[str, Any]] | None = None,
     diagnosis_feedback: list[dict[str, Any]] | None = None,
+    observations_by_student: dict[str, list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     teacher_actions = teacher_actions or []
     intervention_assignments = intervention_assignments or []
     recommendation_acks = recommendation_acks or []
     recommendation_feedback = recommendation_feedback or []
     diagnosis_feedback = diagnosis_feedback or []
+    observations_by_student = observations_by_student or {}
     grouped: dict[tuple[str, str, str], list[tuple[str, int]]] = defaultdict(list)
     students: list[dict[str, Any]] = []
     for payload in student_payloads:
@@ -248,6 +259,7 @@ def build_teacher_insights_payload(
             teacher_actions=row["teacher_actions"],
             intervention_assignments=row["intervention_assignments"],
             diagnosis_feedback=row["diagnosis_feedback"],
+            observations=observations_by_student.get(student_id, []),
         )
         students.append(row)
         inferred = top_inferred

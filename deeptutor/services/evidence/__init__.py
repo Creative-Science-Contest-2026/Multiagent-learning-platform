@@ -11,6 +11,7 @@ from .intervention_assignments import (
     list_intervention_assignments,
     update_intervention_assignment_status,
 )
+from .intervention_effectiveness import summarize_intervention_effectiveness
 from .recommendation_acks import (
     create_recommendation_ack,
     list_recommendation_acks,
@@ -39,6 +40,7 @@ __all__ = [
     "list_recommendation_acks",
     "list_recommendation_feedback",
     "list_teacher_actions",
+    "summarize_intervention_effectiveness",
     "update_diagnosis_feedback",
     "update_intervention_assignment_status",
     "update_recommendation_ack",
