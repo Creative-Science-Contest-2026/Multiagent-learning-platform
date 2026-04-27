@@ -28,17 +28,5 @@ Rules:
 
 ## Active
 
-### Assignment
-
-- Owner: Codex Session B
-- Machine: local
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-runtime-policy-audit-trace`
-- Task: `F115_RUNTIME_POLICY_AUDIT_TRACE`
-- Status: `ready-review`
-- Branch: `pod-b/runtime-policy-audit-trace`
-- Task packet: `docs/superpowers/tasks/2026-04-27-f115-runtime-policy-audit-trace.md`
-- Owned files: `deeptutor/services/runtime_policy/`, bounded `deeptutor/api/routers/agent_specs.py` or a debug route, related tests/docs
-- PR: `Draft, not opened yet`
-- Last update: `2026-04-27T01:10:00+0700`
-- Next action: `Commit the verified F115 branch, open the Draft PR, then move it to Ready for review after self-check.`
-- Blocker: `None`
+- No active AI implementation task is currently assigned on `main`.
+- The next product work should start from a fresh Session A or Session B branch/worktree after the human or AI loop selects the next future-backlog task.
