@@ -75,8 +75,9 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
+      "count": 2,
       "tasks": [
+        "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F118_MISCONCEPTION_TAXONOMY_EXPANSION"
       ]
     },
@@ -91,7 +92,6 @@
       "tasks": [
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
-        "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
@@ -1433,7 +1433,7 @@
       "status": "not-started",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Useful before deeper recommendation-engine expansion because it adds real teacher signal."
+      "notes": "Session A started on 2026-04-28 from worktree .worktrees/pod-a-recommendation-feedback-capture. Scope is bounded recommendation-quality feedback for student and small-group recommendations with labels practical, relevant, and too_generic plus an optional teacher note."
     },
     {
       "id": "F110_TEACHER_OVERRIDE_LOG",

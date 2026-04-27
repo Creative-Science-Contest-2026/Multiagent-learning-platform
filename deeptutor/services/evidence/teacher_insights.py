@@ -163,6 +163,25 @@ def _latest_recommendation_ack(
     )
 
 
+def _latest_recommendation_feedback(
+    *,
+    target_type: str,
+    target_id: str,
+    source_recommendation_id: str,
+    recommendation_feedback: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    return next(
+        (
+            row
+            for row in recommendation_feedback
+            if row.get("target_type") == target_type
+            and row.get("target_id") == target_id
+            and row.get("source_recommendation_id") == source_recommendation_id
+        ),
+        None,
+    )
+
+
 def _small_group_target_id(topic: str, diagnosis_type: str, source_action_type: str) -> str:
     return f"{topic}::{diagnosis_type}::{source_action_type}"
 
@@ -173,11 +192,13 @@ def build_teacher_insights_payload(
     teacher_actions: list[dict[str, Any]] | None = None,
     intervention_assignments: list[dict[str, Any]] | None = None,
     recommendation_acks: list[dict[str, Any]] | None = None,
+    recommendation_feedback: list[dict[str, Any]] | None = None,
     diagnosis_feedback: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     teacher_actions = teacher_actions or []
     intervention_assignments = intervention_assignments or []
     recommendation_acks = recommendation_acks or []
+    recommendation_feedback = recommendation_feedback or []
     diagnosis_feedback = diagnosis_feedback or []
     grouped: dict[tuple[str, str, str], list[tuple[str, int]]] = defaultdict(list)
     students: list[dict[str, Any]] = []
@@ -202,6 +223,16 @@ def build_teacher_insights_payload(
                 target_id=student_id,
                 source_recommendation_id=str(top_action.get("action_id") or f"student:{student_id}"),
                 recommendation_acks=recommendation_acks,
+            )
+            if top_action
+            else None
+        )
+        row["recommendation_feedback"] = (
+            _latest_recommendation_feedback(
+                target_type="student",
+                target_id=student_id,
+                source_recommendation_id=str(top_action.get("action_id") or f"student:{student_id}"),
+                recommendation_feedback=recommendation_feedback,
             )
             if top_action
             else None
@@ -267,6 +298,12 @@ def build_teacher_insights_payload(
             source_recommendation_id=f"group:{topic}:{diagnosis_type}",
             recommendation_acks=recommendation_acks,
         )
+        matching_group_feedback = _latest_recommendation_feedback(
+            target_type="small_group",
+            target_id=target_id,
+            source_recommendation_id=f"group:{topic}:{diagnosis_type}",
+            recommendation_feedback=recommendation_feedback,
+        )
         small_groups.append(
             {
                 "topic": topic,
@@ -277,6 +314,7 @@ def build_teacher_insights_payload(
                 "confidence_tag": "high" if avg_confidence >= 2.5 else "medium",
                 "target_id": target_id,
                 "recommendation_ack": matching_group_ack,
+                "recommendation_feedback": matching_group_feedback,
                 "teacher_action": matching_group_action,
                 "intervention_assignment": matching_group_assignment,
             }

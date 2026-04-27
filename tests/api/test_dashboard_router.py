@@ -851,6 +851,169 @@ async def test_dashboard_recommendation_ack_status_update_round_trip(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_recommendation_feedback_create_round_trip(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {
+            "student_id": "student-a",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        student = insights["students"][0]
+        recommendation_id = student["recommended_actions"][0]["action_id"]
+
+        create_resp = client.post(
+            "/api/v1/dashboard/recommendation-feedback",
+            json={
+                "source_recommendation_id": recommendation_id,
+                "target_type": "student",
+                "target_id": "student-a",
+                "feedback_label": "practical",
+                "teacher_note": "This is easy to apply in tomorrow's warm-up.",
+            },
+        )
+
+        assert create_resp.status_code == 200
+        created = create_resp.json()
+        assert created["target_type"] == "student"
+        assert created["feedback_label"] == "practical"
+
+        update_resp = client.patch(
+            f"/api/v1/dashboard/recommendation-feedback/{created['id']}",
+            json={"feedback_label": "relevant", "teacher_note": "Still relevant after looking at the notebook work."},
+        )
+
+        assert update_resp.status_code == 200
+        assert update_resp.json()["feedback_label"] == "relevant"
+        assert update_resp.json()["teacher_note"] == "Still relevant after looking at the notebook work."
+
+
+@pytest.mark.asyncio
+async def test_dashboard_recommendation_feedback_summary_attaches_to_student_payload(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {
+            "student_id": "student-a",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        student = insights["students"][0]
+        recommendation_id = student["recommended_actions"][0]["action_id"]
+
+        client.post(
+            "/api/v1/dashboard/recommendation-feedback",
+            json={
+                "source_recommendation_id": recommendation_id,
+                "target_type": "student",
+                "target_id": "student-a",
+                "feedback_label": "too_generic",
+                "teacher_note": "I need a more specific reteach move than this.",
+            },
+        )
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_student = next(row for row in refreshed["students"] if row["student_id"] == "student-a")
+        assert refreshed_student["recommendation_feedback"]["source_recommendation_id"] == recommendation_id
+        assert refreshed_student["recommendation_feedback"]["feedback_label"] == "too_generic"
+
+
+@pytest.mark.asyncio
+async def test_dashboard_recommendation_feedback_attaches_to_small_group_card(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    for sid, student_id, answer in [
+        ("student-a-session", "student-a", "1/5"),
+        ("student-b-session", "student-b", "1/6"),
+    ]:
+        await _seed_session(
+            store,
+            session_id=sid,
+            capability="deep_question",
+            message="Generate a quiz on fractions",
+            knowledge_bases=["fractions-pack"],
+        )
+        await store.update_session_preferences(
+            sid,
+            {"student_id": student_id, "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+        )
+        await store.add_message(
+            sid,
+            "user",
+            f"[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: {answer} (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+            capability="deep_question",
+        )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        group = insights["small_groups"][0]
+        recommendation_id = f"group:{group['topic']}:{group['diagnosis_type']}"
+
+        create_resp = client.post(
+            "/api/v1/dashboard/recommendation-feedback",
+            json={
+                "source_recommendation_id": recommendation_id,
+                "target_type": "small_group",
+                "target_id": group["target_id"],
+                "feedback_label": "relevant",
+                "teacher_note": "This grouping is relevant, but I may need a shorter activity.",
+            },
+        )
+
+        assert create_resp.status_code == 200
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_group = refreshed["small_groups"][0]
+        assert refreshed_group["recommendation_feedback"]["target_type"] == "small_group"
+        assert refreshed_group["recommendation_feedback"]["feedback_label"] == "relevant"
+
+
+@pytest.mark.asyncio
 async def test_dashboard_diagnosis_feedback_create_round_trip(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
