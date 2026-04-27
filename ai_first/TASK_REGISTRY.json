@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T04:50:00Z",
+    "last_updated": "2026-04-28T04:58:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 62,
+      "count": 63,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -68,6 +68,7 @@
         "F116_STUDENT_MODEL_ENRICHMENT",
         "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
         "F107_INTERVENTION_HISTORY_VIEW",
+        "F110_TEACHER_OVERRIDE_LOG",
         "F106_STUDENT_INSIGHT_TIMELINE",
         "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
@@ -76,10 +77,8 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F110_TEACHER_OVERRIDE_LOG"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -88,7 +87,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 7,
+      "count": 6,
       "tasks": [
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
@@ -1453,10 +1452,10 @@
       "dependencies": [
         "F108_DIAGNOSIS_FEEDBACK_CAPTURE"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Session A started on 2026-04-28 from worktree .worktrees/pod-a-teacher-override-log. Scope is a bounded override record that captures when teachers choose a different pedagogical move than the recommended one for student and small-group recommendations."
+      "notes": "Merged to main through PR #191 on 2026-04-28. Dashboard now captures bounded teacher override records for student and small-group recommendations, with separate reason and replacement-move fields that stay distinct from recommendation feedback and execution records."
     },
     {
       "id": "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
