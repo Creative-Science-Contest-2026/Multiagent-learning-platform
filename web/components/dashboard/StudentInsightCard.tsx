@@ -53,6 +53,7 @@ export function StudentInsightCard({
   );
   const latestAction = teacherActions[0] ?? null;
   const latestAssignment = interventionAssignments[0] ?? null;
+  const trustTrace = student.reason_trace;
 
   return (
     <article className="rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
@@ -132,6 +133,19 @@ export function StudentInsightCard({
               {diagnosisFeedback.teacher_note ? <div className="mt-1">{diagnosisFeedback.teacher_note}</div> : null}
             </div>
           ) : null}
+          {trustTrace ? (
+            <div className="mt-3 rounded-2xl border border-amber-200/70 bg-white/80 p-3 text-[12px] text-amber-900/80">
+              <div className="font-medium">
+                {t("Trust trace: {{policy}}", { policy: trustTrace.diagnosis_policy || t("teacher-reviewed") })}
+              </div>
+              <div className="mt-1">
+                {trustTrace.teacher_review_required
+                  ? t("Teacher review is required before treating this as a classroom fact.")
+                  : t("This signal does not currently require an extra teacher review step.")}
+              </div>
+              {trustTrace.evidence?.[0] ? <div className="mt-1">{trustTrace.evidence[0]}</div> : null}
+            </div>
+          ) : null}
         </section>
 
         <section className="rounded-2xl bg-emerald-50 p-3">
@@ -147,6 +161,12 @@ export function StudentInsightCard({
               ? t("Why this move: {{reason}}", { reason: diagnosis.evidence[0] })
               : t("Why this move: based on the strongest recent learning signal.")}
           </div>
+          {trustTrace?.recommendation_rationale ? (
+            <div className="mt-2 rounded-2xl border border-emerald-200 bg-white/75 p-3 text-[12px] text-emerald-900/80">
+              <div className="font-medium">{t("Recommendation rationale")}</div>
+              <div className="mt-1">{trustTrace.recommendation_rationale}</div>
+            </div>
+          ) : null}
           <div className="mt-3">
             <RecommendationFeedbackComposer
               triggerLabel={

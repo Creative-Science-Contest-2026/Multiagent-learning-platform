@@ -61,6 +61,30 @@ export interface AgentSpecUpsertPayload {
   files: Record<string, string>;
 }
 
+export interface RuntimePolicyAuditPayload {
+  agent_spec_id: string;
+  agent_spec_version: number | null;
+  capability: string;
+  runtime_policy: {
+    capability: string;
+    agent_spec_id: string;
+    agent_spec_version: number | null;
+    slices: Record<string, string>;
+    sources: Record<string, string>;
+    knowledge_policy: string;
+    source_priority: string[];
+    teacher_kb_context: string;
+    debug: {
+      applied_slices: string[];
+      missing_slices: string[];
+      slice_sources: Record<string, string>;
+      agent_spec_id: string;
+      agent_spec_version: number | null;
+      has_teacher_kb_context: boolean;
+    };
+  };
+}
+
 async function expectJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const message = await response.text();
@@ -104,4 +128,15 @@ export async function exportAgentSpec(agentId: string): Promise<Blob> {
     throw new Error(`Export failed: ${response.status}`);
   }
   return response.blob();
+}
+
+export async function getAgentSpecRuntimePolicyAudit(
+  agentId: string,
+  capability = "chat",
+): Promise<RuntimePolicyAuditPayload> {
+  const response = await fetch(
+    apiUrl(`/api/v1/agent-specs/${agentId}/runtime-policy-audit?capability=${encodeURIComponent(capability)}`),
+    { cache: "no-store" },
+  );
+  return expectJson<RuntimePolicyAuditPayload>(response);
 }

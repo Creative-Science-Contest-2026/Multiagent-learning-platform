@@ -9,6 +9,8 @@ import {
   createAgentSpec,
   exportAgentSpec,
   getAgentSpec,
+  getAgentSpecRuntimePolicyAudit,
+  type RuntimePolicyAuditPayload,
   listAgentSpecs,
   type AgentSpecDetail,
   type AgentSpecUpsertPayload,
@@ -79,6 +81,9 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
   const [activeManualFile, setActiveManualFile] = useState<ManualFile>("CURRICULUM.md");
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [auditCapability, setAuditCapability] = useState<"chat" | "deep_question" | "deep_solve">("chat");
+  const [runtimeAudit, setRuntimeAudit] = useState<RuntimePolicyAuditPayload | null>(null);
+  const [auditLoading, setAuditLoading] = useState(false);
 
   async function reloadList(preferredId?: string) {
     const items = await listAgentSpecs();
@@ -109,6 +114,24 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!draft.agent_id) {
+      setRuntimeAudit(null);
+      return;
+    }
+    void (async () => {
+      setAuditLoading(true);
+      try {
+        const payload = await getAgentSpecRuntimePolicyAudit(draft.agent_id, auditCapability);
+        setRuntimeAudit(payload);
+      } catch {
+        setRuntimeAudit(null);
+      } finally {
+        setAuditLoading(false);
+      }
+    })();
+  }, [draft.agent_id, auditCapability]);
 
   const runtimeSummary = useMemo(
     () => [
@@ -395,6 +418,76 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
             <SummaryRow label={t("What students will feel")} value={runtimeSummary.join(" • ")} />
             <SummaryRow label={t("Version")} value={draft.version > 0 ? `v${draft.version}` : t("New")} />
           </div>
+        </div>
+
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                {t("Runtime policy audit")}
+              </p>
+              <h3 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
+                {t("What policy actually reaches the agent")}
+              </h3>
+            </div>
+            <select
+              value={auditCapability}
+              onChange={(event) => setAuditCapability(event.target.value as "chat" | "deep_question" | "deep_solve")}
+              className="rounded-lg border border-[var(--border)] bg-transparent px-2 py-1 text-[12px] text-[var(--foreground)]"
+            >
+              <option value="chat">chat</option>
+              <option value="deep_question">deep_question</option>
+              <option value="deep_solve">deep_solve</option>
+            </select>
+          </div>
+          {!draft.agent_id ? (
+            <p className="mt-3 text-[12px] text-[var(--muted-foreground)]">
+              {t("Save the spec pack first to inspect the compiled runtime policy.")}
+            </p>
+          ) : auditLoading ? (
+            <div className="mt-4 flex items-center gap-2 text-[12px] text-[var(--muted-foreground)]">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              {t("Loading runtime policy audit…")}
+            </div>
+          ) : runtimeAudit ? (
+            <div className="mt-4 space-y-3 text-[12px]">
+              <SummaryRow label={t("Capability")} value={runtimeAudit.capability} />
+              <SummaryRow
+                label={t("Spec version")}
+                value={runtimeAudit.agent_spec_version != null ? `v${runtimeAudit.agent_spec_version}` : t("Latest")}
+              />
+              <SummaryRow label={t("Knowledge policy")} value={runtimeAudit.runtime_policy.knowledge_policy} />
+              <SummaryRow
+                label={t("Source priority")}
+                value={runtimeAudit.runtime_policy.source_priority.join(" > ")}
+              />
+              <SummaryRow
+                label={t("Applied slices")}
+                value={runtimeAudit.runtime_policy.debug.applied_slices.join(", ") || t("None")}
+              />
+              <SummaryRow
+                label={t("Missing slices")}
+                value={runtimeAudit.runtime_policy.debug.missing_slices.join(", ") || t("None")}
+              />
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--background)]/50 p-3">
+                <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+                  {t("Slice sources")}
+                </p>
+                <div className="mt-2 space-y-2">
+                  {Object.entries(runtimeAudit.runtime_policy.debug.slice_sources).map(([slice, source]) => (
+                    <div key={slice} className="flex items-start justify-between gap-3">
+                      <span className="font-medium text-[var(--foreground)]">{slice}</span>
+                      <span className="text-right text-[var(--muted-foreground)]">{source}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-3 text-[12px] text-[var(--muted-foreground)]">
+              {t("No runtime audit is available for this spec yet.")}
+            </p>
+          )}
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
