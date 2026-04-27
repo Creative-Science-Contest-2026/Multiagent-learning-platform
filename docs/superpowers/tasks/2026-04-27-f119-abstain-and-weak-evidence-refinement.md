@@ -2,7 +2,7 @@
 
 - Task ID: `F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT`
 - Commit tag: `F119`
-- Status: `Planning`
+- Status: `Ready for Review`
 - Branch recommendation: `pod-b/abstain-weak-evidence-refinement`
 
 ## Goal

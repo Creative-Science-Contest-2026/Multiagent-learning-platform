@@ -34,11 +34,11 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-abstain-weak-evidence-refinement`
 - Task: `F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT`
-- Status: `planning`
+- Status: `ready-review`
 - Branch: `pod-b/abstain-weak-evidence-refinement`
 - Task packet: `docs/superpowers/tasks/2026-04-27-f119-abstain-and-weak-evidence-refinement.md`
 - Owned files: `deeptutor/services/evidence/`, bounded dashboard and assessment payload shaping/tests, related docs
-- PR: `Not opened yet`
+- PR: `Draft, not opened yet`
 - Last update: `2026-04-27T23:45:00+0700`
-- Next action: `Start the TDD step by adding failing diagnosis and API tests for thin, stale, and mixed evidence cases.`
+- Next action: `Run final verification, commit the lane, and open the Draft PR for F119.`
 - Blocker: `None`
