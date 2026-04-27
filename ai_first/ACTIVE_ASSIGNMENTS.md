@@ -35,12 +35,13 @@ Rules:
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-a-recommendation-feedback-capture`
 - Task: `F109_RECOMMENDATION_FEEDBACK_CAPTURE`
 - Status: `implementation-verified`
+- Status: `draft-pr-open`
 - Branch: `pod-a/recommendation-feedback-capture`
 - Task packet: `docs/superpowers/tasks/2026-04-28-f109-recommendation-feedback-capture.md`
 - Owned files: `web/components/dashboard/`, `web/app/(workspace)/dashboard/`, `web/lib/dashboard-api.ts`, `deeptutor/api/routers/dashboard.py`, bounded recommendation-feedback storage/helpers under `deeptutor/services/evidence/`, related dashboard tests/docs`
-- PR: `Not opened yet`
-- Last update: `2026-04-28T01:01:00+0700`
-- Next action: `Commit the verified slice, push pod-a/recommendation-feedback-capture, and open the Draft PR.`
+- PR: `#187`
+- Last update: `2026-04-28T01:20:00+0700`
+- Next action: `Watch CI for PR #187, then move it to Ready for review when Backend/Frontend/Docs checks are green.`
 
 ### Assignment
 
