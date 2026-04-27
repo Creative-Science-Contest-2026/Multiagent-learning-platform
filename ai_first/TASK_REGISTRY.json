@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-27T16:50:00Z",
+    "last_updated": "2026-04-27T17:00:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 58,
+      "count": 59,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -67,14 +67,14 @@
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
         "F116_STUDENT_MODEL_ENRICHMENT",
         "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
-        "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT"
+        "F107_INTERVENTION_HISTORY_VIEW",
+        "F106_STUDENT_INSIGHT_TIMELINE"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 2,
+      "count": 1,
       "tasks": [
-        "F107_INTERVENTION_HISTORY_VIEW",
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT"
       ]
     },
@@ -85,11 +85,10 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 15,
+      "count": 14,
       "tasks": [
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
-        "F106_STUDENT_INSIGHT_TIMELINE",
         "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
@@ -1380,10 +1379,10 @@
       "dependencies": [
         "F102_INTERVENTION_ASSIGNMENT_FLOW"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-insight",
-      "notes": "Session A started on 2026-04-27 from worktree .worktrees/pod-a-intervention-history-view. Scope is a bounded per-student intervention history feed built from existing teacher actions, intervention assignments, recommendation acknowledgements, and diagnosis feedback records."
+      "notes": "Merged to main through PR #183 on 2026-04-27. Student detail now shows a derived intervention history feed across acknowledgement, action, assignment, and diagnosis feedback records."
     },
     {
       "id": "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
@@ -1640,7 +1639,7 @@
       "dependencies": [
         "F116_STUDENT_MODEL_ENRICHMENT"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
       "notes": "Active on branch pod-b/confidence-calibration-refinement. The lane calibrates confidence tags using recent evidence density, 24h recency presence, and support burden while preserving the teacher-review framing and the F119 abstain gate."
