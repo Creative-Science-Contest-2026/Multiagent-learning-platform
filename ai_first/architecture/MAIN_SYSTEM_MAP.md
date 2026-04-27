@@ -109,6 +109,7 @@ flowchart TD
   TeacherInsights --> DiagnosisFeedbackAPI["POST/PATCH /api/v1/dashboard/diagnosis-feedback"]
   TeacherInsights --> RecommendationAckAPI["POST/PATCH /api/v1/dashboard/recommendation-acks"]
   TeacherInsights --> RecommendationFeedbackAPI["POST/PATCH /api/v1/dashboard/recommendation-feedback"]
+  TeacherInsights --> TeacherOverrideAPI["POST/PATCH /api/v1/dashboard/teacher-overrides"]
   TeacherInsights --> TeacherActionAPI["POST/PATCH /api/v1/dashboard/teacher-actions"]
   TeacherInsights --> InterventionAssignmentAPI["POST/PATCH /api/v1/dashboard/intervention-assignments"]
   InsightsAPI --> DiagnosisEngine
@@ -117,13 +118,17 @@ flowchart TD
   InsightsAPI --> SmallGroupRecommendations["Small-group recommendation clusters"]
   InsightsAPI --> RecommendationAcks["Recommendation acknowledgement records"]
   InsightsAPI --> RecommendationFeedback["Recommendation quality feedback records"]
+  InsightsAPI --> TeacherOverrides["Teacher override records"]
   InsightsAPI --> TeacherActions["Teacher action records"]
   InsightsAPI --> InterventionAssignments["Intervention assignment records"]
   DiagnosisFeedbackAPI --> DiagnosisFeedback
   RecommendationAckAPI --> RecommendationAcks
   RecommendationFeedbackAPI --> RecommendationFeedback
+  TeacherOverrideAPI --> TeacherOverrides
   DiagnosisFeedback --> RecommendationAckAPI
   RecommendationAcks --> RecommendationFeedbackAPI
+  RecommendationFeedback --> TeacherOverrideAPI
+  TeacherOverrides --> TeacherActionAPI
   RecommendationFeedback --> TeacherActionAPI
   RecommendationAcks --> TeacherActionAPI
   TeacherActionAPI --> TeacherActions
