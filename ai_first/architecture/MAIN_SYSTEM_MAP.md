@@ -101,12 +101,16 @@ flowchart TD
   TeacherAnalytics --> AssessmentTrend["Assessment trend: average + latest + delta"]
   TeacherAnalytics --> DifficultySignals["Learning signals: focus topics + strong areas"]
   TeacherInsights --> InsightsAPI["GET /api/v1/dashboard/insights"]
+  TeacherInsights --> RecommendationAckAPI["POST/PATCH /api/v1/dashboard/recommendation-acks"]
   TeacherInsights --> TeacherActionAPI["POST/PATCH /api/v1/dashboard/teacher-actions"]
   TeacherInsights --> InterventionAssignmentAPI["POST/PATCH /api/v1/dashboard/intervention-assignments"]
   InsightsAPI --> DiagnosisEngine
   InsightsAPI --> SmallGroupRecommendations["Small-group recommendation clusters"]
+  InsightsAPI --> RecommendationAcks["Recommendation acknowledgement records"]
   InsightsAPI --> TeacherActions["Teacher action records"]
   InsightsAPI --> InterventionAssignments["Intervention assignment records"]
+  RecommendationAckAPI --> RecommendationAcks
+  RecommendationAcks --> TeacherActionAPI
   TeacherActionAPI --> TeacherActions
   TeacherActions --> InterventionAssignmentAPI
   InterventionAssignmentAPI --> InterventionAssignments
@@ -117,6 +121,7 @@ flowchart TD
   StudentDashboard --> TrendCards["Streak + average score + recent assessments"]
   StudentDashboard --> TopicSignals["Focus topics + mastered topics"]
   StudentDashboard --> LearningPathSignals["Suggested learning path sequence"]
+  StudentDashboard --> RecommendationAckDetail["Recommendation acknowledgement summary"]
   StudentDashboard --> TeacherActionDetail["Teacher actions section + status updates"]
   StudentDashboard --> AssignmentDetail["Intervention assignments section + status updates"]
   LearningPathSignals --> PathEngine["Deterministic learning-path helper"]

@@ -5,8 +5,14 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { InterventionAssignmentComposer } from "@/components/dashboard/InterventionAssignmentComposer";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
+import { RecommendationAckComposer } from "@/components/dashboard/RecommendationAckComposer";
 import { TeacherActionComposer } from "@/components/dashboard/TeacherActionComposer";
-import type { InterventionAssignmentRecord, TeacherActionRecord, TeacherInsightStudent } from "@/lib/dashboard-api";
+import type {
+  InterventionAssignmentRecord,
+  RecommendationAckRecord,
+  TeacherActionRecord,
+  TeacherInsightStudent,
+} from "@/lib/dashboard-api";
 
 function formatLatency(seconds: number | undefined): string | null {
   if (seconds == null) return null;
@@ -23,6 +29,9 @@ export function StudentInsightCard({
 }) {
   const diagnosis = student.inferred[0];
   const recommendation = student.recommended_actions[0];
+  const [recommendationAck, setRecommendationAck] = useState<RecommendationAckRecord | null>(
+    student.recommendation_ack ?? null,
+  );
   const [teacherActions, setTeacherActions] = useState<TeacherActionRecord[]>(student.teacher_actions ?? []);
   const [interventionAssignments, setInterventionAssignments] = useState<InterventionAssignmentRecord[]>(
     student.intervention_assignments ?? [],
@@ -102,6 +111,25 @@ export function StudentInsightCard({
               ? t("Why this move: {{reason}}", { reason: diagnosis.evidence[0] })
               : t("Why this move: based on the strongest recent learning signal.")}
           </div>
+          <div className="mt-3">
+            <RecommendationAckComposer
+              triggerLabel={recommendationAck ? t("Update acknowledgement") : t("Acknowledge recommendation")}
+              defaultPayload={{
+                target_type: "student",
+                target_id: student.student_id,
+                source_recommendation_id: recommendation?.action_id ?? `student:${student.student_id}`,
+              }}
+              existingAck={recommendationAck}
+              onSaved={setRecommendationAck}
+              t={t}
+            />
+          </div>
+          {recommendationAck ? (
+            <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+              <div className="font-medium">{t("Recommendation status: {{status}}", { status: recommendationAck.status })}</div>
+              {recommendationAck.teacher_note ? <div className="mt-1">{recommendationAck.teacher_note}</div> : null}
+            </div>
+          ) : null}
           <div className="mt-3">
             <TeacherActionComposer
               triggerLabel={t("Create action")}

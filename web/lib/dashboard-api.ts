@@ -261,8 +261,22 @@ export interface TeacherInsightStudent {
     topic: string;
     rationale: string;
   }>;
+  recommendation_ack?: RecommendationAckRecord | null;
   teacher_actions?: TeacherActionRecord[];
   intervention_assignments?: InterventionAssignmentRecord[];
+}
+
+export type RecommendationAckStatus = "accepted" | "deferred" | "dismissed" | "completed";
+
+export interface RecommendationAckRecord {
+  id: string;
+  source_recommendation_id: string;
+  target_type: "student" | "small_group";
+  target_id: string;
+  status: RecommendationAckStatus;
+  teacher_note: string;
+  created_at: number;
+  updated_at: number;
 }
 
 export type TeacherActionType =
@@ -320,6 +334,7 @@ export interface DashboardInsights {
     student_ids: string[];
     recommended_action: string;
     target_id?: string;
+    recommendation_ack?: RecommendationAckRecord | null;
     teacher_action?: TeacherActionRecord | null;
     intervention_assignment?: InterventionAssignmentRecord | null;
   }>;
@@ -340,6 +355,14 @@ export interface CreateTeacherActionRequest {
   topic: string;
   teacher_instruction: string;
   priority: TeacherActionPriority;
+}
+
+export interface CreateRecommendationAckRequest {
+  source_recommendation_id: string;
+  target_type: "student" | "small_group";
+  target_id: string;
+  status: RecommendationAckStatus;
+  teacher_note?: string;
 }
 
 export interface CreateInterventionAssignmentRequest {
@@ -378,6 +401,29 @@ export async function createTeacherAction(
     body: JSON.stringify(payload),
   });
   return expectJson<TeacherActionRecord>(response);
+}
+
+export async function createRecommendationAck(
+  payload: CreateRecommendationAckRequest,
+): Promise<RecommendationAckRecord> {
+  const response = await fetch(apiUrl("/api/v1/dashboard/recommendation-acks"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<RecommendationAckRecord>(response);
+}
+
+export async function updateRecommendationAck(
+  ackId: string,
+  payload: { status: RecommendationAckStatus; teacher_note?: string },
+): Promise<RecommendationAckRecord> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/recommendation-acks/${ackId}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<RecommendationAckRecord>(response);
 }
 
 export async function updateTeacherActionStatus(

@@ -15,6 +15,11 @@ from deeptutor.services.evidence.teacher_actions import (
     list_teacher_actions,
     update_teacher_action_status,
 )
+from deeptutor.services.evidence.recommendation_acks import (
+    create_recommendation_ack,
+    list_recommendation_acks,
+    update_recommendation_ack,
+)
 from deeptutor.services.evidence.intervention_assignments import (
     create_intervention_assignment,
     list_intervention_assignments,
@@ -39,6 +44,19 @@ class TeacherActionCreateRequest(BaseModel):
 
 class TeacherActionStatusUpdateRequest(BaseModel):
     status: str
+
+
+class RecommendationAckCreateRequest(BaseModel):
+    source_recommendation_id: str
+    target_type: str
+    target_id: str
+    status: str
+    teacher_note: str = ""
+
+
+class RecommendationAckUpdateRequest(BaseModel):
+    status: str
+    teacher_note: str | None = None
 
 
 class InterventionAssignmentCreateRequest(BaseModel):
@@ -551,11 +569,50 @@ async def get_dashboard_insights(
 
     teacher_actions = list_teacher_actions(store)
     intervention_assignments = list_intervention_assignments(store)
+    recommendation_acks = list_recommendation_acks(store)
     return build_teacher_insights_payload(
         student_payloads=student_payloads,
         teacher_actions=teacher_actions,
         intervention_assignments=intervention_assignments,
+        recommendation_acks=recommendation_acks,
     )
+
+
+@router.post("/recommendation-acks")
+async def create_dashboard_recommendation_ack(
+    payload: RecommendationAckCreateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return create_recommendation_ack(
+            store,
+            source_recommendation_id=payload.source_recommendation_id,
+            target_type=payload.target_type,
+            target_id=payload.target_id,
+            status=payload.status,
+            teacher_note=payload.teacher_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.patch("/recommendation-acks/{ack_id}")
+async def update_dashboard_recommendation_ack(
+    ack_id: str,
+    payload: RecommendationAckUpdateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return update_recommendation_ack(
+            store,
+            ack_id,
+            status=payload.status,
+            teacher_note=payload.teacher_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="recommendation acknowledgement not found") from exc
 
 
 @router.post("/teacher-actions")
