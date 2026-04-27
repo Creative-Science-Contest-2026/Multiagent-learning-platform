@@ -22,6 +22,7 @@ flowchart TD
   Runtime --> RuntimePolicy["Runtime Policy Compiler"]
   Runtime --> RuntimePolicy["Runtime Policy Assembly"]
   RuntimePolicy --> PolicyCompiler["services/runtime_policy/compiler.py"]
+  RuntimePolicy --> PolicyAudit["Inspectable audit trace: slices + sources + version"]
   RuntimePolicy --> PolicySlices["SOUL/RULES/WORKFLOW/ASSESSMENT/KNOWLEDGE"]
   RuntimePolicy --> SourcePriority["teacher_kb > curriculum_excerpt > teacher_rules > llm_prior_knowledge"]
 
@@ -47,8 +48,10 @@ flowchart TD
   TeacherWorkspace --> AgentSpecAuthoring["Agent Spec Authoring"]
   AgentSpecAuthoring --> AgentSpecUI["/agents authoring tab"]
   AgentSpecAuthoring --> AgentSpecAPI["/api/v1/agent-specs"]
+  AgentSpecAuthoring --> AgentSpecAuditAPI["/api/v1/agent-specs/{agent_id}/runtime-policy-audit"]
   AgentSpecAuthoring --> AgentSpecStorage["Versioned Markdown spec packs"]
   AgentSpecStorage --> RuntimePolicy
+  AgentSpecAuditAPI --> RuntimePolicy
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
   KnowledgePack --> KPVersions["Versioned teacher-pack metadata: current_version + version_history"]

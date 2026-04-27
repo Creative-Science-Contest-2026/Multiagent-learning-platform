@@ -10,6 +10,7 @@ except Exception:  # pragma: no cover
     TestClient = None
 
 from deeptutor.services.agent_spec.service import AgentSpecService
+from deeptutor.services.runtime_policy import compiler as runtime_policy_compiler
 
 pytestmark = pytest.mark.skipif(FastAPI is None or TestClient is None, reason="fastapi not installed")
 
@@ -20,6 +21,7 @@ def _build_app(service: AgentSpecService, monkeypatch: pytest.MonkeyPatch) -> Fa
     app = FastAPI()
     app.include_router(agent_specs.router, prefix="/api/v1/agent-specs")
     monkeypatch.setattr(agent_specs, "get_agent_spec_service", lambda: service)
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
     return app
 
 
@@ -92,3 +94,59 @@ def test_agent_specs_router_returns_404_for_missing_pack(tmp_path, monkeypatch: 
         response = client.get("/api/v1/agent-specs/missing-pack")
 
     assert response.status_code == 404
+
+
+def test_agent_specs_router_returns_runtime_policy_audit_for_latest_and_versioned_pack(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured=_payload()["structured"],
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion one.\n"},
+    )
+    service.save_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            **_payload()["structured"],
+            "soul": {
+                **_payload()["structured"]["soul"],
+                "teaching_philosophy": "Version two philosophy.",
+            },
+        },
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion two.\n"},
+    )
+
+    with TestClient(_build_app(service, monkeypatch)) as client:
+        latest = client.get("/api/v1/agent-specs/fraction-coach/runtime-policy-audit")
+        assert latest.status_code == 200
+        assert latest.json()["agent_spec_version"] == 2
+        assert "Version two philosophy." in latest.json()["runtime_policy"]["slices"]["SOUL"]
+
+        version_one = client.get("/api/v1/agent-specs/fraction-coach/runtime-policy-audit?version=1")
+        assert version_one.status_code == 200
+        assert version_one.json()["agent_spec_version"] == 1
+        assert "Version two philosophy." not in version_one.json()["runtime_policy"]["slices"]["SOUL"]
+
+
+def test_agent_specs_router_returns_404_for_missing_runtime_policy_audit_pack_or_version(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured=_payload()["structured"],
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion one.\n"},
+    )
+
+    with TestClient(_build_app(service, monkeypatch)) as client:
+        missing_pack = client.get("/api/v1/agent-specs/missing-pack/runtime-policy-audit")
+        missing_version = client.get("/api/v1/agent-specs/fraction-coach/runtime-policy-audit?version=9")
+
+    assert missing_pack.status_code == 404
+    assert missing_version.status_code == 404

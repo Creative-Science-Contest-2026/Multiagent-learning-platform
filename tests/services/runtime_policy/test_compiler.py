@@ -159,3 +159,65 @@ def test_runtime_policy_prefers_pinned_agent_spec_version(monkeypatch, tmp_path)
     assert "Version one philosophy." in payload["slices"]["SOUL"]
     assert "Version two philosophy." not in payload["slices"]["SOUL"]
     assert payload["debug"]["agent_spec_version"] == 1
+
+
+def test_runtime_policy_audit_returns_latest_pack_trace(monkeypatch, tmp_path) -> None:
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            "identity": {"agent_name": "Fraction Coach"},
+            "soul": {"teaching_philosophy": "Latest philosophy."},
+            "rules": {"guardrails": "Latest guardrails."},
+        },
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nLatest flow.\n"},
+    )
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    payload = runtime_policy_compiler.build_runtime_policy_audit(
+        agent_spec_id="fraction-coach",
+        capability="chat",
+    )
+
+    assert payload["agent_spec_id"] == "fraction-coach"
+    assert payload["agent_spec_version"] == 1
+    assert payload["capability"] == "chat"
+    assert payload["runtime_policy"]["debug"]["agent_spec_version"] == 1
+    assert "Latest philosophy." in payload["runtime_policy"]["slices"]["SOUL"]
+
+
+def test_runtime_policy_audit_returns_requested_historical_version(monkeypatch, tmp_path) -> None:
+    service = AgentSpecService(tmp_path / "agent_specs")
+    service.create_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            "identity": {"agent_name": "Fraction Coach"},
+            "soul": {"teaching_philosophy": "Version one philosophy."},
+            "rules": {"guardrails": "Version one guardrails."},
+        },
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion one.\n"},
+    )
+    service.save_pack(
+        agent_id="fraction-coach",
+        display_name="Fraction Coach",
+        structured={
+            "identity": {"agent_name": "Fraction Coach"},
+            "soul": {"teaching_philosophy": "Version two philosophy."},
+            "rules": {"guardrails": "Version two guardrails."},
+        },
+        files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion two.\n"},
+    )
+    monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
+
+    payload = runtime_policy_compiler.build_runtime_policy_audit(
+        agent_spec_id="fraction-coach",
+        capability="chat",
+        version=1,
+    )
+
+    assert payload["agent_spec_id"] == "fraction-coach"
+    assert payload["agent_spec_version"] == 1
+    assert "Version one philosophy." in payload["runtime_policy"]["slices"]["SOUL"]
+    assert "Version two philosophy." not in payload["runtime_policy"]["slices"]["SOUL"]
