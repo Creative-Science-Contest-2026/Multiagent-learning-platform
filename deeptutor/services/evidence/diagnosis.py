@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .confidence_calibration import calibrate_confidence_tag
 from .evidence_sufficiency import classify_evidence_sufficiency
 
 ACTION_BY_DIAGNOSIS = {
@@ -19,18 +20,6 @@ ACTION_PRIORITY = {
 }
 
 DIAGNOSIS_POLICY = "rule_assisted_teacher_review"
-
-
-def _confidence_tag(
-    *,
-    evidence_count: int,
-    contradiction_ratio: float,
-) -> str:
-    if evidence_count >= 4 and contradiction_ratio <= 0.25:
-        return "high"
-    if evidence_count >= 2 and contradiction_ratio <= 0.45:
-        return "medium"
-    return "low"
 
 
 def _support_level(observations: list[dict[str, Any]]) -> str:
@@ -196,7 +185,8 @@ def build_student_diagnosis(
     dominant_topic, dominant_rows = _topic_rows(observations)
     scores, evidence_count, contradiction_ratio = _diagnosis_scores(dominant_rows)
     dominant_error, _top_score, _second_score = _select_diagnosis(scores)
-    confidence = _confidence_tag(
+    confidence = calibrate_confidence_tag(
+        student_state=student_state,
         evidence_count=evidence_count,
         contradiction_ratio=contradiction_ratio,
     )

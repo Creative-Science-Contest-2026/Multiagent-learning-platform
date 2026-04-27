@@ -251,3 +251,84 @@ async def test_assessment_diagnosis_endpoint_abstains_on_stale_evidence(
     assert payload["observed"]["abstain_reason_code"] == "stale_evidence"
     assert payload["inferred"] == []
     assert payload["recommended_actions"] == []
+
+
+@pytest.mark.asyncio
+async def test_assessment_diagnosis_endpoint_downgrades_confidence_when_support_burden_is_high(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="assessment-support-heavy",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.add_message(
+        "assessment-support-heavy",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "2. [q2] Q: Solve fractions subtraction 5/6 - 1/3 -> Answered: 1/6 (Incorrect, correct: 1/2, time: 61s)\n"
+        "3. [q3] Q: Solve fractions subtraction 7/8 - 1/4 -> Answered: 1/8 (Incorrect, correct: 5/8, time: 57s)\n"
+        "4. [q4] Q: Solve fractions subtraction 2/3 - 1/6 -> Answered: 1/6 (Incorrect, correct: 1/2, time: 63s)\n"
+        "Score: 0/4 (0%)",
+        capability="deep_question",
+    )
+    await store.save_observations(
+        [
+            {
+                "observation_id": "obs_support_1",
+                "session_id": "support-turn-1",
+                "student_id": "assessment-support-heavy",
+                "source": "tutoring",
+                "topic": "fractions subtraction",
+                "question_id": "s1",
+                "is_correct": True,
+                "latency_seconds": 30,
+                "hint_count": 2,
+                "retry_count": 2,
+                "dominant_error": None,
+                "created_at": 1_710_000_100,
+            },
+            {
+                "observation_id": "obs_support_2",
+                "session_id": "support-turn-2",
+                "student_id": "assessment-support-heavy",
+                "source": "tutoring",
+                "topic": "fractions subtraction",
+                "question_id": "s2",
+                "is_correct": True,
+                "latency_seconds": 32,
+                "hint_count": 2,
+                "retry_count": 2,
+                "dominant_error": None,
+                "created_at": 1_710_000_101,
+            },
+            {
+                "observation_id": "obs_support_3",
+                "session_id": "support-turn-3",
+                "student_id": "assessment-support-heavy",
+                "source": "tutoring",
+                "topic": "fractions subtraction",
+                "question_id": "s3",
+                "is_correct": True,
+                "latency_seconds": 35,
+                "hint_count": 2,
+                "retry_count": 2,
+                "dominant_error": None,
+                "created_at": 1_710_000_102,
+            },
+        ]
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/assessment/diagnosis/assessment-support-heavy")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["diagnosis_type"] == "concept_gap"
+    assert payload["inferred"][0]["confidence_tag"] == "medium"
