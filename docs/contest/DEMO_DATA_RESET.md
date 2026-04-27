@@ -49,6 +49,12 @@ The command:
 - prints the ids and local paths it touched;
 - can be run repeatedly without duplicating demo sessions.
 
+After reset plus smoke, the automation helper can write a machine-readable command-evidence snapshot:
+
+```bash
+python3 -m scripts.contest.refresh_evidence_status --project-root . --api-base http://localhost:8001
+```
+
 Generated local `data/` changes are not committed.
 
 ## Manual UI Reset

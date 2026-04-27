@@ -86,8 +86,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F124_EVIDENCE_AUTOMATION_REFRESH"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -96,9 +98,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 1,
+      "count": 0,
       "tasks": [
-        "F124_EVIDENCE_AUTOMATION_REFRESH"
       ]
     }
   },
@@ -1818,10 +1819,10 @@
       "dependencies": [
         "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "This should improve repeatability without changing the product's proof level by itself."
+      "notes": "Active on branch pod-b/evidence-automation-refresh in worktree .worktrees/pod-b-evidence-automation-refresh. The branch now contains a bounded evidence-refresh helper, a machine-readable status artifact, and contest-doc wiring that preserves manual screenshot and video semantics."
     }
   ],
   "github_issues_template": {

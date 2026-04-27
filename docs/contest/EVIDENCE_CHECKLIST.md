@@ -31,6 +31,8 @@ Use this section to calibrate claims when showing teacher authoring plus evidenc
 
 Refresh these automatically after every successful smoke pass.
 
+Automation source-of-truth for command-backed freshness: `../../ai_first/evidence/evidence_status.json`
+
 | Command | Refresh mode | Status | Source |
 | --- | --- | --- | --- |
 | `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
@@ -41,6 +43,8 @@ Refresh these automatically after every successful smoke pass.
 | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
 | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
 | `cd web && npm ci && npm run build` | Auto after smoke | Current | Passed on 2026-04-26 in lane 6, with the existing lockfile warning. |
+
+Screenshots and optional video remain manual even when command-backed evidence is refreshed through automation.
 
 ## Optional Video
 

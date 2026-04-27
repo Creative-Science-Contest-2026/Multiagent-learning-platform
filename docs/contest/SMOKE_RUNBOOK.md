@@ -10,6 +10,12 @@ If local demo data may be stale, missing, or private, run `DEMO_DATA_RESET.md` b
 python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
 ```
 
+After a successful command-backed smoke pass, the bounded automation helper can refresh the structured status artifact:
+
+```bash
+python3 -m scripts.contest.refresh_evidence_status --project-root . --api-base http://localhost:8001
+```
+
 Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTION_QUEUE.md` and `ai_first/daily/YYYY-MM-DD.md`.
 
 ## Stage 1: Backend

@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-04-28T00:00:00+00:00",
+  "project_root": ".",
+  "api_base": "http://localhost:8001",
+  "proof_level": "validated_prototype",
+  "checks": [
+    {
+      "name": "demo_reset",
+      "command": "python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001",
+      "status": "planned",
+      "summary": "execution skipped",
+      "manual_followup_required": false
+    },
+    {
+      "name": "system_status",
+      "command": "curl -s http://localhost:8001/api/v1/system/status",
+      "status": "planned",
+      "summary": "execution skipped",
+      "manual_followup_required": false
+    }
+  ],
+  "manual_artifacts": {
+    "screenshots": "manual",
+    "video": "manual"
+  }
+}
