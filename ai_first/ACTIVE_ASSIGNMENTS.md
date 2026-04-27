@@ -53,7 +53,7 @@ Rules:
 - Branch: `pod-b/confidence-calibration-refinement`
 - Task packet: `docs/superpowers/tasks/2026-04-27-f117-confidence-calibration-refinement.md`
 - Owned files: `deeptutor/services/evidence/`, bounded dashboard and assessment payload shaping/tests, related docs
-- PR: `Draft, not opened yet`
-- Last update: `2026-04-28T00:25:00+0700`
-- Next action: `Run final verification, commit the lane, and open the Draft PR for F117.`
+- PR: `#185 (Draft)`
+- Last update: `2026-04-28T00:42:00+0700`
+- Next action: `Push the metadata update, mark PR #185 Ready for review, and watch CI.`
 - Blocker: `None`
