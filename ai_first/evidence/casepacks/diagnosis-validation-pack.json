@@ -1,0 +1,278 @@
+{
+  "pack_id": "diagnosis-validation-pack",
+  "version": 1,
+  "policy": "rule_assisted_teacher_review",
+  "description": "Reusable diagnosis and abstain cases derived from merged contest-safe evidence patterns.",
+  "cases": [
+    {
+      "case_id": "concept-gap-fractions",
+      "title": "Concept gap in fraction subtraction",
+      "validation_objective": "Prove repeated same-topic misses still resolve to a teacher-reviewable concept-gap diagnosis.",
+      "student_id": "student-a",
+      "observations": [
+        {
+          "observation_id": "obs_1",
+          "session_id": "quiz-1",
+          "student_id": "student-a",
+          "source": "assessment",
+          "topic": "fractions subtraction",
+          "question_id": "q1",
+          "is_correct": false,
+          "latency_seconds": 48,
+          "hint_count": 0,
+          "retry_count": 1,
+          "dominant_error": "concept_gap"
+        },
+        {
+          "observation_id": "obs_2",
+          "session_id": "quiz-1",
+          "student_id": "student-a",
+          "source": "assessment",
+          "topic": "fractions subtraction",
+          "question_id": "q2",
+          "is_correct": false,
+          "latency_seconds": 61,
+          "hint_count": 0,
+          "retry_count": 1,
+          "dominant_error": "concept_gap"
+        }
+      ],
+      "student_state": {
+        "student_id": "student-a",
+        "repeated_mistakes": ["fractions subtraction"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "mastery_signals": {
+          "emerging_topics": ["fractions subtraction"],
+          "stable_topics": [],
+          "at_risk_topics": ["fractions subtraction"]
+        },
+        "support_signals": {
+          "heavy_hint_topics": ["fractions subtraction"],
+          "retry_heavy_topics": [],
+          "recent_support_burden": "elevated"
+        },
+        "misconception_signals": {
+          "dominant_errors": {
+            "fractions subtraction": "concept_gap"
+          },
+          "persistent_topics": ["fractions subtraction"]
+        }
+      },
+      "expected": {
+        "mode": "diagnosis",
+        "diagnosis_type": "concept_gap",
+        "action_type": "review_prerequisite",
+        "confidence_tags": ["medium", "high"]
+      },
+      "source_refs": [
+        "docs/contest/DIAGNOSIS_CASE_STUDIES.md#case-1-concept-gap-in-fraction-subtraction",
+        "tests/services/evidence/test_diagnosis.py"
+      ]
+    },
+    {
+      "case_id": "careless-error-arithmetic",
+      "title": "Careless error in arithmetic",
+      "validation_objective": "Prove quick incorrect arithmetic responses still route to a bounded careless-error hypothesis.",
+      "student_id": "student-c",
+      "observations": [
+        {
+          "observation_id": "obs_c1",
+          "session_id": "quiz-2",
+          "student_id": "student-c",
+          "source": "assessment",
+          "topic": "arithmetic",
+          "question_id": "q1",
+          "is_correct": false,
+          "latency_seconds": 8,
+          "hint_count": 0,
+          "retry_count": 0,
+          "dominant_error": "careless_error"
+        },
+        {
+          "observation_id": "obs_c2",
+          "session_id": "quiz-2",
+          "student_id": "student-c",
+          "source": "assessment",
+          "topic": "arithmetic",
+          "question_id": "q2",
+          "is_correct": false,
+          "latency_seconds": 10,
+          "hint_count": 0,
+          "retry_count": 0,
+          "dominant_error": "careless_error"
+        }
+      ],
+      "expected": {
+        "mode": "diagnosis",
+        "diagnosis_type": "careless_error",
+        "action_type": "retry_easier"
+      },
+      "source_refs": [
+        "docs/contest/DIAGNOSIS_CASE_STUDIES.md#case-2-careless-error-in-basic-arithmetic",
+        "tests/services/evidence/test_diagnosis.py"
+      ]
+    },
+    {
+      "case_id": "thin-evidence-geometry",
+      "title": "Thin evidence abstain",
+      "validation_objective": "Prove the diagnosis layer abstains when one strong-correct observation is insufficient.",
+      "student_id": "student-d",
+      "observations": [
+        {
+          "observation_id": "obs_ok",
+          "session_id": "quiz-3",
+          "student_id": "student-d",
+          "source": "assessment",
+          "topic": "geometry",
+          "question_id": "q1",
+          "is_correct": true,
+          "latency_seconds": 20,
+          "hint_count": 0,
+          "retry_count": 0,
+          "dominant_error": null
+        }
+      ],
+      "expected": {
+        "mode": "abstain",
+        "abstain_reason_code": "thin_evidence"
+      },
+      "source_refs": [
+        "docs/contest/DIAGNOSIS_CASE_STUDIES.md#case-3-abstain-on-strong-correct-signal",
+        "tests/services/evidence/test_diagnosis.py"
+      ]
+    },
+    {
+      "case_id": "mixed-evidence-fractions",
+      "title": "Mixed evidence abstain",
+      "validation_objective": "Prove the diagnosis layer abstains when the same-topic signal is mixed and support-heavy.",
+      "student_id": "student-m",
+      "observations": [
+        {
+          "observation_id": "obs_m1",
+          "session_id": "quiz-5",
+          "student_id": "student-m",
+          "source": "assessment",
+          "topic": "fractions subtraction",
+          "question_id": "q1",
+          "is_correct": false,
+          "latency_seconds": 34,
+          "hint_count": 0,
+          "retry_count": 0,
+          "dominant_error": null
+        },
+        {
+          "observation_id": "obs_m2",
+          "session_id": "quiz-5",
+          "student_id": "student-m",
+          "source": "assessment",
+          "topic": "fractions subtraction",
+          "question_id": "q2",
+          "is_correct": true,
+          "latency_seconds": 45,
+          "hint_count": 2,
+          "retry_count": 1,
+          "dominant_error": null
+        },
+        {
+          "observation_id": "obs_m3",
+          "session_id": "quiz-5",
+          "student_id": "student-m",
+          "source": "assessment",
+          "topic": "fractions subtraction",
+          "question_id": "q3",
+          "is_correct": true,
+          "latency_seconds": 41,
+          "hint_count": 2,
+          "retry_count": 1,
+          "dominant_error": null
+        }
+      ],
+      "expected": {
+        "mode": "abstain",
+        "abstain_reason_code": "mixed_evidence"
+      },
+      "source_refs": [
+        "tests/services/evidence/test_diagnosis.py"
+      ]
+    },
+    {
+      "case_id": "stale-evidence-equations",
+      "title": "Stale evidence abstain",
+      "validation_objective": "Prove old evidence stays bounded by the stale-evidence abstain gate even if repeated misses exist.",
+      "student_id": "student-old",
+      "observations": [
+        {
+          "observation_id": "obs_old1",
+          "session_id": "quiz-6",
+          "student_id": "student-old",
+          "source": "assessment",
+          "topic": "equations",
+          "question_id": "q1",
+          "is_correct": false,
+          "latency_seconds": 52,
+          "hint_count": 0,
+          "retry_count": 1,
+          "dominant_error": "concept_gap"
+        },
+        {
+          "observation_id": "obs_old2",
+          "session_id": "quiz-6",
+          "student_id": "student-old",
+          "source": "assessment",
+          "topic": "equations",
+          "question_id": "q2",
+          "is_correct": false,
+          "latency_seconds": 57,
+          "hint_count": 0,
+          "retry_count": 1,
+          "dominant_error": "concept_gap"
+        }
+      ],
+      "student_state": {
+        "student_id": "student-old",
+        "repeated_mistakes": ["equations"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "recency_summary": {
+          "total_observations": 2,
+          "window_size": 24,
+          "bucket_counts": {
+            "last_24h": 0,
+            "last_7d": 0,
+            "last_30d": 0,
+            "older": 2
+          },
+          "recent_incorrect": 2,
+          "weighted_topic_misses": {
+            "equations": 0.18
+          }
+        },
+        "mastery_signals": {
+          "emerging_topics": [],
+          "stable_topics": [],
+          "at_risk_topics": ["equations"]
+        },
+        "support_signals": {
+          "heavy_hint_topics": [],
+          "retry_heavy_topics": [],
+          "recent_support_burden": "steady"
+        },
+        "misconception_signals": {
+          "dominant_errors": {
+            "equations": "concept_gap"
+          },
+          "persistent_topics": ["equations"]
+        }
+      },
+      "expected": {
+        "mode": "abstain",
+        "abstain_reason_code": "stale_evidence"
+      },
+      "source_refs": [
+        "tests/services/evidence/test_diagnosis.py"
+      ]
+    }
+  ]
+}
+

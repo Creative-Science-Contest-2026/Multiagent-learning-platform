@@ -34,6 +34,7 @@ The current product can be described as `agent-native` today and `multi-agent by
 - [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md): local validation commands, results, limitations, and remaining capture work.
 - [`PILOT_STATUS.md`](./PILOT_STATUS.md): explicit status of pilot or external-feedback evidence.
 - [`DIAGNOSIS_CASE_STUDIES.md`](./DIAGNOSIS_CASE_STUDIES.md): judge-facing diagnosis examples and teacher-review framing.
+- [`VALIDATION_CASEPACK.md`](./VALIDATION_CASEPACK.md): reusable structured casepack for diagnosis and abstain validation.
 - [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md): smoke lane used to verify the MVP path before any evidence refresh.
 - [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md): demo-safe data inventory and reset runbook before smoke/evidence refresh.
 

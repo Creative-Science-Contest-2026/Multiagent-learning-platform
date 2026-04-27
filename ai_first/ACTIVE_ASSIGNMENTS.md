@@ -34,11 +34,11 @@ Rules:
 - Machine: local-mac
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-casepack-evaluation-dataset-expansion`
 - Task: `F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION`
-- Status: `planning`
+- Status: `in-progress`
 - Branch: `pod-b/casepack-evaluation-dataset-expansion`
 - Task packet: `docs/superpowers/tasks/2026-04-28-f123-casepack-and-evaluation-dataset-expansion.md`
 - Owned files: `ai_first/evidence/`, bounded `docs/contest/`, `tests/services/evidence/`, bounded `tests/api/`, `docs/superpowers/{tasks,specs,plans,pr-notes}/`, `ai_first/{ACTIVE_ASSIGNMENTS.md,TASK_REGISTRY.json,daily/2026-04-28.md}`
 - PR: `none yet`
 - Last update: `2026-04-28`
-- Next action: `write F123 packet/spec/plan before creating the validation casepack dataset`
+- Next action: `run final verification, then stage the casepack slice and open a Draft PR`
 - Blocker: `none`

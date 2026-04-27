@@ -2,7 +2,7 @@
 
 - Task ID: `F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION`
 - Commit tag: `F123`
-- Status: `Planning`
+- Status: `In Progress`
 - Branch recommendation: `pod-b/casepack-evaluation-dataset-expansion`
 
 ## Goal

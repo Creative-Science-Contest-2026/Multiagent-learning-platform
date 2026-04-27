@@ -201,6 +201,7 @@ flowchart TD
   AIFirst --> Plans["docs/superpowers/plans"]
   AIFirst --> Tasks["docs/superpowers/tasks"]
   AIFirst --> Evidence["ai_first/evidence"]
+  Evidence --> ValidationCasepacks["Validation casepacks for diagnosis/evidence regression"]
   AIFirst --> AutoLoop["Autonomous completion loop"]
   AutoLoop --> MergeGates["Safe merge gates"]
   AutoLoop --> NextTask["Next task selection"]
