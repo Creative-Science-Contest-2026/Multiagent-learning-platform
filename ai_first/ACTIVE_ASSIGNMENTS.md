@@ -34,10 +34,10 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-a-assessment-review-rubric-controls`
 - Task: `F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS`
-- Status: `implementation-verified`
+- Status: `draft-pr-open`
 - Branch: `pod-a/assessment-review-rubric-controls`
 - Task packet: `docs/superpowers/tasks/2026-04-28-f111-assessment-review-rubric-controls.md`
 - Owned files: `web/components/assessment/`, `web/app/(workspace)/dashboard/assessments/`, `deeptutor/api/routers/sessions.py`, bounded assessment-review persistence helpers/tests/docs`
-- PR: `Not opened yet`
-- Last update: `2026-04-28T12:24:00+0700`
-- Next action: `Commit the verified F111 slice, push the branch, and open a Draft PR after one final status check.`
+- PR: `#195`
+- Last update: `2026-04-28T12:39:00+0700`
+- Next action: `Watch PR #195 CI, then move it to Ready for review once Backend, Frontend, and Docs are green.`
