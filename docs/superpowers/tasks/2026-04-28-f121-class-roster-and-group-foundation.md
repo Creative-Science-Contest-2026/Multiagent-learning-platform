@@ -2,7 +2,7 @@
 
 - Task ID: `F121_CLASS_ROSTER_AND_GROUP_FOUNDATION`
 - Commit tag: `F121`
-- Status: `Planning`
+- Status: `Implementation`
 - Branch recommendation: `pod-b/class-roster-group-foundation`
 
 ## Goal

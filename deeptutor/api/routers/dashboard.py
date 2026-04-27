@@ -577,6 +577,8 @@ async def get_dashboard_insights(
     limit: int = 100,
     knowledge_base: str | None = None,
     cohort: str | None = None,
+    teacher_id: str | None = None,
+    class_id: str | None = None,
     start_ts: int | None = None,
     end_ts: int | None = None,
 ):
@@ -584,6 +586,11 @@ async def get_dashboard_insights(
     sessions = await store.list_sessions(limit=limit, offset=0)
     student_payloads: list[dict[str, Any]] = []
     observations_by_student: dict[str, list[dict[str, Any]]] = {}
+    scoped_student_ids: set[str] | None = None
+    if teacher_id:
+        scoped_student_ids = set(
+            await store.list_teacher_roster_student_ids(teacher_id, class_id=class_id)
+        )
 
     for session in sessions:
         activity = await _activity_with_review(store, session)
@@ -607,6 +614,8 @@ async def get_dashboard_insights(
             continue
 
         student_id = str((detail.get("preferences") or {}).get("student_id") or activity["id"])
+        if scoped_student_ids is not None and student_id not in scoped_student_ids:
+            continue
         review["student_id"] = student_id
         observations = extract_observations_from_review(review)
         await store.save_observations(observations)

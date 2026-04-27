@@ -1963,6 +1963,89 @@ async def test_dashboard_intervention_history_attaches_effectiveness_summary(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_insights_can_scope_students_to_explicit_class_roster(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    for sid, student_id, answer in [
+        ("student-a-session", "student-a", "1/4"),
+        ("student-b-session", "student-b", "1/3"),
+    ]:
+        await _seed_session(
+            store,
+            session_id=sid,
+            capability="deep_question",
+            message="Generate a quiz on fractions",
+            knowledge_bases=["fractions-pack"],
+        )
+        await store.update_session_preferences(
+            sid,
+            {"student_id": student_id, "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+        )
+        await store.add_message(
+            sid,
+            "user",
+            f"[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: {answer} (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+            capability="deep_question",
+        )
+
+    await store.create_class_roster(
+        class_id="class-a",
+        teacher_id="teacher-1",
+        title="Class A",
+        student_ids=["student-a"],
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/insights?teacher_id=teacher-1&class_id=class-a")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert [row["student_id"] for row in payload["students"]] == ["student-a"]
+
+
+@pytest.mark.asyncio
+async def test_dashboard_insights_excludes_students_for_non_owner_teacher_scope(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {"student_id": "student-a", "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/3 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    await store.create_class_roster(
+        class_id="class-a",
+        teacher_id="teacher-1",
+        title="Class A",
+        student_ids=["student-a"],
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/insights?teacher_id=teacher-2&class_id=class-a")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["students"] == []
+    assert payload["small_groups"] == []
+
+
+@pytest.mark.asyncio
 async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
