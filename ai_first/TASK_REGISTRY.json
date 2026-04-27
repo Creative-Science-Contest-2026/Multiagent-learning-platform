@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T04:58:00Z",
+    "last_updated": "2026-04-28T05:05:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 63,
+      "count": 64,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -72,15 +72,14 @@
         "F106_STUDENT_INSIGHT_TIMELINE",
         "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
-        "F118_MISCONCEPTION_TAXONOMY_EXPANSION"
+        "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
+        "F120_INTERVENTION_EFFECTIVENESS_TRACKING"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F120_INTERVENTION_EFFECTIVENESS_TRACKING"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1714,10 +1713,10 @@
         "F102_INTERVENTION_ASSIGNMENT_FLOW",
         "F116_STUDENT_MODEL_ENRICHMENT"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "Active on branch pod-b/intervention-effectiveness-tracking with PR #192 ready for review. The lane derives bounded post-intervention effectiveness signals from existing recommendation/action/assignment history plus later observations, without claiming causal proof or widening dashboard UX."
+      "notes": "Merged to main through PR #192 on 2026-04-28. Teacher insight payloads now attach bounded observational intervention-effectiveness summaries to existing intervention-history rows using same-topic follow-up evidence without claiming causal proof or widening dashboard UX."
     },
     {
       "id": "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",

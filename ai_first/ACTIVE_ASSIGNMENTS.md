@@ -28,17 +28,5 @@ Rules:
 
 ## Active
 
-### Assignment
-
-- Owner: Codex Session B
-- Machine: local
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-intervention-effectiveness-tracking`
-- Task: `F120_INTERVENTION_EFFECTIVENESS_TRACKING`
-- Status: `ready-review`
-- Branch: `pod-b/intervention-effectiveness-tracking`
-- Task packet: `docs/superpowers/tasks/2026-04-28-f120-intervention-effectiveness-tracking.md`
-- Owned files: `deeptutor/services/evidence/`, bounded dashboard payload shaping/tests, related docs
-- PR: `#192`
-- Last update: `2026-04-28T03:48:00+0700`
-- Next action: `Keep PR #192 green and mergeable, then run the post-merge AI-first sync on a fresh docs branch.`
-- Blocker: `None`
+No active AI implementation task is currently assigned on `main`.
+The next product work should start from a fresh Session A or Session B branch/worktree after the human or AI loop selects the next future-backlog task.
