@@ -1822,7 +1822,7 @@
       "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "Active on branch pod-b/evidence-automation-refresh in worktree .worktrees/pod-b-evidence-automation-refresh. This lane is automating command-backed evidence refresh status while keeping screenshot and video evidence explicitly manual."
+      "notes": "Active on branch pod-b/evidence-automation-refresh in worktree .worktrees/pod-b-evidence-automation-refresh. The branch now contains a bounded evidence-refresh helper, a machine-readable status artifact, and contest-doc wiring that preserves manual screenshot and video semantics."
     }
   ],
   "github_issues_template": {
