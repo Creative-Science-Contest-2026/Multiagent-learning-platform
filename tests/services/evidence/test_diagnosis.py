@@ -517,3 +517,193 @@ def test_build_student_diagnosis_caps_confidence_when_evidence_is_not_recent() -
 
     assert payload["observed"]["abstained"] is False
     assert payload["inferred"][0]["confidence_tag"] == "medium"
+
+
+def test_build_student_diagnosis_emits_procedure_breakdown_for_retry_heavy_misses() -> None:
+    observations = [
+        {
+            "observation_id": f"obs_p{i}",
+            "session_id": "quiz-10",
+            "student_id": "student-procedure",
+            "source": "assessment",
+            "topic": "long division",
+            "question_id": f"q{i}",
+            "is_correct": False,
+            "latency_seconds": 34 + i,
+            "hint_count": 1,
+            "retry_count": 2,
+            "dominant_error": None,
+        }
+        for i in range(1, 4)
+    ]
+    state = {
+        "student_id": "student-procedure",
+        "repeated_mistakes": ["long division"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "recency_summary": {
+            "total_observations": 3,
+            "window_size": 24,
+            "bucket_counts": {"last_24h": 3, "last_7d": 0, "last_30d": 0, "older": 0},
+            "recent_incorrect": 3,
+            "weighted_topic_misses": {"long division": 2.8},
+        },
+        "mastery_signals": {
+            "emerging_topics": [],
+            "stable_topics": [],
+            "at_risk_topics": ["long division"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": ["long division"],
+            "retry_heavy_topics": ["long division"],
+            "recent_support_burden": "elevated",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"long division": "needs_scaffold"},
+            "persistent_topics": ["long division"],
+        },
+    }
+
+    payload = build_student_diagnosis(
+        student_id="student-procedure",
+        observations=observations,
+        student_state=state,
+    )
+
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["diagnosis_type"] == "procedure_breakdown"
+
+
+def test_build_student_diagnosis_emits_support_dependency_for_hint_heavy_pattern() -> None:
+    observations = [
+        {
+            "observation_id": "obs_sd1",
+            "session_id": "quiz-11",
+            "student_id": "student-support-dependency",
+            "source": "assessment",
+            "topic": "fractions multiplication",
+            "question_id": "q1",
+            "is_correct": False,
+            "latency_seconds": 28,
+            "hint_count": 2,
+            "retry_count": 1,
+            "dominant_error": None,
+        },
+        {
+            "observation_id": "obs_sd2",
+            "session_id": "quiz-11",
+            "student_id": "student-support-dependency",
+            "source": "assessment",
+            "topic": "fractions multiplication",
+            "question_id": "q2",
+            "is_correct": True,
+            "latency_seconds": 31,
+            "hint_count": 3,
+            "retry_count": 1,
+            "dominant_error": None,
+        },
+        {
+            "observation_id": "obs_sd3",
+            "session_id": "quiz-11",
+            "student_id": "student-support-dependency",
+            "source": "assessment",
+            "topic": "fractions multiplication",
+            "question_id": "q3",
+            "is_correct": False,
+            "latency_seconds": 29,
+            "hint_count": 2,
+            "retry_count": 1,
+            "dominant_error": None,
+        },
+    ]
+    state = {
+        "student_id": "student-support-dependency",
+        "repeated_mistakes": ["fractions multiplication"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "recency_summary": {
+            "total_observations": 3,
+            "window_size": 24,
+            "bucket_counts": {"last_24h": 3, "last_7d": 0, "last_30d": 0, "older": 0},
+            "recent_incorrect": 2,
+            "weighted_topic_misses": {"fractions multiplication": 2.2},
+        },
+        "mastery_signals": {
+            "emerging_topics": [],
+            "stable_topics": [],
+            "at_risk_topics": ["fractions multiplication"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": ["fractions multiplication"],
+            "retry_heavy_topics": ["fractions multiplication"],
+            "recent_support_burden": "high",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"fractions multiplication": "needs_scaffold"},
+            "persistent_topics": ["fractions multiplication"],
+        },
+    }
+
+    payload = build_student_diagnosis(
+        student_id="student-support-dependency",
+        observations=observations,
+        student_state=state,
+    )
+
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["diagnosis_type"] == "support_dependency"
+
+
+def test_build_student_diagnosis_emits_fluency_gap_for_slow_consistent_errors() -> None:
+    observations = [
+        {
+            "observation_id": f"obs_f{i}",
+            "session_id": "quiz-12",
+            "student_id": "student-fluency",
+            "source": "assessment",
+            "topic": "multiplication facts",
+            "question_id": f"q{i}",
+            "is_correct": False,
+            "latency_seconds": 42 + i,
+            "hint_count": 0,
+            "retry_count": 0,
+            "dominant_error": None,
+        }
+        for i in range(1, 4)
+    ]
+    state = {
+        "student_id": "student-fluency",
+        "repeated_mistakes": ["multiplication facts"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "recency_summary": {
+            "total_observations": 3,
+            "window_size": 24,
+            "bucket_counts": {"last_24h": 3, "last_7d": 0, "last_30d": 0, "older": 0},
+            "recent_incorrect": 3,
+            "weighted_topic_misses": {"multiplication facts": 2.4},
+        },
+        "mastery_signals": {
+            "emerging_topics": [],
+            "stable_topics": [],
+            "at_risk_topics": ["multiplication facts"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": [],
+            "retry_heavy_topics": [],
+            "recent_support_burden": "steady",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"multiplication facts": "careless_error"},
+            "persistent_topics": ["multiplication facts"],
+        },
+    }
+
+    payload = build_student_diagnosis(
+        student_id="student-fluency",
+        observations=observations,
+        student_state=state,
+    )
+
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["diagnosis_type"] == "fluency_gap"

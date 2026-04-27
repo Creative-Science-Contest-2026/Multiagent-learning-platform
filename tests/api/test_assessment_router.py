@@ -332,3 +332,75 @@ async def test_assessment_diagnosis_endpoint_downgrades_confidence_when_support_
     assert payload["observed"]["abstained"] is False
     assert payload["inferred"][0]["diagnosis_type"] == "concept_gap"
     assert payload["inferred"][0]["confidence_tag"] == "medium"
+
+
+@pytest.mark.asyncio
+async def test_assessment_diagnosis_endpoint_emits_support_dependency_from_student_state(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="assessment-support-dependency",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "assessment-support-dependency",
+        {
+            "student_id": "student-support-dependency",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.save_observations(
+        [
+            {
+                "observation_id": "obs_sd_a1",
+                "session_id": "tutor-support-1",
+                "student_id": "student-support-dependency",
+                "source": "tutoring",
+                "topic": "fractions multiplication",
+                "question_id": "s1",
+                "is_correct": True,
+                "latency_seconds": 31,
+                "hint_count": 3,
+                "retry_count": 1,
+                "dominant_error": None,
+                "created_at": 1_710_100_001,
+            },
+            {
+                "observation_id": "obs_sd_a2",
+                "session_id": "tutor-support-2",
+                "student_id": "student-support-dependency",
+                "source": "tutoring",
+                "topic": "fractions multiplication",
+                "question_id": "s2",
+                "is_correct": True,
+                "latency_seconds": 29,
+                "hint_count": 2,
+                "retry_count": 1,
+                "dominant_error": None,
+                "created_at": 1_710_100_002,
+            },
+        ]
+    )
+    await store.add_message(
+        "assessment-support-dependency",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions multiplication 2/3 x 3/5 -> Answered: 5/15 (Incorrect, correct: 2/5, time: 28s)\n"
+        "2. [q2] Q: Solve fractions multiplication 3/4 x 2/3 -> Answered: 5/12 (Incorrect, correct: 1/2, time: 30s)\n"
+        "Score: 0/2 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/assessment/diagnosis/assessment-support-dependency")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["diagnosis_type"] == "support_dependency"

@@ -4,7 +4,15 @@ from typing import Literal, TypedDict
 
 
 ObservationSource = Literal["assessment", "tutoring"]
-DiagnosisType = Literal["concept_gap", "careless_error", "low_confidence", "needs_scaffold"]
+DiagnosisType = Literal[
+    "concept_gap",
+    "careless_error",
+    "low_confidence",
+    "needs_scaffold",
+    "procedure_breakdown",
+    "support_dependency",
+    "fluency_gap",
+]
 ConfidenceTag = Literal["low", "medium", "high"]
 SupportLevel = Literal["independent", "guided", "intensive"]
 ConfidenceTrend = Literal["up", "flat", "down"]

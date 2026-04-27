@@ -75,8 +75,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F118_MISCONCEPTION_TAXONOMY_EXPANSION"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -85,15 +87,11 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 13,
+      "count": 8,
       "tasks": [
-        "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
-        "F105_CLASS_INTERVENTION_QUEUE",
-        "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
-        "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
         "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
         "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
         "F122_PILOT_FEEDBACK_INGESTION_PATH",
@@ -1663,10 +1661,10 @@
       "dependencies": [
         "F116_STUDENT_MODEL_ENRICHMENT"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "A broader taxonomy should still keep abstain paths available when evidence is weak."
+      "notes": "Active on branch pod-b/misconception-taxonomy-expansion. The lane broadens diagnosis labels in the evidence layer while preserving bounded action selection, abstain behavior, and teacher-review framing."
     },
     {
       "id": "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
