@@ -20,6 +20,11 @@ from deeptutor.services.evidence.teacher_actions import (
     list_teacher_actions,
     update_teacher_action_status,
 )
+from deeptutor.services.evidence.recommendation_feedback import (
+    create_recommendation_feedback,
+    list_recommendation_feedback,
+    update_recommendation_feedback,
+)
 from deeptutor.services.evidence.recommendation_acks import (
     create_recommendation_ack,
     list_recommendation_acks,
@@ -61,6 +66,19 @@ class RecommendationAckCreateRequest(BaseModel):
 
 class RecommendationAckUpdateRequest(BaseModel):
     status: str
+    teacher_note: str | None = None
+
+
+class RecommendationFeedbackCreateRequest(BaseModel):
+    source_recommendation_id: str
+    target_type: str
+    target_id: str
+    feedback_label: str
+    teacher_note: str = ""
+
+
+class RecommendationFeedbackUpdateRequest(BaseModel):
+    feedback_label: str
     teacher_note: str | None = None
 
 
@@ -588,14 +606,53 @@ async def get_dashboard_insights(
     teacher_actions = list_teacher_actions(store)
     intervention_assignments = list_intervention_assignments(store)
     recommendation_acks = list_recommendation_acks(store)
+    recommendation_feedback = list_recommendation_feedback(store)
     diagnosis_feedback = list_diagnosis_feedback(store)
     return build_teacher_insights_payload(
         student_payloads=student_payloads,
         teacher_actions=teacher_actions,
         intervention_assignments=intervention_assignments,
         recommendation_acks=recommendation_acks,
+        recommendation_feedback=recommendation_feedback,
         diagnosis_feedback=diagnosis_feedback,
     )
+
+
+@router.post("/recommendation-feedback")
+async def create_dashboard_recommendation_feedback(
+    payload: RecommendationFeedbackCreateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return create_recommendation_feedback(
+            store,
+            source_recommendation_id=payload.source_recommendation_id,
+            target_type=payload.target_type,
+            target_id=payload.target_id,
+            feedback_label=payload.feedback_label,
+            teacher_note=payload.teacher_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.patch("/recommendation-feedback/{feedback_id}")
+async def update_dashboard_recommendation_feedback(
+    feedback_id: str,
+    payload: RecommendationFeedbackUpdateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return update_recommendation_feedback(
+            store,
+            feedback_id,
+            feedback_label=payload.feedback_label,
+            teacher_note=payload.teacher_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="recommendation feedback not found") from exc
 
 
 @router.post("/diagnosis-feedback")

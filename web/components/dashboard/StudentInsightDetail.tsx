@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { DiagnosisFeedbackComposer } from "@/components/dashboard/DiagnosisFeedbackComposer";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
+import { RecommendationFeedbackComposer } from "@/components/dashboard/RecommendationFeedbackComposer";
 import {
   type DiagnosisFeedbackRecord,
   type InterventionHistoryItem,
   type InterventionAssignmentRecord,
   type InterventionAssignmentStatus,
+  type RecommendationFeedbackRecord,
   type RecommendationAckRecord,
   type TeacherActionRecord,
   type TeacherActionStatus,
@@ -57,6 +59,9 @@ export function StudentInsightDetail({
 }) {
   const [diagnosisFeedback, setDiagnosisFeedback] = useState<DiagnosisFeedbackRecord | null>(
     student?.diagnosis_feedback ?? null,
+  );
+  const [recommendationFeedback, setRecommendationFeedback] = useState<RecommendationFeedbackRecord | null>(
+    student?.recommendation_feedback ?? null,
   );
   const [teacherActions, setTeacherActions] = useState<TeacherActionRecord[]>(student?.teacher_actions ?? []);
   const [recommendationAck] = useState<RecommendationAckRecord | null>(student?.recommendation_ack ?? null);
@@ -188,6 +193,37 @@ export function StudentInsightDetail({
               <div>{t("Support level: {{value}}", { value: student.student_state.support_level })}</div>
             ) : null}
           </div>
+          {recommendation ? (
+            <div className="mt-4">
+              <RecommendationFeedbackComposer
+                triggerLabel={
+                  recommendationFeedback ? t("Update recommendation feedback") : t("Review recommendation quality")
+                }
+                defaultPayload={{
+                  target_type: "student",
+                  target_id: student.student_id,
+                  source_recommendation_id: recommendation.action_id,
+                }}
+                existingFeedback={recommendationFeedback}
+                onSaved={setRecommendationFeedback}
+                t={t}
+              />
+            </div>
+          ) : null}
+          {recommendationFeedback ? (
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+              <div className="font-medium">
+                {t("Recommendation feedback: {{label}}", { label: recommendationFeedback.feedback_label })}
+              </div>
+              {recommendationFeedback.teacher_note ? (
+                <div className="mt-1 text-[12px] text-emerald-900/80">{recommendationFeedback.teacher_note}</div>
+              ) : (
+                <div className="mt-1 text-[12px] text-emerald-900/70">
+                  {t("No teacher note was recorded for this recommendation feedback.")}
+                </div>
+              )}
+            </div>
+          ) : null}
         </div>
       </section>
 
