@@ -38,7 +38,7 @@ Before submission, quickly verify:
 - screenshots are clear and contain no private data
 - `docs/contest/VALIDATION_REPORT.md` still matches the intended demo environment
 - hybrid authoring claims stay calibrated: `/agents` authoring can be shown, and bounded automated proof now exists for the unified Tutor turn path; do not rewrite that as universal live binding across every entry point
-- pilot or external-feedback language stays honest: use [`PILOT_STATUS.md`](./PILOT_STATUS.md) instead of implying classroom validation that the repository does not contain
+- pilot or external-feedback language stays honest: use [`PILOT_STATUS.md`](./PILOT_STATUS.md) and keep `/api/v1/system/pilot-feedback-status` aligned with any real stored feedback instead of implying classroom validation that the repository does not contain
 - optional video is either not required or has been recorded separately using `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
 
 ### 4. Final package sign-off

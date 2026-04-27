@@ -2,7 +2,7 @@
 
 - Task ID: `F122_PILOT_FEEDBACK_INGESTION_PATH`
 - Commit tag: `F122`
-- Status: `Planning`
+- Status: `In Progress`
 - Branch recommendation: `pod-b/pilot-feedback-ingestion-path`
 
 ## Goal
@@ -13,9 +13,8 @@ Prepare a bounded ingestion and status path for future external walkthrough or p
 
 - `deeptutor/api/routers/system.py`
 - `deeptutor/services/evidence/`
-- bounded `deeptutor/services/session/sqlite_store.py`
 - `tests/api/test_system_router.py`
-- bounded `tests/services/session/test_sqlite_store.py`
+- `tests/services/evidence/`
 - bounded `docs/contest/`
 - bounded `ai_first/competition/`
 - `docs/superpowers/specs/`

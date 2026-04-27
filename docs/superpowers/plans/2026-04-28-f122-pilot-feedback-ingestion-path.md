@@ -7,11 +7,11 @@ Add a bounded validation-ops seam for future pilot or external walkthrough feedb
 ## Steps
 
 1. Add failing tests first
-   - store/service tests for dedicated pilot-feedback persistence and validation
+   - service tests for dedicated pilot-feedback persistence and validation
    - system API tests for honest empty-state status and record listing behavior
 2. Isolate feedback ingestion logic
    - add a focused helper under `deeptutor/services/evidence/`
-   - use a dedicated SQLite table or similarly isolated storage path
+   - use a dedicated SQLite table or similarly isolated storage path managed by that helper
    - keep labels and required fields explicit and claim-safe
 3. Expose a bounded ops surface
    - extend a non-dashboard router such as `system.py`
