@@ -5,6 +5,7 @@ import { DiagnosisFeedbackComposer } from "@/components/dashboard/DiagnosisFeedb
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
 import {
   type DiagnosisFeedbackRecord,
+  type InterventionHistoryItem,
   type InterventionAssignmentRecord,
   type InterventionAssignmentStatus,
   type RecommendationAckRecord,
@@ -19,6 +20,32 @@ function formatLatency(seconds: number | undefined): string | null {
   if (seconds == null) return null;
   if (seconds < 1) return `≈${Math.round(seconds * 1000)} ms`;
   return `${Math.round(seconds)} s`;
+}
+
+function formatEventTime(timestamp: number | undefined): string | null {
+  if (!timestamp) return null;
+  const value = timestamp > 10_000_000_000 ? timestamp : timestamp * 1000;
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function historyLabel(item: InterventionHistoryItem, t: (value: string, options?: Record<string, string | number>) => string): string {
+  switch (item.item_type) {
+    case "recommendation_ack":
+      return t("Recommendation acknowledgement");
+    case "teacher_action":
+      return t("Teacher action");
+    case "intervention_assignment":
+      return t("Intervention assignment");
+    case "diagnosis_feedback":
+      return t("Diagnosis feedback");
+    default:
+      return item.item_type;
+  }
 }
 
 export function StudentInsightDetail({
@@ -36,6 +63,7 @@ export function StudentInsightDetail({
   const [interventionAssignments, setInterventionAssignments] = useState<InterventionAssignmentRecord[]>(
     student?.intervention_assignments ?? [],
   );
+  const [interventionHistory] = useState<InterventionHistoryItem[]>(student?.intervention_history ?? []);
 
   const diagnosis = student?.inferred[0];
   const recommendation = student?.recommended_actions[0];
@@ -284,6 +312,51 @@ export function StudentInsightDetail({
           ) : (
             <div className="rounded-2xl bg-[var(--muted)]/50 p-4 text-[13px] text-[var(--muted-foreground)]">
               {t("Convert a teacher action into an intervention assignment from the dashboard overview to track a concrete remediation shell here.")}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm xl:col-span-2">
+        <InsightSectionLabel
+          eyebrow={t("Intervention history")}
+          title={
+            interventionHistory.length
+              ? t("{{count}} recorded steps", { count: interventionHistory.length })
+              : t("No intervention history yet")
+          }
+        >
+          {t("A descriptive timeline of teacher response, execution, assignment, and diagnosis review for this student.")}
+        </InsightSectionLabel>
+        <div className="mt-4 space-y-3">
+          {interventionHistory.length ? (
+            interventionHistory.map((item) => (
+              <div key={item.id} className="rounded-2xl bg-[var(--muted)]/50 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                      {historyLabel(item, t)}
+                    </div>
+                    <div className="mt-1 text-[13px] font-medium text-[var(--foreground)]">{item.title}</div>
+                    {item.topic ? (
+                      <div className="mt-1 text-[12px] text-[var(--muted-foreground)]">
+                        {t("Topic: {{topic}}", { topic: item.topic })}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="rounded-full border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-[11px] font-medium text-[var(--foreground)]">
+                    {item.status}
+                  </div>
+                </div>
+                <div className="mt-3 text-[13px] text-[var(--foreground)]">{item.detail}</div>
+                <div className="mt-2 text-[11px] text-[var(--muted-foreground)]">
+                  {formatEventTime(item.timestamp) ?? t("Unknown time")}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="rounded-2xl bg-[var(--muted)]/50 p-4 text-[13px] text-[var(--muted-foreground)]">
+              {t("Recommendation acknowledgements, teacher actions, intervention assignments, and diagnosis feedback will appear here once recorded.")}
             </div>
           )}
         </div>

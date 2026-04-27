@@ -58,6 +58,92 @@ def _student_assignments(student_id: str, assignments: list[dict[str, Any]]) -> 
     return sorted(rows, key=lambda row: row.get("updated_at", 0), reverse=True)
 
 
+def _student_intervention_history(
+    *,
+    student_id: str,
+    recommendation_ack: dict[str, Any] | None,
+    teacher_actions: list[dict[str, Any]],
+    intervention_assignments: list[dict[str, Any]],
+    diagnosis_feedback: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    sequence = 0
+
+    def add_row(row: dict[str, Any]) -> None:
+        nonlocal sequence
+        sequence += 1
+        row["_sequence"] = sequence
+        rows.append(row)
+
+    if recommendation_ack:
+        add_row(
+            {
+                "id": f"recommendation_ack:{recommendation_ack.get('id')}",
+                "item_type": "recommendation_ack",
+                "timestamp": int(recommendation_ack.get("updated_at") or recommendation_ack.get("created_at") or 0),
+                "title": "Recommendation acknowledgement",
+                "detail": str(recommendation_ack.get("teacher_note") or "Teacher acknowledged the recommendation."),
+                "status": str(recommendation_ack.get("status") or "unknown"),
+                "topic": "",
+                "source_id": str(recommendation_ack.get("id") or ""),
+            }
+        )
+
+    for action in teacher_actions:
+        add_row(
+            {
+                "id": f"teacher_action:{action.get('id')}",
+                "item_type": "teacher_action",
+                "timestamp": int(action.get("updated_at") or action.get("created_at") or 0),
+                "title": str(action.get("action_type") or "Teacher action"),
+                "detail": str(action.get("teacher_instruction") or "No teacher instruction recorded."),
+                "status": str(action.get("status") or "unknown"),
+                "topic": str(action.get("topic") or ""),
+                "source_id": str(action.get("id") or ""),
+            }
+        )
+
+    for assignment in intervention_assignments:
+        add_row(
+            {
+                "id": f"intervention_assignment:{assignment.get('id')}",
+                "item_type": "intervention_assignment",
+                "timestamp": int(assignment.get("updated_at") or assignment.get("created_at") or 0),
+                "title": str(assignment.get("title") or assignment.get("assignment_type") or "Intervention assignment"),
+                "detail": str(
+                    assignment.get("teacher_note")
+                    or assignment.get("practice_note")
+                    or "No assignment detail recorded."
+                ),
+                "status": str(assignment.get("status") or "unknown"),
+                "topic": "",
+                "source_id": str(assignment.get("id") or ""),
+            }
+        )
+
+    if diagnosis_feedback:
+        add_row(
+            {
+                "id": f"diagnosis_feedback:{diagnosis_feedback.get('id')}",
+                "item_type": "diagnosis_feedback",
+                "timestamp": int(diagnosis_feedback.get("updated_at") or diagnosis_feedback.get("created_at") or 0),
+                "title": "Diagnosis feedback",
+                "detail": str(
+                    diagnosis_feedback.get("teacher_note")
+                    or "Teacher reviewed the diagnosis quality without leaving a note."
+                ),
+                "status": str(diagnosis_feedback.get("feedback_label") or "unknown"),
+                "topic": str(diagnosis_feedback.get("source_topic") or ""),
+                "source_id": str(diagnosis_feedback.get("id") or ""),
+            }
+        )
+
+    ordered = sorted(rows, key=lambda row: (row.get("timestamp", 0), row.get("_sequence", 0)), reverse=True)
+    for row in ordered:
+        row.pop("_sequence", None)
+    return ordered
+
+
 def _latest_recommendation_ack(
     *,
     target_type: str,
@@ -124,6 +210,13 @@ def build_teacher_insights_payload(
         row["intervention_assignments"] = _student_assignments(
             student_id,
             intervention_assignments,
+        )
+        row["intervention_history"] = _student_intervention_history(
+            student_id=student_id,
+            recommendation_ack=row["recommendation_ack"],
+            teacher_actions=row["teacher_actions"],
+            intervention_assignments=row["intervention_assignments"],
+            diagnosis_feedback=row["diagnosis_feedback"],
         )
         students.append(row)
         inferred = top_inferred

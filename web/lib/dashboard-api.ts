@@ -265,6 +265,24 @@ export interface TeacherInsightStudent {
   recommendation_ack?: RecommendationAckRecord | null;
   teacher_actions?: TeacherActionRecord[];
   intervention_assignments?: InterventionAssignmentRecord[];
+  intervention_history?: InterventionHistoryItem[];
+}
+
+export type InterventionHistoryItemType =
+  | "recommendation_ack"
+  | "teacher_action"
+  | "intervention_assignment"
+  | "diagnosis_feedback";
+
+export interface InterventionHistoryItem {
+  id: string;
+  item_type: InterventionHistoryItemType;
+  timestamp: number;
+  title: string;
+  detail: string;
+  status: string;
+  topic: string;
+  source_id: string;
 }
 
 export type DiagnosisFeedbackLabel = "helpful" | "wrong" | "incomplete";
