@@ -1741,7 +1741,7 @@
       "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "Active on branch pod-b/class-roster-group-foundation. The lane is scoping a minimal backend-first roster and class-ownership primitive so dashboard/student-group signals can be bounded to explicit teacher-owned student lists without opening broader classroom UX."
+      "notes": "Active on branch pod-b/class-roster-group-foundation with Draft PR #196. The lane adds a minimal backend-first roster and class-ownership primitive so dashboard/student-group signals can be bounded to explicit teacher-owned student lists without opening broader classroom UX."
     },
     {
       "id": "F122_PILOT_FEEDBACK_INGESTION_PATH",

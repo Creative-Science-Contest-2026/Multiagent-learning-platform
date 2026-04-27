@@ -34,13 +34,13 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-class-roster-group-foundation`
 - Task: `F121_CLASS_ROSTER_AND_GROUP_FOUNDATION`
-- Status: `implementation`
+- Status: `draft-pr-open`
 - Branch: `pod-b/class-roster-group-foundation`
 - Task packet: `docs/superpowers/tasks/2026-04-28-f121-class-roster-and-group-foundation.md`
 - Owned files: `deeptutor/services/session/`, bounded dashboard ownership contracts, minimal class-roster storage helpers, related tests, planning docs
-- PR: `Not opened yet`
-- Last update: `2026-04-28T01:06:19+0700`
-- Next action: `Broaden the roster TDD proof, then write the PR note and bounded system-map update before opening the Draft PR.`
+- PR: `#196`
+- Last update: `2026-04-28T01:22:00+0700`
+- Next action: `Push the draft-review metadata update, then mark PR #196 Ready after the local and control-plane self-review stays clean.`
 - Blocker: `None`
 
 ### Assignment
