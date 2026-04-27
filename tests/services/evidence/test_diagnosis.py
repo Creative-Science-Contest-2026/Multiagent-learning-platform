@@ -139,7 +139,139 @@ def test_build_student_diagnosis_abstains_on_weak_or_non_error_signal() -> None:
     )
 
     assert payload["observed"]["abstained"] is True
+    assert payload["observed"]["abstain_reason_code"] == "thin_evidence"
     assert payload["observed"]["abstain_reason"] == "Evidence is too weak or too mixed for a confident diagnosis."
+    assert payload["inferred"] == []
+    assert payload["recommended_actions"] == []
+
+
+def test_build_student_diagnosis_abstains_on_mixed_signal() -> None:
+    observations = [
+        {
+            "observation_id": "obs_m1",
+            "session_id": "quiz-5",
+            "student_id": "student-m",
+            "source": "assessment",
+            "topic": "fractions subtraction",
+            "question_id": "q1",
+            "is_correct": False,
+            "latency_seconds": 34,
+            "hint_count": 0,
+            "retry_count": 0,
+            "dominant_error": None,
+        },
+        {
+            "observation_id": "obs_m2",
+            "session_id": "quiz-5",
+            "student_id": "student-m",
+            "source": "assessment",
+            "topic": "fractions subtraction",
+            "question_id": "q2",
+            "is_correct": True,
+            "latency_seconds": 45,
+            "hint_count": 2,
+            "retry_count": 1,
+            "dominant_error": None,
+        },
+        {
+            "observation_id": "obs_m3",
+            "session_id": "quiz-5",
+            "student_id": "student-m",
+            "source": "assessment",
+            "topic": "fractions subtraction",
+            "question_id": "q3",
+            "is_correct": True,
+            "latency_seconds": 41,
+            "hint_count": 2,
+            "retry_count": 1,
+            "dominant_error": None,
+        },
+    ]
+
+    payload = build_student_diagnosis(
+        student_id="student-m",
+        observations=observations,
+        student_state=None,
+    )
+
+    assert payload["observed"]["abstained"] is True
+    assert payload["observed"]["abstain_reason_code"] == "mixed_evidence"
+    assert payload["inferred"] == []
+    assert payload["recommended_actions"] == []
+
+
+def test_build_student_diagnosis_abstains_on_stale_evidence() -> None:
+    observations = [
+        {
+            "observation_id": "obs_old1",
+            "session_id": "quiz-6",
+            "student_id": "student-old",
+            "source": "assessment",
+            "topic": "equations",
+            "question_id": "q1",
+            "is_correct": False,
+            "latency_seconds": 52,
+            "hint_count": 0,
+            "retry_count": 1,
+            "dominant_error": "concept_gap",
+        },
+        {
+            "observation_id": "obs_old2",
+            "session_id": "quiz-6",
+            "student_id": "student-old",
+            "source": "assessment",
+            "topic": "equations",
+            "question_id": "q2",
+            "is_correct": False,
+            "latency_seconds": 57,
+            "hint_count": 0,
+            "retry_count": 1,
+            "dominant_error": "concept_gap",
+        },
+    ]
+    stale_state = {
+        "student_id": "student-old",
+        "repeated_mistakes": ["equations"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "recency_summary": {
+            "total_observations": 2,
+            "window_size": 24,
+            "bucket_counts": {
+                "last_24h": 0,
+                "last_7d": 0,
+                "last_30d": 0,
+                "older": 2,
+            },
+            "recent_incorrect": 2,
+            "weighted_topic_misses": {
+                "equations": 0.18,
+            },
+        },
+        "mastery_signals": {
+            "emerging_topics": [],
+            "stable_topics": [],
+            "at_risk_topics": ["equations"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": [],
+            "retry_heavy_topics": [],
+            "recent_support_burden": "steady",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"equations": "concept_gap"},
+            "persistent_topics": ["equations"],
+        },
+    }
+
+    payload = build_student_diagnosis(
+        student_id="student-old",
+        observations=observations,
+        student_state=stale_state,
+    )
+
+    assert payload["observed"]["abstained"] is True
+    assert payload["observed"]["abstain_reason_code"] == "stale_evidence"
     assert payload["inferred"] == []
     assert payload["recommended_actions"] == []
 
@@ -202,5 +334,6 @@ def test_build_student_diagnosis_keeps_enriched_student_state_as_context_only() 
 
     assert payload["observed"]["topic"] == "equations"
     assert payload["observed"]["abstained"] is False
+    assert payload["observed"]["abstain_reason_code"] == ""
     assert payload["inferred"][0]["diagnosis_type"] == "needs_scaffold"
     assert payload["student_state"]["misconception_signals"]["persistent_topics"] == ["equations"]

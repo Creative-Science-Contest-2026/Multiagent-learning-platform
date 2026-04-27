@@ -103,6 +103,7 @@ def extract_observations_from_review(review: dict[str, Any]) -> list[Observation
             topic_miss_counts[topic] = topic_miss_counts.get(topic, 0) + 1
 
     rows: list[ObservationRecord] = []
+    created_at = float(review.get("timestamp") or 0) or None
     for item in results:
         topic = infer_topic_from_question(str(item.get("question") or ""), fallback="general")
         rows.append(
@@ -118,6 +119,7 @@ def extract_observations_from_review(review: dict[str, Any]) -> list[Observation
                 "hint_count": int(item.get("hint_count") or 0),
                 "retry_count": int(item.get("retry_count") or 0),
                 "dominant_error": _dominant_error(item, topic_miss_counts.get(topic, 0)),
+                "created_at": created_at,
             }
         )
     return rows

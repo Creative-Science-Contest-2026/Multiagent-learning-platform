@@ -22,6 +22,7 @@ class ObservationRecord(TypedDict):
     hint_count: int
     retry_count: int
     dominant_error: DiagnosisType | None
+    created_at: float | None
 
 
 class StudentStateRecord(TypedDict):

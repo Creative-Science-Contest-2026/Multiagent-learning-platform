@@ -216,3 +216,38 @@ async def test_assessment_diagnosis_endpoint_can_abstain_on_strong_correct_signa
     assert payload["observed"]["abstained"] is True
     assert payload["inferred"] == []
     assert payload["recommended_actions"] == []
+
+
+@pytest.mark.asyncio
+async def test_assessment_diagnosis_endpoint_abstains_on_stale_evidence(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="assessment-stale",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.add_message(
+        "assessment-stale",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "2. [q2] Q: Solve fractions subtraction 5/6 - 1/3 -> Answered: 1/6 (Incorrect, correct: 1/2, time: 61s)\n"
+        "Score: 0/2 (0%)",
+        capability="deep_question",
+    )
+    _set_session_timestamp(store, "assessment-stale", 1_700_000_000)
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/assessment/diagnosis/assessment-stale")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["observed"]["abstained"] is True
+    assert payload["observed"]["abstain_reason_code"] == "stale_evidence"
+    assert payload["inferred"] == []
+    assert payload["recommended_actions"] == []

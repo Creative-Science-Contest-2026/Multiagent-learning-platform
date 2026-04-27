@@ -499,6 +499,77 @@ async def test_dashboard_insights_returns_students_and_small_groups(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_insights_skips_small_groups_for_stale_evidence(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-stale",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-stale",
+        {
+            "student_id": "student-a",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-a-stale",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "2. [q2] Q: Solve fractions subtraction 5/6 - 1/3 -> Answered: 1/6 (Incorrect, correct: 1/2, time: 61s)\n"
+        "Score: 0/2 (0%)",
+        capability="deep_question",
+    )
+    _set_session_timestamp(store, "student-a-stale", 1_700_000_000)
+
+    await _seed_session(
+        store,
+        session_id="student-b-stale",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-b-stale",
+        {
+            "student_id": "student-b",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-b-stale",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 7/8 - 1/4 -> Answered: 1/8 (Incorrect, correct: 5/8, time: 54s)\n"
+        "2. [q2] Q: Solve fractions subtraction 2/3 - 1/6 -> Answered: 1/6 (Incorrect, correct: 1/2, time: 57s)\n"
+        "Score: 0/2 (0%)",
+        capability="deep_question",
+    )
+    _set_session_timestamp(store, "student-b-stale", 1_700_000_000)
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/insights")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload["students"]) == 2
+    assert payload["small_groups"] == []
+    for student in payload["students"]:
+        assert student["observed"]["abstained"] is True
+        assert student["observed"]["abstain_reason_code"] == "stale_evidence"
+        assert student["recommended_actions"] == []
+
+
+@pytest.mark.asyncio
 async def test_dashboard_teacher_action_create_round_trip(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
