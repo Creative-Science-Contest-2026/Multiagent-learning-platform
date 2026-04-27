@@ -72,8 +72,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F117_CONFIDENCE_CALIBRATION_REFINEMENT"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1378,7 +1380,7 @@
       "dependencies": [
         "F102_INTERVENTION_ASSIGNMENT_FLOW"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-insight",
       "notes": "Pairs naturally with F120 later, but does not require outcome scoring on day one."
@@ -1641,7 +1643,7 @@
       "status": "not-started",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "Should preserve the current teacher-review framing rather than presenting confidence as objective truth."
+      "notes": "Active on branch pod-b/confidence-calibration-refinement. The lane should calibrate confidence tags using recent evidence density, recency buckets, and support burden while preserving the teacher-review framing and the F119 abstain gate."
     },
     {
       "id": "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
