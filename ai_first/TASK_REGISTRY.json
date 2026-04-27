@@ -1796,7 +1796,7 @@
       "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "Active on branch pod-b/casepack-eval-dataset in worktree .worktrees/pod-b-casepack-eval-dataset. This lane is building a reusable machine-readable validation casepack for judge-safe evidence review without widening runtime product scope."
+      "notes": "Active on branch pod-b/casepack-eval-dataset in worktree .worktrees/pod-b-casepack-eval-dataset. The branch now contains a reusable machine-readable validation casepack, contest-facing guide, and bounded schema test; open it as a Draft PR and keep runtime product scope unchanged."
     },
     {
       "id": "F124_EVIDENCE_AUTOMATION_REFRESH",
