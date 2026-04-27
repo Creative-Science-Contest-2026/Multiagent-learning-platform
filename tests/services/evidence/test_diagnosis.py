@@ -37,6 +37,20 @@ def test_build_student_diagnosis_returns_structured_hypotheses_and_actions() -> 
         "repeated_mistakes": ["fractions subtraction"],
         "support_level": "guided",
         "confidence_trend": "down",
+        "mastery_signals": {
+            "emerging_topics": ["fractions subtraction"],
+            "stable_topics": [],
+            "at_risk_topics": ["fractions subtraction"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": ["fractions subtraction"],
+            "retry_heavy_topics": [],
+            "recent_support_burden": "elevated",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"fractions subtraction": "concept_gap"},
+            "persistent_topics": ["fractions subtraction"],
+        },
     }
 
     payload = build_student_diagnosis(
@@ -55,6 +69,9 @@ def test_build_student_diagnosis_returns_structured_hypotheses_and_actions() -> 
     assert "teacher-reviewable hypothesis" in payload["inferred"][0]["teacher_review_note"]
     assert payload["recommended_actions"][0]["action_type"] == "review_prerequisite"
     assert "Teacher should confirm" in payload["recommended_actions"][0]["teacher_review_note"]
+    assert payload["student_state"]["mastery_signals"]["at_risk_topics"] == ["fractions subtraction"]
+    assert payload["student_state"]["support_signals"]["recent_support_burden"] == "elevated"
+    assert payload["student_state"]["misconception_signals"]["dominant_errors"]["fractions subtraction"] == "concept_gap"
 
 
 def test_build_student_diagnosis_routes_careless_error_to_retry_action() -> None:
@@ -125,3 +142,65 @@ def test_build_student_diagnosis_abstains_on_weak_or_non_error_signal() -> None:
     assert payload["observed"]["abstain_reason"] == "Evidence is too weak or too mixed for a confident diagnosis."
     assert payload["inferred"] == []
     assert payload["recommended_actions"] == []
+
+
+def test_build_student_diagnosis_keeps_enriched_student_state_as_context_only() -> None:
+    observations = [
+        {
+            "observation_id": "obs_s1",
+            "session_id": "quiz-4",
+            "student_id": "student-e",
+            "source": "assessment",
+            "topic": "equations",
+            "question_id": "q1",
+            "is_correct": False,
+            "latency_seconds": 32,
+            "hint_count": 2,
+            "retry_count": 0,
+            "dominant_error": "needs_scaffold",
+        },
+        {
+            "observation_id": "obs_s2",
+            "session_id": "quiz-4",
+            "student_id": "student-e",
+            "source": "assessment",
+            "topic": "equations",
+            "question_id": "q2",
+            "is_correct": False,
+            "latency_seconds": 35,
+            "hint_count": 2,
+            "retry_count": 1,
+            "dominant_error": "needs_scaffold",
+        },
+    ]
+    enriched_state = {
+        "student_id": "student-e",
+        "repeated_mistakes": ["equations"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "mastery_signals": {
+            "emerging_topics": [],
+            "stable_topics": [],
+            "at_risk_topics": ["equations"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": ["equations"],
+            "retry_heavy_topics": [],
+            "recent_support_burden": "elevated",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"equations": "needs_scaffold"},
+            "persistent_topics": ["equations"],
+        },
+    }
+
+    payload = build_student_diagnosis(
+        student_id="student-e",
+        observations=observations,
+        student_state=enriched_state,
+    )
+
+    assert payload["observed"]["topic"] == "equations"
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["diagnosis_type"] == "needs_scaffold"
+    assert payload["student_state"]["misconception_signals"]["persistent_topics"] == ["equations"]

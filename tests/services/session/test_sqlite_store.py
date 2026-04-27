@@ -80,6 +80,20 @@ async def test_sqlite_store_persists_observations_and_student_state(tmp_path: Pa
             "support_level": "guided",
             "confidence_trend": "down",
             "recency_summary": {"total_observations": 1},
+            "mastery_signals": {
+                "emerging_topics": ["fractions subtraction"],
+                "stable_topics": [],
+                "at_risk_topics": ["fractions subtraction"],
+            },
+            "support_signals": {
+                "heavy_hint_topics": ["fractions subtraction"],
+                "retry_heavy_topics": [],
+                "recent_support_burden": "elevated",
+            },
+            "misconception_signals": {
+                "dominant_errors": {"fractions subtraction": "concept_gap"},
+                "persistent_topics": ["fractions subtraction"],
+            },
         },
     )
 
@@ -92,6 +106,9 @@ async def test_sqlite_store_persists_observations_and_student_state(tmp_path: Pa
     assert state["support_level"] == "guided"
     assert state["confidence_trend"] == "down"
     assert state["recency_summary"]["total_observations"] == 1
+    assert state["mastery_signals"]["at_risk_topics"] == ["fractions subtraction"]
+    assert state["support_signals"]["recent_support_burden"] == "elevated"
+    assert state["misconception_signals"]["dominant_errors"]["fractions subtraction"] == "concept_gap"
 
 
 @pytest.mark.asyncio
@@ -154,6 +171,11 @@ async def test_sqlite_store_builds_recency_aware_student_state_rollup(tmp_path: 
     assert rollup["confidence_trend"] in {"up", "flat", "down"}
     assert rollup["recency_summary"]["total_observations"] == 3
     assert rollup["recency_summary"]["bucket_counts"]["last_24h"] >= 2
+    assert rollup["mastery_signals"]["at_risk_topics"][0] == "fractions subtraction"
+    assert "fractions subtraction" in rollup["support_signals"]["heavy_hint_topics"]
+    assert rollup["support_signals"]["recent_support_burden"] in {"elevated", "high"}
+    assert rollup["misconception_signals"]["dominant_errors"]["fractions subtraction"] == "needs_scaffold"
+    assert "fractions subtraction" in rollup["misconception_signals"]["persistent_topics"]
 
 
 @pytest.mark.asyncio
