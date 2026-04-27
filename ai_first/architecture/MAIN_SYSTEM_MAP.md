@@ -45,7 +45,6 @@ flowchart TD
 
   Project --> Product["Contest MVP Product Layer"]
   Product --> TeacherWorkspace["Teacher Workspace"]
-  TeacherWorkspace --> ClassRosterFoundation["Class roster + teacher ownership foundation"]
   TeacherWorkspace --> AgentSpecAuthoring["Agent Spec Authoring"]
   AgentSpecAuthoring --> AgentSpecUI["/agents authoring tab"]
   AgentSpecAuthoring --> AgentSpecAPI["/api/v1/agent-specs"]
@@ -114,7 +113,6 @@ flowchart TD
   TeacherInsights --> TeacherActionAPI["POST/PATCH /api/v1/dashboard/teacher-actions"]
   TeacherInsights --> InterventionAssignmentAPI["POST/PATCH /api/v1/dashboard/intervention-assignments"]
   InsightsAPI --> DiagnosisEngine
-  InsightsAPI --> RosterScope["Optional teacher/class roster scope"]
   EvidenceGate --> InsightsAPI
   InsightsAPI --> DiagnosisFeedback["Diagnosis feedback records"]
   InsightsAPI --> SmallGroupRecommendations["Small-group recommendation clusters"]
@@ -179,7 +177,6 @@ flowchart TD
 
   Project --> Data["Data Layer"]
   Data --> SQLite["data/user/chat_history.db"]
-  SQLite --> ClassRosterTables["class_rosters + class_roster_students"]
   Data --> KnowledgeBases["data/knowledge_bases"]
   Data --> Memory["data/memory"]
   Data --> Settings["data/user/settings"]
