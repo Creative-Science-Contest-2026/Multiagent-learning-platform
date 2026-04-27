@@ -5,11 +5,17 @@ Unified session history API.
 from __future__ import annotations
 
 from typing import Any
+from enum import Enum
 
 from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException, Query
 
-from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
+from deeptutor.services.session import (
+    extract_assessment_review,
+    get_assessment_rubric_review,
+    get_sqlite_session_store,
+    upsert_assessment_rubric_review,
+)
 
 router = APIRouter()
 
@@ -29,6 +35,26 @@ class QuizResultItem(BaseModel):
 
 class QuizResultsRequest(BaseModel):
     answers: list[QuizResultItem] = Field(default_factory=list)
+
+
+class AssessmentRubricLevel(str, Enum):
+    strong = "strong"
+    acceptable = "acceptable"
+    weak = "weak"
+
+
+class AssessmentRubricDecision(str, Enum):
+    approved_for_reuse = "approved_for_reuse"
+    needs_edit_before_reuse = "needs_edit_before_reuse"
+    not_ready = "not_ready"
+
+
+class TeacherAssessmentReviewRequest(BaseModel):
+    wording_quality: AssessmentRubricLevel
+    distractor_quality: AssessmentRubricLevel
+    explanation_clarity: AssessmentRubricLevel
+    overall_decision: AssessmentRubricDecision
+    teacher_note: str = ""
 
 
 def _clip_text(value: str, limit: int = 280) -> str:
@@ -172,10 +198,35 @@ async def get_assessment_review(session_id: str):
     review = extract_assessment_review(session)
     if review is None:
         raise HTTPException(status_code=404, detail="Assessment review not found")
+    review["teacher_review"] = get_assessment_rubric_review(store.db_path, session_id)
     return {
         **review,
         "context_support": _build_review_context_support(session, review),
     }
+
+
+@router.post("/{session_id}/assessment-rubric-review")
+async def create_assessment_rubric_review(session_id: str, payload: TeacherAssessmentReviewRequest):
+    store = get_sqlite_session_store()
+    session = await store.get_session_with_messages(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    review = extract_assessment_review(session)
+    if review is None:
+        raise HTTPException(status_code=404, detail="Assessment review not found")
+    return upsert_assessment_rubric_review(store.db_path, session_id, payload.model_dump())
+
+
+@router.patch("/{session_id}/assessment-rubric-review")
+async def update_assessment_rubric_review(session_id: str, payload: TeacherAssessmentReviewRequest):
+    store = get_sqlite_session_store()
+    session = await store.get_session_with_messages(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    review = extract_assessment_review(session)
+    if review is None:
+        raise HTTPException(status_code=404, detail="Assessment review not found")
+    return upsert_assessment_rubric_review(store.db_path, session_id, payload.model_dump())
 
 
 @router.patch("/{session_id}")
