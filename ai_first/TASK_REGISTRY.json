@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T05:15:00Z",
+    "last_updated": "2026-04-28T05:24:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 68,
+      "count": 69,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -77,7 +77,8 @@
         "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
         "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
-        "F120_INTERVENTION_EFFECTIVENESS_TRACKING"
+        "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
+        "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION"
       ]
     },
     "in_progress": {
@@ -92,10 +93,9 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 5,
+      "count": 4,
       "tasks": [
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
-        "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
         "F122_PILOT_FEEDBACK_INGESTION_PATH",
         "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
         "F124_EVIDENCE_AUTOMATION_REFRESH"
@@ -1740,10 +1740,10 @@
       "complexity": "High",
       "estimated_hours": 7,
       "dependencies": [],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "This establishes classroom primitives but should stay minimal until a stronger operations slice is explicitly opened."
+      "notes": "Merged to main through PR #196 on 2026-04-28. The platform now has a minimal backend-first class roster and ownership seam that can scope dashboard insight payloads to explicit teacher-owned student membership without opening full classroom management UX."
     },
     {
       "id": "F122_PILOT_FEEDBACK_INGESTION_PATH",
