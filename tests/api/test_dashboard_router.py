@@ -1869,6 +1869,100 @@ async def test_dashboard_intervention_history_sorts_newest_first(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_intervention_history_attaches_effectiveness_summary(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {"student_id": "student-a", "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        student = insights["students"][0]
+        recommendation_id = student["recommended_actions"][0]["action_id"]
+
+        action = client.post(
+            "/api/v1/dashboard/teacher-actions",
+            json={
+                "target_type": "student",
+                "target_id": "student-a",
+                "source_recommendation_id": recommendation_id,
+                "action_type": "reteach_concept",
+                "topic": "fractions subtraction",
+                "teacher_instruction": "Reteach denominator alignment.",
+                "priority": "high",
+            },
+        ).json()
+        assignment = client.post(
+            "/api/v1/dashboard/intervention-assignments",
+            json={
+                "teacher_action_id": action["id"],
+                "assignment_type": "reteach_session",
+                "title": "Fractions subtraction reteach",
+                "teacher_note": "One model example then guided practice.",
+                "practice_note": "Close with one independent item.",
+            },
+        ).json()
+
+        await store.save_observations(
+            [
+                {
+                    "observation_id": "obs_followup_1",
+                    "session_id": "tutor-followup-1",
+                    "student_id": "student-a",
+                    "source": "tutoring",
+                    "topic": "fractions subtraction",
+                    "question_id": "f1",
+                    "is_correct": True,
+                    "latency_seconds": 20,
+                    "hint_count": 0,
+                    "retry_count": 0,
+                    "dominant_error": None,
+                    "created_at": float(assignment["updated_at"] + 10),
+                },
+                {
+                    "observation_id": "obs_followup_2",
+                    "session_id": "tutor-followup-2",
+                    "student_id": "student-a",
+                    "source": "tutoring",
+                    "topic": "fractions subtraction",
+                    "question_id": "f2",
+                    "is_correct": True,
+                    "latency_seconds": 18,
+                    "hint_count": 0,
+                    "retry_count": 0,
+                    "dominant_error": None,
+                    "created_at": float(assignment["updated_at"] + 20),
+                },
+            ]
+        )
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_student = next(row for row in refreshed["students"] if row["student_id"] == "student-a")
+        history = refreshed_student["intervention_history"]
+        assignment_row = next(row for row in history if row["item_type"] == "intervention_assignment")
+
+        assert assignment_row["effectiveness_summary"]["label"] == "appears_helpful"
+        assert assignment_row["effectiveness_summary"]["followup_observation_count"] == 2
+
+
+@pytest.mark.asyncio
 async def test_dashboard_overview_applies_search_kb_type_and_min_score_filters(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-27
+Last updated: 2026-04-28
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -121,6 +121,7 @@ flowchart TD
   InsightsAPI --> TeacherOverrides["Teacher override records"]
   InsightsAPI --> TeacherActions["Teacher action records"]
   InsightsAPI --> InterventionAssignments["Intervention assignment records"]
+  InsightsAPI --> InterventionEffectiveness["Observational intervention effectiveness summaries"]
   DiagnosisFeedbackAPI --> DiagnosisFeedback
   RecommendationAckAPI --> RecommendationAcks
   RecommendationFeedbackAPI --> RecommendationFeedback
@@ -146,6 +147,7 @@ flowchart TD
   StudentDashboard --> TeacherActionDetail["Teacher actions section + status updates"]
   StudentDashboard --> AssignmentDetail["Intervention assignments section + status updates"]
   StudentDashboard --> InterventionHistoryDetail["Intervention history timeline across acknowledgement, action, assignment, and diagnosis feedback"]
+  InterventionHistoryDetail --> InterventionEffectiveness
   LearningPathSignals --> PathEngine["Deterministic learning-path helper"]
   PathEngine --> FocusTopicInputs["Focus topics from assessment analysis"]
   PathEngine --> ObjectiveInputs["Knowledge-pack learning_objectives metadata"]
