@@ -25,6 +25,11 @@ from deeptutor.services.evidence.recommendation_feedback import (
     list_recommendation_feedback,
     update_recommendation_feedback,
 )
+from deeptutor.services.evidence.teacher_overrides import (
+    create_teacher_override,
+    list_teacher_overrides,
+    update_teacher_override,
+)
 from deeptutor.services.evidence.recommendation_acks import (
     create_recommendation_ack,
     list_recommendation_acks,
@@ -79,6 +84,21 @@ class RecommendationFeedbackCreateRequest(BaseModel):
 
 class RecommendationFeedbackUpdateRequest(BaseModel):
     feedback_label: str
+    teacher_note: str | None = None
+
+
+class TeacherOverrideCreateRequest(BaseModel):
+    source_recommendation_id: str
+    target_type: str
+    target_id: str
+    override_reason: str
+    teacher_selected_move: str
+    teacher_note: str = ""
+
+
+class TeacherOverrideUpdateRequest(BaseModel):
+    override_reason: str
+    teacher_selected_move: str
     teacher_note: str | None = None
 
 
@@ -607,6 +627,7 @@ async def get_dashboard_insights(
     intervention_assignments = list_intervention_assignments(store)
     recommendation_acks = list_recommendation_acks(store)
     recommendation_feedback = list_recommendation_feedback(store)
+    teacher_overrides = list_teacher_overrides(store)
     diagnosis_feedback = list_diagnosis_feedback(store)
     return build_teacher_insights_payload(
         student_payloads=student_payloads,
@@ -614,8 +635,48 @@ async def get_dashboard_insights(
         intervention_assignments=intervention_assignments,
         recommendation_acks=recommendation_acks,
         recommendation_feedback=recommendation_feedback,
+        teacher_overrides=teacher_overrides,
         diagnosis_feedback=diagnosis_feedback,
     )
+
+
+@router.post("/teacher-overrides")
+async def create_dashboard_teacher_override(
+    payload: TeacherOverrideCreateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return create_teacher_override(
+            store,
+            source_recommendation_id=payload.source_recommendation_id,
+            target_type=payload.target_type,
+            target_id=payload.target_id,
+            override_reason=payload.override_reason,
+            teacher_selected_move=payload.teacher_selected_move,
+            teacher_note=payload.teacher_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.patch("/teacher-overrides/{override_id}")
+async def update_dashboard_teacher_override(
+    override_id: str,
+    payload: TeacherOverrideUpdateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return update_teacher_override(
+            store,
+            override_id,
+            override_reason=payload.override_reason,
+            teacher_selected_move=payload.teacher_selected_move,
+            teacher_note=payload.teacher_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="teacher override not found") from exc
 
 
 @router.post("/recommendation-feedback")

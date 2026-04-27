@@ -1090,6 +1090,177 @@ async def test_dashboard_recommendation_feedback_attaches_to_small_group_card(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_teacher_override_create_round_trip(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {
+            "student_id": "student-a",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        student = insights["students"][0]
+        recommendation_id = student["recommended_actions"][0]["action_id"]
+
+        create_resp = client.post(
+            "/api/v1/dashboard/teacher-overrides",
+            json={
+                "source_recommendation_id": recommendation_id,
+                "target_type": "student",
+                "target_id": "student-a",
+                "override_reason": "different_strategy",
+                "teacher_selected_move": "review_prerequisite",
+                "teacher_note": "I need to back up and reteach the denominator idea first.",
+            },
+        )
+
+        assert create_resp.status_code == 200
+        created = create_resp.json()
+        assert created["target_type"] == "student"
+        assert created["override_reason"] == "different_strategy"
+        assert created["teacher_selected_move"] == "review_prerequisite"
+
+        update_resp = client.patch(
+            f"/api/v1/dashboard/teacher-overrides/{created['id']}",
+            json={
+                "override_reason": "not_classroom_fit",
+                "teacher_selected_move": "scaffolded_practice",
+                "teacher_note": "The original move is fine in theory, but not for today's class rhythm.",
+            },
+        )
+
+        assert update_resp.status_code == 200
+        assert update_resp.json()["override_reason"] == "not_classroom_fit"
+        assert update_resp.json()["teacher_selected_move"] == "scaffolded_practice"
+
+
+@pytest.mark.asyncio
+async def test_dashboard_teacher_override_summary_attaches_to_student_payload(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {
+            "student_id": "student-a",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        student = insights["students"][0]
+        recommendation_id = student["recommended_actions"][0]["action_id"]
+
+        client.post(
+            "/api/v1/dashboard/teacher-overrides",
+            json={
+                "source_recommendation_id": recommendation_id,
+                "target_type": "student",
+                "target_id": "student-a",
+                "override_reason": "needs_more_context",
+                "teacher_selected_move": "reteach_concept",
+                "teacher_note": "I want to see written work before choosing the next move.",
+            },
+        )
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_student = next(row for row in refreshed["students"] if row["student_id"] == "student-a")
+        assert refreshed_student["teacher_override"]["source_recommendation_id"] == recommendation_id
+        assert refreshed_student["teacher_override"]["override_reason"] == "needs_more_context"
+
+
+@pytest.mark.asyncio
+async def test_dashboard_teacher_override_attaches_to_small_group_card(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    for sid, student_id, answer in [
+        ("student-a-session", "student-a", "1/5"),
+        ("student-b-session", "student-b", "1/6"),
+    ]:
+        await _seed_session(
+            store,
+            session_id=sid,
+            capability="deep_question",
+            message="Generate a quiz on fractions",
+            knowledge_bases=["fractions-pack"],
+        )
+        await store.update_session_preferences(
+            sid,
+            {"student_id": student_id, "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+        )
+        await store.add_message(
+            sid,
+            "user",
+            f"[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: {answer} (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+            capability="deep_question",
+        )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        group = insights["small_groups"][0]
+        recommendation_id = f"group:{group['topic']}:{group['diagnosis_type']}"
+
+        create_resp = client.post(
+            "/api/v1/dashboard/teacher-overrides",
+            json={
+                "source_recommendation_id": recommendation_id,
+                "target_type": "small_group",
+                "target_id": group["target_id"],
+                "override_reason": "different_strategy",
+                "teacher_selected_move": "small_group_remediation",
+                "teacher_note": "I will still pull them together, but with a more concrete activity pattern.",
+            },
+        )
+
+        assert create_resp.status_code == 200
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_group = refreshed["small_groups"][0]
+        assert refreshed_group["teacher_override"]["target_type"] == "small_group"
+        assert refreshed_group["teacher_override"]["override_reason"] == "different_strategy"
+
+
+@pytest.mark.asyncio
 async def test_dashboard_diagnosis_feedback_create_round_trip(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

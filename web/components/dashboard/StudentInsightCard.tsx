@@ -9,12 +9,14 @@ import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel"
 import { RecommendationAckComposer } from "@/components/dashboard/RecommendationAckComposer";
 import { RecommendationFeedbackComposer } from "@/components/dashboard/RecommendationFeedbackComposer";
 import { TeacherActionComposer } from "@/components/dashboard/TeacherActionComposer";
+import { TeacherOverrideComposer } from "@/components/dashboard/TeacherOverrideComposer";
 import type {
   DiagnosisFeedbackRecord,
   InterventionAssignmentRecord,
   RecommendationFeedbackRecord,
   RecommendationAckRecord,
   TeacherActionRecord,
+  TeacherOverrideRecord,
   TeacherInsightStudent,
 } from "@/lib/dashboard-api";
 
@@ -41,6 +43,9 @@ export function StudentInsightCard({
   );
   const [recommendationFeedback, setRecommendationFeedback] = useState<RecommendationFeedbackRecord | null>(
     student.recommendation_feedback ?? null,
+  );
+  const [teacherOverride, setTeacherOverride] = useState<TeacherOverrideRecord | null>(
+    student.teacher_override ?? null,
   );
   const [teacherActions, setTeacherActions] = useState<TeacherActionRecord[]>(student.teacher_actions ?? []);
   const [interventionAssignments, setInterventionAssignments] = useState<InterventionAssignmentRecord[]>(
@@ -163,6 +168,30 @@ export function StudentInsightCard({
                 {t("Recommendation feedback: {{label}}", { label: recommendationFeedback.feedback_label })}
               </div>
               {recommendationFeedback.teacher_note ? <div className="mt-1">{recommendationFeedback.teacher_note}</div> : null}
+            </div>
+          ) : null}
+          <div className="mt-3">
+            <TeacherOverrideComposer
+              triggerLabel={teacherOverride ? t("Update teacher override") : t("Log teacher override")}
+              defaultPayload={{
+                target_type: "student",
+                target_id: student.student_id,
+                source_recommendation_id: recommendation?.action_id ?? `student:${student.student_id}`,
+              }}
+              existingOverride={teacherOverride}
+              onSaved={setTeacherOverride}
+              t={t}
+            />
+          </div>
+          {teacherOverride ? (
+            <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+              <div className="font-medium">
+                {t("Teacher override: {{move}}", { move: teacherOverride.teacher_selected_move })}
+              </div>
+              <div className="mt-1">
+                {t("Reason: {{reason}}", { reason: teacherOverride.override_reason })}
+              </div>
+              {teacherOverride.teacher_note ? <div className="mt-1">{teacherOverride.teacher_note}</div> : null}
             </div>
           ) : null}
           <div className="mt-3">
