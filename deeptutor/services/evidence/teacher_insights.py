@@ -214,6 +214,62 @@ def _small_group_target_id(topic: str, diagnosis_type: str, source_action_type: 
     return f"{topic}::{diagnosis_type}::{source_action_type}"
 
 
+def _student_reason_trace(
+    *,
+    payload: dict[str, Any],
+    top_inferred: dict[str, Any] | None,
+    top_action: dict[str, Any] | None,
+) -> dict[str, Any]:
+    observed = payload.get("observed") or {}
+    inferred = top_inferred or {}
+    return {
+        "diagnosis_policy": str(payload.get("diagnosis_policy") or ""),
+        "teacher_review_required": bool(payload.get("teacher_review_required")),
+        "confidence_tag": str(inferred.get("confidence_tag") or ""),
+        "topic": str(inferred.get("topic") or observed.get("topic") or "general"),
+        "evidence": list(inferred.get("evidence") or []),
+        "teacher_review_note": str(inferred.get("teacher_review_note") or ""),
+        "recommendation_rationale": str(top_action.get("rationale") or "") if top_action else "",
+        "abstained": bool(observed.get("abstained")),
+        "abstain_reason": str(observed.get("abstain_reason") or ""),
+    }
+
+
+def _small_group_reason_trace(
+    *,
+    topic: str,
+    diagnosis_type: str,
+    source_action_type: str,
+    confidence_tag: str,
+    member_payloads: list[dict[str, Any]],
+) -> dict[str, Any]:
+    evidence: list[str] = []
+    for payload in member_payloads:
+        inferred = _top_inferred(payload)
+        if not inferred:
+            continue
+        for fact in list(inferred.get("evidence") or []):
+            if fact not in evidence:
+                evidence.append(str(fact))
+            if len(evidence) >= 3:
+                break
+        if len(evidence) >= 3:
+            break
+    return {
+        "topic": topic,
+        "diagnosis_type": diagnosis_type,
+        "source_action_type": source_action_type,
+        "confidence_tag": confidence_tag,
+        "grouping_rule": "same_topic_same_diagnosis_same_recommended_move",
+        "shared_evidence": evidence,
+        "teacher_review_note": "Use this cluster as a teacher-reviewable grouping cue, not as an automatic placement decision.",
+        "supporting_student_ids": [
+            str(payload.get("student_id") or "unknown")
+            for payload in member_payloads
+        ],
+    }
+
+
 def build_teacher_insights_payload(
     *,
     student_payloads: list[dict[str, Any]],
@@ -239,6 +295,11 @@ def build_teacher_insights_payload(
         top_action = _top_action(payload)
         student_id = str(payload.get("student_id") or "unknown")
         top_inferred = _top_inferred(payload)
+        row["reason_trace"] = _student_reason_trace(
+            payload=payload,
+            top_inferred=top_inferred,
+            top_action=top_action,
+        )
         row["diagnosis_feedback"] = (
             _latest_diagnosis_feedback(
                 student_id=student_id,
@@ -310,6 +371,11 @@ def build_teacher_insights_payload(
         )
 
     small_groups: list[dict[str, Any]] = []
+    student_payload_by_id = {
+        str(payload.get("student_id") or "unknown"): payload
+        for payload in student_payloads
+    }
+
     for (topic, diagnosis_type, action_type), rows in grouped.items():
         if len(rows) < 2:
             continue
@@ -318,6 +384,11 @@ def build_teacher_insights_payload(
         if avg_confidence < 1.0:
             continue
         student_ids = sorted({sid for sid, _score in rows})
+        member_payloads = [
+            student_payload_by_id[sid]
+            for sid in student_ids
+            if sid in student_payload_by_id
+        ]
         target_id = _small_group_target_id(topic, diagnosis_type, action_type)
         matching_group_action = next(
             (
@@ -361,6 +432,13 @@ def build_teacher_insights_payload(
                 "recommended_action": "small_group_support",
                 "source_action_type": action_type,
                 "confidence_tag": "high" if avg_confidence >= 2.5 else "medium",
+                "reason_trace": _small_group_reason_trace(
+                    topic=topic,
+                    diagnosis_type=diagnosis_type,
+                    source_action_type=action_type,
+                    confidence_tag="high" if avg_confidence >= 2.5 else "medium",
+                    member_payloads=member_payloads,
+                ),
                 "target_id": target_id,
                 "recommendation_ack": matching_group_ack,
                 "recommendation_feedback": matching_group_feedback,

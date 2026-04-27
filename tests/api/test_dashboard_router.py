@@ -492,10 +492,15 @@ async def test_dashboard_insights_returns_students_and_small_groups(
     assert response.status_code == 200
     payload = response.json()
     assert payload["students"][0]["student_id"] in {"student-a", "student-b"}
+    assert payload["students"][0]["reason_trace"]["diagnosis_policy"] == "rule_assisted_teacher_review"
+    assert payload["students"][0]["reason_trace"]["teacher_review_required"] is True
+    assert payload["students"][0]["reason_trace"]["evidence"]
     assert payload["small_groups"][0]["topic"] == "fractions subtraction"
     assert sorted(payload["small_groups"][0]["student_ids"]) == ["student-a", "student-b"]
     assert payload["small_groups"][0]["recommended_action"] == "small_group_support"
     assert payload["small_groups"][0]["confidence_tag"] in {"medium", "high"}
+    assert payload["small_groups"][0]["reason_trace"]["grouping_rule"] == "same_topic_same_diagnosis_same_recommended_move"
+    assert payload["small_groups"][0]["reason_trace"]["shared_evidence"]
 
 
 @pytest.mark.asyncio

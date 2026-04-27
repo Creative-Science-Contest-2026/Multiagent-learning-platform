@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T05:24:00Z",
+    "last_updated": "2026-04-28T06:12:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -83,8 +83,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -93,9 +95,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 4,
+      "count": 3,
       "tasks": [
-        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
         "F122_PILOT_FEEDBACK_INGESTION_PATH",
         "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
         "F124_EVIDENCE_AUTOMATION_REFRESH"
@@ -1507,10 +1508,10 @@
         "R1_RUNTIME_BINDING_PROOF",
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Should consume bounded traces produced by Session B rather than invent frontend-only explanations."
+      "notes": "Session A started on 2026-04-28 from worktree .worktrees/pod-a-provenance-reason-traces. Scope is bounded trust surfaces that reuse runtime-policy audit and evidence payloads already produced by the platform instead of inventing frontend-only explanations."
     },
     {
       "id": "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
