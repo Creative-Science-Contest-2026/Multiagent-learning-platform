@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 70,
+      "count": 71,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -79,7 +79,8 @@
         "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
         "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
         "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
-        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES"
+        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
+        "F122_PILOT_FEEDBACK_INGESTION_PATH"
       ]
     },
     "in_progress": {
@@ -94,9 +95,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 3,
+      "count": 2,
       "tasks": [
-        "F122_PILOT_FEEDBACK_INGESTION_PATH",
         "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
         "F124_EVIDENCE_AUTOMATION_REFRESH"
       ]
@@ -1766,10 +1766,10 @@
       "dependencies": [
         "R6_CLAIM_CALIBRATION_PILOT"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "Should preserve the current explicit no-pilot-yet stance until real external feedback exists."
+      "notes": "Merged to main through PR #200 on 2026-04-28. The platform now has a bounded pilot-feedback ingestion seam for future external walkthrough evidence, while preserving the explicit no-pilot-yet stance until real outside feedback exists."
     },
     {
       "id": "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",

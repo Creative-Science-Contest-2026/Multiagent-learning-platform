@@ -177,6 +177,13 @@ flowchart TD
   PromptManager --> VietnameseFallback["vi → en fallback chain"]
   Localization --> LanguageSettings["Settings: en/zh/vi"]
 
+  Product --> ValidationOps["Validation Ops"]
+  ValidationOps --> ValidationStatus["Contest validation status surfaces"]
+  ValidationStatus --> PilotStatusDoc["docs/contest/PILOT_STATUS.md"]
+  ValidationStatus --> PilotStatusAPI["GET /api/v1/system/pilot-feedback-status"]
+  ValidationStatus --> PilotFeedbackAPI["POST/GET /api/v1/system/pilot-feedback"]
+  PilotFeedbackAPI --> PilotFeedbackStore["Pilot feedback records (bounded validation-ops storage)"]
+
   Project --> Data["Data Layer"]
   Data --> SQLite["data/user/chat_history.db"]
   Data --> KnowledgeBases["data/knowledge_bases"]
