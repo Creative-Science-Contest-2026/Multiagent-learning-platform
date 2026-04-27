@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T05:05:00Z",
+    "last_updated": "2026-04-28T05:10:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -78,8 +78,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -88,11 +90,10 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 6,
+      "count": 5,
       "tasks": [
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
-        "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
         "F122_PILOT_FEEDBACK_INGESTION_PATH",
         "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
         "F124_EVIDENCE_AUTOMATION_REFRESH"
@@ -1737,10 +1738,10 @@
       "complexity": "High",
       "estimated_hours": 7,
       "dependencies": [],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "This establishes classroom primitives but should stay minimal until a stronger operations slice is explicitly opened."
+      "notes": "Active on branch pod-b/class-roster-group-foundation. The lane is scoping a minimal backend-first roster and class-ownership primitive so dashboard/student-group signals can be bounded to explicit teacher-owned student lists without opening broader classroom UX."
     },
     {
       "id": "F122_PILOT_FEEDBACK_INGESTION_PATH",
