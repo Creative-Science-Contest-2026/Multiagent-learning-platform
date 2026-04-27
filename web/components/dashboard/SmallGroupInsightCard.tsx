@@ -38,6 +38,7 @@ export function SmallGroupInsightCard({
   const [interventionAssignment, setInterventionAssignment] = useState<InterventionAssignmentRecord | null>(
     group.intervention_assignment ?? null,
   );
+  const reasonTrace = group.reason_trace;
 
   return (
     <article className="rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
@@ -57,11 +58,31 @@ export function SmallGroupInsightCard({
           toneClassName="text-emerald-700"
         />
         <div className="mt-3 text-[12px] text-emerald-900/80">
-          {t("Why these students are grouped: they show the same dominant learning signal.")}
+          {reasonTrace
+            ? t("Why these students are grouped: same topic, diagnosis, and suggested move.")
+            : t("Why these students are grouped: they show the same dominant learning signal.")}
         </div>
         <div className="mt-3 text-[12px] text-[var(--muted-foreground)]">
           {t("Students: {{students}}", { students: group.student_ids.join(", ") })}
         </div>
+        {reasonTrace ? (
+          <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+            <div className="font-medium">
+              {t("Trust trace: {{confidence}} confidence", { confidence: reasonTrace.confidence_tag })}
+            </div>
+            <div className="mt-1">
+              {t("Rule: {{rule}}", { rule: reasonTrace.grouping_rule })}
+            </div>
+            {reasonTrace.shared_evidence?.length ? (
+              <ul className="mt-2 space-y-1">
+                {reasonTrace.shared_evidence.map((fact) => (
+                  <li key={`${group.target_id ?? group.topic}-${fact}`}>• {fact}</li>
+                ))}
+              </ul>
+            ) : null}
+            <div className="mt-2 text-emerald-900/70">{reasonTrace.teacher_review_note}</div>
+          </div>
+        ) : null}
         <div className="mt-3">
           <RecommendationFeedbackComposer
             triggerLabel={

@@ -305,7 +305,19 @@ export interface TeacherInsightStudent {
     confidence_tag: string;
     topic: string;
     evidence: string[];
+    teacher_review_note?: string;
   }>;
+  reason_trace?: {
+    diagnosis_policy: string;
+    teacher_review_required: boolean;
+    confidence_tag: string;
+    topic: string;
+    evidence: string[];
+    teacher_review_note: string;
+    recommendation_rationale: string;
+    abstained: boolean;
+    abstain_reason: string;
+  } | null;
   diagnosis_feedback?: DiagnosisFeedbackRecord | null;
   recommended_actions: Array<{
     action_id: string;
@@ -455,6 +467,18 @@ export interface DashboardInsights {
     diagnosis_type: string;
     student_ids: string[];
     recommended_action: string;
+    source_action_type?: string;
+    confidence_tag?: string;
+    reason_trace?: {
+      topic: string;
+      diagnosis_type: string;
+      source_action_type: string;
+      confidence_tag: string;
+      grouping_rule: string;
+      shared_evidence: string[];
+      teacher_review_note: string;
+      supporting_student_ids: string[];
+    } | null;
     target_id?: string;
     recommendation_ack?: RecommendationAckRecord | null;
     recommendation_feedback?: RecommendationFeedbackRecord | null;

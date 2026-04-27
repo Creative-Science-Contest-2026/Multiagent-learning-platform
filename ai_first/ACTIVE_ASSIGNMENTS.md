@@ -28,5 +28,17 @@ Rules:
 
 ## Active
 
-No active AI implementation task is currently assigned on `main`.
-The next product work should start from a fresh Session A or Session B branch/worktree after the AI loop selects the next future-backlog task.
+### Assignment
+
+- Owner: Codex Session A
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-a-provenance-reason-traces`
+- Task: `F112_PROVENANCE_AND_REASON_TRACE_SURFACES`
+- Status: `planning`
+- Branch: `pod-a/provenance-reason-traces`
+- Task packet: `docs/superpowers/tasks/2026-04-28-f112-provenance-and-reason-trace-surfaces.md`
+- Owned files: `web/components/dashboard/`, `web/components/agents/`, `web/app/(workspace)/agents/`, `web/lib/dashboard-api.ts`, `web/lib/agent-spec-api.ts`, bounded read-only trust payload shaping in `deeptutor/services/evidence/teacher_insights.py`, related dashboard/agent-spec tests/docs`
+- PR: `Not opened yet`
+- Last update: `2026-04-28T13:12:00+0700`
+- Next action: `Write the F112 task packet, spec, and implementation plan before implementation.`
+- Blocker: `None`

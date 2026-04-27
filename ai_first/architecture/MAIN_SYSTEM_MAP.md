@@ -49,6 +49,7 @@ flowchart TD
   AgentSpecAuthoring --> AgentSpecUI["/agents authoring tab"]
   AgentSpecAuthoring --> AgentSpecAPI["/api/v1/agent-specs"]
   AgentSpecAuthoring --> AgentSpecAuditAPI["/api/v1/agent-specs/{agent_id}/runtime-policy-audit"]
+  AgentSpecAuditAPI --> AgentSpecTrustSurface["Runtime policy audit panel: slices + sources + knowledge policy"]
   AgentSpecAuthoring --> AgentSpecStorage["Versioned Markdown spec packs"]
   AgentSpecStorage --> RuntimePolicy
   AgentSpecAuditAPI --> RuntimePolicy
@@ -112,6 +113,7 @@ flowchart TD
   TeacherInsights --> TeacherOverrideAPI["POST/PATCH /api/v1/dashboard/teacher-overrides"]
   TeacherInsights --> TeacherActionAPI["POST/PATCH /api/v1/dashboard/teacher-actions"]
   TeacherInsights --> InterventionAssignmentAPI["POST/PATCH /api/v1/dashboard/intervention-assignments"]
+  TeacherInsights --> InsightTrustTrace["Student + small-group trust traces"]
   InsightsAPI --> DiagnosisEngine
   EvidenceGate --> InsightsAPI
   InsightsAPI --> DiagnosisFeedback["Diagnosis feedback records"]

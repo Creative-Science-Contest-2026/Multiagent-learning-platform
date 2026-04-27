@@ -77,6 +77,7 @@ export function StudentInsightDetail({
 
   const diagnosis = student?.inferred[0];
   const recommendation = student?.recommended_actions[0];
+  const trustTrace = student?.reason_trace ?? null;
 
   if (!student) {
     return (
@@ -165,6 +166,28 @@ export function StudentInsightDetail({
                 )}
               </div>
             ) : null}
+            {trustTrace ? (
+              <div className="mt-4 rounded-2xl border border-amber-200 bg-white/80 p-4 text-[12px] text-amber-900/80">
+                <div className="font-medium">
+                  {t("Trust trace: {{policy}}", { policy: trustTrace.diagnosis_policy || t("teacher-reviewed") })}
+                </div>
+                <div className="mt-2">
+                  {trustTrace.teacher_review_required
+                    ? t("This diagnosis is a teacher-reviewable hypothesis, not an autonomous final judgment.")
+                    : t("This signal can be reviewed directly in context.")}
+                </div>
+                {trustTrace.teacher_review_note ? (
+                  <div className="mt-2">{trustTrace.teacher_review_note}</div>
+                ) : null}
+                {trustTrace.abstained ? (
+                  <div className="mt-2">
+                    {t("Abstain reason: {{reason}}", {
+                      reason: trustTrace.abstain_reason || t("evidence was too weak"),
+                    })}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </section>
       </div>
@@ -187,6 +210,12 @@ export function StudentInsightDetail({
               ? t("Why this move: {{reason}}", { reason: diagnosis.evidence[0] })
               : t("Why this move: based on the strongest recent learning signal.")}
           </div>
+          {trustTrace?.recommendation_rationale ? (
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+              <div className="font-medium">{t("Recommendation rationale")}</div>
+              <div className="mt-1">{trustTrace.recommendation_rationale}</div>
+            </div>
+          ) : null}
           <div className="mt-4 space-y-2 text-[12px] text-[var(--muted-foreground)]">
             <div>{t("Topic: {{topic}}", { topic: recommendation?.topic ?? diagnosis?.topic ?? t("Unknown") })}</div>
             <div>
@@ -198,6 +227,16 @@ export function StudentInsightDetail({
               <div>{t("Support level: {{value}}", { value: student.student_state.support_level })}</div>
             ) : null}
           </div>
+          {trustTrace?.evidence?.length ? (
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+              <div className="font-medium">{t("Evidence used")}</div>
+              <ul className="mt-2 space-y-1">
+                {trustTrace.evidence.map((fact) => (
+                  <li key={`${student.student_id}-trust-${fact}`}>• {fact}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {recommendation ? (
             <div className="mt-4">
               <RecommendationFeedbackComposer
