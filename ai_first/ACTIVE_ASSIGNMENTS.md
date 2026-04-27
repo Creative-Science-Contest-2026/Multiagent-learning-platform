@@ -34,11 +34,11 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-intervention-effectiveness-tracking`
 - Task: `F120_INTERVENTION_EFFECTIVENESS_TRACKING`
-- Status: `implementation`
+- Status: `ready-review`
 - Branch: `pod-b/intervention-effectiveness-tracking`
 - Task packet: `docs/superpowers/tasks/2026-04-28-f120-intervention-effectiveness-tracking.md`
 - Owned files: `deeptutor/services/evidence/`, bounded dashboard payload shaping/tests, related docs
-- PR: `Not opened yet`
-- Last update: `2026-04-28T03:35:00+0700`
-- Next action: `Finish self-review, commit the bounded evidence/dashboard slice, and open the Draft PR for F120.`
+- PR: `#192`
+- Last update: `2026-04-28T03:48:00+0700`
+- Next action: `Keep PR #192 green and mergeable, then run the post-merge AI-first sync on a fresh docs branch.`
 - Blocker: `None`

@@ -1717,7 +1717,7 @@
       "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "Active on branch pod-b/intervention-effectiveness-tracking. The lane derives bounded post-intervention effectiveness signals from existing recommendation/action/assignment history plus later observations, without claiming causal proof or widening dashboard UX."
+      "notes": "Active on branch pod-b/intervention-effectiveness-tracking with PR #192 ready for review. The lane derives bounded post-intervention effectiveness signals from existing recommendation/action/assignment history plus later observations, without claiming causal proof or widening dashboard UX."
     },
     {
       "id": "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
