@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 55,
+      "count": 56,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -64,15 +64,14 @@
         "F102_INTERVENTION_ASSIGNMENT_FLOW",
         "F114_SPEC_VERSION_PINNING_PER_SESSION",
         "F115_RUNTIME_POLICY_AUDIT_TRACE",
-        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
+        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
+        "F116_STUDENT_MODEL_ENRICHMENT"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F116_STUDENT_MODEL_ENRICHMENT"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1612,10 +1611,10 @@
       "dependencies": [
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "Active on branch pod-b/student-model-enrichment. This remains conservative and evidence-backed by deriving additive mastery, support, and misconception signals from observations rather than inventing opaque scores."
+      "notes": "Merged to main through PR #176. Student-state persistence now carries additive mastery, support, and misconception signals derived conservatively from observations rather than inventing opaque global scores."
     },
     {
       "id": "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
