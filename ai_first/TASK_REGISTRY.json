@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-27T16:25:00Z",
+    "last_updated": "2026-04-27T16:40:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -69,8 +69,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F108_DIAGNOSIS_FEEDBACK_CAPTURE"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1403,10 +1405,10 @@
       "dependencies": [
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Keep the first slice simple: structured feedback labels plus optional teacher note."
+      "notes": "Session A started on 2026-04-27 from worktree .worktrees/pod-a-diagnosis-feedback-capture. Scope is structured per-student diagnosis feedback with bounded labels plus an optional teacher note."
     },
     {
       "id": "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
