@@ -176,6 +176,28 @@ class SQLiteSessionStore:
                     misconception_signals_json TEXT NOT NULL DEFAULT '{}',
                     updated_at REAL NOT NULL
                 );
+
+                CREATE TABLE IF NOT EXISTS class_rosters (
+                    class_id TEXT PRIMARY KEY,
+                    teacher_id TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    metadata_json TEXT NOT NULL DEFAULT '{}',
+                    created_at REAL NOT NULL,
+                    updated_at REAL NOT NULL
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_class_rosters_teacher_updated
+                    ON class_rosters(teacher_id, updated_at DESC);
+
+                CREATE TABLE IF NOT EXISTS class_roster_students (
+                    class_id TEXT NOT NULL REFERENCES class_rosters(class_id) ON DELETE CASCADE,
+                    student_id TEXT NOT NULL,
+                    created_at REAL NOT NULL,
+                    PRIMARY KEY (class_id, student_id)
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_class_roster_students_student
+                    ON class_roster_students(student_id, class_id);
                 """
             )
             columns = {row[1] for row in conn.execute("PRAGMA table_info(sessions)").fetchall()}
@@ -584,6 +606,137 @@ class SQLiteSessionStore:
 
     async def upsert_student_state(self, student_id: str, state: dict[str, Any]) -> None:
         return await self._run(self._upsert_student_state_sync, student_id, state)
+
+    def _create_class_roster_sync(
+        self,
+        class_id: str,
+        teacher_id: str,
+        title: str,
+        student_ids: list[str],
+    ) -> dict[str, Any]:
+        cleaned_class_id = class_id.strip()
+        cleaned_teacher_id = teacher_id.strip()
+        cleaned_title = title.strip()
+        cleaned_student_ids = [sid for sid in dict.fromkeys(s.strip() for s in student_ids) if sid]
+        if not cleaned_class_id or not cleaned_teacher_id or not cleaned_title:
+            raise ValueError("class_id, teacher_id, and title are required")
+        if not cleaned_student_ids:
+            raise ValueError("student_ids must not be empty")
+
+        now = time.time()
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO class_rosters (class_id, teacher_id, title, metadata_json, created_at, updated_at)
+                VALUES (?, ?, ?, '{}', ?, ?)
+                ON CONFLICT(class_id) DO UPDATE SET
+                    teacher_id = excluded.teacher_id,
+                    title = excluded.title,
+                    updated_at = excluded.updated_at
+                """,
+                (cleaned_class_id, cleaned_teacher_id, cleaned_title, now, now),
+            )
+            conn.execute("DELETE FROM class_roster_students WHERE class_id = ?", (cleaned_class_id,))
+            conn.executemany(
+                """
+                INSERT INTO class_roster_students (class_id, student_id, created_at)
+                VALUES (?, ?, ?)
+                """,
+                [(cleaned_class_id, student_id, now) for student_id in cleaned_student_ids],
+            )
+            conn.commit()
+
+        return {
+            "class_id": cleaned_class_id,
+            "teacher_id": cleaned_teacher_id,
+            "title": cleaned_title,
+            "student_ids": cleaned_student_ids,
+            "created_at": now,
+            "updated_at": now,
+        }
+
+    async def create_class_roster(
+        self,
+        *,
+        class_id: str,
+        teacher_id: str,
+        title: str,
+        student_ids: list[str],
+    ) -> dict[str, Any]:
+        return await self._run(
+            self._create_class_roster_sync,
+            class_id,
+            teacher_id,
+            title,
+            student_ids,
+        )
+
+    def _get_class_roster_sync(self, class_id: str) -> dict[str, Any] | None:
+        cleaned_class_id = class_id.strip()
+        if not cleaned_class_id:
+            return None
+        with self._connect() as conn:
+            roster = conn.execute(
+                """
+                SELECT class_id, teacher_id, title, created_at, updated_at
+                FROM class_rosters
+                WHERE class_id = ?
+                """,
+                (cleaned_class_id,),
+            ).fetchone()
+            if roster is None:
+                return None
+            members = conn.execute(
+                """
+                SELECT student_id
+                FROM class_roster_students
+                WHERE class_id = ?
+                ORDER BY student_id
+                """,
+                (cleaned_class_id,),
+            ).fetchall()
+        return {
+            "class_id": roster["class_id"],
+            "teacher_id": roster["teacher_id"],
+            "title": roster["title"],
+            "student_ids": [row["student_id"] for row in members],
+            "created_at": roster["created_at"],
+            "updated_at": roster["updated_at"],
+        }
+
+    async def get_class_roster(self, class_id: str) -> dict[str, Any] | None:
+        return await self._run(self._get_class_roster_sync, class_id)
+
+    def _list_teacher_roster_student_ids_sync(
+        self,
+        teacher_id: str,
+        class_id: str | None = None,
+    ) -> list[str]:
+        cleaned_teacher_id = teacher_id.strip()
+        if not cleaned_teacher_id:
+            return []
+        query = """
+            SELECT DISTINCT members.student_id
+            FROM class_rosters rosters
+            JOIN class_roster_students members ON members.class_id = rosters.class_id
+            WHERE rosters.teacher_id = ?
+        """
+        params: list[Any] = [cleaned_teacher_id]
+        if class_id and class_id.strip():
+            query += " AND rosters.class_id = ?"
+            params.append(class_id.strip())
+        query += " ORDER BY members.student_id"
+        with self._connect() as conn:
+            rows = conn.execute(query, tuple(params)).fetchall()
+        return [str(row["student_id"]) for row in rows]
+
+    async def list_teacher_roster_student_ids(
+        self,
+        teacher_id: str,
+        *,
+        class_id: str | None = None,
+    ) -> list[str]:
+        return await self._run(self._list_teacher_roster_student_ids_sync, teacher_id, class_id)
 
     def _get_student_state_sync(self, student_id: str) -> dict[str, Any] | None:
         with self._connect() as conn:

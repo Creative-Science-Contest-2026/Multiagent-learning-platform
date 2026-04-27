@@ -203,3 +203,25 @@ async def test_sqlite_store_persists_agent_spec_pin_in_session_preferences(tmp_p
         "version": 2,
         "updated_at": "2026-04-27T00:00:00Z",
     }
+
+
+@pytest.mark.asyncio
+async def test_sqlite_store_persists_class_roster_membership(tmp_path: Path) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+
+    created = await store.create_class_roster(
+        class_id="class-a",
+        teacher_id="teacher-1",
+        title="Class A",
+        student_ids=["student-a", "student-b"],
+    )
+    fetched = await store.get_class_roster("class-a")
+    teacher_student_ids = await store.list_teacher_roster_student_ids("teacher-1", class_id="class-a")
+
+    assert created["class_id"] == "class-a"
+    assert created["teacher_id"] == "teacher-1"
+    assert created["student_ids"] == ["student-a", "student-b"]
+    assert fetched is not None
+    assert fetched["title"] == "Class A"
+    assert fetched["student_ids"] == ["student-a", "student-b"]
+    assert teacher_student_ids == ["student-a", "student-b"]
