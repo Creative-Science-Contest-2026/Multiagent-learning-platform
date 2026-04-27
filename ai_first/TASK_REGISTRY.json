@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T06:12:00Z",
+    "last_updated": "2026-04-28T06:20:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -83,9 +83,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
+      "count": 2,
       "tasks": [
-        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES"
+        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
+        "F122_PILOT_FEEDBACK_INGESTION_PATH"
       ]
     },
     "blocked": {
@@ -95,9 +96,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 3,
+      "count": 2,
       "tasks": [
-        "F122_PILOT_FEEDBACK_INGESTION_PATH",
         "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
         "F124_EVIDENCE_AUTOMATION_REFRESH"
       ]
@@ -1767,10 +1767,10 @@
       "dependencies": [
         "R6_CLAIM_CALIBRATION_PILOT"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "Should preserve the current explicit no-pilot-yet stance until real external feedback exists."
+      "notes": "Active on branch pod-b/pilot-feedback-ingestion-path in worktree .worktrees/pod-b-pilot-feedback-ingestion. Planning and implementation must preserve the explicit no-pilot-yet stance until real external feedback exists."
     },
     {
       "id": "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",

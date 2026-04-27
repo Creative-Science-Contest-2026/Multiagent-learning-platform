@@ -6,14 +6,20 @@ Manages system status checks and model connection tests
 from datetime import datetime
 import time
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from deeptutor.services.evidence.pilot_feedback import (
+    build_pilot_feedback_status,
+    create_pilot_feedback,
+    list_pilot_feedback,
+)
 from deeptutor.services.config import resolve_search_runtime_config
 from deeptutor.services.embedding import get_embedding_client, get_embedding_config
 from deeptutor.services.llm import complete as llm_complete
 from deeptutor.services.llm import get_llm_config, get_token_limit_kwargs
 from deeptutor.services.search import web_search
+from deeptutor.services.session import get_sqlite_session_store
 
 router = APIRouter()
 
@@ -24,6 +30,39 @@ class TestResponse(BaseModel):
     model: str | None = None
     response_time_ms: float | None = None
     error: str | None = None
+
+
+class PilotFeedbackCreateRequest(BaseModel):
+    evidence_level: str
+    source_label: str
+    participant_role: str = ""
+    feedback_date: str
+    scope_note: str
+    finding_summary: str
+    recommendation_note: str = ""
+    artifact_ref: str = ""
+    verified_by: str = ""
+
+
+@router.get("/pilot-feedback-status")
+async def get_pilot_feedback_status():
+    return build_pilot_feedback_status(get_sqlite_session_store())
+
+
+@router.get("/pilot-feedback")
+async def get_pilot_feedback():
+    return {"items": list_pilot_feedback(get_sqlite_session_store())}
+
+
+@router.post("/pilot-feedback")
+async def create_pilot_feedback_record(payload: PilotFeedbackCreateRequest):
+    try:
+        return create_pilot_feedback(
+            get_sqlite_session_store(),
+            **payload.model_dump(),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/runtime-topology")
