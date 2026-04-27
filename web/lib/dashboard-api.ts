@@ -263,6 +263,7 @@ export interface TeacherInsightStudent {
     rationale: string;
   }>;
   recommendation_ack?: RecommendationAckRecord | null;
+  recommendation_feedback?: RecommendationFeedbackRecord | null;
   teacher_actions?: TeacherActionRecord[];
   intervention_assignments?: InterventionAssignmentRecord[];
   intervention_history?: InterventionHistoryItem[];
@@ -299,6 +300,19 @@ export interface DiagnosisFeedbackRecord {
 }
 
 export type RecommendationAckStatus = "accepted" | "deferred" | "dismissed" | "completed";
+
+export type RecommendationFeedbackLabel = "practical" | "relevant" | "too_generic";
+
+export interface RecommendationFeedbackRecord {
+  id: string;
+  source_recommendation_id: string;
+  target_type: "student" | "small_group";
+  target_id: string;
+  feedback_label: RecommendationFeedbackLabel;
+  teacher_note: string;
+  created_at: number;
+  updated_at: number;
+}
 
 export interface RecommendationAckRecord {
   id: string;
@@ -367,6 +381,7 @@ export interface DashboardInsights {
     recommended_action: string;
     target_id?: string;
     recommendation_ack?: RecommendationAckRecord | null;
+    recommendation_feedback?: RecommendationFeedbackRecord | null;
     teacher_action?: TeacherActionRecord | null;
     intervention_assignment?: InterventionAssignmentRecord | null;
   }>;
@@ -394,6 +409,14 @@ export interface CreateRecommendationAckRequest {
   target_type: "student" | "small_group";
   target_id: string;
   status: RecommendationAckStatus;
+  teacher_note?: string;
+}
+
+export interface CreateRecommendationFeedbackRequest {
+  source_recommendation_id: string;
+  target_type: "student" | "small_group";
+  target_id: string;
+  feedback_label: RecommendationFeedbackLabel;
   teacher_note?: string;
 }
 
@@ -454,6 +477,17 @@ export async function createRecommendationAck(
   return expectJson<RecommendationAckRecord>(response);
 }
 
+export async function createRecommendationFeedback(
+  payload: CreateRecommendationFeedbackRequest,
+): Promise<RecommendationFeedbackRecord> {
+  const response = await fetch(apiUrl("/api/v1/dashboard/recommendation-feedback"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<RecommendationFeedbackRecord>(response);
+}
+
 export async function createDiagnosisFeedback(
   payload: CreateDiagnosisFeedbackRequest,
 ): Promise<DiagnosisFeedbackRecord> {
@@ -487,6 +521,18 @@ export async function updateRecommendationAck(
     body: JSON.stringify(payload),
   });
   return expectJson<RecommendationAckRecord>(response);
+}
+
+export async function updateRecommendationFeedback(
+  feedbackId: string,
+  payload: { feedback_label: RecommendationFeedbackLabel; teacher_note?: string },
+): Promise<RecommendationFeedbackRecord> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/recommendation-feedback/${feedbackId}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<RecommendationFeedbackRecord>(response);
 }
 
 export async function updateTeacherActionStatus(
