@@ -1,0 +1,153 @@
+{
+  "version": "2026-04-28",
+  "categories": [
+    "diagnosis_credibility",
+    "recommendation_actionability",
+    "abstain_behavior",
+    "teacher_execution_loop",
+    "trust_trace"
+  ],
+  "cases": [
+    {
+      "id": "diagnosis-fraction-concept-gap",
+      "category": "diagnosis_credibility",
+      "title": "Concept gap in fraction subtraction",
+      "objective": "Show that repeated same-topic misses with slower response patterns support a bounded concept-gap hypothesis.",
+      "product_surface": [
+        "teacher_dashboard",
+        "diagnosis_review"
+      ],
+      "observed": [
+        "Topic is fractions subtraction",
+        "Two incorrect answers on the same topic",
+        "Long response times of 48s and 61s",
+        "Retry behavior present"
+      ],
+      "inferred": {
+        "diagnosis": "concept_gap",
+        "confidence": "medium_to_high",
+        "abstain_reason": null
+      },
+      "recommended_action": "review_prerequisite",
+      "teacher_review_framing": "Use this as a likely prerequisite gap worth checking before the next assessment, not as a proof of the student's exact misconception.",
+      "unsafe_overclaim": "The system has proven the exact internal misunderstanding without teacher review.",
+      "expected_artifacts": [
+        "docs/contest/DIAGNOSIS_CASE_STUDIES.md",
+        "docs/contest/VALIDATION_REPORT.md"
+      ]
+    },
+    {
+      "id": "recommendation-mini-group-remediation",
+      "category": "recommendation_actionability",
+      "title": "Shared misconception becomes a small-group move",
+      "objective": "Show that the evidence loop can move from shared signals to a concrete teacher move instead of stopping at analysis.",
+      "product_surface": [
+        "teacher_dashboard",
+        "small_group_cards",
+        "teacher_actions"
+      ],
+      "observed": [
+        "Three students share the same topic-level misconception",
+        "All three required repeated hints before reaching an answer",
+        "The diagnosis layer grouped them under one recommendation"
+      ],
+      "inferred": {
+        "diagnosis": "support_dependency",
+        "confidence": "medium",
+        "abstain_reason": null
+      },
+      "recommended_action": "small_group_remediation",
+      "teacher_review_framing": "The system is proposing one bounded classroom move: pull the students into a remediation mini-group around the same misconception.",
+      "unsafe_overclaim": "This grouping guarantees the best intervention outcome or proves that no other grouping would work.",
+      "expected_artifacts": [
+        "docs/contest/README.md",
+        "docs/contest/CASEPACK_AND_EVALUATION_DATASET.md"
+      ]
+    },
+    {
+      "id": "abstain-on-thin-geometry-signal",
+      "category": "abstain_behavior",
+      "title": "Abstain when the evidence layer is too thin",
+      "objective": "Show that the system withholds diagnosis when one strong-correct signal is not enough to justify intervention.",
+      "product_surface": [
+        "teacher_dashboard",
+        "teacher_trust"
+      ],
+      "observed": [
+        "Topic is geometry",
+        "Student answered correctly",
+        "No hint burden",
+        "No retry burden"
+      ],
+      "inferred": {
+        "diagnosis": null,
+        "confidence": "abstained",
+        "abstain_reason": "evidence is too weak or too mixed for a confident diagnosis"
+      },
+      "recommended_action": null,
+      "teacher_review_framing": "This is a trust feature: the system avoids fabricating intervention when the observation layer does not justify one.",
+      "unsafe_overclaim": "No diagnosis means the student fully mastered the topic or needs no future review at all.",
+      "expected_artifacts": [
+        "docs/contest/DIAGNOSIS_CASE_STUDIES.md",
+        "docs/contest/CASEPACK_AND_EVALUATION_DATASET.md"
+      ]
+    },
+    {
+      "id": "teacher-action-follow-through",
+      "category": "teacher_execution_loop",
+      "title": "Teacher converts a recommendation into a bounded remediation step",
+      "objective": "Show that the product now supports the path from recommendation to structured teacher action and intervention assignment.",
+      "product_surface": [
+        "teacher_dashboard",
+        "teacher_actions",
+        "intervention_assignments"
+      ],
+      "observed": [
+        "A student repeatedly misses one prerequisite concept",
+        "The dashboard recommends reteaching that prerequisite",
+        "The teacher creates a structured action and later turns it into an intervention assignment"
+      ],
+      "inferred": {
+        "diagnosis": "concept_gap",
+        "confidence": "medium",
+        "abstain_reason": null
+      },
+      "recommended_action": "reteach_concept",
+      "teacher_review_framing": "The system helps the teacher operationalize the insight, but the teacher remains responsible for confirming and executing the intervention.",
+      "unsafe_overclaim": "Creating a teacher action proves the intervention was effective or completed successfully.",
+      "expected_artifacts": [
+        "docs/contest/README.md",
+        "docs/contest/SUBMISSION_PACKAGE.md"
+      ]
+    },
+    {
+      "id": "trust-trace-bounded-rationale",
+      "category": "trust_trace",
+      "title": "Bounded reason trace supports trust without chain-of-thought exposure",
+      "objective": "Show that the system exposes provenance and teacher-review framing while keeping rationale bounded and audit-friendly.",
+      "product_surface": [
+        "teacher_dashboard",
+        "agents_authoring",
+        "trust_surfaces"
+      ],
+      "observed": [
+        "The insight payload includes observed evidence facts",
+        "The dashboard shows diagnosis policy and teacher-review-required framing",
+        "The /agents authoring surface shows runtime policy audit slices and sources"
+      ],
+      "inferred": {
+        "diagnosis": "rule_assisted_teacher_review",
+        "confidence": "bounded",
+        "abstain_reason": null
+      },
+      "recommended_action": "inspect_reason_trace_before_reteach",
+      "teacher_review_framing": "These traces are bounded trust surfaces for review and debugging, not unrestricted model reasoning dumps.",
+      "unsafe_overclaim": "The product now exposes full internal chain-of-thought or proves universal explainability across all paths.",
+      "expected_artifacts": [
+        "docs/contest/README.md",
+        "docs/contest/VALIDATION_REPORT.md",
+        "docs/contest/SUBMISSION_PACKAGE.md"
+      ]
+    }
+  ]
+}

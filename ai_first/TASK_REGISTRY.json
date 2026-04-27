@@ -85,8 +85,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -95,9 +97,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 2,
+      "count": 1,
       "tasks": [
-        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
         "F124_EVIDENCE_AUTOMATION_REFRESH"
       ]
     }
@@ -1792,10 +1793,10 @@
       "dependencies": [
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "Provides stronger repeatable fixtures for later automation and model-quality work."
+      "notes": "Active on branch pod-b/casepack-eval-dataset in worktree .worktrees/pod-b-casepack-eval-dataset. The branch now contains a reusable machine-readable validation casepack, contest-facing guide, and bounded schema test; open it as a Draft PR and keep runtime product scope unchanged."
     },
     {
       "id": "F124_EVIDENCE_AUTOMATION_REFRESH",
