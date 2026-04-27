@@ -583,6 +583,7 @@ async def get_dashboard_insights(
     store = get_sqlite_session_store()
     sessions = await store.list_sessions(limit=limit, offset=0)
     student_payloads: list[dict[str, Any]] = []
+    observations_by_student: dict[str, list[dict[str, Any]]] = {}
 
     for session in sessions:
         activity = await _activity_with_review(store, session)
@@ -622,6 +623,7 @@ async def get_dashboard_insights(
                 student_state=state,
             )
         )
+        observations_by_student[student_id] = await store.list_observations(student_id)
 
     teacher_actions = list_teacher_actions(store)
     intervention_assignments = list_intervention_assignments(store)
@@ -637,6 +639,7 @@ async def get_dashboard_insights(
         recommendation_feedback=recommendation_feedback,
         teacher_overrides=teacher_overrides,
         diagnosis_feedback=diagnosis_feedback,
+        observations_by_student=observations_by_student,
     )
 
 
