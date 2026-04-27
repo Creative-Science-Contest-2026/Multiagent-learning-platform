@@ -2,6 +2,8 @@
 
 Use these cases when a reviewer asks how the diagnosis layer works or how much trust to place in it.
 
+Structured source-of-truth: the reusable machine-readable pack now lives at [`../../ai_first/evidence/casepack.json`](../../ai_first/evidence/casepack.json). This document remains the judge-facing prose layer for a subset of those cases.
+
 ## Framing
 
 - The diagnosis layer is `rule_assisted_teacher_review`, not a benchmarked autonomous assessor.

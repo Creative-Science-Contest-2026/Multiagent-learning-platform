@@ -34,6 +34,7 @@ The current product can be described as `agent-native` today and `multi-agent by
 - [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md): local validation commands, results, limitations, and remaining capture work.
 - [`PILOT_STATUS.md`](./PILOT_STATUS.md): explicit status of pilot or external-feedback evidence.
 - [`DIAGNOSIS_CASE_STUDIES.md`](./DIAGNOSIS_CASE_STUDIES.md): judge-facing diagnosis examples and teacher-review framing.
+- [`CASEPACK_AND_EVALUATION_DATASET.md`](./CASEPACK_AND_EVALUATION_DATASET.md): structured validation casepack guide backed by `ai_first/evidence/casepack.json`.
 - [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md): smoke lane used to verify the MVP path before any evidence refresh.
 - [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md): demo-safe data inventory and reset runbook before smoke/evidence refresh.
 
@@ -47,6 +48,7 @@ The current product can be described as `agent-native` today and `multi-agent by
 - Hybrid `/agents` screenshots are current, and the codebase now also carries automated bounded runtime-binding proof for the unified `chat`, `deep_question`, and `deep_solve` turn paths. Keep the claim narrower than universal entry-point coverage.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 - No pilot evidence is currently bundled; the strongest current proof is structured walkthrough validation plus smoke-backed and screenshot-backed artifacts.
+- Judge-safe validation examples now have both prose case studies and a reusable machine-readable casepack for future evaluation reuse.
 
 ## Judge-Friendly Use Cases
 
