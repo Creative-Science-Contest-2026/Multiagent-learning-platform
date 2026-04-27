@@ -9,6 +9,11 @@ from pydantic import BaseModel
 
 from deeptutor.services.assessment import build_assessment_analysis
 from deeptutor.services.evidence.diagnosis import build_student_diagnosis
+from deeptutor.services.evidence.diagnosis_feedback import (
+    create_diagnosis_feedback,
+    list_diagnosis_feedback,
+    update_diagnosis_feedback,
+)
 from deeptutor.services.evidence.extractor import extract_observations_from_review
 from deeptutor.services.evidence.teacher_actions import (
     create_teacher_action,
@@ -56,6 +61,19 @@ class RecommendationAckCreateRequest(BaseModel):
 
 class RecommendationAckUpdateRequest(BaseModel):
     status: str
+    teacher_note: str | None = None
+
+
+class DiagnosisFeedbackCreateRequest(BaseModel):
+    student_id: str
+    source_topic: str
+    source_diagnosis_type: str
+    feedback_label: str
+    teacher_note: str = ""
+
+
+class DiagnosisFeedbackUpdateRequest(BaseModel):
+    feedback_label: str
     teacher_note: str | None = None
 
 
@@ -570,12 +588,51 @@ async def get_dashboard_insights(
     teacher_actions = list_teacher_actions(store)
     intervention_assignments = list_intervention_assignments(store)
     recommendation_acks = list_recommendation_acks(store)
+    diagnosis_feedback = list_diagnosis_feedback(store)
     return build_teacher_insights_payload(
         student_payloads=student_payloads,
         teacher_actions=teacher_actions,
         intervention_assignments=intervention_assignments,
         recommendation_acks=recommendation_acks,
+        diagnosis_feedback=diagnosis_feedback,
     )
+
+
+@router.post("/diagnosis-feedback")
+async def create_dashboard_diagnosis_feedback(
+    payload: DiagnosisFeedbackCreateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return create_diagnosis_feedback(
+            store,
+            student_id=payload.student_id,
+            source_topic=payload.source_topic,
+            source_diagnosis_type=payload.source_diagnosis_type,
+            feedback_label=payload.feedback_label,
+            teacher_note=payload.teacher_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.patch("/diagnosis-feedback/{feedback_id}")
+async def update_dashboard_diagnosis_feedback(
+    feedback_id: str,
+    payload: DiagnosisFeedbackUpdateRequest,
+) -> dict[str, Any]:
+    store = get_sqlite_session_store()
+    try:
+        return update_diagnosis_feedback(
+            store,
+            feedback_id,
+            feedback_label=payload.feedback_label,
+            teacher_note=payload.teacher_note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="diagnosis feedback not found") from exc
 
 
 @router.post("/recommendation-acks")

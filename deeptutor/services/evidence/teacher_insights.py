@@ -14,6 +14,25 @@ def _top_inferred(payload: dict[str, Any]) -> dict[str, Any] | None:
     return inferred[0]
 
 
+def _latest_diagnosis_feedback(
+    *,
+    student_id: str,
+    source_topic: str,
+    source_diagnosis_type: str,
+    diagnosis_feedback: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    return next(
+        (
+            row
+            for row in diagnosis_feedback
+            if row.get("student_id") == student_id
+            and row.get("source_topic") == source_topic
+            and row.get("source_diagnosis_type") == source_diagnosis_type
+        ),
+        None,
+    )
+
+
 def _top_action(payload: dict[str, Any]) -> dict[str, Any] | None:
     actions = payload.get("recommended_actions") or []
     if not actions:
@@ -68,16 +87,29 @@ def build_teacher_insights_payload(
     teacher_actions: list[dict[str, Any]] | None = None,
     intervention_assignments: list[dict[str, Any]] | None = None,
     recommendation_acks: list[dict[str, Any]] | None = None,
+    diagnosis_feedback: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     teacher_actions = teacher_actions or []
     intervention_assignments = intervention_assignments or []
     recommendation_acks = recommendation_acks or []
+    diagnosis_feedback = diagnosis_feedback or []
     grouped: dict[tuple[str, str, str], list[tuple[str, int]]] = defaultdict(list)
     students: list[dict[str, Any]] = []
     for payload in student_payloads:
         row = dict(payload)
         top_action = _top_action(payload)
         student_id = str(payload.get("student_id") or "unknown")
+        top_inferred = _top_inferred(payload)
+        row["diagnosis_feedback"] = (
+            _latest_diagnosis_feedback(
+                student_id=student_id,
+                source_topic=str(top_inferred.get("topic") or "general"),
+                source_diagnosis_type=str(top_inferred.get("diagnosis_type") or "low_confidence"),
+                diagnosis_feedback=diagnosis_feedback,
+            )
+            if top_inferred
+            else None
+        )
         row["recommendation_ack"] = (
             _latest_recommendation_ack(
                 target_type="student",
@@ -94,7 +126,7 @@ def build_teacher_insights_payload(
             intervention_assignments,
         )
         students.append(row)
-        inferred = _top_inferred(payload)
+        inferred = top_inferred
         action = top_action
         if not inferred or not action:
             continue

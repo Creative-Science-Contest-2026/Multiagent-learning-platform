@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { DiagnosisFeedbackComposer } from "@/components/dashboard/DiagnosisFeedbackComposer";
 import { InterventionAssignmentComposer } from "@/components/dashboard/InterventionAssignmentComposer";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
 import { RecommendationAckComposer } from "@/components/dashboard/RecommendationAckComposer";
 import { TeacherActionComposer } from "@/components/dashboard/TeacherActionComposer";
 import type {
+  DiagnosisFeedbackRecord,
   InterventionAssignmentRecord,
   RecommendationAckRecord,
   TeacherActionRecord,
@@ -29,6 +31,9 @@ export function StudentInsightCard({
 }) {
   const diagnosis = student.inferred[0];
   const recommendation = student.recommended_actions[0];
+  const [diagnosisFeedback, setDiagnosisFeedback] = useState<DiagnosisFeedbackRecord | null>(
+    student.diagnosis_feedback ?? null,
+  );
   const [recommendationAck, setRecommendationAck] = useState<RecommendationAckRecord | null>(
     student.recommendation_ack ?? null,
   );
@@ -94,6 +99,27 @@ export function StudentInsightCard({
                   {fact}
                 </span>
               ))}
+            </div>
+          ) : null}
+          {diagnosis ? (
+            <div className="mt-3">
+              <DiagnosisFeedbackComposer
+                triggerLabel={diagnosisFeedback ? t("Update diagnosis feedback") : t("Review diagnosis")}
+                defaultPayload={{
+                  student_id: student.student_id,
+                  source_topic: diagnosis.topic,
+                  source_diagnosis_type: diagnosis.diagnosis_type,
+                }}
+                existingFeedback={diagnosisFeedback}
+                onSaved={setDiagnosisFeedback}
+                t={t}
+              />
+            </div>
+          ) : null}
+          {diagnosisFeedback ? (
+            <div className="mt-3 rounded-2xl border border-amber-200 bg-white/80 p-3 text-[12px] text-amber-900/80">
+              <div className="font-medium">{t("Diagnosis feedback: {{label}}", { label: diagnosisFeedback.feedback_label })}</div>
+              {diagnosisFeedback.teacher_note ? <div className="mt-1">{diagnosisFeedback.teacher_note}</div> : null}
             </div>
           ) : null}
         </section>

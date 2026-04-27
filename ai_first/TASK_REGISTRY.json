@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-27T16:25:00Z",
+    "last_updated": "2026-04-27T16:41:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 56,
+      "count": 57,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -65,7 +65,8 @@
         "F114_SPEC_VERSION_PINNING_PER_SESSION",
         "F115_RUNTIME_POLICY_AUDIT_TRACE",
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
-        "F116_STUDENT_MODEL_ENRICHMENT"
+        "F116_STUDENT_MODEL_ENRICHMENT",
+        "F108_DIAGNOSIS_FEEDBACK_CAPTURE"
       ]
     },
     "in_progress": {
@@ -82,13 +83,12 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 17,
+      "count": 16,
       "tasks": [
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
         "F106_STUDENT_INSIGHT_TIMELINE",
         "F107_INTERVENTION_HISTORY_VIEW",
-        "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
         "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
@@ -1328,7 +1328,7 @@
       "dependencies": [
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-insight",
       "notes": "Benefits from class roster work later, but can start as a queue over current student/group signals."
@@ -1405,10 +1405,10 @@
       "dependencies": [
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Keep the first slice simple: structured feedback labels plus optional teacher note."
+      "notes": "Merged to main through PR #179 on 2026-04-27. Structured per-student diagnosis feedback with bounded labels and optional teacher note is now live on the dashboard."
     },
     {
       "id": "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
@@ -1694,7 +1694,7 @@
       "status": "not-started",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "Active on branch pod-b/abstain-weak-evidence-refinement. The implementation should centralize weak-evidence gating in the evidence layer and suppress recommendation payloads when signals are thin, stale, or mixed."
+      "notes": "Active on branch pod-b/abstain-weak-evidence-refinement. The lane now adds a shared evidence-sufficiency gate plus timestamp-aware stale-evidence handling so diagnosis and dashboard recommendation payloads suppress thin, stale, and mixed signals without widening dashboard UX scope."
     },
     {
       "id": "F120_INTERVENTION_EFFECTIVENESS_TRACKING",

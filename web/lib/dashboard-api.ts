@@ -254,6 +254,7 @@ export interface TeacherInsightStudent {
     topic: string;
     evidence: string[];
   }>;
+  diagnosis_feedback?: DiagnosisFeedbackRecord | null;
   recommended_actions: Array<{
     action_id: string;
     action_type: string;
@@ -264,6 +265,19 @@ export interface TeacherInsightStudent {
   recommendation_ack?: RecommendationAckRecord | null;
   teacher_actions?: TeacherActionRecord[];
   intervention_assignments?: InterventionAssignmentRecord[];
+}
+
+export type DiagnosisFeedbackLabel = "helpful" | "wrong" | "incomplete";
+
+export interface DiagnosisFeedbackRecord {
+  id: string;
+  student_id: string;
+  source_topic: string;
+  source_diagnosis_type: string;
+  feedback_label: DiagnosisFeedbackLabel;
+  teacher_note: string;
+  created_at: number;
+  updated_at: number;
 }
 
 export type RecommendationAckStatus = "accepted" | "deferred" | "dismissed" | "completed";
@@ -365,6 +379,14 @@ export interface CreateRecommendationAckRequest {
   teacher_note?: string;
 }
 
+export interface CreateDiagnosisFeedbackRequest {
+  student_id: string;
+  source_topic: string;
+  source_diagnosis_type: string;
+  feedback_label: DiagnosisFeedbackLabel;
+  teacher_note?: string;
+}
+
 export interface CreateInterventionAssignmentRequest {
   teacher_action_id: string;
   assignment_type: InterventionAssignmentType;
@@ -412,6 +434,29 @@ export async function createRecommendationAck(
     body: JSON.stringify(payload),
   });
   return expectJson<RecommendationAckRecord>(response);
+}
+
+export async function createDiagnosisFeedback(
+  payload: CreateDiagnosisFeedbackRequest,
+): Promise<DiagnosisFeedbackRecord> {
+  const response = await fetch(apiUrl("/api/v1/dashboard/diagnosis-feedback"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<DiagnosisFeedbackRecord>(response);
+}
+
+export async function updateDiagnosisFeedback(
+  feedbackId: string,
+  payload: { feedback_label: DiagnosisFeedbackLabel; teacher_note?: string },
+): Promise<DiagnosisFeedbackRecord> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/diagnosis-feedback/${feedbackId}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<DiagnosisFeedbackRecord>(response);
 }
 
 export async function updateRecommendationAck(

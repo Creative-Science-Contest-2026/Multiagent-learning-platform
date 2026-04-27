@@ -851,6 +851,155 @@ async def test_dashboard_recommendation_ack_status_update_round_trip(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_diagnosis_feedback_create_round_trip(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {
+            "student_id": "student-a",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        student = insights["students"][0]
+        diagnosis = student["inferred"][0]
+
+        create_resp = client.post(
+            "/api/v1/dashboard/diagnosis-feedback",
+            json={
+                "student_id": "student-a",
+                "source_topic": diagnosis["topic"],
+                "source_diagnosis_type": diagnosis["diagnosis_type"],
+                "feedback_label": "helpful",
+                "teacher_note": "This matches what I saw in guided review.",
+            },
+        )
+
+        assert create_resp.status_code == 200
+        created = create_resp.json()
+        assert created["student_id"] == "student-a"
+        assert created["feedback_label"] == "helpful"
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_student = next(row for row in refreshed["students"] if row["student_id"] == "student-a")
+        assert refreshed_student["diagnosis_feedback"]["source_diagnosis_type"] == diagnosis["diagnosis_type"]
+        assert refreshed_student["diagnosis_feedback"]["teacher_note"] == "This matches what I saw in guided review."
+
+
+@pytest.mark.asyncio
+async def test_dashboard_diagnosis_feedback_status_update_round_trip(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {"student_id": "student-a", "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        diagnosis = insights["students"][0]["inferred"][0]
+        created = client.post(
+            "/api/v1/dashboard/diagnosis-feedback",
+            json={
+                "student_id": "student-a",
+                "source_topic": diagnosis["topic"],
+                "source_diagnosis_type": diagnosis["diagnosis_type"],
+                "feedback_label": "helpful",
+                "teacher_note": "Initial read looks plausible.",
+            },
+        ).json()
+
+        update_resp = client.patch(
+            f"/api/v1/dashboard/diagnosis-feedback/{created['id']}",
+            json={"feedback_label": "incomplete", "teacher_note": "Needs more context than one quiz attempt."},
+        )
+
+        assert update_resp.status_code == 200
+        assert update_resp.json()["feedback_label"] == "incomplete"
+        assert update_resp.json()["teacher_note"] == "Needs more context than one quiz attempt."
+
+
+@pytest.mark.asyncio
+async def test_dashboard_diagnosis_feedback_summary_attaches_to_student_payload(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {"student_id": "student-a", "knowledge_bases": ["fractions-pack"], "capability": "deep_question"},
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n1. [q1] Q: fractions subtraction -> Answered: 1/5 (Incorrect, correct: 1/4)\nScore: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        insights = client.get("/api/v1/dashboard/insights").json()
+        diagnosis = insights["students"][0]["inferred"][0]
+        client.post(
+            "/api/v1/dashboard/diagnosis-feedback",
+            json={
+                "student_id": "student-a",
+                "source_topic": diagnosis["topic"],
+                "source_diagnosis_type": diagnosis["diagnosis_type"],
+                "feedback_label": "wrong",
+                "teacher_note": "The issue looked more like a careless sign error.",
+            },
+        )
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_student = next(row for row in refreshed["students"] if row["student_id"] == "student-a")
+        assert refreshed_student["diagnosis_feedback"]["feedback_label"] == "wrong"
+        assert refreshed_student["diagnosis_feedback"]["source_topic"] == diagnosis["topic"]
+
+
+@pytest.mark.asyncio
 async def test_dashboard_teacher_action_status_update_round_trip(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

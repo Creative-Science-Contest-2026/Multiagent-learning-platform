@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { DiagnosisFeedbackComposer } from "@/components/dashboard/DiagnosisFeedbackComposer";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
 import {
+  type DiagnosisFeedbackRecord,
   type InterventionAssignmentRecord,
   type InterventionAssignmentStatus,
   type RecommendationAckRecord,
@@ -26,6 +28,9 @@ export function StudentInsightDetail({
   student: TeacherInsightStudent | null;
   t: (value: string, options?: Record<string, string | number>) => string;
 }) {
+  const [diagnosisFeedback, setDiagnosisFeedback] = useState<DiagnosisFeedbackRecord | null>(
+    student?.diagnosis_feedback ?? null,
+  );
   const [teacherActions, setTeacherActions] = useState<TeacherActionRecord[]>(student?.teacher_actions ?? []);
   const [recommendationAck] = useState<RecommendationAckRecord | null>(student?.recommendation_ack ?? null);
   const [interventionAssignments, setInterventionAssignments] = useState<InterventionAssignmentRecord[]>(
@@ -93,6 +98,35 @@ export function StudentInsightDetail({
                 {t("No structured rationale was provided in the payload.")}
               </div>
             )}
+            {diagnosis ? (
+              <div className="mt-4">
+                <DiagnosisFeedbackComposer
+                  triggerLabel={diagnosisFeedback ? t("Update diagnosis feedback") : t("Review diagnosis")}
+                  defaultPayload={{
+                    student_id: student.student_id,
+                    source_topic: diagnosis.topic,
+                    source_diagnosis_type: diagnosis.diagnosis_type,
+                  }}
+                  existingFeedback={diagnosisFeedback}
+                  onSaved={setDiagnosisFeedback}
+                  t={t}
+                />
+              </div>
+            ) : null}
+            {diagnosisFeedback ? (
+              <div className="mt-4 rounded-2xl border border-amber-200 bg-white/80 p-3 text-[12px] text-amber-900/80">
+                <div className="font-medium">
+                  {t("Diagnosis feedback: {{label}}", { label: diagnosisFeedback.feedback_label })}
+                </div>
+                {diagnosisFeedback.teacher_note ? (
+                  <div className="mt-1 text-[12px] text-amber-900/80">{diagnosisFeedback.teacher_note}</div>
+                ) : (
+                  <div className="mt-1 text-[12px] text-amber-900/70">
+                    {t("No teacher note was recorded for this diagnosis feedback.")}
+                  </div>
+                )}
+              </div>
+            ) : null}
           </div>
         </section>
       </div>
