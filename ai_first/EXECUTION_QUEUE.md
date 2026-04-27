@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest feature-risk merge: `#170 [F102] feat(dashboard): add intervention assignment flow`
+- Latest feature-risk merge: `#175 [F103] F103: add recommendation acknowledgement flow`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Lane 3 (`2026-04-26-lane-3-observation-student-state`) merged to `main` through PR `#140`.
@@ -38,9 +38,9 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Next recommended task
 
-- After `F101`, `F102`, and `F113`, the preferred next pair from the future backlog packet is:
-  - Session A: `F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS` or `F107_INTERVENTION_HISTORY_VIEW`
-  - Session B: `F114_SPEC_VERSION_PINNING_PER_SESSION` or `F116_STUDENT_MODEL_ENRICHMENT`
+- After `F101`, `F102`, `F103`, `F113`, `F114`, and `F115`, the preferred next pair from the future backlog packet is:
+  - Session A: `F107_INTERVENTION_HISTORY_VIEW` or `F108_DIAGNOSIS_FEEDBACK_CAPTURE`
+  - Session B: `F116_STUDENT_MODEL_ENRICHMENT` or `F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT`
 - Any new AI task should start from a fresh branch/worktree off `main`, not from a merged lane branch.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
@@ -56,7 +56,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None currently. The next AI-owned work is the post-contest future backlog, but no session is active by default after the `F101`, `F102`, and `F113` merges.
+- None currently. The next AI-owned work is the post-contest future backlog, but no session is active by default after the `F101`, `F102`, `F103`, `F113`, `F114`, and `F115` merges.
 
 ## Human-review blockers
 
