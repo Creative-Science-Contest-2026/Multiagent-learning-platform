@@ -2,7 +2,7 @@
 
 - Task ID: `F118_MISCONCEPTION_TAXONOMY_EXPANSION`
 - Commit tag: `F118`
-- Status: `Planning`
+- Status: `Draft PR Open`
 - Branch recommendation: `pod-b/misconception-taxonomy-expansion`
 
 ## Goal
