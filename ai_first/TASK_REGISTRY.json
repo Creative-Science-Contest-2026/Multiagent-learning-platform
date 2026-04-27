@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T06:20:00Z",
+    "last_updated": "2026-04-28T07:05:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -85,8 +85,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -95,9 +97,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 2,
+      "count": 1,
       "tasks": [
-        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
         "F124_EVIDENCE_AUTOMATION_REFRESH"
       ]
     }
@@ -1792,10 +1793,10 @@
       "dependencies": [
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "Provides stronger repeatable fixtures for later automation and model-quality work."
+      "notes": "Active on branch pod-b/casepack-evaluation-dataset-expansion in worktree .worktrees/pod-b-casepack-evaluation-dataset-expansion. The slice should package current diagnosis/evidence examples into a reusable validation pack without broadening into benchmark claims."
     },
     {
       "id": "F124_EVIDENCE_AUTOMATION_REFRESH",
