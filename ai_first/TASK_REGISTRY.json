@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 71,
+      "count": 72,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -80,15 +80,14 @@
         "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
         "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
-        "F122_PILOT_FEEDBACK_INGESTION_PATH"
+        "F122_PILOT_FEEDBACK_INGESTION_PATH",
+        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1793,10 +1792,10 @@
       "dependencies": [
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
-      "notes": "Active on branch pod-b/casepack-eval-dataset in worktree .worktrees/pod-b-casepack-eval-dataset. The branch now contains a reusable machine-readable validation casepack, contest-facing guide, and bounded schema test; open it as a Draft PR and keep runtime product scope unchanged."
+      "notes": "Merged to main through PR #203 on 2026-04-28. The repository now has a reusable machine-readable validation casepack, contest-facing guide, and bounded schema test that future automation work can reuse without widening runtime product scope."
     },
     {
       "id": "F124_EVIDENCE_AUTOMATION_REFRESH",
