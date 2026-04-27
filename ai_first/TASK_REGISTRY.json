@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 71,
+      "count": 72,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -80,7 +80,8 @@
         "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
         "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
-        "F122_PILOT_FEEDBACK_INGESTION_PATH"
+        "F122_PILOT_FEEDBACK_INGESTION_PATH",
+        "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION"
       ]
     },
     "in_progress": {
@@ -95,8 +96,9 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 0,
+      "count": 1,
       "tasks": [
+        "F124_EVIDENCE_AUTOMATION_REFRESH"
       ]
     }
   },
