@@ -115,16 +115,30 @@ class ContextBuilder:
         support = str(state.get("support_level") or "independent")
         trend = str(state.get("confidence_trend") or "flat")
         recency = state.get("recency_summary") if isinstance(state.get("recency_summary"), dict) else {}
+        mastery = state.get("mastery_signals") if isinstance(state.get("mastery_signals"), dict) else {}
+        support_signals = state.get("support_signals") if isinstance(state.get("support_signals"), dict) else {}
+        misconception = (
+            state.get("misconception_signals")
+            if isinstance(state.get("misconception_signals"), dict)
+            else {}
+        )
         bucket_counts = recency.get("bucket_counts") if isinstance(recency, dict) else {}
         last_24h = int((bucket_counts or {}).get("last_24h", 0))
         last_7d = int((bucket_counts or {}).get("last_7d", 0))
         recent_incorrect = int((recency or {}).get("recent_incorrect", 0))
+        at_risk = ", ".join(mastery.get("at_risk_topics") or []) or "none"
+        stable = ", ".join(mastery.get("stable_topics") or []) or "none"
+        support_burden = str(support_signals.get("recent_support_burden") or "steady")
+        persistent = ", ".join(misconception.get("persistent_topics") or []) or "none"
         return (
             "Student state snapshot:\n"
             f"- repeated_mistakes: {repeated}\n"
             f"- support_level: {support}\n"
             f"- confidence_trend: {trend}\n"
-            f"- recency_summary: last_24h={last_24h}, last_7d={last_7d}, recent_incorrect={recent_incorrect}"
+            f"- recency_summary: last_24h={last_24h}, last_7d={last_7d}, recent_incorrect={recent_incorrect}\n"
+            f"- mastery_signals: at_risk={at_risk}, stable={stable}\n"
+            f"- support_signals: recent_support_burden={support_burden}\n"
+            f"- misconception_signals: persistent_topics={persistent}"
         )
 
     def _build_history(

@@ -69,8 +69,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F116_STUDENT_MODEL_ENRICHMENT"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -79,7 +81,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 18,
+      "count": 17,
       "tasks": [
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
@@ -90,7 +92,6 @@
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
-        "F116_STUDENT_MODEL_ENRICHMENT",
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
         "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
         "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
@@ -1611,10 +1612,10 @@
       "dependencies": [
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "This should remain conservative and evidence-backed rather than turning into an opaque mastery score engine."
+      "notes": "Active on branch pod-b/student-model-enrichment. This remains conservative and evidence-backed by deriving additive mastery, support, and misconception signals from observations rather than inventing opaque scores."
     },
     {
       "id": "F117_CONFIDENCE_CALIBRATION_REFINEMENT",

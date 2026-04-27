@@ -171,6 +171,9 @@ class SQLiteSessionStore:
                     support_level TEXT NOT NULL DEFAULT 'independent',
                     confidence_trend TEXT NOT NULL DEFAULT 'flat',
                     recency_summary_json TEXT NOT NULL DEFAULT '{}',
+                    mastery_signals_json TEXT NOT NULL DEFAULT '{}',
+                    support_signals_json TEXT NOT NULL DEFAULT '{}',
+                    misconception_signals_json TEXT NOT NULL DEFAULT '{}',
                     updated_at REAL NOT NULL
                 );
                 """
@@ -186,6 +189,18 @@ class SQLiteSessionStore:
             if "recency_summary_json" not in student_state_columns:
                 conn.execute(
                     "ALTER TABLE student_states ADD COLUMN recency_summary_json TEXT NOT NULL DEFAULT '{}'"
+                )
+            if "mastery_signals_json" not in student_state_columns:
+                conn.execute(
+                    "ALTER TABLE student_states ADD COLUMN mastery_signals_json TEXT NOT NULL DEFAULT '{}'"
+                )
+            if "support_signals_json" not in student_state_columns:
+                conn.execute(
+                    "ALTER TABLE student_states ADD COLUMN support_signals_json TEXT NOT NULL DEFAULT '{}'"
+                )
+            if "misconception_signals_json" not in student_state_columns:
+                conn.execute(
+                    "ALTER TABLE student_states ADD COLUMN misconception_signals_json TEXT NOT NULL DEFAULT '{}'"
                 )
             conn.commit()
 
@@ -540,13 +555,17 @@ class SQLiteSessionStore:
             conn.execute(
                 """
                 INSERT INTO student_states (
-                    student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?)
+                    student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json,
+                    mastery_signals_json, support_signals_json, misconception_signals_json, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(student_id) DO UPDATE SET
                     repeated_mistakes_json = excluded.repeated_mistakes_json,
                     support_level = excluded.support_level,
                     confidence_trend = excluded.confidence_trend,
                     recency_summary_json = excluded.recency_summary_json,
+                    mastery_signals_json = excluded.mastery_signals_json,
+                    support_signals_json = excluded.support_signals_json,
+                    misconception_signals_json = excluded.misconception_signals_json,
                     updated_at = excluded.updated_at
                 """,
                 (
@@ -555,6 +574,9 @@ class SQLiteSessionStore:
                     state.get("support_level", "independent"),
                     state.get("confidence_trend", "flat"),
                     _json_dumps(state.get("recency_summary", {})),
+                    _json_dumps(state.get("mastery_signals", {})),
+                    _json_dumps(state.get("support_signals", {})),
+                    _json_dumps(state.get("misconception_signals", {})),
                     now,
                 ),
             )
@@ -567,7 +589,8 @@ class SQLiteSessionStore:
         with self._connect() as conn:
             row = conn.execute(
                 """
-                SELECT student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json, updated_at
+                SELECT student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json,
+                       mastery_signals_json, support_signals_json, misconception_signals_json, updated_at
                 FROM student_states
                 WHERE student_id = ?
                 """,
@@ -581,6 +604,9 @@ class SQLiteSessionStore:
             "support_level": row["support_level"],
             "confidence_trend": row["confidence_trend"],
             "recency_summary": _json_loads(row["recency_summary_json"], {}),
+            "mastery_signals": _json_loads(row["mastery_signals_json"], {}),
+            "support_signals": _json_loads(row["support_signals_json"], {}),
+            "misconception_signals": _json_loads(row["misconception_signals_json"], {}),
             "updated_at": row["updated_at"],
         }
 
@@ -635,7 +661,7 @@ class SQLiteSessionStore:
         with self._connect() as conn:
             rows = conn.execute(
                 """
-                SELECT topic, is_correct, hint_count, retry_count, created_at
+                SELECT topic, is_correct, hint_count, retry_count, dominant_error, created_at
                 FROM observations
                 WHERE student_id = ?
                 ORDER BY created_at DESC
@@ -648,6 +674,11 @@ class SQLiteSessionStore:
 
         now = time.time()
         weighted_topic_misses: Counter[str] = Counter()
+        topic_attempts: Counter[str] = Counter()
+        topic_correct: Counter[str] = Counter()
+        heavy_hint_topics: Counter[str] = Counter()
+        retry_heavy_topics: Counter[str] = Counter()
+        dominant_errors: Counter[tuple[str, str]] = Counter()
         recent_rows = []
         recency_counter: Counter[str] = Counter()
         for row in rows:
@@ -655,15 +686,25 @@ class SQLiteSessionStore:
             is_correct = bool(row["is_correct"])
             hint_count = int(row["hint_count"] or 0)
             retry_count = int(row["retry_count"] or 0)
+            dominant_error = str(row["dominant_error"] or "").strip()
             created_at = float(row["created_at"] or now)
             age_seconds = max(0.0, now - created_at)
             recency_counter[self._recency_bucket(age_seconds)] += 1
+            topic_attempts[topic] += 1
+            if is_correct:
+                topic_correct[topic] += 1
 
             if not is_correct:
                 half_life_seconds = 7 * 24 * 60 * 60
                 weight = 2 ** (-age_seconds / half_life_seconds)
                 weighted_topic_misses[topic] += weight
-            recent_rows.append((is_correct, hint_count, retry_count))
+            if hint_count >= 2:
+                heavy_hint_topics[topic] += 1
+            if retry_count >= 2:
+                retry_heavy_topics[topic] += 1
+            if dominant_error:
+                dominant_errors[(topic, dominant_error)] += 1
+            recent_rows.append((topic, is_correct, hint_count, retry_count))
 
         repeated_mistakes = [
             topic
@@ -675,8 +716,8 @@ class SQLiteSessionStore:
         ]
 
         recent_slice = recent_rows[: min(8, len(recent_rows))]
-        incorrect_recent = sum(1 for item in recent_slice if not item[0])
-        heavy_support_recent = sum(1 for item in recent_slice if item[1] >= 2 or item[2] >= 2)
+        incorrect_recent = sum(1 for item in recent_slice if not item[1])
+        heavy_support_recent = sum(1 for item in recent_slice if item[2] >= 2 or item[3] >= 2)
         if incorrect_recent >= 3 and heavy_support_recent >= 2:
             support_level = "intensive"
         elif incorrect_recent >= 1 or heavy_support_recent >= 1:
@@ -686,7 +727,7 @@ class SQLiteSessionStore:
 
         chronological = list(reversed(recent_slice))
         perf_scores: list[float] = []
-        for is_correct, hint_count, retry_count in chronological:
+        for _topic, is_correct, hint_count, retry_count in chronological:
             base = 1.0 if is_correct else -1.0
             base -= 0.15 * min(3, hint_count)
             base -= 0.1 * min(3, retry_count)
@@ -718,12 +759,58 @@ class SQLiteSessionStore:
             },
         }
 
+        at_risk_topics = [
+            topic
+            for topic, _score in sorted(weighted_topic_misses.items(), key=lambda item: item[1], reverse=True)
+            if weighted_topic_misses[topic] >= 0.5
+        ][:3]
+        stable_topics = [
+            topic
+            for topic, attempts in topic_attempts.items()
+            if attempts >= 2 and topic_correct[topic] == attempts
+        ][:3]
+        emerging_topics = [
+            topic
+            for topic in repeated_mistakes
+            if topic not in at_risk_topics
+        ][:3]
+
+        if heavy_support_recent >= 3:
+            recent_support_burden = "high"
+        elif heavy_support_recent >= 1:
+            recent_support_burden = "elevated"
+        else:
+            recent_support_burden = "steady"
+
+        dominant_error_by_topic: dict[str, str] = {}
+        for (topic, error), _count in dominant_errors.most_common():
+            dominant_error_by_topic.setdefault(topic, error)
+        persistent_topics = [
+            topic
+            for topic in repeated_mistakes
+            if topic in dominant_error_by_topic or topic in at_risk_topics
+        ]
+
         return {
             "student_id": student_id,
             "repeated_mistakes": repeated_mistakes,
             "support_level": support_level,
             "confidence_trend": confidence_trend,
             "recency_summary": recency_summary,
+            "mastery_signals": {
+                "emerging_topics": emerging_topics,
+                "stable_topics": stable_topics,
+                "at_risk_topics": at_risk_topics,
+            },
+            "support_signals": {
+                "heavy_hint_topics": list(heavy_hint_topics.keys())[:3],
+                "retry_heavy_topics": list(retry_heavy_topics.keys())[:3],
+                "recent_support_burden": recent_support_burden,
+            },
+            "misconception_signals": {
+                "dominant_errors": dominant_error_by_topic,
+                "persistent_topics": persistent_topics[:3],
+            },
         }
 
     async def build_student_state_rollup(self, student_id: str, limit: int = 24) -> dict[str, Any] | None:

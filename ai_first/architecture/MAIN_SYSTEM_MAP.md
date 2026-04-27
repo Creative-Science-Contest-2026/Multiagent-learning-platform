@@ -80,8 +80,10 @@ flowchart TD
   AssessmentRecommendAPI --> RecommendEngine["Assessment Recommendation Engine"]
   RecommendEngine --> AssessmentSignals["Weak topics + score trend + KB context"]
   AssessmentDiagnosisAPI --> EvidenceExtractor["Observation extractor (assessment + tutoring runtime)"]
-  EvidenceExtractor --> ObservationStore["SQLite observations + student_states (+ recency rollups)"]
+  EvidenceExtractor --> ObservationStore["SQLite observations + student_states (+ enriched rollups)"]
   ObservationStore --> DiagnosisEngine["Rule-first diagnosis + action selection"]
+  ObservationStore --> StudentModel["Student model signals: mastery + support + misconception"]
+  StudentModel --> DiagnosisEngine
   AdaptiveDifficulty --> QuizHistory["[Quiz Performance] session context"]
   AdaptiveDifficulty --> DeepQuestion
   

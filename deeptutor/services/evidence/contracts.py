@@ -29,6 +29,10 @@ class StudentStateRecord(TypedDict):
     repeated_mistakes: list[str]
     support_level: SupportLevel
     confidence_trend: ConfidenceTrend
+    recency_summary: dict[str, object]
+    mastery_signals: dict[str, object]
+    support_signals: dict[str, object]
+    misconception_signals: dict[str, object]
 
 
 class DiagnosisRecord(TypedDict):
