@@ -83,6 +83,7 @@ flowchart TD
   EvidenceExtractor --> ObservationStore["SQLite observations + student_states (+ enriched rollups)"]
   ObservationStore --> DiagnosisEngine["Rule-first diagnosis + action selection"]
   DiagnosisEngine --> EvidenceGate["Evidence sufficiency gate: thin / stale / mixed"]
+  DiagnosisEngine --> ConfidenceCalibration["Confidence calibration: evidence density + recency + support burden"]
   ObservationStore --> StudentModel["Student model signals: mastery + support + misconception"]
   StudentModel --> DiagnosisEngine
   AdaptiveDifficulty --> QuizHistory["[Quiz Performance] session context"]

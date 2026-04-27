@@ -2,7 +2,7 @@
 
 - Task ID: `F117_CONFIDENCE_CALIBRATION_REFINEMENT`
 - Commit tag: `F117`
-- Status: `Planning`
+- Status: `Ready for Review`
 - Branch recommendation: `pod-b/confidence-calibration-refinement`
 
 ## Goal

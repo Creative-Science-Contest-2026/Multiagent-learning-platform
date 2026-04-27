@@ -337,3 +337,183 @@ def test_build_student_diagnosis_keeps_enriched_student_state_as_context_only() 
     assert payload["observed"]["abstain_reason_code"] == ""
     assert payload["inferred"][0]["diagnosis_type"] == "needs_scaffold"
     assert payload["student_state"]["misconception_signals"]["persistent_topics"] == ["equations"]
+
+
+def test_build_student_diagnosis_uses_high_confidence_for_recent_consistent_evidence() -> None:
+    observations = [
+        {
+            "observation_id": f"obs_h{i}",
+            "session_id": "quiz-7",
+            "student_id": "student-high",
+            "source": "assessment",
+            "topic": "fractions subtraction",
+            "question_id": f"q{i}",
+            "is_correct": False,
+            "latency_seconds": 52 + i,
+            "hint_count": 0,
+            "retry_count": 1,
+            "dominant_error": "concept_gap",
+        }
+        for i in range(1, 5)
+    ]
+    state = {
+        "student_id": "student-high",
+        "repeated_mistakes": ["fractions subtraction"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "recency_summary": {
+            "total_observations": 4,
+            "window_size": 24,
+            "bucket_counts": {
+                "last_24h": 4,
+                "last_7d": 0,
+                "last_30d": 0,
+                "older": 0,
+            },
+            "recent_incorrect": 4,
+            "weighted_topic_misses": {"fractions subtraction": 3.5},
+        },
+        "mastery_signals": {
+            "emerging_topics": [],
+            "stable_topics": [],
+            "at_risk_topics": ["fractions subtraction"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": [],
+            "retry_heavy_topics": [],
+            "recent_support_burden": "steady",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"fractions subtraction": "concept_gap"},
+            "persistent_topics": ["fractions subtraction"],
+        },
+    }
+
+    payload = build_student_diagnosis(
+        student_id="student-high",
+        observations=observations,
+        student_state=state,
+    )
+
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["confidence_tag"] == "high"
+
+
+def test_build_student_diagnosis_caps_confidence_when_support_burden_is_high() -> None:
+    observations = [
+        {
+            "observation_id": f"obs_s{i}",
+            "session_id": "quiz-8",
+            "student_id": "student-support",
+            "source": "assessment",
+            "topic": "equations",
+            "question_id": f"q{i}",
+            "is_correct": False,
+            "latency_seconds": 56 + i,
+            "hint_count": 0,
+            "retry_count": 1,
+            "dominant_error": "concept_gap",
+        }
+        for i in range(1, 5)
+    ]
+    state = {
+        "student_id": "student-support",
+        "repeated_mistakes": ["equations"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "recency_summary": {
+            "total_observations": 7,
+            "window_size": 24,
+            "bucket_counts": {
+                "last_24h": 7,
+                "last_7d": 0,
+                "last_30d": 0,
+                "older": 0,
+            },
+            "recent_incorrect": 4,
+            "weighted_topic_misses": {"equations": 3.5},
+        },
+        "mastery_signals": {
+            "emerging_topics": [],
+            "stable_topics": [],
+            "at_risk_topics": ["equations"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": ["equations"],
+            "retry_heavy_topics": ["equations"],
+            "recent_support_burden": "high",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"equations": "concept_gap"},
+            "persistent_topics": ["equations"],
+        },
+    }
+
+    payload = build_student_diagnosis(
+        student_id="student-support",
+        observations=observations,
+        student_state=state,
+    )
+
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["confidence_tag"] == "medium"
+
+
+def test_build_student_diagnosis_caps_confidence_when_evidence_is_not_recent() -> None:
+    observations = [
+        {
+            "observation_id": f"obs_r{i}",
+            "session_id": "quiz-9",
+            "student_id": "student-recency",
+            "source": "assessment",
+            "topic": "decimals",
+            "question_id": f"q{i}",
+            "is_correct": False,
+            "latency_seconds": 50 + i,
+            "hint_count": 0,
+            "retry_count": 1,
+            "dominant_error": "concept_gap",
+        }
+        for i in range(1, 5)
+    ]
+    state = {
+        "student_id": "student-recency",
+        "repeated_mistakes": ["decimals"],
+        "support_level": "guided",
+        "confidence_trend": "down",
+        "recency_summary": {
+            "total_observations": 4,
+            "window_size": 24,
+            "bucket_counts": {
+                "last_24h": 0,
+                "last_7d": 4,
+                "last_30d": 0,
+                "older": 0,
+            },
+            "recent_incorrect": 4,
+            "weighted_topic_misses": {"decimals": 2.1},
+        },
+        "mastery_signals": {
+            "emerging_topics": [],
+            "stable_topics": [],
+            "at_risk_topics": ["decimals"],
+        },
+        "support_signals": {
+            "heavy_hint_topics": [],
+            "retry_heavy_topics": [],
+            "recent_support_burden": "steady",
+        },
+        "misconception_signals": {
+            "dominant_errors": {"decimals": "concept_gap"},
+            "persistent_topics": ["decimals"],
+        },
+    }
+
+    payload = build_student_diagnosis(
+        student_id="student-recency",
+        observations=observations,
+        student_state=state,
+    )
+
+    assert payload["observed"]["abstained"] is False
+    assert payload["inferred"][0]["confidence_tag"] == "medium"

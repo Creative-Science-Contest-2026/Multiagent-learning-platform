@@ -34,11 +34,11 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-confidence-calibration-refinement`
 - Task: `F117_CONFIDENCE_CALIBRATION_REFINEMENT`
-- Status: `planning`
+- Status: `ready-review`
 - Branch: `pod-b/confidence-calibration-refinement`
 - Task packet: `docs/superpowers/tasks/2026-04-27-f117-confidence-calibration-refinement.md`
 - Owned files: `deeptutor/services/evidence/`, bounded dashboard and assessment payload shaping/tests, related docs
-- PR: `Not opened yet`
+- PR: `Draft, not opened yet`
 - Last update: `2026-04-28T00:25:00+0700`
-- Next action: `Write the F117 task packet, design spec, and implementation plan before code changes.`
+- Next action: `Run final verification, commit the lane, and open the Draft PR for F117.`
 - Blocker: `None`
