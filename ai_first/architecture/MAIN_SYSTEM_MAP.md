@@ -82,6 +82,7 @@ flowchart TD
   AssessmentDiagnosisAPI --> EvidenceExtractor["Observation extractor (assessment + tutoring runtime)"]
   EvidenceExtractor --> ObservationStore["SQLite observations + student_states (+ enriched rollups)"]
   ObservationStore --> DiagnosisEngine["Rule-first diagnosis + action selection"]
+  DiagnosisEngine --> EvidenceGate["Evidence sufficiency gate: thin / stale / mixed"]
   ObservationStore --> StudentModel["Student model signals: mastery + support + misconception"]
   StudentModel --> DiagnosisEngine
   AdaptiveDifficulty --> QuizHistory["[Quiz Performance] session context"]
@@ -108,6 +109,7 @@ flowchart TD
   TeacherInsights --> TeacherActionAPI["POST/PATCH /api/v1/dashboard/teacher-actions"]
   TeacherInsights --> InterventionAssignmentAPI["POST/PATCH /api/v1/dashboard/intervention-assignments"]
   InsightsAPI --> DiagnosisEngine
+  EvidenceGate --> InsightsAPI
   InsightsAPI --> DiagnosisFeedback["Diagnosis feedback records"]
   InsightsAPI --> SmallGroupRecommendations["Small-group recommendation clusters"]
   InsightsAPI --> RecommendationAcks["Recommendation acknowledgement records"]

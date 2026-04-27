@@ -4,6 +4,7 @@ from .diagnosis_feedback import (
     update_diagnosis_feedback,
 )
 from .diagnosis import build_student_diagnosis
+from .evidence_sufficiency import classify_evidence_sufficiency
 from .extractor import extract_observations_from_review
 from .intervention_assignments import (
     create_intervention_assignment,
@@ -21,6 +22,7 @@ from .teacher_insights import build_teacher_insights_payload
 __all__ = [
     "build_student_diagnosis",
     "build_teacher_insights_payload",
+    "classify_evidence_sufficiency",
     "create_diagnosis_feedback",
     "create_intervention_assignment",
     "create_recommendation_ack",

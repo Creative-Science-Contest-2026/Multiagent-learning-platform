@@ -41,4 +41,18 @@ Rules:
 - PR: `Not opened yet`
 - Last update: `2026-04-27T23:50:00+0700`
 - Next action: `Write the F107 design for a bounded per-student intervention history view built from existing teacher-action and assignment records.`
+
+### Assignment
+
+- Owner: Codex Session B
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-abstain-weak-evidence-refinement`
+- Task: `F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT`
+- Status: `ready-review`
+- Branch: `pod-b/abstain-weak-evidence-refinement`
+- Task packet: `docs/superpowers/tasks/2026-04-27-f119-abstain-and-weak-evidence-refinement.md`
+- Owned files: `deeptutor/services/evidence/`, bounded dashboard and assessment payload shaping/tests, related docs
+- PR: `#181 (Draft)`
+- Last update: `2026-04-28T00:14:00+0700`
+- Next action: `Push the metadata update, mark PR #181 Ready for review, and watch CI.`
 - Blocker: `None`

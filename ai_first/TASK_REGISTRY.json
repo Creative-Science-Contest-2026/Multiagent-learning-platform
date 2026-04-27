@@ -71,9 +71,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
+      "count": 2,
       "tasks": [
-        "F107_INTERVENTION_HISTORY_VIEW"
+        "F107_INTERVENTION_HISTORY_VIEW",
+        "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT"
       ]
     },
     "blocked": {
@@ -1301,7 +1302,7 @@
       "dependencies": [
         "R5_DASHBOARD_ACTIONABILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
       "notes": "Depends on the existing grouped-card pattern but not on full class-roster infrastructure yet."
@@ -1327,7 +1328,7 @@
       "dependencies": [
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-insight",
       "notes": "Benefits from class roster work later, but can start as a queue over current student/group signals."
@@ -1693,7 +1694,7 @@
       "status": "not-started",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "Can begin before the full enriched student model, but should benefit from it later."
+      "notes": "Active on branch pod-b/abstain-weak-evidence-refinement. The lane now adds a shared evidence-sufficiency gate plus timestamp-aware stale-evidence handling so diagnosis and dashboard recommendation payloads suppress thin, stale, and mixed signals without widening dashboard UX scope."
     },
     {
       "id": "F120_INTERVENTION_EFFECTIVENESS_TRACKING",

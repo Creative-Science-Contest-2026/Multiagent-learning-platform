@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .evidence_sufficiency import classify_evidence_sufficiency
 
 ACTION_BY_DIAGNOSIS = {
     "concept_gap": "review_prerequisite",
@@ -194,7 +195,7 @@ def build_student_diagnosis(
 
     dominant_topic, dominant_rows = _topic_rows(observations)
     scores, evidence_count, contradiction_ratio = _diagnosis_scores(dominant_rows)
-    dominant_error, top_score, second_score = _select_diagnosis(scores)
+    dominant_error, _top_score, _second_score = _select_diagnosis(scores)
     confidence = _confidence_tag(
         evidence_count=evidence_count,
         contradiction_ratio=contradiction_ratio,
@@ -205,13 +206,13 @@ def build_student_diagnosis(
         if row.get("latency_seconds") is not None
     ]
     miss_count = sum(1 for row in dominant_rows if not row.get("is_correct"))
-    abstain = miss_count == 0 or (
-        miss_count <= 1
-        and top_score <= 1
-        and (top_score - second_score) <= 0
-        and confidence == "low"
-        and contradiction_ratio >= 0.5
+    evidence_sufficient, abstain_reason_code, abstain_reason = classify_evidence_sufficiency(
+        student_state=student_state,
+        miss_count=miss_count,
+        evidence_count=evidence_count,
+        contradiction_ratio=contradiction_ratio,
     )
+    abstain = not evidence_sufficient
 
     derived_state = student_state or {
         "student_id": student_id,
@@ -255,11 +256,8 @@ def build_student_diagnosis(
             "miss_count": miss_count,
             "evidence_count": evidence_count,
             "abstained": abstain,
-            "abstain_reason": (
-                "Evidence is too weak or too mixed for a confident diagnosis."
-                if abstain
-                else ""
-            ),
+            "abstain_reason_code": abstain_reason_code,
+            "abstain_reason": abstain_reason,
             "avg_latency_seconds": round(sum(avg_latency_values) / len(avg_latency_values))
             if avg_latency_values
             else 0,
