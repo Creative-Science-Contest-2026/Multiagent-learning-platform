@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-27T16:45:00Z",
+    "last_updated": "2026-04-27T16:25:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 54,
+      "count": 55,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -63,15 +63,14 @@
         "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
         "F102_INTERVENTION_ASSIGNMENT_FLOW",
         "F114_SPEC_VERSION_PINNING_PER_SESSION",
-        "F115_RUNTIME_POLICY_AUDIT_TRACE"
+        "F115_RUNTIME_POLICY_AUDIT_TRACE",
+        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1276,10 +1275,10 @@
       "dependencies": [
         "F101_TEACHER_ACTION_EXECUTION_LOOP"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
-      "notes": "Session A started on 2026-04-27 from worktree .worktrees/pod-a-recommendation-acknowledgement-status. Scope is an explicit recommendation acknowledgement layer separate from teacher actions and intervention assignments."
+      "notes": "Merged to main through PR #175. Teachers can now explicitly acknowledge recommendations as accepted, deferred, dismissed, or completed before or without creating downstream teacher actions or intervention assignments."
     },
     {
       "id": "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
@@ -1301,7 +1300,7 @@
       "dependencies": [
         "R5_DASHBOARD_ACTIONABILITY"
       ],
-      "status": "in-progress",
+      "status": "not-started",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
       "notes": "Depends on the existing grouped-card pattern but not on full class-roster infrastructure yet."
@@ -1327,7 +1326,7 @@
       "dependencies": [
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
       ],
-      "status": "in-progress",
+      "status": "not-started",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-insight",
       "notes": "Benefits from class roster work later, but can start as a queue over current student/group signals."
@@ -1352,7 +1351,7 @@
       "dependencies": [
         "R5_DASHBOARD_ACTIONABILITY"
       ],
-      "status": "in-progress",
+      "status": "not-started",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-insight",
       "notes": "Should stay evidence-first and avoid adding frontend-only diagnosis logic."
@@ -1378,7 +1377,7 @@
       "dependencies": [
         "F102_INTERVENTION_ASSIGNMENT_FLOW"
       ],
-      "status": "in-progress",
+      "status": "not-started",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-insight",
       "notes": "Pairs naturally with F120 later, but does not require outcome scoring on day one."
