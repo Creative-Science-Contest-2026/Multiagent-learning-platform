@@ -34,11 +34,11 @@ Rules:
 - Machine: local-mac
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-pilot-feedback-ingestion`
 - Task: `F122_PILOT_FEEDBACK_INGESTION_PATH`
-- Status: `in-progress`
+- Status: `ready-review`
 - Branch: `pod-b/pilot-feedback-ingestion-path`
 - Task packet: `docs/superpowers/tasks/2026-04-28-f122-pilot-feedback-ingestion-path.md`
 - Owned files: `deeptutor/api/routers/system.py`, `deeptutor/services/evidence/`, `tests/api/test_system_router.py`, `tests/services/evidence/`, bounded `docs/contest/`, bounded `ai_first/competition/`, `docs/superpowers/{tasks,specs,plans,pr-notes}/`, `ai_first/{ACTIVE_ASSIGNMENTS.md,TASK_REGISTRY.json,daily/2026-04-28.md}`
-- PR: `none yet`
+- PR: `#200`
 - Last update: `2026-04-28`
-- Next action: `run final targeted verification, then stage the implementation and open a Draft PR`
+- Next action: `watch CI on PR #200 and merge once checks are green`
 - Blocker: `none`

@@ -2,7 +2,7 @@
 
 - Task ID: `F122_PILOT_FEEDBACK_INGESTION_PATH`
 - Commit tag: `F122`
-- Status: `In Progress`
+- Status: `Ready for review`
 - Branch recommendation: `pod-b/pilot-feedback-ingestion-path`
 
 ## Goal
