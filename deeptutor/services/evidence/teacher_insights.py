@@ -39,6 +39,25 @@ def _student_assignments(student_id: str, assignments: list[dict[str, Any]]) -> 
     return sorted(rows, key=lambda row: row.get("updated_at", 0), reverse=True)
 
 
+def _latest_recommendation_ack(
+    *,
+    target_type: str,
+    target_id: str,
+    source_recommendation_id: str,
+    recommendation_acks: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    return next(
+        (
+            row
+            for row in recommendation_acks
+            if row.get("target_type") == target_type
+            and row.get("target_id") == target_id
+            and row.get("source_recommendation_id") == source_recommendation_id
+        ),
+        None,
+    )
+
+
 def _small_group_target_id(topic: str, diagnosis_type: str, source_action_type: str) -> str:
     return f"{topic}::{diagnosis_type}::{source_action_type}"
 
@@ -48,21 +67,35 @@ def build_teacher_insights_payload(
     student_payloads: list[dict[str, Any]],
     teacher_actions: list[dict[str, Any]] | None = None,
     intervention_assignments: list[dict[str, Any]] | None = None,
+    recommendation_acks: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     teacher_actions = teacher_actions or []
     intervention_assignments = intervention_assignments or []
+    recommendation_acks = recommendation_acks or []
     grouped: dict[tuple[str, str, str], list[tuple[str, int]]] = defaultdict(list)
     students: list[dict[str, Any]] = []
     for payload in student_payloads:
         row = dict(payload)
-        row["teacher_actions"] = _student_actions(str(payload.get("student_id") or "unknown"), teacher_actions)
+        top_action = _top_action(payload)
+        student_id = str(payload.get("student_id") or "unknown")
+        row["recommendation_ack"] = (
+            _latest_recommendation_ack(
+                target_type="student",
+                target_id=student_id,
+                source_recommendation_id=str(top_action.get("action_id") or f"student:{student_id}"),
+                recommendation_acks=recommendation_acks,
+            )
+            if top_action
+            else None
+        )
+        row["teacher_actions"] = _student_actions(student_id, teacher_actions)
         row["intervention_assignments"] = _student_assignments(
-            str(payload.get("student_id") or "unknown"),
+            student_id,
             intervention_assignments,
         )
         students.append(row)
         inferred = _top_inferred(payload)
-        action = _top_action(payload)
+        action = top_action
         if not inferred or not action:
             continue
         key = (
@@ -103,6 +136,12 @@ def build_teacher_insights_payload(
             ),
             None,
         )
+        matching_group_ack = _latest_recommendation_ack(
+            target_type="small_group",
+            target_id=target_id,
+            source_recommendation_id=f"group:{topic}:{diagnosis_type}",
+            recommendation_acks=recommendation_acks,
+        )
         small_groups.append(
             {
                 "topic": topic,
@@ -112,6 +151,7 @@ def build_teacher_insights_payload(
                 "source_action_type": action_type,
                 "confidence_tag": "high" if avg_confidence >= 2.5 else "medium",
                 "target_id": target_id,
+                "recommendation_ack": matching_group_ack,
                 "teacher_action": matching_group_action,
                 "intervention_assignment": matching_group_assignment,
             }

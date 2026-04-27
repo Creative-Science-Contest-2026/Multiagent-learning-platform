@@ -5,6 +5,7 @@ import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel"
 import {
   type InterventionAssignmentRecord,
   type InterventionAssignmentStatus,
+  type RecommendationAckRecord,
   type TeacherActionRecord,
   type TeacherActionStatus,
   type TeacherInsightStudent,
@@ -26,6 +27,7 @@ export function StudentInsightDetail({
   t: (value: string, options?: Record<string, string | number>) => string;
 }) {
   const [teacherActions, setTeacherActions] = useState<TeacherActionRecord[]>(student?.teacher_actions ?? []);
+  const [recommendationAck] = useState<RecommendationAckRecord | null>(student?.recommendation_ack ?? null);
   const [interventionAssignments, setInterventionAssignments] = useState<InterventionAssignmentRecord[]>(
     student?.intervention_assignments ?? [],
   );
@@ -124,6 +126,33 @@ export function StudentInsightDetail({
               <div>{t("Support level: {{value}}", { value: student.student_state.support_level })}</div>
             ) : null}
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm xl:col-span-2">
+        <InsightSectionLabel
+          eyebrow={t("Recommendation acknowledgement")}
+          title={recommendationAck ? recommendationAck.status : t("No acknowledgement yet")}
+        >
+          {t("Teacher response to the recommendation before or alongside execution.")}
+        </InsightSectionLabel>
+        <div className="mt-4 rounded-2xl bg-[var(--muted)]/50 p-4 text-[13px] text-[var(--foreground)]">
+          {recommendationAck ? (
+            <>
+              <div className="font-medium">{t("Current status: {{status}}", { status: recommendationAck.status })}</div>
+              {recommendationAck.teacher_note ? (
+                <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">{recommendationAck.teacher_note}</div>
+              ) : (
+                <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
+                  {t("No teacher note was recorded for this acknowledgement.")}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-[13px] text-[var(--muted-foreground)]">
+              {t("Acknowledge the recommendation from the dashboard overview to record the teacher response here.")}
+            </div>
+          )}
         </div>
       </section>
 

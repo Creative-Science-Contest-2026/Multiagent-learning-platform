@@ -3,8 +3,14 @@
 import { useState } from "react";
 import { InterventionAssignmentComposer } from "@/components/dashboard/InterventionAssignmentComposer";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
+import { RecommendationAckComposer } from "@/components/dashboard/RecommendationAckComposer";
 import { TeacherActionComposer } from "@/components/dashboard/TeacherActionComposer";
-import type { DashboardInsights, InterventionAssignmentRecord, TeacherActionRecord } from "@/lib/dashboard-api";
+import type {
+  DashboardInsights,
+  InterventionAssignmentRecord,
+  RecommendationAckRecord,
+  TeacherActionRecord,
+} from "@/lib/dashboard-api";
 
 type SmallGroupInsight = DashboardInsights["small_groups"][number];
 
@@ -16,6 +22,9 @@ export function SmallGroupInsightCard({
   t: (value: string, options?: Record<string, string | number>) => string;
 }) {
   const [teacherAction, setTeacherAction] = useState<TeacherActionRecord | null>(group.teacher_action ?? null);
+  const [recommendationAck, setRecommendationAck] = useState<RecommendationAckRecord | null>(
+    group.recommendation_ack ?? null,
+  );
   const [interventionAssignment, setInterventionAssignment] = useState<InterventionAssignmentRecord | null>(
     group.intervention_assignment ?? null,
   );
@@ -43,6 +52,25 @@ export function SmallGroupInsightCard({
         <div className="mt-3 text-[12px] text-[var(--muted-foreground)]">
           {t("Students: {{students}}", { students: group.student_ids.join(", ") })}
         </div>
+        <div className="mt-3">
+          <RecommendationAckComposer
+            triggerLabel={recommendationAck ? t("Update acknowledgement") : t("Acknowledge recommendation")}
+            defaultPayload={{
+              target_type: "small_group",
+              target_id: group.target_id ?? `${group.topic}:${group.diagnosis_type}`,
+              source_recommendation_id: `group:${group.topic}:${group.diagnosis_type}`,
+            }}
+            existingAck={recommendationAck}
+            onSaved={setRecommendationAck}
+            t={t}
+          />
+        </div>
+        {recommendationAck ? (
+          <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+            <div className="font-medium">{t("Recommendation status: {{status}}", { status: recommendationAck.status })}</div>
+            {recommendationAck.teacher_note ? <div className="mt-1">{recommendationAck.teacher_note}</div> : null}
+          </div>
+        ) : null}
         <div className="mt-3">
           <TeacherActionComposer
             triggerLabel={t("Create group action")}
