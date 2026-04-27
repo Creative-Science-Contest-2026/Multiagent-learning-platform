@@ -186,6 +186,85 @@ async def test_assessment_review_includes_context_support_and_followups(
 
 
 @pytest.mark.asyncio
+async def test_assessment_review_supports_teacher_rubric_review(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await store.create_session(session_id="quiz-rubric-session")
+    await store.add_message(
+        "quiz-rubric-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: 2+2 -> Answered: 3 (Incorrect, correct: 4)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        create_response = client.post(
+            "/api/v1/sessions/quiz-rubric-session/assessment-rubric-review",
+            json={
+                "wording_quality": "acceptable",
+                "distractor_quality": "weak",
+                "explanation_clarity": "strong",
+                "overall_decision": "needs_edit_before_reuse",
+                "teacher_note": "Distractors are too easy to eliminate.",
+            },
+        )
+        review_response = client.get("/api/v1/sessions/quiz-rubric-session/assessment-review")
+
+    assert create_response.status_code == 200
+    payload = review_response.json()
+    assert payload["teacher_review"]["overall_decision"] == "needs_edit_before_reuse"
+    assert payload["teacher_review"]["distractor_quality"] == "weak"
+
+
+@pytest.mark.asyncio
+async def test_assessment_rubric_review_can_be_updated(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await store.create_session(session_id="quiz-rubric-update-session")
+    await store.add_message(
+        "quiz-rubric-update-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: 2+2 -> Answered: 3 (Incorrect, correct: 4)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        client.post(
+            "/api/v1/sessions/quiz-rubric-update-session/assessment-rubric-review",
+            json={
+                "wording_quality": "acceptable",
+                "distractor_quality": "acceptable",
+                "explanation_clarity": "acceptable",
+                "overall_decision": "needs_edit_before_reuse",
+                "teacher_note": "",
+            },
+        )
+        patch_response = client.patch(
+            "/api/v1/sessions/quiz-rubric-update-session/assessment-rubric-review",
+            json={
+                "wording_quality": "strong",
+                "distractor_quality": "acceptable",
+                "explanation_clarity": "strong",
+                "overall_decision": "approved_for_reuse",
+                "teacher_note": "Ready after wording cleanup.",
+            },
+        )
+        review_response = client.get("/api/v1/sessions/quiz-rubric-update-session/assessment-review")
+
+    assert patch_response.status_code == 200
+    assert patch_response.json()["overall_decision"] == "approved_for_reuse"
+    assert review_response.json()["teacher_review"]["wording_quality"] == "strong"
+
+
+@pytest.mark.asyncio
 async def test_get_session_includes_context_support_snapshot(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T04:58:00Z",
+    "last_updated": "2026-04-28T05:12:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -77,8 +77,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -87,7 +89,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 6,
+      "count": 5,
       "tasks": [
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
@@ -1477,10 +1479,10 @@
       "dependencies": [
         "R3_ASSESSMENT_SAFETY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Should keep the assessment flow teacher-reviewed without claiming automated quality guarantees."
+      "notes": "Session A started on 2026-04-28 from worktree .worktrees/pod-a-assessment-review-rubric-controls. Scope is a bounded structured rubric review record on the existing assessment review route, without opening a publishing workflow."
     },
     {
       "id": "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
