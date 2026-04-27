@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T06:12:00Z",
+    "last_updated": "2026-04-28T06:20:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 69,
+      "count": 70,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -78,15 +78,14 @@
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
         "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
         "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
-        "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION"
+        "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
+        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1508,10 +1507,10 @@
         "R1_RUNTIME_BINDING_PROOF",
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Session A started on 2026-04-28 from worktree .worktrees/pod-a-provenance-reason-traces. Scope is bounded trust surfaces that reuse runtime-policy audit and evidence payloads already produced by the platform instead of inventing frontend-only explanations."
+      "notes": "Merged to main through PR #199 on 2026-04-28. Teachers can now inspect bounded runtime-policy audit details on /agents and view student/small-group trust traces derived from real evidence and teacher-review framing without exposing chain-of-thought."
     },
     {
       "id": "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
