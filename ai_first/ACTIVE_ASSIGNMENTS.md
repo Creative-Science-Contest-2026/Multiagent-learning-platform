@@ -28,5 +28,17 @@ Rules:
 
 ## Active
 
-No active AI implementation task is currently assigned on `main`.
-The next product work should start from a fresh Session A or Session B branch/worktree after the AI loop selects the next future-backlog task.
+### Assignment
+
+- Owner: Codex Session B
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-evidence-automation-refresh`
+- Task: `F124_EVIDENCE_AUTOMATION_REFRESH`
+- Status: `brainstorming`
+- Branch: `pod-b/evidence-automation-refresh`
+- Task packet: `docs/superpowers/tasks/2026-04-28-f124-evidence-automation-refresh.md`
+- Owned files: `scripts/contest/`, `docs/contest/`, `ai_first/evidence/`, bounded `tests/` for automation helpers, `docs/superpowers/{tasks,specs,plans,pr-notes}/`, `ai_first/{ACTIVE_ASSIGNMENTS.md,TASK_REGISTRY.json,daily/2026-04-28.md}`
+- PR: `draft-not-opened`
+- Last update: `2026-04-28`
+- Next action: `write packet, spec, and plan for a bounded evidence automation helper that preserves manual screenshot/video semantics`
+- Blocker: `none`
