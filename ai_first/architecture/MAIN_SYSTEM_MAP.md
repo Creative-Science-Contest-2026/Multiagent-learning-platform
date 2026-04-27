@@ -133,6 +133,7 @@ flowchart TD
   StudentDashboard --> RecommendationAckDetail["Recommendation acknowledgement summary"]
   StudentDashboard --> TeacherActionDetail["Teacher actions section + status updates"]
   StudentDashboard --> AssignmentDetail["Intervention assignments section + status updates"]
+  StudentDashboard --> InterventionHistoryDetail["Intervention history timeline across acknowledgement, action, assignment, and diagnosis feedback"]
   LearningPathSignals --> PathEngine["Deterministic learning-path helper"]
   PathEngine --> FocusTopicInputs["Focus topics from assessment analysis"]
   PathEngine --> ObjectiveInputs["Knowledge-pack learning_objectives metadata"]

@@ -28,5 +28,17 @@ Rules:
 
 ## Active
 
-- No active AI implementation task is currently assigned on `main`.
-- The next product work should start from a fresh Session A or Session B branch/worktree after the human or AI loop selects the next future-backlog task.
+### Assignment
+
+- Owner: Codex Session A
+- Machine: local
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-a-intervention-history-view`
+- Task: `F107_INTERVENTION_HISTORY_VIEW`
+- Status: `implementation-verified`
+- Branch: `pod-a/intervention-history-view`
+- Task packet: `docs/superpowers/tasks/2026-04-27-f107-intervention-history-view.md`
+- Owned files: `web/components/dashboard/`, `web/app/(workspace)/dashboard/student/`, `web/lib/dashboard-api.ts`, `deeptutor/api/routers/dashboard.py`, bounded intervention-history shaping in evidence/dashboard helpers, related dashboard tests/docs`
+- PR: `#183`
+- Last update: `2026-04-28T00:08:00+0700`
+- Next action: `Wait for CI on PR #183, then move it to Ready for review when Backend, Frontend, Docs, and Summary checks are green.`
+- Blocker: `None`

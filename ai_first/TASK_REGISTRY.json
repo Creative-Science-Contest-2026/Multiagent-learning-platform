@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-27T16:41:00Z",
+    "last_updated": "2026-04-27T16:50:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -72,8 +72,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F107_INTERVENTION_HISTORY_VIEW"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -82,12 +84,11 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 16,
+      "count": 15,
       "tasks": [
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
         "F106_STUDENT_INSIGHT_TIMELINE",
-        "F107_INTERVENTION_HISTORY_VIEW",
         "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
@@ -1378,10 +1379,10 @@
       "dependencies": [
         "F102_INTERVENTION_ASSIGNMENT_FLOW"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-insight",
-      "notes": "Pairs naturally with F120 later, but does not require outcome scoring on day one."
+      "notes": "Session A started on 2026-04-27 from worktree .worktrees/pod-a-intervention-history-view. Scope is a bounded per-student intervention history feed built from existing teacher actions, intervention assignments, recommendation acknowledgements, and diagnosis feedback records."
     },
     {
       "id": "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
