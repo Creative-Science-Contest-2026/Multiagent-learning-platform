@@ -2,7 +2,7 @@
 
 - Task ID: `F116_STUDENT_MODEL_ENRICHMENT`
 - Commit tag: `F116`
-- Status: `Planning`
+- Status: `Ready for Review`
 - Branch recommendation: `pod-b/student-model-enrichment`
 
 ## Goal
