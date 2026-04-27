@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T05:12:00Z",
+    "last_updated": "2026-04-28T05:15:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 64,
+      "count": 68,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -62,13 +62,17 @@
         "F101_TEACHER_ACTION_EXECUTION_LOOP",
         "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
         "F102_INTERVENTION_ASSIGNMENT_FLOW",
+        "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
+        "F105_CLASS_INTERVENTION_QUEUE",
         "F114_SPEC_VERSION_PINNING_PER_SESSION",
         "F115_RUNTIME_POLICY_AUDIT_TRACE",
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
         "F116_STUDENT_MODEL_ENRICHMENT",
         "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
         "F107_INTERVENTION_HISTORY_VIEW",
+        "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F110_TEACHER_OVERRIDE_LOG",
+        "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F106_STUDENT_INSIGHT_TIMELINE",
         "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
@@ -78,10 +82,8 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1478,10 +1480,10 @@
       "dependencies": [
         "R3_ASSESSMENT_SAFETY"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Session A started on 2026-04-28 from worktree .worktrees/pod-a-assessment-review-rubric-controls. Scope is a bounded structured rubric review record on the existing assessment review route, without opening a publishing workflow."
+      "notes": "Merged to main through PR #195 on 2026-04-28. Assessment review now includes a bounded teacher-authored rubric record with structured quality dimensions and a reuse decision, without widening into a publishing workflow."
     },
     {
       "id": "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
