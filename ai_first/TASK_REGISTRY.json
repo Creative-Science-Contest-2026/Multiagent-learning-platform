@@ -1611,10 +1611,10 @@
       "dependencies": [
         "R2_DIAGNOSIS_CREDIBILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "This should remain conservative and evidence-backed rather than turning into an opaque mastery score engine."
+      "notes": "Active on branch pod-b/student-model-enrichment. This remains conservative and evidence-backed by deriving additive mastery, support, and misconception signals from observations rather than inventing opaque scores."
     },
     {
       "id": "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
