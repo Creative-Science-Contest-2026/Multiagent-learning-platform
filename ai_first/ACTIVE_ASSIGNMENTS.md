@@ -38,9 +38,9 @@ Rules:
 - Branch: `pod-a/intervention-history-view`
 - Task packet: `docs/superpowers/tasks/2026-04-27-f107-intervention-history-view.md`
 - Owned files: `web/components/dashboard/`, `web/app/(workspace)/dashboard/student/`, `web/lib/dashboard-api.ts`, `deeptutor/api/routers/dashboard.py`, bounded intervention-history shaping in evidence/dashboard helpers, related dashboard tests/docs`
-- PR: `Not opened yet`
+- PR: `#183`
 - Last update: `2026-04-28T00:08:00+0700`
-- Next action: `Commit the verified F107 slice, push the branch, and open a Draft PR.`
+- Next action: `Wait for CI on PR #183, then move it to Ready for review when Backend, Frontend, Docs, and Summary checks are green.`
 - Blocker: `None`
 
 ### Assignment
