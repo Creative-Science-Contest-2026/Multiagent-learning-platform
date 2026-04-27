@@ -22,6 +22,11 @@ from .recommendation_feedback import (
     list_recommendation_feedback,
     update_recommendation_feedback,
 )
+from .teacher_overrides import (
+    create_teacher_override,
+    list_teacher_overrides,
+    update_teacher_override,
+)
 from .teacher_actions import create_teacher_action, list_teacher_actions, update_teacher_action_status
 from .teacher_insights import build_teacher_insights_payload
 
@@ -33,17 +38,20 @@ __all__ = [
     "create_intervention_assignment",
     "create_recommendation_ack",
     "create_recommendation_feedback",
+    "create_teacher_override",
     "create_teacher_action",
     "extract_observations_from_review",
     "list_diagnosis_feedback",
     "list_intervention_assignments",
     "list_recommendation_acks",
     "list_recommendation_feedback",
+    "list_teacher_overrides",
     "list_teacher_actions",
     "summarize_intervention_effectiveness",
     "update_diagnosis_feedback",
     "update_intervention_assignment_status",
     "update_recommendation_ack",
     "update_recommendation_feedback",
+    "update_teacher_override",
     "update_teacher_action_status",
 ]

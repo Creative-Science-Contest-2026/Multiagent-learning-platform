@@ -6,12 +6,14 @@ import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel"
 import { RecommendationAckComposer } from "@/components/dashboard/RecommendationAckComposer";
 import { RecommendationFeedbackComposer } from "@/components/dashboard/RecommendationFeedbackComposer";
 import { TeacherActionComposer } from "@/components/dashboard/TeacherActionComposer";
+import { TeacherOverrideComposer } from "@/components/dashboard/TeacherOverrideComposer";
 import type {
   DashboardInsights,
   InterventionAssignmentRecord,
   RecommendationFeedbackRecord,
   RecommendationAckRecord,
   TeacherActionRecord,
+  TeacherOverrideRecord,
 } from "@/lib/dashboard-api";
 
 type SmallGroupInsight = DashboardInsights["small_groups"][number];
@@ -29,6 +31,9 @@ export function SmallGroupInsightCard({
   );
   const [recommendationFeedback, setRecommendationFeedback] = useState<RecommendationFeedbackRecord | null>(
     group.recommendation_feedback ?? null,
+  );
+  const [teacherOverride, setTeacherOverride] = useState<TeacherOverrideRecord | null>(
+    group.teacher_override ?? null,
   );
   const [interventionAssignment, setInterventionAssignment] = useState<InterventionAssignmentRecord | null>(
     group.intervention_assignment ?? null,
@@ -78,6 +83,30 @@ export function SmallGroupInsightCard({
               {t("Recommendation feedback: {{label}}", { label: recommendationFeedback.feedback_label })}
             </div>
             {recommendationFeedback.teacher_note ? <div className="mt-1">{recommendationFeedback.teacher_note}</div> : null}
+          </div>
+        ) : null}
+        <div className="mt-3">
+          <TeacherOverrideComposer
+            triggerLabel={teacherOverride ? t("Update teacher override") : t("Log teacher override")}
+            defaultPayload={{
+              target_type: "small_group",
+              target_id: group.target_id ?? `${group.topic}:${group.diagnosis_type}`,
+              source_recommendation_id: `group:${group.topic}:${group.diagnosis_type}`,
+            }}
+            existingOverride={teacherOverride}
+            onSaved={setTeacherOverride}
+            t={t}
+          />
+        </div>
+        {teacherOverride ? (
+          <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
+            <div className="font-medium">
+              {t("Teacher override: {{move}}", { move: teacherOverride.teacher_selected_move })}
+            </div>
+            <div className="mt-1">
+              {t("Reason: {{reason}}", { reason: teacherOverride.override_reason })}
+            </div>
+            {teacherOverride.teacher_note ? <div className="mt-1">{teacherOverride.teacher_note}</div> : null}
           </div>
         ) : null}
         <div className="mt-3">

@@ -264,6 +264,7 @@ export interface TeacherInsightStudent {
   }>;
   recommendation_ack?: RecommendationAckRecord | null;
   recommendation_feedback?: RecommendationFeedbackRecord | null;
+  teacher_override?: TeacherOverrideRecord | null;
   teacher_actions?: TeacherActionRecord[];
   intervention_assignments?: InterventionAssignmentRecord[];
   intervention_history?: InterventionHistoryItem[];
@@ -309,6 +310,29 @@ export interface RecommendationFeedbackRecord {
   target_type: "student" | "small_group";
   target_id: string;
   feedback_label: RecommendationFeedbackLabel;
+  teacher_note: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export type TeacherOverrideReason =
+  | "different_strategy"
+  | "needs_more_context"
+  | "not_classroom_fit";
+
+export type TeacherSelectedMove =
+  | "reteach_concept"
+  | "scaffolded_practice"
+  | "review_prerequisite"
+  | "small_group_remediation";
+
+export interface TeacherOverrideRecord {
+  id: string;
+  source_recommendation_id: string;
+  target_type: "student" | "small_group";
+  target_id: string;
+  override_reason: TeacherOverrideReason;
+  teacher_selected_move: TeacherSelectedMove;
   teacher_note: string;
   created_at: number;
   updated_at: number;
@@ -382,6 +406,7 @@ export interface DashboardInsights {
     target_id?: string;
     recommendation_ack?: RecommendationAckRecord | null;
     recommendation_feedback?: RecommendationFeedbackRecord | null;
+    teacher_override?: TeacherOverrideRecord | null;
     teacher_action?: TeacherActionRecord | null;
     intervention_assignment?: InterventionAssignmentRecord | null;
   }>;
@@ -417,6 +442,15 @@ export interface CreateRecommendationFeedbackRequest {
   target_type: "student" | "small_group";
   target_id: string;
   feedback_label: RecommendationFeedbackLabel;
+  teacher_note?: string;
+}
+
+export interface CreateTeacherOverrideRequest {
+  source_recommendation_id: string;
+  target_type: "student" | "small_group";
+  target_id: string;
+  override_reason: TeacherOverrideReason;
+  teacher_selected_move: TeacherSelectedMove;
   teacher_note?: string;
 }
 
@@ -488,6 +522,17 @@ export async function createRecommendationFeedback(
   return expectJson<RecommendationFeedbackRecord>(response);
 }
 
+export async function createTeacherOverride(
+  payload: CreateTeacherOverrideRequest,
+): Promise<TeacherOverrideRecord> {
+  const response = await fetch(apiUrl("/api/v1/dashboard/teacher-overrides"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<TeacherOverrideRecord>(response);
+}
+
 export async function createDiagnosisFeedback(
   payload: CreateDiagnosisFeedbackRequest,
 ): Promise<DiagnosisFeedbackRecord> {
@@ -533,6 +578,22 @@ export async function updateRecommendationFeedback(
     body: JSON.stringify(payload),
   });
   return expectJson<RecommendationFeedbackRecord>(response);
+}
+
+export async function updateTeacherOverride(
+  overrideId: string,
+  payload: {
+    override_reason: TeacherOverrideReason;
+    teacher_selected_move: TeacherSelectedMove;
+    teacher_note?: string;
+  },
+): Promise<TeacherOverrideRecord> {
+  const response = await fetch(apiUrl(`/api/v1/dashboard/teacher-overrides/${overrideId}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<TeacherOverrideRecord>(response);
 }
 
 export async function updateTeacherActionStatus(
