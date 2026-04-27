@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-27T16:35:00Z",
+    "last_updated": "2026-04-27T16:45:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 53,
+      "count": 54,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -62,15 +62,15 @@
         "F101_TEACHER_ACTION_EXECUTION_LOOP",
         "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
         "F102_INTERVENTION_ASSIGNMENT_FLOW",
-        "F114_SPEC_VERSION_PINNING_PER_SESSION"
+        "F114_SPEC_VERSION_PINNING_PER_SESSION",
+        "F115_RUNTIME_POLICY_AUDIT_TRACE"
       ]
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
-        "F115_RUNTIME_POLICY_AUDIT_TRACE"
+        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
       ]
     },
     "blocked": {
@@ -1586,10 +1586,10 @@
       "dependencies": [
         "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "runtime-policy",
-      "notes": "Active on branch pod-b/runtime-policy-audit-trace. This stays as the backend half of future provenance UI work and exposes a bounded inspectable audit contract on top of runtime-policy compilation."
+      "notes": "Merged to main through PR #173. Runtime policy is now inspectable through a bounded backend audit route that supports current and historical Agent Spec snapshots."
     },
     {
       "id": "F116_STUDENT_MODEL_ENRICHMENT",
