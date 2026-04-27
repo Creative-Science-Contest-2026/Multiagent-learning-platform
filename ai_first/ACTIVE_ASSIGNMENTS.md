@@ -28,17 +28,5 @@ Rules:
 
 ## Active
 
-### Assignment
-
-- Owner: Codex Session B
-- Machine: local
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-confidence-calibration-refinement`
-- Task: `F117_CONFIDENCE_CALIBRATION_REFINEMENT`
-- Status: `ready-review`
-- Branch: `pod-b/confidence-calibration-refinement`
-- Task packet: `docs/superpowers/tasks/2026-04-27-f117-confidence-calibration-refinement.md`
-- Owned files: `deeptutor/services/evidence/`, bounded dashboard and assessment payload shaping/tests, related docs
-- PR: `#185`
-- Last update: `2026-04-28T00:42:00+0700`
-- Next action: `Resolve the main-sync merge, push the updated branch, and watch CI on PR #185.`
-- Blocker: `None`
+No active AI implementation task is currently assigned on `main`.
+The next product work should start from a fresh Session A or Session B branch/worktree after the human or AI loop selects the next future-backlog task.
