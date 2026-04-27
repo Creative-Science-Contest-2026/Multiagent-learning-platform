@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-27T17:00:00Z",
+    "last_updated": "2026-04-27T17:20:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 73
@@ -73,8 +73,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F109_RECOMMENDATION_FEEDBACK_CAPTURE"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -83,11 +85,10 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 14,
+      "count": 13,
       "tasks": [
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
-        "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
@@ -1429,10 +1430,10 @@
       "dependencies": [
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
-      "notes": "Useful before deeper recommendation-engine expansion because it adds real teacher signal."
+      "notes": "Session A started on 2026-04-28 from worktree .worktrees/pod-a-recommendation-feedback-capture. Scope is bounded recommendation-quality feedback for student and small-group recommendations with labels practical, relevant, and too_generic plus an optional teacher note."
     },
     {
       "id": "F110_TEACHER_OVERRIDE_LOG",
