@@ -2,7 +2,7 @@
 
 - Task ID: `F115_RUNTIME_POLICY_AUDIT_TRACE`
 - Commit tag: `F115`
-- Status: `Planning`
+- Status: `Ready for Review`
 - Branch recommendation: `pod-b/runtime-policy-audit-trace`
 
 ## Goal

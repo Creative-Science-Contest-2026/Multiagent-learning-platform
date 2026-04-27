@@ -5,6 +5,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from deeptutor.services.agent_spec import get_agent_spec_service
+from deeptutor.services.runtime_policy.compiler import build_runtime_policy_audit
 
 router = APIRouter()
 
@@ -72,6 +73,22 @@ async def get_agent_spec(agent_id: str):
     service = get_agent_spec_service()
     try:
         return service.get_pack(agent_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Agent spec not found") from exc
+
+
+@router.get("/{agent_id}/runtime-policy-audit")
+async def get_agent_spec_runtime_policy_audit(
+    agent_id: str,
+    capability: str = "chat",
+    version: int | None = None,
+):
+    try:
+        return build_runtime_policy_audit(
+            agent_spec_id=agent_id,
+            capability=capability,
+            version=version,
+        )
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail="Agent spec not found") from exc
 

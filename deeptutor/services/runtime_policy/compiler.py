@@ -97,6 +97,35 @@ def ensure_runtime_policy(context: UnifiedContext, capability: str) -> RuntimePo
     return policy
 
 
+def build_runtime_policy_audit(
+    *,
+    agent_spec_id: str,
+    capability: str = "chat",
+    version: int | None = None,
+    knowledge_bases: list[str] | None = None,
+) -> dict[str, Any]:
+    """Build a serializable runtime-policy audit payload for a selected Agent Spec."""
+    service = get_agent_spec_service()
+    pack = service.get_pack_version(agent_spec_id, int(version)) if version is not None else service.get_pack(agent_spec_id)
+    metadata: dict[str, Any] = {
+        "agent_spec_id": str(pack.get("agent_id") or agent_spec_id),
+        "teacher_spec_compiled": _pack_to_teacher_spec(pack),
+    }
+    context = UnifiedContext(
+        active_capability=capability,
+        knowledge_bases=list(knowledge_bases or []),
+        config_overrides={"agent_spec_id": str(pack.get("agent_id") or agent_spec_id)},
+        metadata=metadata,
+    )
+    policy = ensure_runtime_policy(context, capability)
+    return {
+        "agent_spec_id": policy.agent_spec_id,
+        "agent_spec_version": policy.agent_spec_version,
+        "capability": capability,
+        "runtime_policy": policy.to_dict(),
+    }
+
+
 def format_chat_system_context(policy: RuntimePolicy) -> str:
     """Build tutoring-oriented system guidance from assembled slices."""
     sections = [
