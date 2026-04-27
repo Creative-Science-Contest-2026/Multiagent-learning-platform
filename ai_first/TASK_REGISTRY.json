@@ -70,8 +70,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -1300,7 +1302,7 @@
       "dependencies": [
         "R5_DASHBOARD_ACTIONABILITY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-workflow",
       "notes": "Depends on the existing grouped-card pattern but not on full class-roster infrastructure yet."
@@ -1692,7 +1694,7 @@
       "status": "not-started",
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "student-model",
-      "notes": "Can begin before the full enriched student model, but should benefit from it later."
+      "notes": "Active on branch pod-b/abstain-weak-evidence-refinement. The implementation should centralize weak-evidence gating in the evidence layer and suppress recommendation payloads when signals are thin, stale, or mixed."
     },
     {
       "id": "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
