@@ -87,10 +87,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 10,
+      "count": 8,
       "tasks": [
-        "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
-        "F105_CLASS_INTERVENTION_QUEUE",
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
         "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
