@@ -28,5 +28,17 @@ Rules:
 
 ## Active
 
-No active AI implementation task is currently assigned on `main`.
-The next product work should start from a fresh Session A or Session B branch/worktree after the AI loop selects the next future-backlog task.
+### Assignment
+
+- Owner: Session B AI
+- Machine: local-mac
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/pod-b-pilot-feedback-ingestion`
+- Task: `F122_PILOT_FEEDBACK_INGESTION_PATH`
+- Status: `planning`
+- Branch: `pod-b/pilot-feedback-ingestion-path`
+- Task packet: `docs/superpowers/tasks/2026-04-28-f122-pilot-feedback-ingestion-path.md`
+- Owned files: `deeptutor/api/routers/system.py`, `deeptutor/services/evidence/`, bounded `deeptutor/services/session/sqlite_store.py`, `tests/api/test_system_router.py`, bounded `tests/services/session/test_sqlite_store.py`, bounded `docs/contest/`, bounded `ai_first/competition/`, `docs/superpowers/{tasks,specs,plans,pr-notes}/`, `ai_first/{ACTIVE_ASSIGNMENTS.md,TASK_REGISTRY.json,daily/2026-04-28.md}`
+- PR: `none yet`
+- Last update: `2026-04-28`
+- Next action: `write F122 task packet, spec, and implementation plan before any code changes`
+- Blocker: `none`
