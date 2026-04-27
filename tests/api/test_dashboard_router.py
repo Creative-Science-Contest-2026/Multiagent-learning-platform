@@ -499,6 +499,82 @@ async def test_dashboard_insights_returns_students_and_small_groups(
 
 
 @pytest.mark.asyncio
+async def test_dashboard_insights_preserve_procedure_breakdown_taxonomy_for_small_groups(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    for sid, student_id, answer in [
+        ("student-p-a", "student-proc-a", "18"),
+        ("student-p-b", "student-proc-b", "16"),
+    ]:
+        await _seed_session(
+            store,
+            session_id=sid,
+            capability="deep_question",
+            message="Generate a quiz on long division",
+            knowledge_bases=["division-pack"],
+        )
+        await store.update_session_preferences(
+            sid,
+            {
+                "student_id": student_id,
+                "knowledge_bases": ["division-pack"],
+                "capability": "deep_question",
+            },
+        )
+        await store.save_observations(
+            [
+                {
+                    "observation_id": f"{student_id}-support-1",
+                    "session_id": f"{sid}-tutor-1",
+                    "student_id": student_id,
+                    "source": "tutoring",
+                    "topic": "long division",
+                    "question_id": "s1",
+                    "is_correct": False,
+                    "latency_seconds": 35,
+                    "hint_count": 1,
+                    "retry_count": 2,
+                    "dominant_error": None,
+                    "created_at": 1_710_200_001,
+                },
+                {
+                    "observation_id": f"{student_id}-support-2",
+                    "session_id": f"{sid}-tutor-2",
+                    "student_id": student_id,
+                    "source": "tutoring",
+                    "topic": "long division",
+                    "question_id": "s2",
+                    "is_correct": False,
+                    "latency_seconds": 36,
+                    "hint_count": 1,
+                    "retry_count": 2,
+                    "dominant_error": None,
+                    "created_at": 1_710_200_002,
+                },
+            ]
+        )
+        await store.add_message(
+            sid,
+            "user",
+            "[Quiz Performance]\n"
+            f"1. [q1] Q: Solve long division 84 / 6 -> Answered: {answer} (Incorrect, correct: 14, time: 34s)\n"
+            "2. [q2] Q: Solve long division 96 / 8 -> Answered: 10 (Incorrect, correct: 12, time: 37s)\n"
+            "Score: 0/2 (0%)",
+            capability="deep_question",
+        )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/dashboard/insights")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["students"][0]["inferred"][0]["diagnosis_type"] == "procedure_breakdown"
+    assert payload["small_groups"][0]["diagnosis_type"] == "procedure_breakdown"
+
+
+@pytest.mark.asyncio
 async def test_dashboard_insights_skips_small_groups_for_stale_evidence(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

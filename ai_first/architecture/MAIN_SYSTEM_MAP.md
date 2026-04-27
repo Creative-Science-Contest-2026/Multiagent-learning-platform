@@ -82,6 +82,7 @@ flowchart TD
   AssessmentDiagnosisAPI --> EvidenceExtractor["Observation extractor (assessment + tutoring runtime)"]
   EvidenceExtractor --> ObservationStore["SQLite observations + student_states (+ enriched rollups)"]
   ObservationStore --> DiagnosisEngine["Rule-first diagnosis + action selection"]
+  DiagnosisEngine --> DiagnosisTaxonomy["Diagnosis taxonomy scoring: misconception patterns + state boosts"]
   DiagnosisEngine --> EvidenceGate["Evidence sufficiency gate: thin / stale / mixed"]
   DiagnosisEngine --> ConfidenceCalibration["Confidence calibration: evidence density + recency + support burden"]
   ObservationStore --> StudentModel["Student model signals: mastery + support + misconception"]

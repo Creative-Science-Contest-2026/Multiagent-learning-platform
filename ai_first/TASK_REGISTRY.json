@@ -88,7 +88,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 11,
+      "count": 10,
       "tasks": [
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
@@ -1430,7 +1430,7 @@
       "dependencies": [
         "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-teacher-facing",
       "layer": "teacher-quality-control",
       "notes": "Session A started on 2026-04-28 from worktree .worktrees/pod-a-recommendation-feedback-capture. Scope is bounded recommendation-quality feedback for student and small-group recommendations with labels practical, relevant, and too_generic plus an optional teacher note."

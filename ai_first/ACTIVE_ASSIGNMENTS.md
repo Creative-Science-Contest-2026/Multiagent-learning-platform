@@ -40,7 +40,7 @@ Rules:
 - Owned files: `deeptutor/services/evidence/`, bounded assessment and dashboard payload contracts/tests, related docs
 - PR: `Not opened yet`
 - Last update: `2026-04-28T01:35:00+0700`
-- Next action: `Finish bounded API proof, write PR note, and open the Draft PR for F118.`
+- Next action: `Run the full targeted suite, then commit and open the Draft PR for F118.`
 
 ### Assignment
 
