@@ -12,6 +12,7 @@ import {
   type AssessmentAnalysis,
   type AssessmentReview,
 } from "@/lib/dashboard-api";
+import { AssessmentRubricReviewCard } from "@/components/assessment/AssessmentRubricReviewCard";
 import { ProgressIndicator } from "@/components/assessment/ProgressIndicator";
 import { LearningJourneySummary } from "@/components/assessment/LearningJourneySummary";
 
@@ -211,6 +212,12 @@ export default function AssessmentReviewPage() {
             </div>
           </div>
         </section>
+
+        <AssessmentRubricReviewCard
+          sessionId={sessionId}
+          existingReview={review.teacher_review ?? null}
+          t={t}
+        />
 
         <ProgressIndicator
           totalQuestions={review.summary.total_questions}

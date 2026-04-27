@@ -18,6 +18,25 @@ export interface AssessmentReviewResult {
   duration_seconds?: number | null;
 }
 
+export type AssessmentRubricLevel = "strong" | "acceptable" | "weak";
+
+export type AssessmentRubricDecision =
+  | "approved_for_reuse"
+  | "needs_edit_before_reuse"
+  | "not_ready";
+
+export interface TeacherAssessmentReviewRecord {
+  id: string;
+  session_id: string;
+  wording_quality: AssessmentRubricLevel;
+  distractor_quality: AssessmentRubricLevel;
+  explanation_clarity: AssessmentRubricLevel;
+  overall_decision: AssessmentRubricDecision;
+  teacher_note: string;
+  created_at: number;
+  updated_at: number;
+}
+
 export interface AssessmentReview {
   session_id: string;
   title: string;
@@ -26,6 +45,7 @@ export interface AssessmentReview {
   knowledge_bases: string[];
   summary: AssessmentSummary;
   results: AssessmentReviewResult[];
+  teacher_review?: TeacherAssessmentReviewRecord | null;
 }
 
 export interface TopicPerformance {
@@ -43,6 +63,14 @@ export interface AssessmentAnalysis {
   weak_topics: string[];
   strong_topics: string[];
   recommendations: string[];
+}
+
+export interface CreateTeacherAssessmentReviewRequest {
+  wording_quality: AssessmentRubricLevel;
+  distractor_quality: AssessmentRubricLevel;
+  explanation_clarity: AssessmentRubricLevel;
+  overall_decision: AssessmentRubricDecision;
+  teacher_note?: string;
 }
 
 export interface DashboardActivity {
@@ -202,6 +230,30 @@ export async function getAssessmentReview(sessionId: string): Promise<Assessment
     cache: "no-store",
   });
   return expectJson<AssessmentReview>(response);
+}
+
+export async function createAssessmentRubricReview(
+  sessionId: string,
+  payload: CreateTeacherAssessmentReviewRequest,
+): Promise<TeacherAssessmentReviewRecord> {
+  const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/assessment-rubric-review`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<TeacherAssessmentReviewRecord>(response);
+}
+
+export async function updateAssessmentRubricReview(
+  sessionId: string,
+  payload: CreateTeacherAssessmentReviewRequest,
+): Promise<TeacherAssessmentReviewRecord> {
+  const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/assessment-rubric-review`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<TeacherAssessmentReviewRecord>(response);
 }
 
 export async function getAssessmentAnalysis(sessionId: string): Promise<AssessmentAnalysis> {
