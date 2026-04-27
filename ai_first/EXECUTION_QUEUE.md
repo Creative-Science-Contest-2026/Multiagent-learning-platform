@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest feature-risk merge: `#196 [F121] feat(classroom): add class roster ownership foundation`
+- Latest feature-risk merge: `#200 [F122] feat(validation): add pilot feedback ingestion seam`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Lane 3 (`2026-04-26-lane-3-observation-student-state`) merged to `main` through PR `#140`.
@@ -37,6 +37,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Future backlog Session B task `F120_INTERVENTION_EFFECTIVENESS_TRACKING` merged to `main` through PR `#192`.
 - Future backlog Session A task `F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS` merged to `main` through PR `#195`.
 - Future backlog Session B task `F121_CLASS_ROSTER_AND_GROUP_FOUNDATION` merged to `main` through PR `#196`.
+- Future backlog Session B task `F122_PILOT_FEEDBACK_INGESTION_PATH` merged to `main` through PR `#200`.
 - Latest smoke result: the 2026-04-26 scripted-reset smoke pass succeeded in lane 6 (`docs/evaluation-evidence-readiness`) against current `main` behavior.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -44,14 +45,15 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- No active AI implementation task remains on `main`.
-- The next safe product work should be selected from the future backlog pair below on a fresh branch/worktree.
+- Session A remains active on `F112_PROVENANCE_AND_REASON_TRACE_SURFACES` through PR `#199`.
+- Session B has no remaining active lane on `main` after the `F122` merge.
+- The next safe Session B product work should be selected from the remaining pending future-backlog task below on a fresh branch/worktree.
 
 ## Next recommended task
 
-- After `F101`, `F102`, `F103`, `F107`, `F108`, `F109`, `F110`, `F111`, `F113`, `F114`, `F115`, `F116`, `F117`, `F118`, `F119`, `F120`, and `F121`, the preferred next pair from the future backlog packet is:
-  - Session A: `F112_PROVENANCE_AND_REASON_TRACE_SURFACES`
-  - Session B: `F122_PILOT_FEEDBACK_INGESTION_PATH` or `F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION`
+- After `F101`, `F102`, `F103`, `F107`, `F108`, `F109`, `F110`, `F111`, `F113`, `F114`, `F115`, `F116`, `F117`, `F118`, `F119`, `F120`, `F121`, and `F122`, the preferred next pending future-backlog work is:
+  - Session A: keep `F112_PROVENANCE_AND_REASON_TRACE_SURFACES` moving through PR `#199`
+  - Session B: `F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION`
 - Any new AI task should start from a fresh branch/worktree off `main`, not from a merged lane branch.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
@@ -67,7 +69,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None currently. The next AI-owned work is the post-contest future backlog, but no session is active by default after the `F101`, `F102`, `F103`, `F107`, `F108`, `F109`, `F110`, `F111`, `F113`, `F114`, `F115`, `F116`, `F117`, `F118`, `F119`, `F120`, and `F121` merges.
+- None currently. Session A remains active on `F112`, while the next unclaimed Session B work is `F123`.
 
 ## Human-review blockers
 
