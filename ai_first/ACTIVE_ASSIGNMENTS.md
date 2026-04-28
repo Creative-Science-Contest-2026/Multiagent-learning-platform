@@ -30,17 +30,32 @@ Rules:
 
 ### Assignment
 
+- Owner: Post-229 active-assignment sync lane
+- Machine: local
+- Worktree: `.worktrees/post-terminal-state-sync`
+- Task: `OPS_POST_229_ACTIVE_ASSIGNMENTS_SYNC`
+- Status: ready-for-review
+- Branch: `docs/post-terminal-state-sync`
+- Task packet: `docs/superpowers/tasks/2026-04-28-post-229-active-assignments-merge-sync.md`
+- Owned files: `ai_first/ACTIVE_ASSIGNMENTS.md`, daily log, and sync task/PR note only
+- PR: `#230`
+- Last update: 2026-04-28
+- Next action: merge the docs-only post-229 repair PR once checks are clear and no blocking review remains
+- Blocker: none
+
+### Assignment
+
 - Owner: Screenshot truth sync lane
 - Machine: local
 - Worktree: `.worktrees/post-screenshot-truth-sync`
 - Task: `OPS_SCREENSHOT_TRUTH_SYNC`
-- Status: ready-for-review
+- Status: merged
 - Branch: `docs/post-screenshot-truth-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-screenshot-truth-sync.md`
 - Owned files: authoritative prompt, compact mirrors, daily log, and sync task/PR note only
-- PR:
+- PR: `#229`
 - Last update: 2026-04-28
-- Next action: align AI-first mirrors with the authoritative contest evidence docs that still mark browser screenshot rows stale
+- Next action: preserve the merged screenshot-truth sync as the current control-plane baseline for stale browser-backed evidence rows
 - Blocker: none
 
 ### Assignment
