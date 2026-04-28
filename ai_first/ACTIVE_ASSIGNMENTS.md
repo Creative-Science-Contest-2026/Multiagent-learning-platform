@@ -30,17 +30,17 @@ Rules:
 
 ### Assignment
 
-- Owner: Control-plane sync lane
+- Owner: Post-221 sync lane
 - Machine: local
-- Worktree: `.worktrees/post-submission-close-sync`
-- Task: `OPS_POST_SUBMISSION_CLOSE_SYNC`
-- Status: in-progress
-- Branch: `docs/post-submission-close-sync`
-- Task packet: `docs/superpowers/tasks/2026-04-28-post-submission-close-sync.md`
-- Owned files: AI-first mirrors, submission-close registry state, and sync PR note
-- PR:
+- Worktree: `.worktrees/submission-close-c`
+- Task: `OPS_POST_221_BROWSER_RECAPTURE_SYNC`
+- Status: merged
+- Branch: `docs/post-221-browser-recapture-sync`
+- Task packet: `docs/superpowers/tasks/2026-04-28-post-221-browser-recapture-sync.md`
+- Owned files: authoritative prompt, compact mirrors, daily log, and sync PR note
+- PR: `#222`
 - Last update: 2026-04-28
-- Next action: mark Phase 1 submission-close work completed across registry and mirrors, then open a docs-only sync PR
+- Next action: preserve the merged post-`#221` control-plane sync as the current terminal-state baseline
 - Blocker: none
 
 ### Assignment
@@ -109,13 +109,13 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/submission-close-c211`
 - Task: `C211_TEACHER_FIRST_ENTRY_POLISH`
-- Status: ready-for-review
+- Status: merged
 - Branch: `fix/submission-close-c211`
 - Task packet: `docs/superpowers/tasks/2026-04-28-c211-teacher-first-entry-polish.md`
 - Owned files: teacher-entry product surfaces plus required AI-first mirrors for C211 only
 - PR: `#219`
 - Last update: 2026-04-28
-- Next action: monitor Ready PR `#219` and merge when checks finish green and review is clear
+- Next action: preserve the merged teacher-first entry wording as the current baseline unless a later packet changes those surfaces
 - Blocker:
 
 ### Assignment
@@ -124,11 +124,11 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
 - Task: `OPS_BROWSER_RECAPTURE_AFTER_PHASE2`
-- Status: packet-ready
-- Branch: `docs/post-phase2-browser-recapture-packet`
+- Status: merged
+- Branch: `docs/post-phase2-browser-recapture-run`
 - Task packet: `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
-- Owned files: workflow docs and AI-first mirrors for the next browser/manual evidence lane
-- PR:
+- Owned files: browser screenshot artifacts, contest evidence docs, AI-first mirrors, daily log, and PR note for the recapture execution
+- PR: `#221`
 - Last update: 2026-04-28
-- Next action: use this packet from `main` when the team decides to refresh the stale browser screenshot rows
-- Blocker: browser capture is not being executed in this packet lane
+- Next action: preserve the merged browser screenshot refresh as the current contest evidence baseline unless a later UI change makes these rows stale again
+- Blocker: none

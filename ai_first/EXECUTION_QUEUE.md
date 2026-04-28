@@ -7,9 +7,8 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest optional Phase 2 polish merges: `#214` (`C212` core-loop visibility polish), `#215` (`C213` differentiation wording sweep), `#216` (`C214` judge-facing visual asset polish), and `#217` (`C215` post-polish evidence freshness sync).
-
-- Latest docs/control-plane merges: `#210` (submission-close master coordination), `#212` (validation and evidence refresh), and `#211` (submission narrative and final package readiness).
+- Latest optional Phase 2 polish merges: `#214` (`C212` core-loop visibility polish), `#215` (`C213` differentiation wording sweep), `#216` (`C214` judge-facing visual asset polish), `#217` (`C215` post-polish evidence freshness sync), and `#219` (`C211` teacher-first entry polish).
+- Latest docs/control-plane merges: `#210` (submission-close master coordination), `#212` (validation and evidence refresh), `#211` (submission narrative and final package readiness), `#220` (browser recapture packet), `#221` (browser recapture execution), and `#222` (post-221 control-plane sync).
 - Latest feature-risk merge: `#206 [F124] feat(validation): automate evidence refresh status`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
@@ -44,22 +43,19 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Future backlog Session B task `F122_PILOT_FEEDBACK_INGESTION_PATH` merged to `main` through PR `#200`.
 - Future backlog Session B task `F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION` merged to `main` through PR `#203`.
 - Future backlog Session B task `F124_EVIDENCE_AUTOMATION_REFRESH` merged to `main` through PR `#206`.
-- Latest smoke result: the 2026-04-26 scripted-reset smoke pass succeeded in lane 6 (`docs/evaluation-evidence-readiness`) against current `main` behavior.
-- The two-lane contest MVP polish experiment is now fully merged to `main`:
-  `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
+- Latest smoke result: the 2026-04-28 scripted-reset smoke pass succeeded against current `main` behavior.
 - Core MVP path in `main` now also includes the Wave 1 evidence spine: structured observations, student-state persistence, assessment diagnosis, and teacher insight payloads on top of the earlier marketplace, assessment, tutor, dashboard, offline, analytics, evidence, and submission flows.
 
 ## Active queue
 
 - The post-contest future backlog `F101-F124` is fully merged on `main`.
 - Submission-close Phase 1 (`C201-C210`) is fully merged on `main`.
-- Optional Phase 2 contest polish (`C212-C215`) is fully merged on `main`.
+- Optional Phase 2 contest polish (`C211-C215`) is fully merged on `main`.
 - No active AI-owned blocker remains in the current submission-close scope.
 
 ## Next recommended task
 
 - Complete the remaining human review gates: product wording confirmation, IP commitment, optional video decision, and final sign-off.
-- If the screenshot bundle must become fully current again, use `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md` from `main`; do not silently treat stale browser captures as current.
 - Otherwise, open a new packet only if the human explicitly wants more post-submission work from `main`.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
@@ -75,12 +71,11 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None currently. Submission-close Phase 1 and the optional Phase 2 polish are merged, and the next AI-owned work is already packetized as `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md` if the stale browser rows must be refreshed.
+- None currently. The browser screenshot recapture follow-up is already merged through PR `#221`.
 
 ## Human-review blockers
 
 - Human-only submission items remain for the contest package, including IP commitment review, optional video decision, and final package sign-off.
-- Browser screenshot freshness for Knowledge, Tutor, Dashboard, and `/agents` is intentionally marked stale after Phase 2 polish and requires a fresh manual recapture pass if the submission needs those rows restored to `Current`.
 
 ## Read path
 

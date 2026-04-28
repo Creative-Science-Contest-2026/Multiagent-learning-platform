@@ -28,10 +28,10 @@ Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 
 ## Active Branches and PRs
 
-- Latest merged docs/control-plane PRs: `#210`, `#212`, and `#211` completed submission-close Phase 1 on 2026-04-28.
-- Current branch for this sync: `docs/post-submission-close-sync`
-- Product MVP path status: the core contest flow, the Wave 1 evidence spine, the command-backed 2026-04-28 smoke refresh, the optional Phase 2 polish train (`C212-C215`), and the final human-review package path are all merged to `main` as a validated prototype.
-- Current purpose: keep a correct terminal wait state while the remaining submission work is human review, optional video, optional browser screenshot recapture via the explicit post-Phase-2 packet, final sign-off, or a newly opened packet from `main`.
+- Latest merged docs/control-plane PRs: `#210`, `#212`, `#211`, `#220`, `#221`, and `#222` completed submission-close evidence and control-plane sync on 2026-04-28.
+- Latest sync branch: `docs/post-221-browser-recapture-sync`
+- Product MVP path status: the core contest flow, the Wave 1 evidence spine, the command-backed 2026-04-28 smoke refresh, the optional Phase 2 polish train (`C211-C215`), and the post-Phase-2 browser screenshot recapture (`#221`) are merged to `main` as a validated prototype.
+- Current purpose: the repository is back in final human-review state, with current browser screenshots and no active AI-owned blocker in the submission-close scope.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -59,16 +59,16 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: none active by default after the Phase 2 sync; if browser freshness must be restored, start from `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
+- Latest completed task packet: `docs/superpowers/tasks/2026-04-28-post-221-browser-recapture-sync.md`
 - Current open GitHub issue:
 - Latest completed smoke run result: the 2026-04-28 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
-- Recently completed merged work: submission-close master coordination and package readiness merged through PRs `#210`, `#212`, and `#211`, followed by optional Phase 2 polish through PRs `#214`, `#215`, `#216`, and `#217`.
+- Recently completed merged work: submission-close master coordination and package readiness merged through PRs `#210`, `#212`, and `#211`, followed by optional Phase 2 polish through PRs `#214`, `#215`, `#216`, `#217`, and `#219`, plus browser screenshot freshness restoration through PR `#221`.
 - Autonomous loop design: `docs/superpowers/specs/2026-04-18-autonomous-ai-loop-design.md`
 - Autonomous loop roadmap: `ai_first/AI_FIRST_ROADMAP.md`
 
 ## Current Next Task
 
-Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off unless the browser-recapture packet or another follow-up packet is explicitly opened from `main`.
+Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off unless another follow-up packet is explicitly opened from `main`.
 
 ## Autonomous Merge Policy
 
@@ -81,6 +81,6 @@ Wait for human review of the submission package, IP commitment, optional video d
 Use this file only as a compact status mirror. Do not rely on it for the full operating contract. For a human-friendly quick start, read `ai_first/USAGE_GUIDE.md`.
 ## 2026-04-28
 
-- `main` now includes submission-close Phase 1 through PRs `#210`, `#212`, and `#211` plus the optional Phase 2 polish train through PRs `#214`, `#215`, `#216`, and `#217`.
-- The authoritative contest package is in human-review state, with command-backed validation current on 2026-04-28 and browser screenshot freshness intentionally split between `Current` assessment rows and stale Knowledge/Tutor/Dashboard/`/agents` rows pending recapture.
-- Optional AI-owned next work is now limited to a fresh browser-recapture packet or another newly approved packet from `main`.
+- `main` now includes submission-close Phase 1 through PRs `#210`, `#212`, and `#211` plus the optional Phase 2 polish train through PRs `#214`, `#215`, `#216`, `#217`, and `#219`.
+- The authoritative contest package now has both command-backed validation and browser screenshot freshness current on 2026-04-28.
+- Optional AI-owned next work after this sync should return to human review, optional video, or another newly approved packet from `main`.
