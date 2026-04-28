@@ -163,10 +163,10 @@ export default function BotChatPage() {
                 <Bot size={22} />
               </div>
               <p className="text-[14px] font-medium text-[var(--foreground)]">
-                {t("Continue guided tutoring with {{name}}", { name: bot?.name ?? botId })}
+                {t("Continue classroom-guided tutoring with {{name}}", { name: bot?.name ?? botId })}
               </p>
               <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-                {t("Use the tutor to probe understanding, then bring that evidence back to teacher review.")}
+                {t("Use this class tutor to probe understanding, then bring that evidence back to teacher review.")}
               </p>
             </div>
           )}

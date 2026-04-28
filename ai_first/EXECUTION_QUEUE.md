@@ -54,12 +54,12 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - The post-contest future backlog `F101-F124` is fully merged on `main`.
 - Submission-close Phase 1 (`C201-C210`) is fully merged on `main`.
 - Optional Phase 2 contest polish (`C212-C215`) is fully merged on `main`.
-- The remaining submission-close AI-owned blocker was the optional browser screenshot recapture lane; it is now being executed on `docs/post-phase2-browser-recapture-run`.
+- No active AI-owned blocker remains in the current submission-close scope.
 
 ## Next recommended task
 
 - Complete the remaining human review gates: product wording confirmation, IP commitment, optional video decision, and final sign-off.
-- Review the refreshed screenshot bundle from `docs/post-phase2-browser-recapture-run` and merge it once docs validation is clean and CI is green.
+- If the screenshot bundle must become fully current again, use `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md` from `main`; do not silently treat stale browser captures as current.
 - Otherwise, open a new packet only if the human explicitly wants more post-submission work from `main`.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
@@ -75,11 +75,12 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None beyond landing the active docs-only browser recapture lane and keeping its validation green.
+- None currently. Submission-close Phase 1 and the optional Phase 2 polish are merged, and the next AI-owned work is already packetized as `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md` if the stale browser rows must be refreshed.
 
 ## Human-review blockers
 
 - Human-only submission items remain for the contest package, including IP commitment review, optional video decision, and final package sign-off.
+- Browser screenshot freshness for Knowledge, Tutor, Dashboard, and `/agents` is intentionally marked stale after Phase 2 polish and requires a fresh manual recapture pass if the submission needs those rows restored to `Current`.
 
 ## Read path
 

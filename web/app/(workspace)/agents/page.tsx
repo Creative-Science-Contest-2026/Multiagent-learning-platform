@@ -91,13 +91,13 @@ export default function AgentsPage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-[24px] font-semibold tracking-tight text-[var(--foreground)]">
-            {t("TutorBot Agents")}
+            {t("Class tutor setup")}
           </h1>
           {toast ? (
             <p className="mt-1 text-[13px] text-[var(--primary)] animate-fade-in">{toast}</p>
           ) : (
             <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-              {t("Set how this class tutor explains, encourages, and gives hints before students start learning")}
+              {t("Set how the teacher-controlled class tutor explains, encourages, and gives hints before students start guided practice.")}
             </p>
           )}
         </div>
@@ -250,7 +250,7 @@ function BotsTab({
           className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)]/50 px-3 py-1.5 text-[12px] font-medium text-[var(--muted-foreground)] transition-colors hover:border-[var(--border)] hover:text-[var(--foreground)]"
         >
           <Plus className="h-3 w-3" />
-          {t("New Bot")}
+          {t("New class tutor")}
         </button>
       </div>
 
@@ -258,7 +258,7 @@ function BotsTab({
       {showCreate && (
         <div className="mb-6 rounded-xl border border-[var(--border)] p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-[15px] font-medium text-[var(--foreground)]">{t("Create TutorBot")}</h2>
+            <h2 className="text-[15px] font-medium text-[var(--foreground)]">{t("Create class tutor")}</h2>
             <button onClick={() => { setShowCreate(false); resetForm(); }} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
               <X className="h-4 w-4" />
             </button>
@@ -358,9 +358,9 @@ function BotsTab({
           <div className="mb-3 rounded-xl bg-[var(--muted)] p-2.5 text-[var(--muted-foreground)]">
             <Bot size={18} />
           </div>
-          <p className="text-[14px] font-medium text-[var(--foreground)]">{t("No TutorBots yet")}</p>
+          <p className="text-[14px] font-medium text-[var(--foreground)]">{t("No class tutors yet")}</p>
           <p className="mt-1.5 max-w-xs text-[13px] text-[var(--muted-foreground)]">
-            {t("Create your first TutorBot to get started.")}
+            {t("Create your first class tutor to shape how guided help works for this classroom.")}
           </p>
         </div>
       ) : (
@@ -738,7 +738,7 @@ function SoulsTab({
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="text-[13px] text-[var(--muted-foreground)]">
-          {t("Reusable soul templates for creating TutorBots.")}
+          {t("Reusable soul templates for shaping class tutors with clear classroom boundaries.")}
         </p>
         <button
           onClick={startCreate}

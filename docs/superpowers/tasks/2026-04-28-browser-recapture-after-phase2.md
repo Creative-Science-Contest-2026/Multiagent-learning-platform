@@ -26,7 +26,6 @@ Recapture the browser screenshot evidence that is now stale after the merged Pha
 - `docs/contest/SUBMISSION_PACKAGE.md`
 - `docs/contest/DEMO_SCRIPT.md`
 - `ai_first/evidence/screenshots.md`
-- `ai_first/evidence/demo-script.md`
 - `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
 - `docs/superpowers/pr-notes/*`
 - `ai_first/ACTIVE_ASSIGNMENTS.md`
@@ -92,4 +91,3 @@ Recapture the browser screenshot evidence that is now stale after the merged Pha
 
 - `#217` intentionally split command-backed freshness from browser-backed freshness; this lane is the follow-up that can restore the browser rows to `Current`.
 - Start from `origin/main`, use demo-safe data, and only update screenshot dates after the fresh artifacts exist.
-- 2026-04-28 execution note: local backend and frontend were started from `.worktrees/submission-close-c`, demo data was reset, a demo-safe `fraction-coach` spec pack was seeded for `/agents`, and the seven stale screenshot rows were freshly recaptured before doc statuses were moved back to `Current`.

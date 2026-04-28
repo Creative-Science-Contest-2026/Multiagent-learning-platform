@@ -34,11 +34,11 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/post-submission-close-sync`
 - Task: `OPS_POST_SUBMISSION_CLOSE_SYNC`
-- Status: review-ready
+- Status: in-progress
 - Branch: `docs/post-submission-close-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-submission-close-sync.md`
 - Owned files: AI-first mirrors, submission-close registry state, and sync PR note
-- PR: `#221`
+- PR:
 - Last update: 2026-04-28
 - Next action: mark Phase 1 submission-close work completed across registry and mirrors, then open a docs-only sync PR
 - Blocker: none
@@ -103,17 +103,32 @@ Rules:
 - Next action: keep 2026-04-28 command-backed smoke evidence current, and treat browser screenshot recapture as a separate future packet if needed
 - Blocker:
 
+### Active Assignment
+
+- Owner: Session C211
+- Machine: local
+- Worktree: `.worktrees/submission-close-c211`
+- Task: `C211_TEACHER_FIRST_ENTRY_POLISH`
+- Status: ready-for-review
+- Branch: `fix/submission-close-c211`
+- Task packet: `docs/superpowers/tasks/2026-04-28-c211-teacher-first-entry-polish.md`
+- Owned files: teacher-entry product surfaces plus required AI-first mirrors for C211 only
+- PR: `#219`
+- Last update: 2026-04-28
+- Next action: monitor Ready PR `#219` and merge when checks finish green and review is clear
+- Blocker:
+
 ### Assignment
 
-- Owner: Browser recapture execution lane
+- Owner: Browser recapture packet lane
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
 - Task: `OPS_BROWSER_RECAPTURE_AFTER_PHASE2`
-- Status: in-progress
-- Branch: `docs/post-phase2-browser-recapture-run`
+- Status: packet-ready
+- Branch: `docs/post-phase2-browser-recapture-packet`
 - Task packet: `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
-- Owned files: browser screenshot artifacts, contest evidence docs, AI-first mirrors, daily log, and PR note for the recapture execution
+- Owned files: workflow docs and AI-first mirrors for the next browser/manual evidence lane
 - PR:
 - Last update: 2026-04-28
-- Next action: keep PR `#221` green and merge it once required checks pass
-- Blocker: none
+- Next action: use this packet from `main` when the team decides to refresh the stale browser screenshot rows
+- Blocker: browser capture is not being executed in this packet lane
