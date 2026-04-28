@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Activity, ArrowRight, BookOpen, CheckCircle2, Filter, Loader2, PenLine, Search, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { TeacherInsightPanel } from "@/components/dashboard/TeacherInsightPanel";
+import { CoreLoopVisibilityStrip } from "@/components/contest/CoreLoopVisibilityStrip";
 import {
   getDashboardInsights,
   getDashboardOverview,
@@ -142,6 +143,13 @@ export default function DashboardPage() {
               {t("Open student progress")}
               <ArrowRight size={15} />
             </Link>
+          </div>
+          <div className="mt-4">
+            <CoreLoopVisibilityStrip
+              currentStep="Diagnosis"
+              nextStep="Intervention"
+              helperText={t("This dashboard turns observed activity into teacher-reviewed diagnosis and the next intervention decision, not autonomous final judgment.")}
+            />
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <div className="rounded-xl bg-[var(--background)] px-4 py-3">

@@ -36,6 +36,7 @@ import {
   invalidateNotebookCaches,
   listNotebooks,
 } from "@/lib/notebook-api";
+import { CoreLoopVisibilityStrip } from "@/components/contest/CoreLoopVisibilityStrip";
 
 const MarkdownRenderer = dynamic(() => import("@/components/common/MarkdownRenderer"), {
   ssr: false,
@@ -759,7 +760,7 @@ export default function KnowledgePage() {
       return t("This knowledge base is currently {{status}} and cannot accept uploads yet.", { status: status.replaceAll("_", " ") });
     }
     return null;
-  }, [uploadTargetKb]);
+  }, [t, uploadTargetKb]);
 
   const uploadDisabled =
     !uploadTarget || !uploadFiles.length || !!uploadingKb || Boolean(uploadBlockedReason);
@@ -804,6 +805,12 @@ export default function KnowledgePage() {
             ))}
           </div>
         </div>
+
+        <CoreLoopVisibilityStrip
+          currentStep="Knowledge Pack"
+          nextStep="Assessment"
+          helperText={t("Start with teacher-owned source material so every later step stays grounded in the same classroom knowledge pack.")}
+        />
 
         {pageError && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">

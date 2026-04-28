@@ -91,14 +91,14 @@ Rules:
 ### Planned Assignment
 
 - Owner: Session C
-- Machine:
+- Machine: local
 - Worktree: `.worktrees/submission-close-c`
-- Task: `OPS_SUBMISSION_CLOSE_C`
-- Status: planned
+- Task: `C212_CORE_LOOP_VISIBILITY_POLISH`
+- Status: in-progress
 - Branch: `fix/submission-close-session-c`
-- Task packet: `docs/superpowers/tasks/2026-04-28-session-c-runtime-fix-and-polish.md`
-- Owned files: runtime fixes and optional polish only
+- Task packet: `docs/superpowers/tasks/2026-04-28-c212-core-loop-visibility-polish.md`
+- Owned files: core-loop visibility polish on contest-facing frontend surfaces
 - PR:
 - Last update: 2026-04-28
-- Next action: remain on standby unless a human explicitly opens optional Phase 2 polish or a new blocker appears
+- Next action: implement `PR-POLISH-02` on the bounded Knowledge, Assessment, Tutor, and Dashboard surfaces, then validate with lint and build
 - Blocker:
