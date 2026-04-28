@@ -149,7 +149,7 @@ export default function BotChatPage() {
             compact
             currentStep="Tutor"
             nextStep="Diagnosis"
-            helperText={t("Tutor replies are one step in the same classroom loop before the teacher reviews diagnosis and chooses the next intervention.")}
+            helperText={t("Tutor replies provide adaptive practice inside the same teacher-controlled loop before diagnosis review and intervention selection.")}
           />
         </div>
       </div>
@@ -163,10 +163,10 @@ export default function BotChatPage() {
                 <Bot size={22} />
               </div>
               <p className="text-[14px] font-medium text-[var(--foreground)]">
-                {t("Chat with {{name}}", { name: bot?.name ?? botId })}
+                {t("Continue guided tutoring with {{name}}", { name: bot?.name ?? botId })}
               </p>
               <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-                {t("Send a message to start the conversation.")}
+                {t("Use the tutor to probe understanding, then bring that evidence back to teacher review.")}
               </p>
             </div>
           )}

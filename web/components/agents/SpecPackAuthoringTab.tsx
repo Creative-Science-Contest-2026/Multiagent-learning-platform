@@ -221,7 +221,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
               {t("Class tutoring setup")}
             </p>
             <h2 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
-              {t("Shape how the tutor teaches this class")}
+              {t("Shape the adaptive tutor for this class")}
             </h2>
           </div>
           <button
@@ -238,7 +238,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
           </div>
         ) : packs.length === 0 ? (
           <div className="rounded-xl border border-dashed border-[var(--border)] p-4 text-[13px] text-[var(--muted-foreground)]">
-            {t("No spec packs yet. Start with a new teacher-defined agent.")}
+            {t("No spec packs yet. Start with a teacher-controlled adaptive tutor.")}
           </div>
         ) : (
           <div className="space-y-2">
@@ -282,7 +282,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
                 {t("Choose class fit, support style, and guardrails")}
               </h2>
               <p className="mt-2 max-w-[680px] text-[13px] text-[var(--muted-foreground)]">
-                {t("IDENTITY sets who this tutor is for, SOUL shapes how it responds when students are wrong or stuck, and RULES keep help within your classroom boundaries.")}
+                {t("IDENTITY defines who this adaptive tutor supports, SOUL shapes how it coaches when students are wrong or stuck, and RULES keep every response inside your classroom boundaries.")}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -435,9 +435,9 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
               onChange={(event) => setAuditCapability(event.target.value as "chat" | "deep_question" | "deep_solve")}
               className="rounded-lg border border-[var(--border)] bg-transparent px-2 py-1 text-[12px] text-[var(--foreground)]"
             >
-              <option value="chat">chat</option>
-              <option value="deep_question">deep_question</option>
-              <option value="deep_solve">deep_solve</option>
+              <option value="chat">{t("chat")}</option>
+              <option value="deep_question">{t("deep_question")}</option>
+              <option value="deep_solve">{t("deep_solve")}</option>
             </select>
           </div>
           {!draft.agent_id ? (

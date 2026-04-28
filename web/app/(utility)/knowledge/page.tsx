@@ -809,7 +809,7 @@ export default function KnowledgePage() {
         <CoreLoopVisibilityStrip
           currentStep="Knowledge Pack"
           nextStep="Assessment"
-          helperText={t("Start with teacher-owned source material so every later step stays grounded in the same classroom knowledge pack.")}
+          helperText={t("Start with teacher-owned source material so the adaptive tutor, assessment, and teacher review all stay grounded in the same classroom knowledge pack.")}
         />
 
         {pageError && (
