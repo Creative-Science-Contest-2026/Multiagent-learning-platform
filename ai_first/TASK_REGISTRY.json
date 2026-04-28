@@ -2115,10 +2115,10 @@
       "dependencies": [
         "C210_FINAL_PACKAGE_READINESS"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
-      "notes": "Activated on branch fix/submission-close-session-c on 2026-04-28. Scope is bounded to loop-visibility labels on existing Knowledge, Assessment, Tutor, and Dashboard surfaces."
+      "notes": "Merged to main through PR #214 on 2026-04-28. Scope stayed bounded to loop-visibility labels on existing Knowledge, Assessment, Tutor, and Dashboard surfaces."
     },
     {
       "id": "C213_DIFFERENTIATION_WORDING_SWEEP",
@@ -2139,9 +2139,10 @@
       "dependencies": [
         "C210_FINAL_PACKAGE_READINESS"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-c-polish",
-      "layer": "optional-polish"
+      "layer": "optional-polish",
+      "notes": "Activated on branch fix/submission-close-c213 on 2026-04-28. Scope is bounded to contest-facing wording only on existing frontend surfaces and required AI-first mirrors."
     },
     {
       "id": "C214_JUDGE_FACING_VISUAL_ASSET_POLISH",

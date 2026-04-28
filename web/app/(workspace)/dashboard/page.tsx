@@ -127,13 +127,13 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-                {t("Teacher Workflow")}
+                {t("Teacher-controlled adaptive loop")}
               </p>
               <h1 className="mt-2 text-[28px] font-semibold tracking-tight text-[var(--foreground)]">
-                {t("Observed, diagnosed, and ready for action")}
+                {t("Teacher-reviewed signals, adaptive next steps")}
               </h1>
               <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-[var(--muted-foreground)]">
-                {t("Review observed facts first, then decide the clearest next classroom move for each student or group.")}
+                {t("Review observed evidence first, then choose the clearest adaptive classroom move for each student or group.")}
               </p>
             </div>
             <Link
@@ -148,7 +148,7 @@ export default function DashboardPage() {
             <CoreLoopVisibilityStrip
               currentStep="Diagnosis"
               nextStep="Intervention"
-              helperText={t("This dashboard turns observed activity into teacher-reviewed diagnosis and the next intervention decision, not autonomous final judgment.")}
+              helperText={t("This dashboard turns assessment and tutoring signals into teacher-reviewed diagnosis and the next classroom move; it does not replace teacher judgment.")}
             />
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-3">

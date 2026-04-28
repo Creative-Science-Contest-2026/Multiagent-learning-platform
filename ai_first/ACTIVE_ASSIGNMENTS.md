@@ -88,17 +88,17 @@ Rules:
 - Next action: keep the 2026-04-28 command-backed validation refresh as the authoritative proof baseline unless a later smoke pass replaces it
 - Blocker:
 
-### Planned Assignment
+### Active Assignment
 
 - Owner: Session C
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
-- Task: `C212_CORE_LOOP_VISIBILITY_POLISH`
+- Task: `C213_DIFFERENTIATION_WORDING_SWEEP`
 - Status: in-progress
-- Branch: `fix/submission-close-session-c`
-- Task packet: `docs/superpowers/tasks/2026-04-28-c212-core-loop-visibility-polish.md`
-- Owned files: core-loop visibility polish on contest-facing frontend surfaces
+- Branch: `fix/submission-close-c213`
+- Task packet: `docs/superpowers/tasks/2026-04-28-c213-differentiation-wording-sweep.md`
+- Owned files: contest-facing wording-only polish on bounded frontend surfaces plus required AI-first mirrors
 - PR:
 - Last update: 2026-04-28
-- Next action: implement `PR-POLISH-02` on the bounded Knowledge, Assessment, Tutor, and Dashboard surfaces, then validate with lint and build
+- Next action: implement the wording sweep on Knowledge, Dashboard, Tutor, and Spec Pack authoring surfaces, then validate with lint and build
 - Blocker:
