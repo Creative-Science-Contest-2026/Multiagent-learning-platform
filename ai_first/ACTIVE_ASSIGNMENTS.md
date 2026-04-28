@@ -105,15 +105,15 @@ Rules:
 
 ### Assignment
 
-- Owner: Browser recapture packet lane
+- Owner: Browser recapture execution lane
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
 - Task: `OPS_BROWSER_RECAPTURE_AFTER_PHASE2`
-- Status: packet-ready
-- Branch: `docs/post-phase2-browser-recapture-packet`
+- Status: in-progress
+- Branch: `docs/post-phase2-browser-recapture-run`
 - Task packet: `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
-- Owned files: workflow docs and AI-first mirrors for the next browser/manual evidence lane
+- Owned files: browser screenshot artifacts, contest evidence docs, AI-first mirrors, daily log, and PR note for the recapture execution
 - PR:
 - Last update: 2026-04-28
-- Next action: use this packet from `main` when the team decides to refresh the stale browser screenshot rows
-- Blocker: browser capture is not being executed in this packet lane
+- Next action: finish docs freshness updates, run docs validation, then open the docs-only PR for review
+- Blocker: none
