@@ -1858,10 +1858,10 @@
       "dependencies": [
         "Approved submission-close design"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "coordination-docs",
       "layer": "workflow",
-      "notes": "Active on branch docs/submission-close-master. This task must merge before Session A, Session B, and Session C launch from fresh worktrees off main."
+      "notes": "Merged to main through PR #210 on 2026-04-28. The approved three-session submission-close spec, plan, master packet, and queue mirrors now exist on main."
     },
     {
       "id": "C202_SUBMISSION_SCOPE_FREEZE",
@@ -1881,9 +1881,10 @@
       "dependencies": [
         "C201_SUBMISSION_CLOSE_MASTER_COORDINATION"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-a-docs",
-      "layer": "submission-docs"
+      "layer": "submission-docs",
+      "notes": "Merged to main through PR #211 on 2026-04-28 as part of the Session A submission package freeze."
     },
     {
       "id": "C203_CLAIM_AND_PROOF_CONTRACT_FREEZE",
@@ -1903,9 +1904,10 @@
       "dependencies": [
         "C202_SUBMISSION_SCOPE_FREEZE"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-a-docs",
-      "layer": "submission-docs"
+      "layer": "submission-docs",
+      "notes": "Merged to main through PR #211 on 2026-04-28 with the bounded claim-and-proof contract."
     },
     {
       "id": "C204_CORE_LOOP_RUNTIME_REVALIDATION",
@@ -1926,9 +1928,10 @@
       "dependencies": [
         "C201_SUBMISSION_CLOSE_MASTER_COORDINATION"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-b-validation",
-      "layer": "validation-ops"
+      "layer": "validation-ops",
+      "notes": "Merged to main through PR #212 on 2026-04-28 after the command-backed five-step contest loop was revalidated on current main."
     },
     {
       "id": "C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH",
@@ -1948,9 +1951,10 @@
       "dependencies": [
         "C204_CORE_LOOP_RUNTIME_REVALIDATION"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-b-validation",
-      "layer": "validation-ops"
+      "layer": "validation-ops",
+      "notes": "Merged to main through PR #212 on 2026-04-28 with the repo-virtualenv reset and smoke contract refresh."
     },
     {
       "id": "C206_EVIDENCE_BUNDLE_REFRESH",
@@ -1971,9 +1975,10 @@
         "C204_CORE_LOOP_RUNTIME_REVALIDATION",
         "C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-b-validation",
-      "layer": "validation-ops"
+      "layer": "validation-ops",
+      "notes": "Merged to main through PR #212 on 2026-04-28. Evidence freshness wording now matches the 2026-04-28 command-backed smoke and preserved screenshot capture dates."
     },
     {
       "id": "C207_SUBMISSION_NARRATIVE_PACK",
@@ -1993,9 +1998,10 @@
         "C202_SUBMISSION_SCOPE_FREEZE",
         "C203_CLAIM_AND_PROOF_CONTRACT_FREEZE"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-a-docs",
-      "layer": "submission-docs"
+      "layer": "submission-docs",
+      "notes": "Merged to main through PR #211 on 2026-04-28 across the product description, pitch notes, and fork-modifications narrative pack."
     },
     {
       "id": "C208_SUBMISSION_OPERATOR_PACK",
@@ -2016,9 +2022,10 @@
         "C206_EVIDENCE_BUNDLE_REFRESH",
         "C207_SUBMISSION_NARRATIVE_PACK"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-a-docs",
-      "layer": "submission-docs"
+      "layer": "submission-docs",
+      "notes": "Merged to main through PR #211 on 2026-04-28 with the operator-facing read path and final package surface."
     },
     {
       "id": "C209_HUMAN_REVIEW_GATES",
@@ -2038,9 +2045,10 @@
       "dependencies": [
         "C208_SUBMISSION_OPERATOR_PACK"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-a-docs",
-      "layer": "submission-docs"
+      "layer": "submission-docs",
+      "notes": "Merged to main through PR #211 on 2026-04-28. Human-only work is now expressed as explicit gates rather than implied TODOs."
     },
     {
       "id": "C210_FINAL_PACKAGE_READINESS",
@@ -2061,9 +2069,10 @@
         "C208_SUBMISSION_OPERATOR_PACK",
         "C209_HUMAN_REVIEW_GATES"
       ],
-      "status": "not-started",
+      "status": "completed",
       "recommended_session_bucket": "session-a-docs",
-      "layer": "submission-docs"
+      "layer": "submission-docs",
+      "notes": "Merged to main through PR #211 on 2026-04-28 after Session B merged its authoritative proof refresh."
     },
     {
       "id": "C211_TEACHER_FIRST_ENTRY_POLISH",

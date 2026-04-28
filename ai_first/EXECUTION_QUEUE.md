@@ -7,6 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
+- Latest docs/control-plane merges: `#210` (submission-close master coordination), `#212` (validation and evidence refresh), and `#211` (submission narrative and final package readiness).
 - Latest feature-risk merge: `#206 [F124] feat(validation): automate evidence refresh status`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
@@ -48,13 +49,14 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- The post-contest future backlog `F101-F124` is now fully merged on `main`.
-- A new submission-close backlog extension is now defined on branch `docs/submission-close-master` through `C201-C215`, but it is not on `main` until the master coordination PR merges.
+- The post-contest future backlog `F101-F124` is fully merged on `main`.
+- Submission-close Phase 1 (`C201-C210`) is fully merged on `main`.
+- No active AI-owned blocker remains inside the current submission-close Phase 1 scope.
 
 ## Next recommended task
 
-- Finish `C201_SUBMISSION_CLOSE_MASTER_COORDINATION` on `docs/submission-close-master`.
-- After that PR merges, launch Session A plus Session B in parallel from fresh worktrees off `main`, with Session C reserved for blocker fixes or optional polish.
+- Complete the remaining human review gates: product wording confirmation, IP commitment, optional video decision, and final sign-off.
+- Open an optional Phase 2 packet only if the human explicitly wants polish from `C211-C215`.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
@@ -69,7 +71,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None currently. The post-contest future backlog `F101-F124` is fully merged, so the next AI-owned work requires a fresh packet or a newly approved backlog extension.
+- None currently. Submission-close Phase 1 is merged, so the next AI-owned work requires either an explicitly opened optional Phase 2 packet or a new approved backlog extension.
 
 ## Human-review blockers
 

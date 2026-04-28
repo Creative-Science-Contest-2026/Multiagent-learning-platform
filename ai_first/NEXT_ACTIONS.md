@@ -1,19 +1,17 @@
 # Next Actions
 
-Last updated: 2026-04-26
+Last updated: 2026-04-28
 
 This file is a compatibility snapshot. The authoritative action list lives in `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Immediate
 
-1. Finish `C201_SUBMISSION_CLOSE_MASTER_COORDINATION` on `docs/submission-close-master`.
-2. After that PR merges, launch Session A on submission scope and narrative freeze.
-3. Launch Session B on runtime revalidation and evidence refresh.
-4. Keep Session C reserved for narrow blocker fixes or optional Phase 2 polish.
-5. Complete human review of the submission package, IP commitment, and final product-description wording.
-6. Decide whether an optional contest video artifact is required.
-7. Treat any future smoke failure as the next product task before opening another polish slice.
-8. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
+1. Complete human review of the submission package, IP commitment, and final product-description wording.
+2. Decide whether an optional contest video artifact is required.
+3. Complete final package sign-off using the current `docs/contest/` read path.
+4. Treat any future smoke failure as the next product task before opening another polish slice.
+5. Open optional Phase 2 polish only if the human explicitly requests work from `C211-C215`.
+6. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
 
 ## After Milestone 0
 
@@ -29,10 +27,10 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 ## Mirror Policy
 
 Use this file only as a compact queue mirror. Do not rely on it for the full operating contract. For a human-friendly quick start, read `ai_first/USAGE_GUIDE.md`.
-## 2026-04-26
+## 2026-04-28
 
 1. Start new AI sessions from `main` only if a new task packet is explicitly opened.
 2. Use the matching packet before code edits.
 3. If no packet exists and the remaining work is human-only, stop instead of inventing a new AI lane.
 4. Keep contest wording at validated-prototype level unless a stronger repository artifact is added.
-5. If future product work is reopened, prefer `Session A` and `Session B` startup from the two-session future backlog packet instead of improvising a new split.
+5. If optional polish is reopened, prefer the existing Phase 2 submission-close tasks `C211-C215` instead of inventing a new split.
