@@ -30,17 +30,17 @@ Rules:
 
 ### Assignment
 
-- Owner: Control-plane sync lane
+- Owner: Post-221 sync lane
 - Machine: local
-- Worktree: `.worktrees/post-submission-close-sync`
-- Task: `OPS_POST_SUBMISSION_CLOSE_SYNC`
-- Status: review-ready
-- Branch: `docs/post-submission-close-sync`
-- Task packet: `docs/superpowers/tasks/2026-04-28-post-submission-close-sync.md`
-- Owned files: AI-first mirrors, submission-close registry state, and sync PR note
-- PR: `#221`
+- Worktree: `.worktrees/submission-close-c`
+- Task: `OPS_POST_221_BROWSER_RECAPTURE_SYNC`
+- Status: in-progress
+- Branch: `docs/post-221-browser-recapture-sync`
+- Task packet: `docs/superpowers/tasks/2026-04-28-post-221-browser-recapture-sync.md`
+- Owned files: authoritative prompt, compact mirrors, daily log, and sync PR note
+- PR:
 - Last update: 2026-04-28
-- Next action: mark Phase 1 submission-close work completed across registry and mirrors, then open a docs-only sync PR
+- Next action: update prompt/mirrors after merged PR `#221`, then open a docs-only sync PR
 - Blocker: none
 
 ### Assignment
@@ -109,11 +109,11 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
 - Task: `OPS_BROWSER_RECAPTURE_AFTER_PHASE2`
-- Status: in-progress
+- Status: merged
 - Branch: `docs/post-phase2-browser-recapture-run`
 - Task packet: `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
 - Owned files: browser screenshot artifacts, contest evidence docs, AI-first mirrors, daily log, and PR note for the recapture execution
-- PR:
+- PR: `#221`
 - Last update: 2026-04-28
-- Next action: keep PR `#221` green and merge it once required checks pass
+- Next action: preserve the merged browser screenshot refresh as the current contest evidence baseline unless a later UI change makes these rows stale again
 - Blocker: none

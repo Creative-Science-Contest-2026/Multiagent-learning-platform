@@ -8,10 +8,9 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 1. Complete human review of the submission package, IP commitment, and final product-description wording.
 2. Decide whether an optional contest video artifact is required.
-3. Review the refreshed browser screenshot bundle from `docs/post-phase2-browser-recapture-run` and merge it once validation and CI are green.
-4. Complete final package sign-off using the current `docs/contest/` read path.
-5. Treat any future smoke failure as the next product task before opening another lane.
-6. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
+3. Complete final package sign-off using the current `docs/contest/` read path.
+4. Treat any future smoke failure as the next product task before opening another lane.
+5. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
 
 ## After Milestone 0
 
@@ -33,4 +32,4 @@ Use this file only as a compact queue mirror. Do not rely on it for the full ope
 2. Use the matching packet before code edits.
 3. If no packet exists and the remaining work is human-only, stop instead of inventing a new AI lane.
 4. Keep contest wording at validated-prototype level unless a stronger repository artifact is added.
-5. Reuse the post-Phase-2 browser recapture packet if a future UI change makes the current screenshot bundle stale again.
+5. Reuse the post-Phase-2 browser recapture packet only if a future UI change makes the current screenshot bundle stale again.
