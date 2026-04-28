@@ -64,3 +64,4 @@ Freeze the contest submission story, claims, operator-facing read path, and manu
 - 2026-04-28: Session A started from `.worktrees/submission-close-a` on branch `docs/submission-close-session-a`.
 - 2026-04-28: `PR-CLOSE-01` and `PR-CLOSE-02` are being executed together as a docs-only scope and claim freeze across the owned narrative files.
 - 2026-04-28: `PR-CLOSE-06`, `PR-CLOSE-07`, and `PR-CLOSE-08` are limited to skeleton/operator-gate wording until Session B refreshes validation-owned proof files.
+- 2026-04-28: Draft PR `#211` was opened for the current docs-only Session A freeze set.

@@ -49,14 +49,14 @@ Rules:
 - Machine:
 - Worktree: `.worktrees/submission-close-a`
 - Task: `OPS_SUBMISSION_CLOSE_A`
-- Status: in-progress
+- Status: in-review
 - Branch: `docs/submission-close-session-a`
 - Task packet: `docs/superpowers/tasks/2026-04-28-session-a-submission-scope-and-narrative.md`
 - Owned files: submission narrative and package docs
-- PR:
+- PR: `#211`
 - Last update: 2026-04-28
-- Next action: execute `C202_SUBMISSION_SCOPE_FREEZE`, then `C203_CLAIM_AND_PROOF_CONTRACT_FREEZE`
-- Blocker:
+- Next action: keep Draft PR `#211` aligned with Session B proof refresh, then advance the remaining Session A packaging work that does not require validation-owned edits
+- Blocker: `PR-CLOSE-09` remains blocked on Session B validation/evidence outputs
 
 ### Planned Assignment
 
