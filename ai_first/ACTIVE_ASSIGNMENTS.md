@@ -109,11 +109,11 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/submission-close-c211`
 - Task: `C211_TEACHER_FIRST_ENTRY_POLISH`
-- Status: in-review
+- Status: ready-for-review
 - Branch: `fix/submission-close-c211`
 - Task packet: `docs/superpowers/tasks/2026-04-28-c211-teacher-first-entry-polish.md`
 - Owned files: teacher-entry product surfaces plus required AI-first mirrors for C211 only
 - PR: `#219`
 - Last update: 2026-04-28
-- Next action: keep Draft PR `#219` green, then move it to Ready after self-review
+- Next action: monitor Ready PR `#219` and merge when checks finish green and review is clear
 - Blocker:
