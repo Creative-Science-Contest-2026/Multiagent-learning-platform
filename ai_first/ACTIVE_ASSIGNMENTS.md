@@ -30,6 +30,21 @@ Rules:
 
 ### Assignment
 
+- Owner: Screenshot truth sync lane
+- Machine: local
+- Worktree: `.worktrees/post-screenshot-truth-sync`
+- Task: `OPS_SCREENSHOT_TRUTH_SYNC`
+- Status: ready-for-review
+- Branch: `docs/post-screenshot-truth-sync`
+- Task packet: `docs/superpowers/tasks/2026-04-28-post-screenshot-truth-sync.md`
+- Owned files: authoritative prompt, compact mirrors, daily log, and sync task/PR note only
+- PR:
+- Last update: 2026-04-28
+- Next action: align AI-first mirrors with the authoritative contest evidence docs that still mark browser screenshot rows stale
+- Blocker: none
+
+### Assignment
+
 - Owner: Active-assignment terminal sync lane
 - Machine: local
 - Worktree: `.worktrees/post-active-assignments-terminal-sync`
