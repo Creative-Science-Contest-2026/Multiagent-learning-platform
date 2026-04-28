@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest feature-risk merge: `#203 [F123] feat(validation): expand casepack evaluation dataset`
+- Latest feature-risk merge: `#206 [F124] feat(validation): automate evidence refresh status`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
 - Lane 3 (`2026-04-26-lane-3-observation-student-state`) merged to `main` through PR `#140`.
@@ -40,6 +40,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Future backlog Session A task `F112_PROVENANCE_AND_REASON_TRACE_SURFACES` merged to `main` through PR `#199`.
 - Future backlog Session B task `F122_PILOT_FEEDBACK_INGESTION_PATH` merged to `main` through PR `#200`.
 - Future backlog Session B task `F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION` merged to `main` through PR `#203`.
+- Future backlog Session B task `F124_EVIDENCE_AUTOMATION_REFRESH` merged to `main` through PR `#206`.
 - Latest smoke result: the 2026-04-26 scripted-reset smoke pass succeeded in lane 6 (`docs/evaluation-evidence-readiness`) against current `main` behavior.
 - The two-lane contest MVP polish experiment is now fully merged to `main`:
   `#122` (`T044`), `#124` (`T045`), `#125` (`T046`), `#121` (`T049`), `#123` (`T050`), and `#126` (`T051`).
@@ -48,14 +49,12 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 ## Active queue
 
 - No active AI implementation task remains on `main`.
-- The next safe product work should be selected from the future backlog pair below on a fresh branch/worktree.
+- The post-contest future backlog `F101-F124` is now fully merged on `main`.
 
 ## Next recommended task
 
-- After `F101`, `F102`, `F103`, `F107`, `F108`, `F109`, `F110`, `F111`, `F112`, `F113`, `F114`, `F115`, `F116`, `F117`, `F118`, `F119`, `F120`, and `F121`, the preferred next pair from the future backlog packet is:
-  - Session A: no remaining teacher-facing future-backlog task is queued ahead of Session B work
-  - Session B: `F124_EVIDENCE_AUTOMATION_REFRESH`
-- Any new AI task should start from a fresh branch/worktree off `main`, not from a merged lane branch.
+- The `F101-F124` future backlog is exhausted on `main`.
+- Any new AI task should start from a fresh branch/worktree off `main` and should be backed by a new packet or an explicitly extended registry backlog.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
@@ -70,7 +69,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None currently. The next AI-owned work is the remaining post-contest future backlog, but no session is active by default after the `F101`, `F102`, `F103`, `F107`, `F108`, `F109`, `F110`, `F111`, `F112`, `F113`, `F114`, `F115`, `F116`, `F117`, `F118`, `F119`, `F120`, `F121`, `F122`, and `F123` merges.
+- None currently. The post-contest future backlog `F101-F124` is fully merged, so the next AI-owned work requires a fresh packet or a newly approved backlog extension.
 
 ## Human-review blockers
 
