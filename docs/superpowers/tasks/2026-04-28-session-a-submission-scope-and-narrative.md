@@ -58,3 +58,31 @@ Freeze the contest submission story, claims, operator-facing read path, and manu
 - Keep all claims at validated-prototype level unless Session B refreshes stronger evidence.
 - Do not silently widen the product story beyond `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`.
 - Keep the final operator read path link-heavy and conflict-light.
+
+## Session A Progress Notes
+
+- 2026-04-28: Session A started from `.worktrees/submission-close-a` on branch `docs/submission-close-session-a`.
+- 2026-04-28: `PR-CLOSE-01` and `PR-CLOSE-02` are being executed together as a docs-only scope and claim freeze across the owned narrative files.
+- 2026-04-28: `PR-CLOSE-06`, `PR-CLOSE-07`, and `PR-CLOSE-08` are limited to skeleton/operator-gate wording until Session B refreshes validation-owned proof files.
+- 2026-04-28: Draft PR `#211` was opened for the current docs-only Session A freeze set.
+- 2026-04-28: Session A merged `origin/main` after Session B landed, re-read the authoritative validation/evidence files, and executed `PR-CLOSE-09 Final Package Readiness` inside the owned package/handoff docs.
+
+## Handoff Notes
+
+- Current PR: `#211`
+- Current branch head: Session A has already pushed the docs-only freeze set to `origin/docs/submission-close-session-a`.
+- Completed inside owned scope:
+  - `PR-CLOSE-01 Submission Scope Freeze`
+  - `PR-CLOSE-02 Claim and Proof Contract Freeze`
+  - narrative/operator/gate portions of `PR-CLOSE-06`, `PR-CLOSE-07`, and `PR-CLOSE-08`
+  - `PR-CLOSE-09 Final Package Readiness` after Session B merged its proof refresh
+- Deliberately not edited because they are outside owned scope:
+  - `docs/contest/VALIDATION_REPORT.md`
+  - `docs/contest/SMOKE_RUNBOOK.md`
+  - `docs/contest/DEMO_DATA_RESET.md`
+  - `docs/contest/EVIDENCE_CHECKLIST.md`
+- Current dependency rule:
+  - Session B-owned validation and evidence files remain authoritative for proof freshness, smoke wording, and screenshot dates.
+- Safe next step for Session A:
+  - keep PR `#211` aligned with the merged Session B files
+  - hand the package to a human reviewer without widening any claims beyond the validated-prototype contract

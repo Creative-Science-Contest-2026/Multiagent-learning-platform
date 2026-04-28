@@ -4,23 +4,49 @@ This folder is the entry point for VnExpress Sang kien Khoa hoc 2026 demo eviden
 
 Current framing: this repository is a validated prototype with smoke-backed evidence and contest-safe walkthrough artifacts. It is not positioned as a deployed classroom system.
 
+Official contest framing: a teacher-controlled adaptive tutoring platform for Vietnamese classrooms.
+
 ## MVP Story
 
-Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
+Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
+
+The teacher dashboard is the operating surface that helps a teacher inspect diagnosis and choose interventions. It supports the loop; it is not a substitute for the loop.
+
+## Submission Scope Freeze
+
+Core submission scope:
+
+- teacher-controlled adaptive tutoring for Vietnamese classrooms
+- a single five-step loop: `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`
+- teacher-owned tutor control through `/agents` identity, style, and guardrails
+- validated-prototype proof through smoke-backed walkthroughs, screenshots, and submission docs
+
+Secondary proof that can be mentioned but should not replace the core story:
+
+- marketplace reuse and batch import
+- export, replay, timing, and offline-resilience helpers
+- architecture readiness for deeper role separation later
+
+Out of scope for contest claims:
+
+- classroom outcome evidence
+- school-scale deployment claims
+- autonomous diagnosis without teacher review
+- universal capability coverage beyond the currently documented proof paths
 
 ## Hybrid Proof Scope
 
 This evidence bundle now supports a hybrid contest narrative:
 
 - Teacher authoring proof: the teacher can structure Agent Specs on `/agents` and export a spec pack.
-- Learning evidence-loop proof: Knowledge Pack -> assessment -> tutoring follow-up -> dashboard activity.
+- Learning evidence-loop proof: `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`, with dashboard activity as the teacher-facing operating surface around the last two stages.
 
 Teacher-value framing for presenters:
 
 - `IDENTITY` lets a teacher choose who the tutor is for: subject, grade band, tone, and language.
 - `SOUL` lets a teacher decide how the tutor reacts when a student is wrong, stuck, or discouraged.
 - `RULES` lets a teacher keep classroom boundaries such as no direct answers, hint limits, or escalation expectations.
-- The dashboard is not only reporting activity; it helps the teacher decide what to reteach, who needs follow-up, and which students can be grouped around the same misconception.
+- The dashboard is not only reporting activity; it helps the teacher review diagnosis, decide what to reteach, who needs follow-up, and which students can be grouped around the same misconception.
 
 The repository now includes bounded proof that the unified live turn paths for `chat`, `deep_question`, and `deep_solve` can carry `config.agent_spec_id` into runtime policy assembly. Do not expand that claim into universal coverage across every capability or entry point unless a fresh verification run proves those additional paths.
 

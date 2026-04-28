@@ -4,18 +4,28 @@ Use this file as the shortest manual review path before the final VnExpress Sán
 
 ## What Is Already Ready
 
-- end-to-end MVP story is documented in `docs/contest/SUBMISSION_PACKAGE.md`
+- the official product loop and claim contract are documented in `docs/contest/SUBMISSION_PACKAGE.md`
 - smoke-backed validation is recorded in `docs/contest/VALIDATION_REPORT.md`
 - screenshot evidence is current in `docs/contest/screenshots/`
-- AI-verifiable submission items are checked in `ai_first/competition/submission-checklist.md`
-- supporting contest text exists in:
-  - `ai_first/competition/product-description.md`
-  - `ai_first/competition/fork-modifications.md`
-  - `ai_first/competition/pitch-notes.md`
+- AI-verifiable submission items are tracked in `ai_first/competition/submission-checklist.md`
+- supporting contest text exists in `ai_first/competition/product-description.md`, `ai_first/competition/fork-modifications.md`, and `ai_first/competition/pitch-notes.md`
 
-## Remaining Human-Owned Decisions
+## Human Review Gates
 
-### 1. Product description review
+## Gate Status Snapshot
+
+| Gate | Owner | Status | Blocking condition |
+| --- | --- | --- | --- |
+| Product wording and category fit | submission operator / final reviewer | Pending | final human wording review not yet recorded |
+| Intellectual property commitment | submission operator / project owner | Pending | external confirmation not yet recorded |
+| Evidence sanity check | submission operator | Pending | final human sanity pass not yet recorded; Session B proof refresh is now merged and authoritative |
+| Optional video decision | submission operator | Pending | final submission requirements not yet confirmed |
+| Final package sign-off | final reviewer | Blocked | Gates 1-4 must complete first |
+
+### Gate 1. Product wording and category fit
+
+Status: pending human review
+Owner: submission operator / final reviewer
 
 Confirm wording, claim calibration, and category fit for Education using:
 
@@ -23,7 +33,16 @@ Confirm wording, claim calibration, and category fit for Education using:
 - `ai_first/competition/pitch-notes.md`
 - `ai_first/competition/vnexpress-rules-summary.md`
 
-### 2. Intellectual property commitment
+Acceptance rule:
+
+- keep the product framed as a teacher-controlled adaptive tutoring prototype
+- keep the official loop at `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`
+- reject any wording that implies school-scale deployment or autonomous final judgment
+
+### Gate 2. Intellectual property commitment
+
+Status: pending human confirmation
+Owner: submission operator / project owner
 
 Review the contest IP commitment outside the repository submission flow and confirm the maintained facts still match:
 
@@ -31,7 +50,10 @@ Review the contest IP commitment outside the repository submission flow and conf
 - upstream attribution retained in `README.md` and `AGENTS.md`
 - contest-specific fork modifications summarized in `ai_first/competition/fork-modifications.md`
 
-### 3. Evidence sanity check
+### Gate 3. Evidence sanity check
+
+Status: pending final manual pass
+Owner: submission operator
 
 Before submission, quickly verify:
 
@@ -41,7 +63,26 @@ Before submission, quickly verify:
 - pilot or external-feedback language stays honest: use [`PILOT_STATUS.md`](./PILOT_STATUS.md) and keep `/api/v1/system/pilot-feedback-status` aligned with any real stored feedback instead of implying classroom validation that the repository does not contain
 - optional video is either not required or has been recorded separately using `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
 
-### 4. Final package sign-off
+Acceptance rule:
+
+- if Session B refreshes validation or evidence wording, use its files as authoritative
+- if a screenshot or validation artifact is stale, do not silently mark the package ready
+- the current authoritative refresh is the merged 2026-04-28 Session B smoke/evidence pass, while screenshot capture dates remain 2026-04-25 and 2026-04-26
+
+### Gate 4. Optional video decision
+
+Status: pending human decision
+Owner: submission operator
+
+Decide one of:
+
+- no video is required for the submission path
+- video is required and will be recorded outside the repository using `docs/contest/VIDEO_CAPTURE_RUNBOOK.md`
+
+### Gate 5. Final package sign-off
+
+Status: pending after Gates 1-4
+Owner: final reviewer
 
 Use `docs/contest/SUBMISSION_PACKAGE.md` as the final read path and then mark the remaining human checklist items in the actual submission workflow.
 
@@ -54,6 +95,13 @@ Use `docs/contest/SUBMISSION_PACKAGE.md` as the final read path and then mark th
 5. `docs/contest/VALIDATION_REPORT.md`
 6. `docs/contest/screenshots/`
 
+If any wording here disagrees with Session B-owned freshness files, prefer the Session B file and update this handoff later rather than overriding proof status locally.
+This handoff now assumes the Session B refresh merged successfully; the remaining work is human review and optional submission-only decisions.
+
 ## Expected End State
 
-After human review, the only repo state change that may still be useful is marking the final manual submission/sign-off outcome if the team wants a last archival docs sync.
+After human review, the repo should have one visible answer for three questions:
+
+- what the product claims
+- what evidence supports those claims
+- which manual gates were still human-only at sign-off
