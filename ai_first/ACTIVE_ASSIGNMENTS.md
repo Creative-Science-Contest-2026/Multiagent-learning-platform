@@ -88,19 +88,19 @@ Rules:
 - Next action: keep the 2026-04-28 command-backed validation refresh as the authoritative proof baseline unless a later smoke pass replaces it
 - Blocker:
 
-### Active Assignment
+### Assignment
 
 - Owner: Session C
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
-- Task: `C214_JUDGE_FACING_VISUAL_ASSET_POLISH`
-- Status: in-progress
-- Branch: `fix/submission-close-c214`
-- Task packet: `docs/superpowers/tasks/2026-04-28-c214-judge-facing-visual-asset-polish.md`
-- Owned files: docs and evidence-inventory polish for judge-facing screenshot presentation plus required AI-first mirrors
-- PR:
+- Task: `C215_POST_POLISH_EVIDENCE_RECAPTURE`
+- Status: merged
+- Branch: `fix/submission-close-c215`
+- Task packet: `docs/superpowers/tasks/2026-04-28-c215-post-polish-evidence-recapture.md`
+- Owned files: evidence freshness docs plus required AI-first mirrors after the latest optional polish merges
+- PR: `#217`
 - Last update: 2026-04-28
-- Next action: tighten screenshot captions, judge-view order, and evidence guidance without recapturing assets or widening claims
+- Next action: keep 2026-04-28 command-backed smoke evidence current, and treat browser screenshot recapture as a separate future packet if needed
 - Blocker:
 
 ### Active Assignment
