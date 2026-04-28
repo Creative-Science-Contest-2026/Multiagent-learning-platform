@@ -35,10 +35,10 @@ Rules:
 - Worktree: `.worktrees/post-submission-close-sync`
 - Task: `OPS_POST_SUBMISSION_CLOSE_SYNC`
 - Status: ready-for-review
-- Branch: `docs/post-submission-close-sync`
+- Branch: `docs/post-submission-close-sync-repair`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-submission-close-sync.md`
 - Owned files: AI-first mirrors, submission-close registry state, and sync PR note
-- PR: `#223`
+- PR: `#224`
 - Last update: 2026-04-28
 - Next action: merge the docs-only repair PR once checks are green and no blocking review remains
 - Blocker: none
