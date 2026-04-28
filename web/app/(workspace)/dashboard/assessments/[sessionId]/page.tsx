@@ -15,6 +15,7 @@ import {
 import { AssessmentRubricReviewCard } from "@/components/assessment/AssessmentRubricReviewCard";
 import { ProgressIndicator } from "@/components/assessment/ProgressIndicator";
 import { LearningJourneySummary } from "@/components/assessment/LearningJourneySummary";
+import { CoreLoopVisibilityStrip } from "@/components/contest/CoreLoopVisibilityStrip";
 
 function formatTime(value: number): string {
   if (!value) return "";
@@ -161,6 +162,12 @@ export default function AssessmentReviewPage() {
             {exporting ? t("Exporting PDF...") : t("Export PDF")}
           </button>
         </header>
+
+        <CoreLoopVisibilityStrip
+          currentStep="Assessment"
+          nextStep="Tutor"
+          helperText={t("This review keeps the assessment stage visible before students move into tutor support and later teacher diagnosis.")}
+        />
 
         <section className="grid gap-3 md:grid-cols-3">
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">

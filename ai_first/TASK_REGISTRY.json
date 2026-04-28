@@ -2115,9 +2115,10 @@
       "dependencies": [
         "C210_FINAL_PACKAGE_READINESS"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-c-polish",
-      "layer": "optional-polish"
+      "layer": "optional-polish",
+      "notes": "Activated on branch fix/submission-close-session-c on 2026-04-28. Scope is bounded to loop-visibility labels on existing Knowledge, Assessment, Tutor, and Dashboard surfaces."
     },
     {
       "id": "C213_DIFFERENTIATION_WORDING_SWEEP",

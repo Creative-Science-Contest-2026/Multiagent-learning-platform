@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft, Bot, Loader2, Send } from "lucide-react";
 import { apiUrl, wsUrl } from "@/lib/api";
 import AssistantResponse from "@/components/common/AssistantResponse";
+import { CoreLoopVisibilityStrip } from "@/components/contest/CoreLoopVisibilityStrip";
 
 interface BotInfo {
   bot_id: string;
@@ -140,6 +141,17 @@ export default function BotChatPage() {
         {bot?.running && (
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
         )}
+      </div>
+
+      <div className="border-b border-[var(--border)] px-5 py-3">
+        <div className="mx-auto max-w-[720px]">
+          <CoreLoopVisibilityStrip
+            compact
+            currentStep="Tutor"
+            nextStep="Diagnosis"
+            helperText={t("Tutor replies are one step in the same classroom loop before the teacher reviews diagnosis and chooses the next intervention.")}
+          />
+        </div>
       </div>
 
       {/* Messages */}
