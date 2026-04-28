@@ -40,8 +40,8 @@ Rules:
 - Owned files: submission-close spec, plan, task packets, and AI-first mirrors
 - PR:
 - Last update: 2026-04-28
-- Next action: merge the master coordination PR before launching Session A, Session B, and Session C from fresh worktrees off `main`
-- Blocker: baseline `pytest` full suite is not green on current `main`; collection blocker was isolated separately from this docs-planning branch
+- Next action: finish the submission-close PR, then launch Session A, Session B, and Session C from fresh worktrees off `main`
+- Blocker: current `main` no longer has the pytest collection mismatch, but the full baseline suite still contains post-collection failures outside this docs-planning lane
 
 ### Planned Assignment
 
