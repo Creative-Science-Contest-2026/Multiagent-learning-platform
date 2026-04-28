@@ -24,14 +24,14 @@ Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 - GitHub Issues and PRs coordinate active execution.
 - The AI operating prompt is the single entry point for new workers.
 - `ai_first/AI_FIRST_ROADMAP.md` explains the autonomous loop and future operating direction for humans checking progress.
-- Two collaborators may work in parallel through one active task, one branch, and one PR per person, coordinated by `ai_first/ACTIVE_ASSIGNMENTS.md`.
+- Two collaborators may work in parallel through one active task, one branch, and one PR per person, coordinated by `ai_first/ACTIVE_ASSIGNMENTS.md`, which now lists live non-terminal lanes only while merged history stays in the daily log and task/PR-note chain.
 
 ## Active Branches and PRs
 
 - Latest merged docs/control-plane PRs: `#210`, `#212`, `#211`, `#220`, `#221`, and `#222` completed submission-close evidence and control-plane sync on 2026-04-28.
-- Latest sync branch: `docs/post-221-browser-recapture-sync`
+- Latest sync branch: none active by default after the terminal policy fix
 - Product MVP path status: the core contest flow, the Wave 1 evidence spine, the command-backed 2026-04-28 smoke refresh, the optional Phase 2 polish train (`C211-C215`), and the post-Phase-2 browser screenshot recapture (`#221`) are merged to `main` as a validated prototype.
-- Current purpose: the repository is in final human-review state for command-backed validation, but the authoritative contest evidence docs still mark browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshots stale until a fresh recapture is completed.
+- Current purpose: the repository is in final human-review state for command-backed validation, but the authoritative contest evidence docs still mark browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshots stale until a fresh recapture is completed. `ai_first/ACTIVE_ASSIGNMENTS.md` should stay empty unless a new live non-terminal lane is explicitly opened.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
