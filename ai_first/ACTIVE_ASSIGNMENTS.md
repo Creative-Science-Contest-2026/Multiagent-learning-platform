@@ -34,13 +34,13 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
 - Task: `OPS_POST_221_BROWSER_RECAPTURE_SYNC`
-- Status: in-progress
+- Status: review-ready
 - Branch: `docs/post-221-browser-recapture-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-221-browser-recapture-sync.md`
 - Owned files: authoritative prompt, compact mirrors, daily log, and sync PR note
-- PR:
+- PR: `#222`
 - Last update: 2026-04-28
-- Next action: update prompt/mirrors after merged PR `#221`, then open a docs-only sync PR
+- Next action: keep PR `#222` green and merge it once required checks pass
 - Blocker: none
 
 ### Assignment

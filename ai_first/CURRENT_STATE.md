@@ -29,7 +29,7 @@ Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 ## Active Branches and PRs
 
 - Latest merged docs/control-plane PRs: `#210`, `#212`, and `#211` completed submission-close Phase 1 on 2026-04-28.
-- Current branch for this lane: `docs/post-221-browser-recapture-sync`
+- Current branch for this lane: `docs/post-221-browser-recapture-sync` (PR `#222`)
 - Product MVP path status: the core contest flow, the Wave 1 evidence spine, the command-backed 2026-04-28 smoke refresh, the optional Phase 2 polish train (`C212-C215`), and the post-Phase-2 browser screenshot recapture (`#221`) are merged to `main` as a validated prototype.
 - Current purpose: finalize the AI-first control plane after merged PR `#221`, then return the repo to final human review and optional video only.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
@@ -68,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Open and merge the docs-only post-`#221` sync PR, then return the repo to human review of the submission package, IP commitment, optional video decision, and final sign-off.
+Keep docs-only PR `#222` green and merge it, then return the repo to human review of the submission package, IP commitment, optional video decision, and final sign-off.
 
 ## Autonomous Merge Policy
 
