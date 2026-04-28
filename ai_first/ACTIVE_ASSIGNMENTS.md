@@ -28,5 +28,47 @@ Rules:
 
 ## Active
 
-No active AI implementation task is currently assigned on `main`.
-The current future-backlog loop is complete on `main`; any further AI product work should start from a fresh packet or a newly approved backlog addition.
+### Planned Assignment
+
+- Owner: Session A
+- Machine:
+- Worktree: `.worktrees/submission-close-a`
+- Task: `OPS_SUBMISSION_CLOSE_A`
+- Status: planned
+- Branch: `docs/submission-close-session-a`
+- Task packet: `docs/superpowers/tasks/2026-04-28-session-a-submission-scope-and-narrative.md`
+- Owned files: submission narrative and package docs
+- PR:
+- Last update: 2026-04-28
+- Next action: start `PR-CLOSE-01`
+- Blocker:
+
+### Planned Assignment
+
+- Owner: Session B
+- Machine:
+- Worktree: `.worktrees/submission-close-b`
+- Task: `OPS_SUBMISSION_CLOSE_B`
+- Status: planned
+- Branch: `docs/submission-close-session-b`
+- Task packet: `docs/superpowers/tasks/2026-04-28-session-b-validation-and-evidence.md`
+- Owned files: validation, smoke, demo-data, and evidence docs
+- PR:
+- Last update: 2026-04-28
+- Next action: start `PR-CLOSE-03`
+- Blocker:
+
+### Planned Assignment
+
+- Owner: Session C
+- Machine:
+- Worktree: `.worktrees/submission-close-c`
+- Task: `OPS_SUBMISSION_CLOSE_C`
+- Status: planned
+- Branch: `fix/submission-close-session-c`
+- Task packet: `docs/superpowers/tasks/2026-04-28-session-c-runtime-fix-and-polish.md`
+- Owned files: runtime fixes and optional polish only
+- PR:
+- Last update: 2026-04-28
+- Next action: remain on standby until blocker fix or Phase 2 approval
+- Blocker:

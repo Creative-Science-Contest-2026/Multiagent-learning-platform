@@ -54,7 +54,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 ## Next recommended task
 
 - The `F101-F124` future backlog is exhausted on `main`.
-- Any new AI task should start from a fresh branch/worktree off `main` and should be backed by a new packet or an explicitly extended registry backlog.
+- Follow `docs/superpowers/tasks/2026-04-28-submission-close-master-coordination.md` and launch Session A plus Session B in parallel, with Session C reserved for blocker fixes or optional polish.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
