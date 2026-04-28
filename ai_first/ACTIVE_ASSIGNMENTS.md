@@ -38,9 +38,9 @@ Rules:
 - Branch: `docs/submission-close-master`
 - Task packet: `docs/superpowers/tasks/2026-04-28-submission-close-master-coordination.md`
 - Owned files: submission-close spec, plan, task packets, and AI-first mirrors
-- PR:
+- PR: `#210`
 - Last update: 2026-04-28
-- Next action: finish the submission-close PR, then launch Session A, Session B, and Session C from fresh worktrees off `main`
+- Next action: monitor Draft PR `#210`, merge it when CI is green, then launch Session A, Session B, and Session C from fresh worktrees off `main`
 - Blocker: current `main` no longer has the pytest collection mismatch, but the full baseline suite still contains post-collection failures outside this docs-planning lane
 
 ### Planned Assignment
