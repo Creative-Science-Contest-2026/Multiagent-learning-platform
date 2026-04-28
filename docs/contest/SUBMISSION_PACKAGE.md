@@ -70,7 +70,7 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 | Evidence checklist | Ready | [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md) |
 | Diagnosis credibility cases | Ready | [`DIAGNOSIS_CASE_STUDIES.md`](./DIAGNOSIS_CASE_STUDIES.md) |
 | Structured validation casepack | Ready | [`CASEPACK_AND_EVALUATION_DATASET.md`](./CASEPACK_AND_EVALUATION_DATASET.md) |
-| Screenshot bundle | Needs refresh after Phase 2 polish | [`screenshots/`](./screenshots/) |
+| Screenshot bundle | Ready | [`screenshots/`](./screenshots/) |
 | Demo-safe reset command | Ready | [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) |
 | Smoke procedure | Ready | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md) |
 | Pilot / external feedback status | Ready | [`PILOT_STATUS.md`](./PILOT_STATUS.md) |
@@ -103,7 +103,7 @@ The latest command-backed smoke refresh passed on 2026-04-28 after running the s
 - tutor session `contest-tutor-demo`;
 - dashboard overview and recent activity including the contest sessions;
 - frontend production build with `NEXT_PUBLIC_API_BASE=http://localhost:8001`;
-- retained screenshot freshness authority from the last real browser captures on 2026-04-25 and 2026-04-26, which are now partially stale after the later Phase 2 polish merges.
+- fresh browser recapture for Knowledge, Tutor, Dashboard, and `/agents` on 2026-04-28 in `docs/post-phase2-browser-recapture-run`, while assessment screenshots remain current from the 2026-04-25 capture.
 
 Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` and `#128` for the earlier smoke-backed evidence foundation, `#99` plus `#130` for the screenshot bundle, and `#212` for the latest Session B validation/evidence refresh. This validation record supports a validated prototype claim. It does not, by itself, establish classroom deployment or outcome evidence.
 
@@ -126,7 +126,7 @@ These items remain authoritative outside the Session A narrative files and are a
 | --- | --- | --- |
 | Core-loop revalidation wording | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | current after Session B refresh on 2026-04-28 |
 | Smoke/reset contract wording | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md), [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) | current after Session B refresh on 2026-04-28 |
-| Evidence freshness rows | [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | command evidence current on 2026-04-28; browser screenshot rows partially stale after PRs `#214`, `#215`, and `#216` until recaptured |
+| Evidence freshness rows | [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | command evidence current on 2026-04-28; browser screenshot rows refreshed to current on 2026-04-28 |
 | Final package readiness call | this file plus the files above | unblocked for human review; keep Session B files authoritative if wording diverges |
 
 ## Human Review Checklist
@@ -152,7 +152,7 @@ The package is now ready for final human review, not automatic final sign-off.
 - Hybrid authoring evidence for `/agents` now has dedicated screenshots in the contest bundle.
 - The backend `deeptutor.api.run_server` path has a reload/absolute-pattern incompatibility with the installed `uvicorn`; latest smoke used the CLI server path with reload disabled.
 - Frontend build may need network access to fetch Google Fonts.
-- Assessment screenshots remain current from the 2026-04-25 `T037` re-run, but Knowledge, Tutor, Dashboard, and hybrid `/agents` authoring screenshots are stale after the later Phase 2 polish merges and should be recaptured before final judge-facing use.
+- Assessment screenshots remain current from the 2026-04-25 `T037` re-run, and Knowledge, Tutor, Dashboard, and hybrid `/agents` authoring screenshots were recaptured on 2026-04-28 after the later Phase 2 polish merges.
 
 ## Review Flow
 
