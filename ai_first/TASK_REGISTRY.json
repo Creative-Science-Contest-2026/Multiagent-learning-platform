@@ -2188,10 +2188,10 @@
         "C213_DIFFERENTIATION_WORDING_SWEEP",
         "C214_JUDGE_FACING_VISUAL_ASSET_POLISH"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-b-validation",
       "layer": "optional-polish",
-      "notes": "Activated on branch fix/submission-close-c215 on 2026-04-28. Scope is bounded to evidence freshness docs after the latest Phase 2 polish merges; no new smoke run or browser recapture yet."
+      "notes": "Merged to main through PR #217 on 2026-04-28. Scope stayed bounded to evidence freshness docs after the latest Phase 2 polish merges; no new smoke run or browser recapture was performed in this lane."
     }
   ],
   "github_issues_template": {
