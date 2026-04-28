@@ -28,5 +28,17 @@ Rules:
 
 ## Active
 
-No active AI implementation task is currently assigned on `main`.
-The current future-backlog loop is complete on `main`; any further AI product work should start from a fresh packet or a newly approved backlog addition.
+### Assignment
+
+- Owner: Session-specific
+- Machine:
+- Worktree: `.worktrees/fix-baseline-pytest-collection-blocker`
+- Task: `OPS_PYTEST_COLLECTION_BLOCKER`
+- Status: in-review
+- Branch: `fix/baseline-pytest-collection-blocker`
+- Task packet: `docs/superpowers/tasks/2026-04-28-baseline-pytest-collection-blocker.md`
+- Owned files: test package markers, task packet, PR note, active assignment, and daily log
+- PR: `#209`
+- Last update: 2026-04-28
+- Next action: monitor Draft PR `#209`, confirm required checks, and merge this lane before resuming submission-close merge work
+- Blocker: post-collection baseline remains at 23 failing tests on current `main`, but the import-mismatch collector blocker is resolved
