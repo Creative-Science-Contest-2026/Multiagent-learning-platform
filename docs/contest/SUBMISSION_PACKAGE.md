@@ -84,16 +84,16 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 
 ## Latest Validation
 
-The latest smoke-backed refresh passed on 2026-04-26 after running the scripted local reset. It verified:
+The latest command-backed smoke refresh passed on 2026-04-28 after running the scripted local reset. It verified:
 
 - demo-safe Knowledge Pack `contest-demo-quadratics`;
 - assessment session `contest-assessment-demo`;
 - tutor session `contest-tutor-demo`;
 - dashboard overview and recent activity including the contest sessions;
-- dashboard evidence-first and `/agents` authoring screenshots were recaptured on 2026-04-26;
-- frontend production build with `NEXT_PUBLIC_API_BASE=http://localhost:8001`.
+- frontend production build with `NEXT_PUBLIC_API_BASE=http://localhost:8001`;
+- retained screenshot freshness authority from the last real browser captures on 2026-04-25 and 2026-04-26.
 
-Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` and `#128` for smoke-backed evidence, and `#99` plus `#130` for the screenshot bundle. This validation record supports a validated prototype claim. It does not, by itself, establish classroom deployment or outcome evidence.
+Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` and `#128` for the earlier smoke-backed evidence foundation, `#99` plus `#130` for the screenshot bundle, and `#212` for the latest Session B validation/evidence refresh. This validation record supports a validated prototype claim. It does not, by itself, establish classroom deployment or outcome evidence.
 
 ## Operator Read Path
 
@@ -106,16 +106,16 @@ Read in this order before final submission:
 5. [`docs/contest/VALIDATION_REPORT.md`](./VALIDATION_REPORT.md)
 6. [`docs/contest/EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md)
 
-## Pending Dependencies
+## Validation Authority
 
-These items are intentionally outside Session A ownership and remain authoritative in their own files:
+These items remain authoritative outside the Session A narrative files and are already merged through the Session B refresh:
 
 | Dependency | Source of truth | Current handling |
 | --- | --- | --- |
-| Core-loop revalidation wording | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | Session B-owned |
-| Smoke/reset contract wording | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md), [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) | Session B-owned |
-| Evidence freshness rows | [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | Session B-owned |
-| Final package readiness call | this file plus the files above | blocked until Session B refresh completes |
+| Core-loop revalidation wording | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | current after Session B refresh on 2026-04-28 |
+| Smoke/reset contract wording | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md), [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) | current after Session B refresh on 2026-04-28 |
+| Evidence freshness rows | [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | current after Session B refresh on 2026-04-28 |
+| Final package readiness call | this file plus the files above | unblocked for human review; keep Session B files authoritative if wording diverges |
 
 ## Human Review Checklist
 
@@ -131,6 +131,7 @@ Before final submission, a human should review:
 AI-verifiable checklist items are tracked in [`ai_first/competition/submission-checklist.md`](../../ai_first/competition/submission-checklist.md). Human-only items stay unchecked until a final manual review happens.
 Use [`HUMAN_REVIEW_HANDOFF.md`](./HUMAN_REVIEW_HANDOFF.md) for the shortest remaining manual review path.
 If the submission requires video, use [`VIDEO_CAPTURE_RUNBOOK.md`](./VIDEO_CAPTURE_RUNBOOK.md) before recording.
+The package is now ready for final human review, not automatic final sign-off.
 
 ## Known Limitations
 

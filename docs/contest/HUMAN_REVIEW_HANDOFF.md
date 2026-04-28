@@ -18,7 +18,7 @@ Use this file as the shortest manual review path before the final VnExpress Sán
 | --- | --- | --- | --- |
 | Product wording and category fit | submission operator / final reviewer | Pending | final human wording review not yet recorded |
 | Intellectual property commitment | submission operator / project owner | Pending | external confirmation not yet recorded |
-| Evidence sanity check | submission operator | Pending | Session B proof refresh remains authoritative |
+| Evidence sanity check | submission operator | Pending | final human sanity pass not yet recorded; Session B proof refresh is now merged and authoritative |
 | Optional video decision | submission operator | Pending | final submission requirements not yet confirmed |
 | Final package sign-off | final reviewer | Blocked | Gates 1-4 must complete first |
 
@@ -67,6 +67,7 @@ Acceptance rule:
 
 - if Session B refreshes validation or evidence wording, use its files as authoritative
 - if a screenshot or validation artifact is stale, do not silently mark the package ready
+- the current authoritative refresh is the merged 2026-04-28 Session B smoke/evidence pass, while screenshot capture dates remain 2026-04-25 and 2026-04-26
 
 ### Gate 4. Optional video decision
 
@@ -95,6 +96,7 @@ Use `docs/contest/SUBMISSION_PACKAGE.md` as the final read path and then mark th
 6. `docs/contest/screenshots/`
 
 If any wording here disagrees with Session B-owned freshness files, prefer the Session B file and update this handoff later rather than overriding proof status locally.
+This handoff now assumes the Session B refresh merged successfully; the remaining work is human review and optional submission-only decisions.
 
 ## Expected End State
 
