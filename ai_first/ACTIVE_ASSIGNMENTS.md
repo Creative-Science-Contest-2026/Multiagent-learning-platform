@@ -38,7 +38,7 @@ Rules:
 - Branch: `docs/post-active-assignments-terminal-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-active-assignments-terminal-sync.md`
 - Owned files: `ai_first/ACTIVE_ASSIGNMENTS.md`, daily log, and sync task/PR note only
-- PR:
+- PR: `#227`
 - Last update: 2026-04-28
 - Next action: preserve the merged `#225` terminal state in `ACTIVE_ASSIGNMENTS.md` so it no longer contradicts the authoritative prompt
 - Blocker: none
