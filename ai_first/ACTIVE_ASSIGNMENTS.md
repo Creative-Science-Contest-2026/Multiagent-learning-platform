@@ -34,13 +34,13 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/post-active-assignments-terminal-sync`
 - Task: `OPS_ACTIVE_ASSIGNMENTS_TERMINAL_SYNC`
-- Status: ready-for-review
+- Status: merged
 - Branch: `docs/post-active-assignments-terminal-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-active-assignments-terminal-sync.md`
 - Owned files: `ai_first/ACTIVE_ASSIGNMENTS.md`, daily log, and sync task/PR note only
 - PR: `#227`
 - Last update: 2026-04-28
-- Next action: preserve the merged `#225` terminal state in `ACTIVE_ASSIGNMENTS.md` so it no longer contradicts the authoritative prompt
+- Next action: preserve the merged `#227` active-assignment sync as part of the terminal-state baseline
 - Blocker: none
 
 ### Assignment
