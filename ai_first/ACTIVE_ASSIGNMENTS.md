@@ -30,4 +30,16 @@ Rules:
 
 ## Active
 
-No active AI-owned non-terminal lanes.
+### Assignment
+
+- Owner: Browser recapture refresh lane
+- Machine: local
+- Worktree: `.worktrees/browser-recapture-refresh`
+- Task: `OPS_BROWSER_RECAPTURE_AFTER_PHASE2`
+- Status: ready-for-review
+- Branch: `docs/browser-recapture-refresh`
+- Task packet: `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
+- Owned files: stale browser screenshot artifacts, contest evidence docs, AI-first mirrors, daily log, and recapture PR note only
+- PR: `#232`
+- Last update: 2026-04-28
+- Next action: watch PR `#232`, merge it when required checks are green, then run the tiny prompt-sync follow-up if the authoritative prompt still describes browser screenshots as stale

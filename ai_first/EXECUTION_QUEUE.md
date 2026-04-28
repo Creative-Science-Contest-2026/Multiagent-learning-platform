@@ -51,12 +51,12 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - The post-contest future backlog `F101-F124` is fully merged on `main`.
 - Submission-close Phase 1 (`C201-C210`) is fully merged on `main`.
 - Optional Phase 2 contest polish (`C211-C215`) is fully merged on `main`.
-- Command-backed contest evidence is current on `main`, but browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshot rows remain stale in the authoritative contest docs until a fresh recapture is executed.
+- Command-backed contest evidence is current on `main`, and the stale Knowledge, Tutor, Dashboard, and `/agents` browser screenshot rows have now been refreshed in this lane against the current merged UI.
 
 ## Next recommended task
 
-- If judge-facing browser freshness matters, execute a fresh browser recapture lane from `main` and update the authoritative contest evidence docs.
-- Otherwise, complete the remaining human review gates: product wording confirmation, IP commitment, optional video decision, and final sign-off.
+- Complete the remaining human review gates: product wording confirmation, IP commitment, optional video decision, and final sign-off.
+- Otherwise, open a new packet only if the human explicitly wants more post-submission work from `main`.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
@@ -71,7 +71,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- Browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshots are still stale in `docs/contest/VALIDATION_REPORT.md` and `docs/contest/EVIDENCE_CHECKLIST.md`; recapture is the next AI-owned follow-up if final judge-facing freshness is required.
+- None currently, once this browser-recapture lane merges and the refreshed evidence docs become authoritative on `main`.
 
 ## Human-review blockers
 

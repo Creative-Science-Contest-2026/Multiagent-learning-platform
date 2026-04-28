@@ -20,8 +20,8 @@ Structured command-backed status artifact: `../../ai_first/evidence/evidence_sta
 | --- | --- | --- | --- |
 | Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run repeated on 2026-04-28 and recorded in `ai_first/daily/2026-04-28.md`. |
 | Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-28 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the Session B worktree. |
-| Screenshot bundle | Browser capture after smoke when the UI changes | Stale | Last real browser recapture remains 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; after Phase 2 polish merged in PRs `#214`, `#215`, and `#216`, the browser screenshots no longer fully match the current UI. |
-| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Stale | Last real browser recapture remains 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; `/agents` wording changed in PR `#215`, so recapture is required before claiming these screenshots match current UI. |
+| Screenshot bundle | Browser capture after smoke when the UI changes | Current | Refreshed on 2026-04-28 in `docs/browser-recapture-refresh` for Knowledge, Tutor, and Dashboard surfaces against the current merged UI. |
+| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Current | Refreshed on 2026-04-28 in `docs/browser-recapture-refresh` with a demo-safe spec pack on the current `/agents` authoring surface. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
 Use these status values consistently:
@@ -56,8 +56,7 @@ Use these status values consistently:
 - The repository currently documents no pilot cohort, classroom rollout, or real-user study. Use `PILOT_STATUS.md` for the explicit external-feedback status.
 - Local provider-backed assessment generation was unavailable during the 2026-04-25 screenshot refresh because the configured model key was still a placeholder. The refreshed `07` and `08` screenshots therefore use demo-safe local session content in the worktree data store instead of a live provider response.
 - Provider-backed AI quality depends on configured model credentials. If credentials are unavailable during a demo, use the command validation and recorded UI flow as fallback evidence.
-- The 2026-04-28 smoke pass verified seeded demo-safe assessment and tutor sessions plus Knowledge Pack grounding through API responses. It did not freshly recapture browser evidence for diagnosis or intervention surfaces.
-- After Phase 2 polish merged in PRs `#214`, `#215`, and `#216`, the Knowledge, Tutor, Dashboard, and `/agents` screenshots should be treated as stale until a fresh browser recapture is completed.
+- The 2026-04-28 smoke pass verified seeded demo-safe assessment and tutor sessions plus Knowledge Pack grounding through API responses, and the same-day browser recapture refreshed the current judge-facing screenshot bundle.
 - This report uses demo-safe descriptions only. Do not add real student data.
 
 ## Local Demo Run
@@ -72,9 +71,9 @@ The latest smoke-backed evidence refresh used local demo data only (2026-04-28):
   - `contest-assessment-demo`
   - `contest-tutor-demo`
 - Screenshot refresh follow-up:
-  - Session B did not perform a fresh browser recapture on 2026-04-28;
-  - assessment screenshots still match the latest merged assessment UI and remain current from the 2026-04-25 browser refresh;
-  - Knowledge Pack, Tutor, Dashboard, and `/agents` screenshots are now stale because later Phase 2 polish changed visible UI/copy after those captures;
+  - Session B kept command-backed proof current on 2026-04-28;
+  - `docs/browser-recapture-refresh` then refreshed Knowledge, Tutor, Dashboard, and `/agents` browser screenshots on 2026-04-28;
+  - assessment screenshots still remain current from the 2026-04-25 browser refresh because Phase 2 did not change those surfaces;
   - hybrid `/agents` screenshot rows still require the bounded runtime-binding automated proof when discussing live Tutor behavior impact.
 
 Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
@@ -97,8 +96,8 @@ The 2026-04-28 scripted-reset smoke run verified the MVP path in the current mer
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
 4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the Session B worktree;
-5. smoke-backed command evidence is current on 2026-04-28, while browser-captured Knowledge, Tutor, Dashboard, and `/agents` rows are now stale after later Phase 2 polish merges;
-6. this smoke pass proves the command-backed Knowledge Pack -> Assessment session -> Tutor session -> Dashboard path with demo-safe seeded content and retained Knowledge Pack grounding, but it does not newly prove the latest polished browser UI;
+5. smoke-backed command evidence is current on 2026-04-28, and the stale Knowledge, Tutor, Dashboard, and `/agents` browser rows were recaptured later the same day against the current merged UI;
+6. this smoke pass plus the same-day browser recapture now prove both the command-backed Knowledge Pack -> Assessment session -> Tutor session -> Dashboard path and the current judge-facing browser UI without widening claims beyond the validated prototype contract;
 7. focused automated tests still provide the bounded proof that the unified Tutor turn path can accept `config.agent_spec_id`, assemble the matching runtime policy, and produce a deterministic behavior difference between two contrasting spec packs without claiming full entry-point coverage;
 8. diagnosis credibility remains supported by focused rule-based cases and the reviewer-facing case-study packet in `DIAGNOSIS_CASE_STUDIES.md`, not by fabricated accuracy metrics or a fresh Session B browser run;
 9. reusable validation examples remain available as a machine-readable casepack in `ai_first/evidence/casepack.json`, intended for future regression and evidence-automation work rather than runtime scoring.
@@ -109,17 +108,17 @@ Complete this section when the local app is running.
 
 | Step | Expected result | Status | Evidence link |
 | --- | --- | --- | --- |
-| Open Knowledge page | Teacher can create or edit Knowledge Pack metadata | Stale after PR `#214` | [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png) |
-| Reload Knowledge page | Metadata remains visible | Stale after PR `#214` | [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png) |
+| Open Knowledge page | Teacher can create or edit Knowledge Pack metadata | Passed on 2026-04-28 recapture | [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png) |
+| Reload Knowledge page | Metadata remains visible | Passed on 2026-04-28 recapture | [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png) |
 | Open assessment config | Quiz generation mode shows the demo Knowledge Pack context | Passed | [`04-assessment-config.png`](./screenshots/04-assessment-config.png) |
 | Generate assessment | Questions are generated from selected subject/context | Passed with demo-safe local session content | [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png) |
 | Review feedback | Common-mistake or guidance output is visible | Passed with demo-safe local session content | [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png) |
-| Ask Tutor Agent follow-up | Student prompt is visible before the tutor answer | Stale after PRs `#214` and `#215` | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
-| Review tutor answer | Tutor responds to student question with learning context | Stale after PRs `#214` and `#215` | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
-| Open Dashboard | Evidence-first teacher workflow is visible | Stale after PRs `#214` and `#215` | [`05-dashboard-evidence-first-overview.png`](./screenshots/05-dashboard-evidence-first-overview.png) |
-| Review dashboard recent activity | Assessment and tutoring activity still appears below the workflow | Stale after PRs `#214` and `#215` | [`09-dashboard-recent-activity-evidence-first.png`](./screenshots/09-dashboard-recent-activity-evidence-first.png) |
-| Open `/agents` authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections are visible | Stale after PR `#215` | [`10-agents-spec-pack-authoring.png`](./screenshots/10-agents-spec-pack-authoring.png) |
-| Show `/agents` export action | Export is visible from the authoring tab | Stale after PR `#215` | [`11-agents-spec-pack-export.png`](./screenshots/11-agents-spec-pack-export.png) |
+| Ask Tutor Agent follow-up | Student prompt is visible before the tutor answer | Passed on 2026-04-28 recapture | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
+| Review tutor answer | Tutor responds to student question with learning context | Passed on 2026-04-28 recapture | [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) |
+| Open Dashboard | Evidence-first teacher workflow is visible | Passed on 2026-04-28 recapture | [`05-dashboard-evidence-first-overview.png`](./screenshots/05-dashboard-evidence-first-overview.png) |
+| Review dashboard recent activity | Assessment and tutoring activity still appears below the workflow | Passed on 2026-04-28 recapture | [`09-dashboard-recent-activity-evidence-first.png`](./screenshots/09-dashboard-recent-activity-evidence-first.png) |
+| Open `/agents` authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections are visible | Passed on 2026-04-28 recapture | [`10-agents-spec-pack-authoring.png`](./screenshots/10-agents-spec-pack-authoring.png) |
+| Show `/agents` export action | Export is visible from the authoring tab | Passed on 2026-04-28 recapture | [`11-agents-spec-pack-export.png`](./screenshots/11-agents-spec-pack-export.png) |
 
 ## PR Evidence Links
 
@@ -147,4 +146,4 @@ rg -n "evidence refresh|smoke|validation|screenshot|video|Current|Stale|Blocked"
 git diff --check
 ```
 
-6. Recapture Knowledge, Tutor, Dashboard, and `/agents` screenshots against the current merged Phase 2 polish state before returning those rows to `Current`.
+6. If a later UI polish changes these surfaces again, rerun this browser recapture flow before returning affected rows to `Current`.
