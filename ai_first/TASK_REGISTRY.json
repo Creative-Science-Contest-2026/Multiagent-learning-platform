@@ -2162,10 +2162,10 @@
       "dependencies": [
         "C210_FINAL_PACKAGE_READINESS"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
-      "notes": "Activated on branch fix/submission-close-c214 on 2026-04-28. Scope is bounded to docs and evidence inventory wording/order only; no screenshot recapture or runtime edits."
+      "notes": "Merged to main through PR #216 on 2026-04-28. Scope stayed bounded to docs and evidence inventory wording/order only; no screenshot recapture or runtime edits."
     },
     {
       "id": "C215_POST_POLISH_EVIDENCE_RECAPTURE",
@@ -2188,9 +2188,10 @@
         "C213_DIFFERENTIATION_WORDING_SWEEP",
         "C214_JUDGE_FACING_VISUAL_ASSET_POLISH"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-validation",
-      "layer": "optional-polish"
+      "layer": "optional-polish",
+      "notes": "Activated on branch fix/submission-close-c215 on 2026-04-28. Scope is bounded to evidence freshness docs after the latest Phase 2 polish merges; no new smoke run or browser recapture yet."
     }
   ],
   "github_issues_template": {
