@@ -7,7 +7,7 @@ If there is a conflict between this file and any compatibility snapshot, this fi
 
 Build a stable VnExpress Sáng kiến Khoa học 2026 MVP:
 
-Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
+Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 
 ## Compatibility model
 
@@ -25,7 +25,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - Mainline status: Milestone 0 AI-first operating layer merged into `main` on 2026-04-13.
 - Goal: keep the repo self-directing enough that an AI worker can start from this prompt, read the current context, and continue without manual orchestration.
 - Latest product status: Knowledge Pack, marketplace import, batch marketplace import, offline-ready imported-pack fallback, offline quiz-result sync queue, assessment generation and review insights, student tutoring context, KB context badges, Teacher Dashboard, Vietnamese MVP prompt variants, contest-facing Vietnamese UI coverage, marketplace sorting, cached marketplace browsing, mobile-first marketplace layout, metadata-driven marketplace search, marketplace and knowledge-screen polish, dashboard/review polish, dashboard insight depth, metadata depth, session context quality, assessment adaptive difficulty, teacher analytics, assessment PDF export, tutoring session replay, route error boundaries, API rate limiting, teacher invitation metadata, assessment time tracking, tutor follow-up prompts, knowledge-pack version metadata, teacher action execution, intervention assignment flow, recommendation acknowledgement flow, diagnosis feedback capture, intervention history view, recommendation feedback capture, teacher override logging, assessment review rubric controls, provenance and reason trace surfaces, conservative student-model enrichment, weak-evidence abstain gating, confidence calibration refinement, misconception taxonomy expansion, intervention-effectiveness tracking, class roster ownership foundation, pilot feedback ingestion seam, evaluation casepack dataset, evidence refresh status automation, contest evidence screenshots, contest submission-package sync, checklist evidence alignment, contest product-description drafting, and contest fork-modifications documentation are merged into `main`.
-- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, `ai_first/ACTIVE_ASSIGNMENTS.md` is the active coordination board, the Wave 1 evidence spine is merged through PR `#132`, the six-lane Contest MVP+ roadmap remains documented under `docs/superpowers/tasks/2026-04-26-lane-*.md`, the optional post-contest future backlog is defined in `ai_first/TASK_REGISTRY.json` plus `docs/superpowers/tasks/2026-04-26-two-session-future-backlog.md`, the full `F101-F124` backlog is now merged on `main`, and the next AI-owned extension is the registry-backed submission-close train `C201-C215`, starting with `C201_SUBMISSION_CLOSE_MASTER_COORDINATION` on branch `docs/submission-close-master`.
+- Latest operating status: `ai_first/EXECUTION_QUEUE.md` is the shortest queue/status board, `ai_first/ACTIVE_ASSIGNMENTS.md` is the active coordination board, the full `F101-F124` backlog is merged on `main`, and submission-close Phase 1 (`C201-C210`) is now merged on `main` through PRs `#210`, `#212`, and `#211`. The current terminal state is final human review plus optional Phase 2 polish (`C211-C215`) only if a fresh packet is explicitly opened.
 - Operating model: Markdown is source of truth; GitHub Issues and PRs are execution mirrors; the prompt is the control plane.
 
 ## Required startup sequence
@@ -244,7 +244,7 @@ When starting a new feature or fix:
 4. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
 5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, blocker changes, and task selection.
 6. Keep GitHub issue state aligned with merged PRs so the queue mirrors real work, not historical leftovers.
-7. Continue from the next pending registry task in strict order after every successful merge or verification pass. The two-lane contest MVP polish experiment (`T044` through `T051`) is complete, the 2026-04-25 smoke refresh passed, and the refreshed screenshot bundle is now merged, so the next operational step is the remaining human review or optional video decision.
+7. Continue from the next pending registry task in strict order after every successful merge or verification pass. Submission-close Phase 1 (`C201-C210`) is complete on `main`, so the current operational step is human review, optional video decision, or an explicitly opened optional Phase 2 polish task from `C211-C215`.
 8. Keep the demo-readiness smoke lane current after meaningful merges and treat smoke failures as the next task.
 9. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when local demo state may be stale, missing, or private.
 10. Run the scripted reset command before the next smoke/evidence refresh so the merged utility is validated end to end.
