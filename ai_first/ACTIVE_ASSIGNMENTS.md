@@ -109,11 +109,11 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/submission-close-c211`
 - Task: `C211_TEACHER_FIRST_ENTRY_POLISH`
-- Status: in-progress
+- Status: in-review
 - Branch: `fix/submission-close-c211`
 - Task packet: `docs/superpowers/tasks/2026-04-28-c211-teacher-first-entry-polish.md`
 - Owned files: teacher-entry product surfaces plus required AI-first mirrors for C211 only
-- PR:
+- PR: `#219`
 - Last update: 2026-04-28
-- Next action: polish first-impression teacher-entry copy, validate the bounded UI surfaces, and open a draft PR
+- Next action: keep Draft PR `#219` green, then move it to Ready after self-review
 - Blocker:
