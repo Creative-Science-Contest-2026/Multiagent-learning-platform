@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T06:20:00Z",
+    "last_updated": "2026-04-28T11:30:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 73
+    "total_tasks": 88
   },
   "task_categories": {
     "completed": {
@@ -87,8 +87,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "C201_SUBMISSION_CLOSE_MASTER_COORDINATION"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -97,8 +99,23 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 0,
-      "tasks": []
+      "count": 14,
+      "tasks": [
+        "C202_SUBMISSION_SCOPE_FREEZE",
+        "C203_CLAIM_AND_PROOF_CONTRACT_FREEZE",
+        "C204_CORE_LOOP_RUNTIME_REVALIDATION",
+        "C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH",
+        "C206_EVIDENCE_BUNDLE_REFRESH",
+        "C207_SUBMISSION_NARRATIVE_PACK",
+        "C208_SUBMISSION_OPERATOR_PACK",
+        "C209_HUMAN_REVIEW_GATES",
+        "C210_FINAL_PACKAGE_READINESS",
+        "C211_TEACHER_FIRST_ENTRY_POLISH",
+        "C212_CORE_LOOP_VISIBILITY_POLISH",
+        "C213_DIFFERENTIATION_WORDING_SWEEP",
+        "C214_JUDGE_FACING_VISUAL_ASSET_POLISH",
+        "C215_POST_POLISH_EVIDENCE_RECAPTURE"
+      ]
     }
   },
   "tasks": [
@@ -1821,6 +1838,347 @@
       "recommended_session_bucket": "session-b-runtime-data",
       "layer": "validation-ops",
       "notes": "Merged to main through PR #206 on 2026-04-28. The repository now has a bounded evidence-refresh helper, a machine-readable status artifact, and contest-doc wiring that preserves manual screenshot and video semantics."
+    },
+    {
+      "id": "C201_SUBMISSION_CLOSE_MASTER_COORDINATION",
+      "category": "Contest Closure",
+      "priority": 74,
+      "title": "Submission Close Master Coordination",
+      "description": "Add the approved three-session submission-close spec, plan, master packet, and queue mirrors so the final contest close path is tracked inside the AI-first control plane.",
+      "scope": {
+        "docs": "docs/superpowers/specs/, docs/superpowers/plans/, docs/superpowers/tasks/, docs/superpowers/pr-notes/",
+        "control_plane": "ai_first/ACTIVE_ASSIGNMENTS.md, ai_first/EXECUTION_QUEUE.md, ai_first/NEXT_ACTIONS.md, ai_first/daily/2026-04-28.md, ai_first/TASK_REGISTRY.json"
+      },
+      "affected_features": [
+        "AI-first Operating Layer",
+        "Contest Submission Workflow"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "Approved submission-close design"
+      ],
+      "status": "in-progress",
+      "recommended_session_bucket": "coordination-docs",
+      "layer": "workflow",
+      "notes": "Active on branch docs/submission-close-master. This task must merge before Session A, Session B, and Session C launch from fresh worktrees off main."
+    },
+    {
+      "id": "C202_SUBMISSION_SCOPE_FREEZE",
+      "category": "Contest Closure",
+      "priority": 75,
+      "title": "Submission Scope Freeze",
+      "description": "Lock the contest scope around the teacher-controlled adaptive tutoring loop and explicitly mark non-core features as secondary or out of demo scope.",
+      "scope": {
+        "docs": "ai_first/competition/, docs/contest/README.md, docs/contest/SUBMISSION_PACKAGE.md"
+      },
+      "affected_features": [
+        "Contest Narrative",
+        "Submission Package"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "C201_SUBMISSION_CLOSE_MASTER_COORDINATION"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-docs",
+      "layer": "submission-docs"
+    },
+    {
+      "id": "C203_CLAIM_AND_PROOF_CONTRACT_FREEZE",
+      "category": "Contest Closure",
+      "priority": 76,
+      "title": "Claim And Proof Contract Freeze",
+      "description": "Map each contest-facing claim to repo-backed evidence or downgrade it to validated-prototype wording before any final packaging pass.",
+      "scope": {
+        "docs": "ai_first/competition/product-description.md, docs/contest/VALIDATION_REPORT.md, docs/contest/EVIDENCE_CHECKLIST.md"
+      },
+      "affected_features": [
+        "Contest Narrative",
+        "Evidence Calibration"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "C202_SUBMISSION_SCOPE_FREEZE"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-docs",
+      "layer": "submission-docs"
+    },
+    {
+      "id": "C204_CORE_LOOP_RUNTIME_REVALIDATION",
+      "category": "Contest Closure",
+      "priority": 77,
+      "title": "Core Loop Runtime Revalidation",
+      "description": "Re-check current main against the five-step contest loop and convert any real breakage into explicit blocker fixes rather than doc drift.",
+      "scope": {
+        "docs": "docs/contest/VALIDATION_REPORT.md, docs/contest/SMOKE_RUNBOOK.md",
+        "runtime": "narrow blocker notes only; runtime fixes split into separate Session C PRs"
+      },
+      "affected_features": [
+        "Validation Evidence",
+        "Contest MVP Loop"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": [
+        "C201_SUBMISSION_CLOSE_MASTER_COORDINATION"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-validation",
+      "layer": "validation-ops"
+    },
+    {
+      "id": "C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH",
+      "category": "Contest Closure",
+      "priority": 78,
+      "title": "Demo Data And Smoke Contract Refresh",
+      "description": "Refresh the demo-safe reset contract, smoke order, and manual checks so any worker can rebuild the contest path without old chat context.",
+      "scope": {
+        "docs": "docs/contest/DEMO_DATA_RESET.md, docs/contest/SMOKE_RUNBOOK.md, docs/contest/VALIDATION_REPORT.md"
+      },
+      "affected_features": [
+        "Demo Operations",
+        "Validation Evidence"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "C204_CORE_LOOP_RUNTIME_REVALIDATION"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-validation",
+      "layer": "validation-ops"
+    },
+    {
+      "id": "C206_EVIDENCE_BUNDLE_REFRESH",
+      "category": "Contest Closure",
+      "priority": 79,
+      "title": "Evidence Bundle Refresh",
+      "description": "Mark every screenshot, command-backed artifact, and optional video row as current, blocked, deferred, or pending human recapture.",
+      "scope": {
+        "docs": "docs/contest/EVIDENCE_CHECKLIST.md, docs/contest/VALIDATION_REPORT.md, ai_first/evidence/"
+      },
+      "affected_features": [
+        "Contest Evidence",
+        "Submission Package"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "C204_CORE_LOOP_RUNTIME_REVALIDATION",
+        "C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-validation",
+      "layer": "validation-ops"
+    },
+    {
+      "id": "C207_SUBMISSION_NARRATIVE_PACK",
+      "category": "Contest Closure",
+      "priority": 80,
+      "title": "Submission Narrative Pack",
+      "description": "Finalize the product description, differentiation framing, and fork transparency so the repo tells one clear contest story.",
+      "scope": {
+        "docs": "ai_first/competition/product-description.md, ai_first/competition/fork-modifications.md, ai_first/competition/pitch-notes.md"
+      },
+      "affected_features": [
+        "Contest Narrative"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "C202_SUBMISSION_SCOPE_FREEZE",
+        "C203_CLAIM_AND_PROOF_CONTRACT_FREEZE"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-docs",
+      "layer": "submission-docs"
+    },
+    {
+      "id": "C208_SUBMISSION_OPERATOR_PACK",
+      "category": "Contest Closure",
+      "priority": 81,
+      "title": "Submission Operator Pack",
+      "description": "Create the final operator-facing read path that tells a human reviewer what to open, what to attach, and what to verify before submit.",
+      "scope": {
+        "docs": "docs/contest/README.md, docs/contest/SUBMISSION_PACKAGE.md, docs/contest/HUMAN_REVIEW_HANDOFF.md"
+      },
+      "affected_features": [
+        "Submission Package",
+        "Contest Operations"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "C206_EVIDENCE_BUNDLE_REFRESH",
+        "C207_SUBMISSION_NARRATIVE_PACK"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-docs",
+      "layer": "submission-docs"
+    },
+    {
+      "id": "C209_HUMAN_REVIEW_GATES",
+      "category": "Contest Closure",
+      "priority": 82,
+      "title": "Human Review Gates",
+      "description": "Turn remaining manual-only work into explicit gates with owner and status, including IP review, optional video decision, wording review, and sign-off.",
+      "scope": {
+        "docs": "docs/contest/HUMAN_REVIEW_HANDOFF.md, ai_first/NEXT_ACTIONS.md, ai_first/EXECUTION_QUEUE.md"
+      },
+      "affected_features": [
+        "Submission Package",
+        "Human Review"
+      ],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": [
+        "C208_SUBMISSION_OPERATOR_PACK"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-docs",
+      "layer": "submission-docs"
+    },
+    {
+      "id": "C210_FINAL_PACKAGE_READINESS",
+      "category": "Contest Closure",
+      "priority": 83,
+      "title": "Final Package Readiness",
+      "description": "Run the final consistency pass across docs, evidence, and manual gates, then declare the package ready only when the read path is complete.",
+      "scope": {
+        "docs": "docs/contest/, ai_first/competition/, ai_first/EXECUTION_QUEUE.md, ai_first/daily/"
+      },
+      "affected_features": [
+        "Submission Package"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "C206_EVIDENCE_BUNDLE_REFRESH",
+        "C208_SUBMISSION_OPERATOR_PACK",
+        "C209_HUMAN_REVIEW_GATES"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-a-docs",
+      "layer": "submission-docs"
+    },
+    {
+      "id": "C211_TEACHER_FIRST_ENTRY_POLISH",
+      "category": "Contest Closure",
+      "priority": 84,
+      "title": "Teacher-First Entry Polish",
+      "description": "Improve first impression so the product reads immediately as teacher-controlled classroom software rather than a generic AI workspace.",
+      "scope": {
+        "frontend": "contest-facing web entry and teacher setup surfaces only"
+      },
+      "affected_features": [
+        "Contest UI",
+        "Teacher Experience"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": [
+        "C210_FINAL_PACKAGE_READINESS"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-c-polish",
+      "layer": "optional-polish"
+    },
+    {
+      "id": "C212_CORE_LOOP_VISIBILITY_POLISH",
+      "category": "Contest Closure",
+      "priority": 85,
+      "title": "Core Loop Visibility Polish",
+      "description": "Make the five-step learning loop more visible across existing screens with bounded UX and wording adjustments.",
+      "scope": {
+        "frontend": "knowledge, assessment, tutor, dashboard, and teacher-action surfaces involved in the contest loop"
+      },
+      "affected_features": [
+        "Contest UI",
+        "Teacher Dashboard",
+        "Tutor Agent"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": [
+        "C210_FINAL_PACKAGE_READINESS"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-c-polish",
+      "layer": "optional-polish"
+    },
+    {
+      "id": "C213_DIFFERENTIATION_WORDING_SWEEP",
+      "category": "Contest Closure",
+      "priority": 86,
+      "title": "Differentiation Wording Sweep",
+      "description": "Align contest-facing product copy with the teacher-controlled adaptive tutor framing across key UI touchpoints.",
+      "scope": {
+        "frontend": "contest-facing UI copy and i18n touchpoints only",
+        "docs": "small alignment pass only if UI wording changes require it"
+      },
+      "affected_features": [
+        "Contest UI",
+        "Contest Narrative"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 3,
+      "dependencies": [
+        "C210_FINAL_PACKAGE_READINESS"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-c-polish",
+      "layer": "optional-polish"
+    },
+    {
+      "id": "C214_JUDGE_FACING_VISUAL_ASSET_POLISH",
+      "category": "Contest Closure",
+      "priority": 87,
+      "title": "Judge-Facing Visual Asset Polish",
+      "description": "Improve screenshot selection, captions, and supporting visual presentation for judges without widening product claims.",
+      "scope": {
+        "docs": "docs/contest/, ai_first/evidence/, screenshot captions or inventory only"
+      },
+      "affected_features": [
+        "Contest Evidence",
+        "Submission Package"
+      ],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": [
+        "C210_FINAL_PACKAGE_READINESS"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-c-polish",
+      "layer": "optional-polish"
+    },
+    {
+      "id": "C215_POST_POLISH_EVIDENCE_RECAPTURE",
+      "category": "Contest Closure",
+      "priority": 88,
+      "title": "Post-Polish Evidence Recapture",
+      "description": "Re-run the limited validation and evidence refresh needed after any approved Phase 2 UI or wording polish lands.",
+      "scope": {
+        "docs": "docs/contest/VALIDATION_REPORT.md, docs/contest/EVIDENCE_CHECKLIST.md, ai_first/evidence/"
+      },
+      "affected_features": [
+        "Contest Evidence",
+        "Validation Evidence"
+      ],
+      "complexity": "Low",
+      "estimated_hours": 2,
+      "dependencies": [
+        "C211_TEACHER_FIRST_ENTRY_POLISH",
+        "C212_CORE_LOOP_VISIBILITY_POLISH",
+        "C213_DIFFERENTIATION_WORDING_SWEEP",
+        "C214_JUDGE_FACING_VISUAL_ASSET_POLISH"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-validation",
+      "layer": "optional-polish"
     }
   ],
   "github_issues_template": {
@@ -1947,6 +2305,59 @@
     "T035": [
       "T009 (batch import)",
       "Service Worker"
+    ],
+    "C201": [
+      "Approved three-session submission-close design"
+    ],
+    "C202": [
+      "C201"
+    ],
+    "C203": [
+      "C202"
+    ],
+    "C204": [
+      "C201"
+    ],
+    "C205": [
+      "C204"
+    ],
+    "C206": [
+      "C204",
+      "C205"
+    ],
+    "C207": [
+      "C202",
+      "C203"
+    ],
+    "C208": [
+      "C206",
+      "C207"
+    ],
+    "C209": [
+      "C208"
+    ],
+    "C210": [
+      "C206",
+      "C208",
+      "C209"
+    ],
+    "C211": [
+      "C210"
+    ],
+    "C212": [
+      "C210"
+    ],
+    "C213": [
+      "C210"
+    ],
+    "C214": [
+      "C210"
+    ],
+    "C215": [
+      "C211",
+      "C212",
+      "C213",
+      "C214"
     ]
   },
   "milestones": {
@@ -1996,6 +2407,39 @@
         "T037"
       ],
       "target_date": "2026-06-01"
+    },
+    "SUBMISSION_CLOSE_PHASE_0": {
+      "title": "Submission Close Coordination",
+      "tasks": [
+        "C201"
+      ],
+      "target_date": "2026-04-29"
+    },
+    "SUBMISSION_CLOSE_PHASE_1": {
+      "title": "Submit Confidently",
+      "tasks": [
+        "C202",
+        "C203",
+        "C204",
+        "C205",
+        "C206",
+        "C207",
+        "C208",
+        "C209",
+        "C210"
+      ],
+      "target_date": "2026-05-02"
+    },
+    "SUBMISSION_CLOSE_PHASE_2": {
+      "title": "Optional Submission Polish",
+      "tasks": [
+        "C211",
+        "C212",
+        "C213",
+        "C214",
+        "C215"
+      ],
+      "target_date": "2026-05-05"
     }
   }
 }

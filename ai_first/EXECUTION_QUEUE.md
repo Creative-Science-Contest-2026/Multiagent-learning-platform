@@ -48,13 +48,13 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Active queue
 
-- No active AI implementation task remains on `main`.
 - The post-contest future backlog `F101-F124` is now fully merged on `main`.
+- A new submission-close backlog extension is now defined on branch `docs/submission-close-master` through `C201-C215`, but it is not on `main` until the master coordination PR merges.
 
 ## Next recommended task
 
-- The `F101-F124` future backlog is exhausted on `main`.
-- Follow `docs/superpowers/tasks/2026-04-28-submission-close-master-coordination.md` and launch Session A plus Session B in parallel, with Session C reserved for blocker fixes or optional polish.
+- Finish `C201_SUBMISSION_CLOSE_MASTER_COORDINATION` on `docs/submission-close-master`.
+- After that PR merges, launch Session A plus Session B in parallel from fresh worktrees off `main`, with Session C reserved for blocker fixes or optional polish.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 

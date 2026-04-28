@@ -28,6 +28,21 @@ Rules:
 
 ## Active
 
+### Assignment
+
+- Owner: Coordination lane
+- Machine:
+- Worktree: `.worktrees/submission-close-master`
+- Task: `OPS_SUBMISSION_CLOSE_MASTER`
+- Status: in-review
+- Branch: `docs/submission-close-master`
+- Task packet: `docs/superpowers/tasks/2026-04-28-submission-close-master-coordination.md`
+- Owned files: submission-close spec, plan, task packets, and AI-first mirrors
+- PR:
+- Last update: 2026-04-28
+- Next action: merge the master coordination PR before launching Session A, Session B, and Session C from fresh worktrees off `main`
+- Blocker: baseline `pytest` full suite is not green on current `main`; collection blocker was isolated separately from this docs-planning branch
+
 ### Planned Assignment
 
 - Owner: Session A

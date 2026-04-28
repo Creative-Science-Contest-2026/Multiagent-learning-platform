@@ -6,14 +6,14 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Launch Session A on submission scope and narrative freeze.
-2. Launch Session B on runtime revalidation and evidence refresh.
-3. Keep Session C reserved for narrow blocker fixes or optional Phase 2 polish.
-4. Complete human review of the submission package, IP commitment, and final product-description wording.
-5. Decide whether an optional contest video artifact is required.
-6. Treat any future smoke failure as the next product task before opening another polish slice.
-7. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
-8. Keep `ai_first/EXECUTION_QUEUE.md` current only if a new AI-owned task is opened.
+1. Finish `C201_SUBMISSION_CLOSE_MASTER_COORDINATION` on `docs/submission-close-master`.
+2. After that PR merges, launch Session A on submission scope and narrative freeze.
+3. Launch Session B on runtime revalidation and evidence refresh.
+4. Keep Session C reserved for narrow blocker fixes or optional Phase 2 polish.
+5. Complete human review of the submission package, IP commitment, and final product-description wording.
+6. Decide whether an optional contest video artifact is required.
+7. Treat any future smoke failure as the next product task before opening another polish slice.
+8. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
 
 ## After Milestone 0
 
