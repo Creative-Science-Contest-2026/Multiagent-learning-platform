@@ -41,6 +41,20 @@ Rules:
 - PR:
 - Last update: 2026-04-28
 - Next action: push the refreshed screenshot artifacts and evidence docs, open the recapture PR, and merge it once checks are green
+
+### Assignment
+
+- Owner: Post-229 active-assignment sync lane
+- Machine: local
+- Worktree: `.worktrees/post-terminal-state-sync`
+- Task: `OPS_POST_229_ACTIVE_ASSIGNMENTS_SYNC`
+- Status: merged
+- Branch: `docs/post-terminal-state-sync`
+- Task packet: `docs/superpowers/tasks/2026-04-28-post-229-active-assignments-merge-sync.md`
+- Owned files: `ai_first/ACTIVE_ASSIGNMENTS.md`, daily log, and sync task/PR note only
+- PR: `#230`
+- Last update: 2026-04-28
+- Next action: preserve the merged post-229 active-assignment sync as the terminal-state baseline for the screenshot-truth repair lane
 - Blocker: none
 
 ### Assignment
