@@ -34,13 +34,13 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/post-terminal-state-sync`
 - Task: `OPS_POST_229_ACTIVE_ASSIGNMENTS_SYNC`
-- Status: in-progress
+- Status: ready-for-review
 - Branch: `docs/post-terminal-state-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-229-active-assignments-merge-sync.md`
 - Owned files: `ai_first/ACTIVE_ASSIGNMENTS.md`, daily log, and sync task/PR note only
-- PR:
+- PR: `#230`
 - Last update: 2026-04-28
-- Next action: update the merged `OPS_SCREENSHOT_TRUTH_SYNC` assignment to terminal-state truth and open a docs-only PR
+- Next action: merge the docs-only post-229 repair PR once checks are clear and no blocking review remains
 - Blocker: none
 
 ### Assignment
