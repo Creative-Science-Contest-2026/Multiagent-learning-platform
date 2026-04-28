@@ -34,13 +34,13 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/post-submission-close-sync`
 - Task: `OPS_C211_REGISTRY_REPAIR`
-- Status: in-progress
+- Status: ready-for-review
 - Branch: `docs/post-submission-close-terminal-repair`
 - Task packet: `docs/superpowers/tasks/2026-04-28-c211-registry-terminal-repair.md`
 - Owned files: `TASK_REGISTRY.json`, active-assignment mirror, daily log, and repair PR note only
-- PR:
+- PR: `#225`
 - Last update: 2026-04-28
-- Next action: mark `C211` completed in the registry, validate the repair, and open a docs-only PR
+- Next action: merge the docs-only registry repair PR once checks are clear and no blocking review remains
 - Blocker: none
 
 ### Assignment
