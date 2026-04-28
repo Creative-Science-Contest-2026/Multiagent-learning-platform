@@ -102,3 +102,18 @@ Rules:
 - Last update: 2026-04-28
 - Next action: keep 2026-04-28 command-backed smoke evidence current, and treat browser screenshot recapture as a separate future packet if needed
 - Blocker:
+
+### Assignment
+
+- Owner: Browser recapture packet lane
+- Machine: local
+- Worktree: `.worktrees/submission-close-c`
+- Task: `OPS_BROWSER_RECAPTURE_AFTER_PHASE2`
+- Status: packet-ready
+- Branch: `docs/post-phase2-browser-recapture-packet`
+- Task packet: `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
+- Owned files: workflow docs and AI-first mirrors for the next browser/manual evidence lane
+- PR:
+- Last update: 2026-04-28
+- Next action: use this packet from `main` when the team decides to refresh the stale browser screenshot rows
+- Blocker: browser capture is not being executed in this packet lane

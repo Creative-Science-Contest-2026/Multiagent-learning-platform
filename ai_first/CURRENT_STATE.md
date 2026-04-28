@@ -31,7 +31,7 @@ Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 - Latest merged docs/control-plane PRs: `#210`, `#212`, and `#211` completed submission-close Phase 1 on 2026-04-28.
 - Current branch for this sync: `docs/post-submission-close-sync`
 - Product MVP path status: the core contest flow, the Wave 1 evidence spine, the command-backed 2026-04-28 smoke refresh, the optional Phase 2 polish train (`C212-C215`), and the final human-review package path are all merged to `main` as a validated prototype.
-- Current purpose: keep a correct terminal wait state while the remaining submission work is human review, optional video, optional browser screenshot recapture, final sign-off, or a newly opened packet from `main`.
+- Current purpose: keep a correct terminal wait state while the remaining submission work is human review, optional video, optional browser screenshot recapture via the explicit post-Phase-2 packet, final sign-off, or a newly opened packet from `main`.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -59,7 +59,7 @@ Do not revert unrelated changes.
 
 ## Active Execution
 
-- Current open task packet: none by default after the Phase 2 sync lands; start a fresh packet from `main` for any further AI-owned work
+- Current open task packet: none active by default after the Phase 2 sync; if browser freshness must be restored, start from `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
 - Current open GitHub issue:
 - Latest completed smoke run result: the 2026-04-28 scripted-reset smoke pass succeeded with backend online through the CLI server path, frontend build passed after `npm ci`, Knowledge Pack demo data present, assessment/tutor session evidence present, and dashboard activity available.
 - Recently completed merged work: submission-close master coordination and package readiness merged through PRs `#210`, `#212`, and `#211`, followed by optional Phase 2 polish through PRs `#214`, `#215`, `#216`, and `#217`.
@@ -68,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off unless a fresh browser-recapture or follow-up packet is explicitly opened from `main`.
+Wait for human review of the submission package, IP commitment, optional video decision, and final sign-off unless the browser-recapture packet or another follow-up packet is explicitly opened from `main`.
 
 ## Autonomous Merge Policy
 
