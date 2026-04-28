@@ -6,12 +6,14 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Complete human review of the submission package, IP commitment, and final product-description wording.
-2. Decide whether an optional contest video artifact is required.
-3. Treat any future smoke failure as the next product task before opening another polish slice.
-4. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
-5. Keep `ai_first/EXECUTION_QUEUE.md` current only if a new AI-owned task is opened.
-6. If more AI work is requested, create a fresh task packet from `main` instead of reviving merged lanes, and prefer `docs/superpowers/tasks/2026-04-26-two-session-future-backlog.md` for the `F101-F124` backlog.
+1. Finish `C201_SUBMISSION_CLOSE_MASTER_COORDINATION` on `docs/submission-close-master`.
+2. After that PR merges, launch Session A on submission scope and narrative freeze.
+3. Launch Session B on runtime revalidation and evidence refresh.
+4. Keep Session C reserved for narrow blocker fixes or optional Phase 2 polish.
+5. Complete human review of the submission package, IP commitment, and final product-description wording.
+6. Decide whether an optional contest video artifact is required.
+7. Treat any future smoke failure as the next product task before opening another polish slice.
+8. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
 
 ## After Milestone 0
 
