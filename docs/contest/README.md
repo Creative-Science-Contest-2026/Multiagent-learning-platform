@@ -70,8 +70,8 @@ The current product can be described as `agent-native` today and `multi-agent by
 - Product MVP path is implemented through merged PRs for Knowledge Pack, Assessment Builder, Student Tutor context, and Teacher Dashboard.
 - Teacher Agent Spec authoring UI/API and runtime policy assembly contracts are merged on `main` and documented as hybrid-proof context.
 - Diagnosis and recommendation outputs are framed as rule-assisted, confidence-tagged, teacher-reviewed hypotheses rather than benchmarked autonomous judgments.
-- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-26 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
-- Screenshot evidence is captured in [`screenshots/`](./screenshots/), including the 2026-04-26 dashboard evidence-first refresh and the `/agents` authoring proof refresh.
+- The latest scripted-reset smoke-backed MVP verification passed on 2026-04-28 and is recorded in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md).
+- Screenshot evidence is captured in [`screenshots/`](./screenshots/), with Knowledge, Tutor, Dashboard, and `/agents` refreshed again on 2026-04-28 in `docs/browser-recapture-refresh`.
 - Hybrid `/agents` screenshots are current, and the codebase now also carries automated bounded runtime-binding proof for the unified `chat`, `deep_question`, and `deep_solve` turn paths. Keep the claim narrower than universal entry-point coverage.
 - Video capture is optional and deferred to avoid storing large media in the repository.
 - No pilot evidence is currently bundled; the strongest current proof is structured walkthrough validation plus smoke-backed and screenshot-backed artifacts.

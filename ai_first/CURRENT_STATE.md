@@ -31,7 +31,7 @@ Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 - Latest merged docs/control-plane PRs: `#210`, `#212`, `#211`, `#220`, `#221`, and `#222` completed submission-close evidence and control-plane sync on 2026-04-28.
 - Latest sync branch: `docs/post-221-browser-recapture-sync`
 - Product MVP path status: the core contest flow, the Wave 1 evidence spine, the command-backed 2026-04-28 smoke refresh, the optional Phase 2 polish train (`C211-C215`), and the post-Phase-2 browser screenshot recapture (`#221`) are merged to `main` as a validated prototype.
-- Current purpose: the repository is in final human-review state for command-backed validation, but the authoritative contest evidence docs still mark browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshots stale until a fresh recapture is completed.
+- Current purpose: the repository has command-backed validation current on 2026-04-28 and a same-day refreshed browser screenshot bundle for Knowledge, Tutor, Dashboard, and `/agents`, leaving the remaining submission-close work in human review and optional video only.
 - Historical note: preserve `ai_first/2026-04-12-deeptutor-slimming/` as background analysis, not as the operating contract.
 
 ## Active Design
@@ -68,7 +68,7 @@ Do not revert unrelated changes.
 
 ## Current Next Task
 
-Either recapture the stale browser-backed screenshot rows from `main` if final judge-facing freshness is needed, or continue with human review of the submission package, IP commitment, optional video decision, and final sign-off.
+Continue with human review of the submission package, IP commitment, optional video decision, and final sign-off unless another follow-up packet is explicitly opened from `main`.
 
 ## Autonomous Merge Policy
 
@@ -82,5 +82,5 @@ Use this file only as a compact status mirror. Do not rely on it for the full op
 ## 2026-04-28
 
 - `main` now includes submission-close Phase 1 through PRs `#210`, `#212`, and `#211` plus the optional Phase 2 polish train through PRs `#214`, `#215`, `#216`, `#217`, and `#219`.
-- The authoritative contest package now has command-backed validation current on 2026-04-28, while browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshot rows remain stale until a fresh recapture is completed.
+- The authoritative contest package now has both command-backed validation and the refreshed browser screenshot bundle current on 2026-04-28.
 - Optional AI-owned next work after this sync should return to human review, optional video, or another newly approved packet from `main`.

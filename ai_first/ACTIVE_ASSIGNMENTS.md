@@ -30,17 +30,32 @@ Rules:
 
 ### Assignment
 
+- Owner: Browser recapture refresh lane
+- Machine: local
+- Worktree: `.worktrees/browser-recapture-refresh`
+- Task: `OPS_BROWSER_RECAPTURE_AFTER_PHASE2`
+- Status: ready-for-review
+- Branch: `docs/browser-recapture-refresh`
+- Task packet: `docs/superpowers/tasks/2026-04-28-browser-recapture-after-phase2.md`
+- Owned files: stale browser screenshot artifacts, contest evidence docs, AI-first mirrors, daily log, and recapture PR note only
+- PR:
+- Last update: 2026-04-28
+- Next action: push the refreshed screenshot artifacts and evidence docs, open the recapture PR, and merge it once checks are green
+- Blocker: none
+
+### Assignment
+
 - Owner: Screenshot truth sync lane
 - Machine: local
 - Worktree: `.worktrees/post-screenshot-truth-sync`
 - Task: `OPS_SCREENSHOT_TRUTH_SYNC`
-- Status: ready-for-review
+- Status: merged
 - Branch: `docs/post-screenshot-truth-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-screenshot-truth-sync.md`
 - Owned files: authoritative prompt, compact mirrors, daily log, and sync task/PR note only
-- PR:
+- PR: `#229`
 - Last update: 2026-04-28
-- Next action: align AI-first mirrors with the authoritative contest evidence docs that still mark browser screenshot rows stale
+- Next action: preserve the merged screenshot-freshness truth sync as the baseline until a later evidence refresh changes status again
 - Blocker: none
 
 ### Assignment
