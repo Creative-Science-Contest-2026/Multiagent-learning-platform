@@ -2092,10 +2092,10 @@
       "dependencies": [
         "C210_FINAL_PACKAGE_READINESS"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
-      "notes": "Activated on branch fix/submission-close-c211 on 2026-04-28. Scope is bounded to teacher-entry product wording and setup surfaces only."
+      "notes": "Merged to main through PR #219 on 2026-04-28. Scope stayed bounded to teacher-entry wording and setup surfaces only."
     },
     {
       "id": "C212_CORE_LOOP_VISIBILITY_POLISH",

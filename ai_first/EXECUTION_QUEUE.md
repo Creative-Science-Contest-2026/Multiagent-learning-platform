@@ -7,7 +7,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 ## Latest merged result
 
-- Latest optional Phase 2 polish merges: `#214` (`C212` core-loop visibility polish), `#215` (`C213` differentiation wording sweep), `#216` (`C214` judge-facing visual asset polish), and `#217` (`C215` post-polish evidence freshness sync).
+- Latest optional Phase 2 polish merges: `#219` (`C211` teacher-first entry polish), `#214` (`C212` core-loop visibility polish), `#215` (`C213` differentiation wording sweep), `#216` (`C214` judge-facing visual asset polish), and `#217` (`C215` post-polish evidence freshness sync).
 
 - Latest docs/control-plane merges: `#210` (submission-close master coordination), `#212` (validation and evidence refresh), and `#211` (submission narrative and final package readiness).
 - Latest feature-risk merge: `#206 [F124] feat(validation): automate evidence refresh status`
@@ -53,7 +53,7 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 
 - The post-contest future backlog `F101-F124` is fully merged on `main`.
 - Submission-close Phase 1 (`C201-C210`) is fully merged on `main`.
-- Optional Phase 2 contest polish (`C212-C215`) is fully merged on `main`.
+- Optional Phase 2 contest polish (`C211-C215`) is fully merged on `main`.
 - No active AI-owned blocker remains in the current submission-close scope.
 
 ## Next recommended task
