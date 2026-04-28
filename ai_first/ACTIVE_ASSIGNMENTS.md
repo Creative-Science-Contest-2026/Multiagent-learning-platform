@@ -34,13 +34,13 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
 - Task: `OPS_POST_221_BROWSER_RECAPTURE_SYNC`
-- Status: review-ready
+- Status: merged
 - Branch: `docs/post-221-browser-recapture-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-221-browser-recapture-sync.md`
 - Owned files: authoritative prompt, compact mirrors, daily log, and sync PR note
 - PR: `#222`
 - Last update: 2026-04-28
-- Next action: keep PR `#222` green and merge it once required checks pass
+- Next action: preserve the merged post-`#221` control-plane sync as the current terminal-state baseline
 - Blocker: none
 
 ### Assignment
@@ -103,9 +103,24 @@ Rules:
 - Next action: keep 2026-04-28 command-backed smoke evidence current, and treat browser screenshot recapture as a separate future packet if needed
 - Blocker:
 
+### Active Assignment
+
+- Owner: Session C211
+- Machine: local
+- Worktree: `.worktrees/submission-close-c211`
+- Task: `C211_TEACHER_FIRST_ENTRY_POLISH`
+- Status: merged
+- Branch: `fix/submission-close-c211`
+- Task packet: `docs/superpowers/tasks/2026-04-28-c211-teacher-first-entry-polish.md`
+- Owned files: teacher-entry product surfaces plus required AI-first mirrors for C211 only
+- PR: `#219`
+- Last update: 2026-04-28
+- Next action: preserve the merged teacher-first entry wording as the current baseline unless a later packet changes those surfaces
+- Blocker:
+
 ### Assignment
 
-- Owner: Browser recapture execution lane
+- Owner: Browser recapture packet lane
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
 - Task: `OPS_BROWSER_RECAPTURE_AFTER_PHASE2`
