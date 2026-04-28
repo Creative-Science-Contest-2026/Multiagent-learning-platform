@@ -34,11 +34,11 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/post-submission-close-sync`
 - Task: `OPS_POST_SUBMISSION_CLOSE_SYNC`
-- Status: in-progress
+- Status: review-ready
 - Branch: `docs/post-submission-close-sync`
 - Task packet: `docs/superpowers/tasks/2026-04-28-post-submission-close-sync.md`
 - Owned files: AI-first mirrors, submission-close registry state, and sync PR note
-- PR:
+- PR: `#221`
 - Last update: 2026-04-28
 - Next action: mark Phase 1 submission-close work completed across registry and mirrors, then open a docs-only sync PR
 - Blocker: none
@@ -115,5 +115,5 @@ Rules:
 - Owned files: browser screenshot artifacts, contest evidence docs, AI-first mirrors, daily log, and PR note for the recapture execution
 - PR:
 - Last update: 2026-04-28
-- Next action: finish docs freshness updates, run docs validation, then open the docs-only PR for review
+- Next action: keep PR `#221` green and merge it once required checks pass
 - Blocker: none
