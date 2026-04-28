@@ -244,7 +244,7 @@ When starting a new feature or fix:
 4. Use `ai_first/AI_FIRST_ROADMAP.md` to understand the autonomous loop and future operating direction.
 5. Keep `ai_first/EXECUTION_QUEUE.md` current after merges, blocker changes, and task selection.
 6. Keep GitHub issue state aligned with merged PRs so the queue mirrors real work, not historical leftovers.
-7. Continue from the next pending registry task in strict order after every successful merge or verification pass. Submission-close Phase 1 (`C201-C210`) is complete on `main`, so the current operational step is human review, optional video decision, or an explicitly opened optional Phase 2 polish task from `C211-C215`.
+7. Continue from the next pending registry task in strict order after every successful merge or verification pass. Submission-close Phase 1 (`C201-C210`) and the optional Phase 2 polish train (`C211-C215`) are complete on `main`, so the current operational step is human review, optional video decision, or a newly opened packet from `main`.
 8. Keep the demo-readiness smoke lane current after meaningful merges and treat smoke failures as the next task.
 9. Use `docs/contest/DEMO_DATA_RESET.md` before smoke when local demo state may be stale, missing, or private.
 10. Run the scripted reset command before the next smoke/evidence refresh so the merged utility is validated end to end.

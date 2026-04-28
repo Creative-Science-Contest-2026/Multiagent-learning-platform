@@ -30,6 +30,21 @@ Rules:
 
 ### Assignment
 
+- Owner: Post-C211 terminal sync lane
+- Machine: local
+- Worktree: `.worktrees/post-c211-terminal-sync`
+- Task: `OPS_POST_C211_TERMINAL_SYNC`
+- Status: in-progress
+- Branch: `docs/post-c211-terminal-sync`
+- Task packet: `docs/superpowers/tasks/2026-04-28-post-c211-terminal-sync.md`
+- Owned files: task registry, prompt, compact mirrors, daily log, and sync PR note
+- PR:
+- Last update: 2026-04-28
+- Next action: mark `C211` completed in the registry and align the remaining terminal-state mirrors
+- Blocker: none
+
+### Assignment
+
 - Owner: Post-221 sync lane
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
