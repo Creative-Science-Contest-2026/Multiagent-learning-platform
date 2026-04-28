@@ -58,3 +58,9 @@ Freeze the contest submission story, claims, operator-facing read path, and manu
 - Keep all claims at validated-prototype level unless Session B refreshes stronger evidence.
 - Do not silently widen the product story beyond `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`.
 - Keep the final operator read path link-heavy and conflict-light.
+
+## Session A Progress Notes
+
+- 2026-04-28: Session A started from `.worktrees/submission-close-a` on branch `docs/submission-close-session-a`.
+- 2026-04-28: `PR-CLOSE-01` and `PR-CLOSE-02` are being executed together as a docs-only scope and claim freeze across the owned narrative files.
+- 2026-04-28: `PR-CLOSE-06`, `PR-CLOSE-07`, and `PR-CLOSE-08` are limited to skeleton/operator-gate wording until Session B refreshes validation-owned proof files.

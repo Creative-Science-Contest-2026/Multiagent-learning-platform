@@ -4,11 +4,32 @@ Use this as the short review path before submitting the VnExpress Sang kien Khoa
 
 ## Submission Story
 
-Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
+Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 
 One-line pitch:
 
-An AI-first learning platform where Vietnamese teachers turn their own materials into tutoring, practice, and follow-up insight while staying in control of how the AI teaches.
+A teacher-controlled adaptive tutoring platform where Vietnamese teachers turn their own materials into practice, tutoring, diagnosis review, and follow-up intervention while staying in control of how the AI teaches.
+
+## Scope Freeze
+
+Primary contest scope:
+
+- one official product loop: `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`
+- teacher control over source knowledge, tutor behavior, and intervention choice
+- validated prototype proof only
+
+Secondary supporting scope:
+
+- `/agents` authoring as teacher-control proof
+- marketplace reuse, batch import, export, replay, and offline helpers
+- dashboard evidence as the operator surface around diagnosis and intervention
+
+Out-of-scope claims:
+
+- classroom outcome proof
+- school-scale deployment
+- autonomous final judgment without teacher review
+- universal runtime-binding proof across every entry point
 
 Hybrid proof calibration:
 
@@ -19,6 +40,17 @@ Hybrid proof calibration:
 - Assessment claims should stay at: AI can draft questions and feedback, but teacher review is the primary safety gate before student-facing reuse.
 - Overall product framing should stay at: validated prototype, not school-scale deployment.
 - Architecture framing should stay at: agent-native today, prepared for deeper multi-agent role separation later.
+
+## Claim And Proof Contract
+
+Use these pairings when preparing the final package:
+
+| Claim | Allowed proof source | Guardrail |
+| --- | --- | --- |
+| Teacher-controlled adaptive tutoring loop | [`docs/contest/README.md`](./README.md), [`ai_first/competition/product-description.md`](../../ai_first/competition/product-description.md), screenshots, smoke-backed demo flow | Keep the loop at `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention` |
+| `/agents` improves teacher control | `/agents` screenshots, pitch notes, bounded runtime-binding wording already documented in this package | Do not expand bounded proof into universal entry-point coverage |
+| Diagnosis and recommendations help teacher follow-up | [`DIAGNOSIS_CASE_STUDIES.md`](./DIAGNOSIS_CASE_STUDIES.md), dashboard screenshots, validation-backed walkthrough | Present them as teacher-reviewed hypotheses, not autonomous grading |
+| Submission package is reviewable end to end | this file, [`HUMAN_REVIEW_HANDOFF.md`](./HUMAN_REVIEW_HANDOFF.md), checklist, validation report | Keep Session B validation status authoritative |
 
 Teacher-value shorthand for Q&A:
 
@@ -62,6 +94,17 @@ The latest smoke-backed refresh passed on 2026-04-26 after running the scripted 
 - frontend production build with `NEXT_PUBLIC_API_BASE=http://localhost:8001`.
 
 Detailed command evidence lives in [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md). The refresh lanes are `#96` and `#128` for smoke-backed evidence, and `#99` plus `#130` for the screenshot bundle. This validation record supports a validated prototype claim. It does not, by itself, establish classroom deployment or outcome evidence.
+
+## Operator Read Path
+
+Read in this order before final submission:
+
+1. [`docs/contest/SUBMISSION_PACKAGE.md`](./SUBMISSION_PACKAGE.md)
+2. [`docs/contest/HUMAN_REVIEW_HANDOFF.md`](./HUMAN_REVIEW_HANDOFF.md)
+3. [`ai_first/competition/product-description.md`](../../ai_first/competition/product-description.md)
+4. [`ai_first/competition/fork-modifications.md`](../../ai_first/competition/fork-modifications.md)
+5. [`docs/contest/VALIDATION_REPORT.md`](./VALIDATION_REPORT.md)
+6. [`docs/contest/EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md)
 
 ## Human Review Checklist
 

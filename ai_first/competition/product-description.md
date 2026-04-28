@@ -10,7 +10,7 @@ Education
 
 ## Short Description
 
-Multiagent Learning Platform is an AI-first learning platform that helps Vietnamese teachers turn their own teaching materials into reusable Knowledge Packs, draft assessments, support student tutoring, and review learning progress through one connected workflow while still deciding how the AI should teach.
+Multiagent Learning Platform is a teacher-controlled adaptive tutoring platform that helps Vietnamese teachers turn their own teaching materials into reusable Knowledge Packs, draft assessments, support student tutoring, review AI-assisted diagnosis, and decide the next intervention while still controlling how the AI should teach.
 
 Current proof level: a validated prototype with contest-safe walkthrough validation, smoke-backed checks, and refreshed UI evidence.
 
@@ -20,9 +20,11 @@ Teachers often already have lesson materials, exercises, and teaching experience
 
 ## Solution
 
-The platform keeps teachers in control of the source knowledge. A teacher creates or imports a Knowledge Pack, uses AI to generate an assessment, lets students learn with a Tutor Agent grounded in that same pack, and then reviews the resulting activity in a teacher dashboard. This creates one practical loop:
+The platform keeps teachers in control of the source knowledge. A teacher creates or imports a Knowledge Pack, uses AI to generate an assessment, lets students learn with a Tutor Agent grounded in that same pack, reviews teacher-facing diagnosis signals, and then decides the next intervention. This creates one practical loop:
 
-Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
+Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
+
+The teacher dashboard remains the operating surface that helps the teacher inspect that loop, but the product claim should stay anchored to the five-step learning cycle above rather than a generic reporting story.
 
 Within that loop, diagnosis and recommendation outputs are positioned as evidence-backed, confidence-tagged, teacher-reviewed hypotheses rather than autonomous final judgments. The `/agents` flow adds one more teacher-control layer: the teacher can decide who the tutor is for, how it should respond when students are wrong or stuck, and which classroom guardrails it must respect.
 
@@ -38,8 +40,30 @@ Within that loop, diagnosis and recommendation outputs are positioned as evidenc
 2. Marketplace import and batch import for reusable packs.
 3. AI-generated assessments with review insights, timing metrics, and export support.
 4. Tutor Agent sessions with context badges, follow-up prompts, and replay support.
-5. Teacher dashboard analytics for recent activity, student-facing learning progress, and teacher-reviewable diagnosis/recommendation signals.
+5. Teacher-reviewable diagnosis and intervention workflow surfaced through dashboard analytics, recent activity, and teacher-facing learning signals.
 6. Contest-ready evidence bundle with smoke-backed validation, screenshots, and demo-safe reset workflow.
+
+## Submission Scope Freeze
+
+In-scope contest story:
+
+- teacher-controlled adaptive tutoring for Vietnamese classrooms
+- the five-step learning loop: `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`
+- teacher-owned control over tutor identity, teaching style, and guardrails through `/agents`
+- validated-prototype proof through smoke-backed walkthroughs, screenshots, and contest docs
+
+Secondary but not core proof:
+
+- marketplace reuse and batch import
+- assessment export, replay, and timing support
+- offline-ready fallback and sync-resilience helpers
+
+Out of current claim scope:
+
+- classroom outcome evidence
+- school-scale deployment
+- fully autonomous multi-agent operation without teacher review
+- universal runtime proof across every capability and entry point
 
 ## Why It Is Useful in Vietnam
 
@@ -50,7 +74,7 @@ Within that loop, diagnosis and recommendation outputs are positioned as evidenc
 
 ## Innovation
 
-The platform combines agent workflows, retrieval grounded in teacher-approved materials, assessment generation, tutoring, and dashboard review into one connected product path instead of isolated tools. Its practical novelty is not only “using AI,” but using AI while preserving teacher control over source content, teaching style, and evidence review.
+The platform combines agent workflows, retrieval grounded in teacher-approved materials, assessment generation, tutoring, diagnosis support, and intervention decision support into one connected product path instead of isolated tools. Its practical novelty is not only “using AI,” but using AI while preserving teacher control over source content, teaching style, and evidence review.
 
 Its future direction can be described as multi-agent by design, because the architecture is prepared for stronger role separation later. The current merged product should still be described as an agent-native validated prototype rather than a full autonomous multi-agent deployment.
 

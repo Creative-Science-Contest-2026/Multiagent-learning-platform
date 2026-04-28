@@ -34,28 +34,28 @@ Rules:
 - Machine:
 - Worktree: `.worktrees/submission-close-master`
 - Task: `OPS_SUBMISSION_CLOSE_MASTER`
-- Status: in-review
+- Status: merged
 - Branch: `docs/submission-close-master`
 - Task packet: `docs/superpowers/tasks/2026-04-28-submission-close-master-coordination.md`
 - Owned files: submission-close spec, plan, task packets, and AI-first mirrors
 - PR: `#210`
 - Last update: 2026-04-28
-- Next action: monitor Draft PR `#210`, merge it when CI is green, then launch Session A, Session B, and Session C from fresh worktrees off `main`
+- Next action: keep Session A active, launch Session B and Session C only when their assigned worktrees and scopes are ready
 - Blocker: current `main` no longer has the pytest collection mismatch, but the full baseline suite still contains post-collection failures outside this docs-planning lane
 
-### Planned Assignment
+### Assignment
 
 - Owner: Session A
 - Machine:
 - Worktree: `.worktrees/submission-close-a`
 - Task: `OPS_SUBMISSION_CLOSE_A`
-- Status: planned
+- Status: in-progress
 - Branch: `docs/submission-close-session-a`
 - Task packet: `docs/superpowers/tasks/2026-04-28-session-a-submission-scope-and-narrative.md`
 - Owned files: submission narrative and package docs
 - PR:
 - Last update: 2026-04-28
-- Next action: start `PR-CLOSE-01`
+- Next action: execute `C202_SUBMISSION_SCOPE_FREEZE`, then `C203_CLAIM_AND_PROOF_CONTRACT_FREEZE`
 - Blocker:
 
 ### Planned Assignment

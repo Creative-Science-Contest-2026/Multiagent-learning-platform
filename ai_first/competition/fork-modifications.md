@@ -8,7 +8,9 @@ This repository is a contest-focused fork of `HKUDS/DeepTutor`, which remains cr
 
 The fork narrows the broad DeepTutor platform into a stable VnExpress Sáng kiến Khoa học 2026 MVP for the Education field. The submission story is:
 
-Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
+Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
+
+The dashboard remains the teacher-facing operating surface for reviewing diagnosis and choosing interventions, but it should not replace the five-step contest loop as the official product scope.
 
 ## Major Modifications Added in This Fork
 
@@ -43,6 +45,7 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 - teacher analytics and activity views
 - student progress dashboard and learning-path sequencing
 - filtering and recent-session visibility for review workflows
+- teacher-reviewable diagnosis and intervention follow-up context
 
 ### 6. Contest-readiness and operating layer
 
@@ -66,3 +69,9 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 ## Submission Use
 
 This note exists to satisfy the submission-checklist item `Fork modifications described` with a concise, repo-backed explanation of how this fork differs from upstream HKUDS/DeepTutor for the contest MVP.
+
+Scope guardrail for submission wording:
+
+- position the fork as a teacher-controlled adaptive tutoring prototype
+- treat marketplace, export, replay, and offline helpers as supporting proof
+- do not present the current repository as a full classroom deployment or autonomous multi-agent system

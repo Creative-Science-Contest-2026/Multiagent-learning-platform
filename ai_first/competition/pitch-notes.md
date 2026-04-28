@@ -2,7 +2,7 @@
 
 ## One-line pitch
 
-An AI-first learning platform where Vietnamese teachers turn their own materials into classroom-ready tutoring, practice, and follow-up insight without giving up control over how the AI teaches.
+A teacher-controlled adaptive tutoring platform where Vietnamese teachers turn their own materials into classroom-ready practice, tutoring, diagnosis review, and follow-up intervention without giving up control over how the AI teaches.
 
 Current status: validated prototype with smoke-backed demo evidence, not a deployed classroom system.
 
@@ -12,7 +12,7 @@ Teachers already have lesson materials and teaching instincts, but they do not h
 
 ## Solution
 
-The platform turns teacher-owned materials into Knowledge Packs, drafts assessments for teacher review, supports student tutoring, and gives teachers an evidence-first dashboard. Teachers can also set the tutor's class fit, support style, and guardrails on `/agents`, so the system adapts to how they want students to be helped, not just what content is covered.
+The platform turns teacher-owned materials into Knowledge Packs, drafts assessments for teacher review, supports student tutoring, surfaces diagnosis signals for teacher review, and helps the teacher choose the next intervention. Teachers can also set the tutor's class fit, support style, and guardrails on `/agents`, so the system adapts to how they want students to be helped, not just what content is covered.
 
 Teacher-facing use cases:
 
@@ -37,7 +37,15 @@ Architecture direction: agent-native today, with future multi-agent role separat
 1. Teacher creates a Knowledge Pack.
 2. Teacher generates questions from the pack.
 3. Student studies with Tutor Agent grounded in the pack.
-4. Teacher views dashboard evidence and teacher-reviewable diagnosis suggestions.
+4. Teacher reviews diagnosis signals and recommendation context.
+5. Teacher decides the next intervention using dashboard evidence.
+
+Official scope freeze:
+
+- Core loop: `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`
+- Operator surface: the dashboard helps the teacher inspect and act on the loop
+- Claim level: validated prototype, not classroom deployment
+- Architecture claim: agent-native today, multi-agent by design as a future direction
 
 Behavior-diff story for judges:
 
