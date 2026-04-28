@@ -64,13 +64,13 @@ Rules:
 - Machine: local
 - Worktree: `.worktrees/submission-close-b`
 - Task: `OPS_SUBMISSION_CLOSE_B`
-- Status: in-review
+- Status: ready-for-review
 - Branch: `docs/submission-close-session-b`
 - Task packet: `docs/superpowers/tasks/2026-04-28-session-b-validation-and-evidence.md`
 - Owned files: validation, smoke, demo-data, and evidence docs
 - PR: `#212`
 - Last update: 2026-04-28
-- Next action: keep Draft PR `#212` green, then move it to Ready after self-review
+- Next action: monitor Ready PR `#212` and merge when review is clear and required checks remain green
 - Blocker:
 
 ### Planned Assignment
