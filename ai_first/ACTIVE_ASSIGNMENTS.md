@@ -93,12 +93,12 @@ Rules:
 - Owner: Session C
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
-- Task: `C213_DIFFERENTIATION_WORDING_SWEEP`
+- Task: `C214_JUDGE_FACING_VISUAL_ASSET_POLISH`
 - Status: in-progress
-- Branch: `fix/submission-close-c213`
-- Task packet: `docs/superpowers/tasks/2026-04-28-c213-differentiation-wording-sweep.md`
-- Owned files: contest-facing wording-only polish on bounded frontend surfaces plus required AI-first mirrors
+- Branch: `fix/submission-close-c214`
+- Task packet: `docs/superpowers/tasks/2026-04-28-c214-judge-facing-visual-asset-polish.md`
+- Owned files: docs and evidence-inventory polish for judge-facing screenshot presentation plus required AI-first mirrors
 - PR:
 - Last update: 2026-04-28
-- Next action: implement the wording sweep on Knowledge, Dashboard, Tutor, and Spec Pack authoring surfaces, then validate with lint and build
+- Next action: tighten screenshot captions, judge-view order, and evidence guidance without recapturing assets or widening claims
 - Blocker:

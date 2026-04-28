@@ -6,26 +6,34 @@ Use this checklist after running the demo locally.
 
 Refresh these only when the UI changed or when the latest smoke-backed validation marks them stale or blocked.
 
-| Area | Evidence | Refresh mode | Status | Notes |
-| --- | --- | --- | --- | --- |
-| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Browser capture | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `01-knowledge-pack-metadata.png`. |
-| Knowledge Pack | Metadata still visible after reload | Browser capture | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `02-knowledge-pack-after-reload.png`. |
-| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Browser capture | Current | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `04-assessment-config.png`. |
-| Assessment | Generated questions visible | Browser capture | Current | Refreshed on 2026-04-25 with demo-safe local session content in the screenshot worktree; see `07-assessment-generated-questions.png`. |
-| Assessment | Common-mistake or feedback guidance visible | Browser capture | Current | Refreshed on 2026-04-25 with demo-safe local session content in the screenshot worktree; see `08-assessment-common-mistakes.png`. |
-| Tutor Agent | Student asks a follow-up question | Browser capture | Current | Refreshed on 2026-04-25; the student turn is visible in `06-tutor-agent-answer.png`. |
-| Tutor Agent | Tutor response with learning context | Browser capture | Current | Refreshed on 2026-04-25; the tutor answer is visible in `06-tutor-agent-answer.png`. |
-| Dashboard | Evidence-first teacher insight overview visible | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `05-dashboard-evidence-first-overview.png`. |
-| Dashboard | Recent activity still visible below the teacher insight workflow | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `09-dashboard-recent-activity-evidence-first.png`. |
+Recommended judge-view order:
+
+1. `/agents` authoring proof for teacher control
+2. Knowledge Pack grounding
+3. Assessment generation and feedback
+4. Tutor support
+5. Dashboard review and next action
+
+| Area | Evidence | Refresh mode | Status | Judge-facing caption | Notes |
+| --- | --- | --- | --- | --- | --- |
+| Knowledge Pack | Metadata form filled with demo-safe subject, grade, curriculum, objectives, owner, and sharing status | Browser capture | Current | Teacher sets the trusted learning context before assessment or tutoring begins. | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `01-knowledge-pack-metadata.png`. |
+| Knowledge Pack | Metadata still visible after reload | Browser capture | Current | The configured classroom context persists after reload rather than living only in one transient form. | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `02-knowledge-pack-after-reload.png`. |
+| Assessment | Quiz or assessment configuration using the demo subject or Knowledge Pack | Browser capture | Current | Assessment drafting stays grounded in the same teacher-approved pack. | Refreshed on 2026-04-25 in `docs/t037-contest-screenshot-refresh-pass`; see `04-assessment-config.png`. |
+| Assessment | Generated questions visible | Browser capture | Current | The platform can draft practice items from the chosen classroom source. | Refreshed on 2026-04-25 with demo-safe local session content in the screenshot worktree; see `07-assessment-generated-questions.png`. |
+| Assessment | Common-mistake or feedback guidance visible | Browser capture | Current | Assessment output includes feedback signals the teacher can reuse or review. | Refreshed on 2026-04-25 with demo-safe local session content in the screenshot worktree; see `08-assessment-common-mistakes.png`. |
+| Tutor Agent | Student asks a follow-up question | Browser capture | Current | The student can continue from assessment into adaptive tutoring on the same topic. | Refreshed on 2026-04-25; the student turn is visible in `06-tutor-agent-answer.png`. |
+| Tutor Agent | Tutor response with learning context | Browser capture | Current | The tutor gives support inside the same classroom loop rather than acting as a final judge. | Refreshed on 2026-04-25; the tutor answer is visible in `06-tutor-agent-answer.png`. |
+| Dashboard | Evidence-first teacher insight overview visible | Browser capture | Current | The teacher sees reviewed signals and recommended next moves in one operating surface. | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `05-dashboard-evidence-first-overview.png`. |
+| Dashboard | Recent activity still visible below the teacher insight workflow | Browser capture | Current | The teacher can trace the supporting activity behind the dashboard recommendation layer. | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `09-dashboard-recent-activity-evidence-first.png`. |
 
 ## Hybrid Proof Screenshots
 
 Use this section to calibrate claims when showing teacher authoring plus evidence loop in one demo.
 
-| Area | Evidence | Refresh mode | Status | Notes |
-| --- | --- | --- | --- | --- |
-| Agent Specs authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections visible on `/agents` | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `10-agents-spec-pack-authoring.png`. Pair with the bounded runtime-binding test proof when discussing live Tutor behavior. |
-| Agent Specs authoring | Export action visible from authoring tab | Browser capture | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `11-agents-spec-pack-export.png`. Live runtime impact is now supported by automated bounded proof for the unified Tutor turn path. |
+| Area | Evidence | Refresh mode | Status | Judge-facing caption | Notes |
+| --- | --- | --- | --- | --- | --- |
+| Agent Specs authoring | Structured `IDENTITY`, `SOUL`, and `RULES` sections visible on `/agents` | Browser capture | Current | Teacher control is explicit: audience, teaching style, and guardrails are configurable before tutoring starts. | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `10-agents-spec-pack-authoring.png`. Pair with the bounded runtime-binding test proof when discussing live Tutor behavior. |
+| Agent Specs authoring | Export action visible from authoring tab | Browser capture | Current | Tutor setup is portable and reviewable as a spec pack rather than hidden prompt state. | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; see `11-agents-spec-pack-export.png`. Live runtime impact is now supported by automated bounded proof for the unified Tutor turn path. |
 
 ## Required Command Evidence
 

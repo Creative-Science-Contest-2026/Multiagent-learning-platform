@@ -113,16 +113,18 @@ Run [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) first when local demo data may 
 
 ## Screenshot Index
 
-- [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png)
-- [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png)
-- [`04-assessment-config.png`](./screenshots/04-assessment-config.png)
-- [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png)
-- [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png)
-- [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png)
-- [`05-dashboard-evidence-first-overview.png`](./screenshots/05-dashboard-evidence-first-overview.png)
-- [`09-dashboard-recent-activity-evidence-first.png`](./screenshots/09-dashboard-recent-activity-evidence-first.png)
-- [`10-agents-spec-pack-authoring.png`](./screenshots/10-agents-spec-pack-authoring.png)
-- [`11-agents-spec-pack-export.png`](./screenshots/11-agents-spec-pack-export.png)
+Recommended review order for judges:
+
+1. [`10-agents-spec-pack-authoring.png`](./screenshots/10-agents-spec-pack-authoring.png) - teacher sets audience, coaching style, and guardrails
+2. [`11-agents-spec-pack-export.png`](./screenshots/11-agents-spec-pack-export.png) - tutor setup is portable and reviewable
+3. [`01-knowledge-pack-metadata.png`](./screenshots/01-knowledge-pack-metadata.png) - teacher sets trusted classroom source material
+4. [`02-knowledge-pack-after-reload.png`](./screenshots/02-knowledge-pack-after-reload.png) - the configured context persists
+5. [`04-assessment-config.png`](./screenshots/04-assessment-config.png) - assessment drafting stays grounded in the same pack
+6. [`07-assessment-generated-questions.png`](./screenshots/07-assessment-generated-questions.png) - the platform drafts practice items from that context
+7. [`08-assessment-common-mistakes.png`](./screenshots/08-assessment-common-mistakes.png) - assessment output includes feedback signals
+8. [`06-tutor-agent-answer.png`](./screenshots/06-tutor-agent-answer.png) - the tutor gives adaptive support on the same topic
+9. [`05-dashboard-evidence-first-overview.png`](./screenshots/05-dashboard-evidence-first-overview.png) - the teacher reviews signals and next actions
+10. [`09-dashboard-recent-activity-evidence-first.png`](./screenshots/09-dashboard-recent-activity-evidence-first.png) - the teacher can inspect the activity underneath the dashboard layer
 
 ## Evidence Flow
 

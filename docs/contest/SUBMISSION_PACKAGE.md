@@ -82,6 +82,18 @@ Primary pitch source: [`ai_first/competition/pitch-notes.md`](../../ai_first/com
 | Final checklist | Partially verified | [`ai_first/competition/submission-checklist.md`](../../ai_first/competition/submission-checklist.md) |
 | Optional video | Deferred | Record only if final submission requires a video artifact. |
 
+## Recommended Judge Visual Order
+
+If a reviewer wants the shortest screenshot-driven proof path, present the visual bundle in this order:
+
+1. `/agents` authoring to establish teacher control
+2. Knowledge Pack metadata to establish grounded source material
+3. Assessment screenshots to show AI-generated practice and feedback
+4. Tutor screenshot to show adaptive support on the same topic
+5. Dashboard screenshots to show teacher-reviewed diagnosis and next action
+
+Use the screenshots as validated-prototype support only. They show teacher control, adaptive support, and review surfaces; they do not establish classroom outcome proof or autonomous teacher replacement.
+
 ## Latest Validation
 
 The latest command-backed smoke refresh passed on 2026-04-28 after running the scripted local reset. It verified:
