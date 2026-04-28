@@ -218,10 +218,10 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
-              {t("Class tutoring setup")}
+              {t("Teacher setup")}
             </p>
             <h2 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
-              {t("Shape the adaptive tutor for this class")}
+              {t("Shape the teacher-controlled tutor for this class")}
             </h2>
           </div>
           <button
@@ -238,7 +238,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
           </div>
         ) : packs.length === 0 ? (
           <div className="rounded-xl border border-dashed border-[var(--border)] p-4 text-[13px] text-[var(--muted-foreground)]">
-            {t("No spec packs yet. Start with a teacher-controlled adaptive tutor.")}
+            {t("No spec packs yet. Start by shaping a teacher-controlled tutor for this classroom.")}
           </div>
         ) : (
           <div className="space-y-2">
@@ -282,7 +282,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
                 {t("Choose class fit, support style, and guardrails")}
               </h2>
               <p className="mt-2 max-w-[680px] text-[13px] text-[var(--muted-foreground)]">
-                {t("IDENTITY defines who this adaptive tutor supports, SOUL shapes how it coaches when students are wrong or stuck, and RULES keep every response inside your classroom boundaries.")}
+                {t("IDENTITY defines who this class tutor supports, SOUL shapes how it coaches when students are wrong or stuck, and RULES keep every response inside your classroom boundaries.")}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -348,7 +348,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
 
         <StructuredSection
           title={t("RULES.md")}
-          description={t("Set clear classroom boundaries such as hint limits, session expectations, and when the tutor should escalate.")}
+          description={t("Set clear classroom boundaries such as hint limits, session expectations, and when the class tutor should escalate back to teacher review.")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <LabeledInput label={t("Do not solve directly")} value={draft.structured.rules.do_not_solve_directly} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, rules: { ...current.structured.rules, do_not_solve_directly: value } } }))} />

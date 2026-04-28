@@ -102,3 +102,18 @@ Rules:
 - Last update: 2026-04-28
 - Next action: tighten screenshot captions, judge-view order, and evidence guidance without recapturing assets or widening claims
 - Blocker:
+
+### Active Assignment
+
+- Owner: Session C211
+- Machine: local
+- Worktree: `.worktrees/submission-close-c211`
+- Task: `C211_TEACHER_FIRST_ENTRY_POLISH`
+- Status: in-progress
+- Branch: `fix/submission-close-c211`
+- Task packet: `docs/superpowers/tasks/2026-04-28-c211-teacher-first-entry-polish.md`
+- Owned files: teacher-entry product surfaces plus required AI-first mirrors for C211 only
+- PR:
+- Last update: 2026-04-28
+- Next action: polish first-impression teacher-entry copy, validate the bounded UI surfaces, and open a draft PR
+- Blocker:

@@ -787,7 +787,7 @@ export default function KnowledgePage() {
 
           <div className="inline-flex shrink-0 rounded-lg border border-[var(--border)] bg-[var(--muted)] p-0.5">
             {[
-              { key: "knowledge", label: t("Knowledge Bases"), icon: Database },
+              { key: "knowledge", label: t("Knowledge Packs"), icon: Database },
               { key: "notebooks", label: t("Notebooks"), icon: NotebookPen },
             ].map((item) => (
               <button
@@ -809,7 +809,7 @@ export default function KnowledgePage() {
         <CoreLoopVisibilityStrip
           currentStep="Knowledge Pack"
           nextStep="Assessment"
-          helperText={t("Start with teacher-owned source material so the adaptive tutor, assessment, and teacher review all stay grounded in the same classroom knowledge pack.")}
+          helperText={t("Start with teacher-owned source material so class tutoring, assessment, and teacher review all stay grounded in the same classroom knowledge pack.")}
         />
 
         {pageError && (
@@ -830,7 +830,7 @@ export default function KnowledgePage() {
                 <div className="mb-4 flex items-center gap-2">
                   <Plus size={15} className="text-[var(--muted-foreground)]" />
                   <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
-                    {t("Create knowledge base")}
+                    {t("Create Knowledge Pack")}
                   </h2>
                 </div>
 
@@ -838,7 +838,7 @@ export default function KnowledgePage() {
                   <input
                     value={newKbName}
                     onChange={(event) => setNewKbName(event.target.value)}
-                    placeholder={t("Knowledge base name")}
+                    placeholder={t("Knowledge Pack name")}
                     className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
                   />
 

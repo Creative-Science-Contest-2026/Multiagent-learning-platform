@@ -43,7 +43,7 @@ export function CoreLoopVisibilityStrip({
           {t("Contest loop")}
         </div>
         <p className={`${compact ? "text-[12px]" : "text-[13px]"} text-[var(--muted-foreground)]`}>
-          {helperText || t("Track the same teacher-guided adaptive loop across the product.")}
+          {helperText || t("Track the same teacher-guided classroom loop across the product.")}
         </p>
       </div>
 
