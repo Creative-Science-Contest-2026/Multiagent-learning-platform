@@ -34,7 +34,7 @@ Out-of-scope claims:
 Hybrid proof calibration:
 
 - Teacher authoring capability on `/agents` is part of the merged product story.
-- Contest evidence-loop proof remains anchored to smoke-backed Knowledge Pack -> assessment -> tutor -> dashboard artifacts.
+- Contest evidence-loop proof remains anchored to smoke-backed `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention` walkthrough artifacts, with the dashboard serving as the teacher-facing operating surface around the last two stages.
 - You may claim bounded automated proof that the unified Tutor turn path accepts `config.agent_spec_id` and changes behavior across two contrasting spec packs. Do not expand that into universal live turn-time binding unless broader paths are re-verified in the target demo environment.
 - Diagnosis claims should stay at: rule-assisted, confidence-tagged, teacher-reviewed hypothesis layer. Do not present the diagnosis engine as a benchmarked autonomous assessor.
 - Assessment claims should stay at: AI can draft questions and feedback, but teacher review is the primary safety gate before student-facing reuse.
@@ -105,6 +105,17 @@ Read in this order before final submission:
 4. [`ai_first/competition/fork-modifications.md`](../../ai_first/competition/fork-modifications.md)
 5. [`docs/contest/VALIDATION_REPORT.md`](./VALIDATION_REPORT.md)
 6. [`docs/contest/EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md)
+
+## Pending Dependencies
+
+These items are intentionally outside Session A ownership and remain authoritative in their own files:
+
+| Dependency | Source of truth | Current handling |
+| --- | --- | --- |
+| Core-loop revalidation wording | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | Session B-owned |
+| Smoke/reset contract wording | [`SMOKE_RUNBOOK.md`](./SMOKE_RUNBOOK.md), [`DEMO_DATA_RESET.md`](./DEMO_DATA_RESET.md) | Session B-owned |
+| Evidence freshness rows | [`EVIDENCE_CHECKLIST.md`](./EVIDENCE_CHECKLIST.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) | Session B-owned |
+| Final package readiness call | this file plus the files above | blocked until Session B refresh completes |
 
 ## Human Review Checklist
 

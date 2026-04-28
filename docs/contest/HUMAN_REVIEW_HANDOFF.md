@@ -12,6 +12,16 @@ Use this file as the shortest manual review path before the final VnExpress Sán
 
 ## Human Review Gates
 
+## Gate Status Snapshot
+
+| Gate | Owner | Status | Blocking condition |
+| --- | --- | --- | --- |
+| Product wording and category fit | submission operator / final reviewer | Pending | final human wording review not yet recorded |
+| Intellectual property commitment | submission operator / project owner | Pending | external confirmation not yet recorded |
+| Evidence sanity check | submission operator | Pending | Session B proof refresh remains authoritative |
+| Optional video decision | submission operator | Pending | final submission requirements not yet confirmed |
+| Final package sign-off | final reviewer | Blocked | Gates 1-4 must complete first |
+
 ### Gate 1. Product wording and category fit
 
 Status: pending human review
@@ -83,6 +93,8 @@ Use `docs/contest/SUBMISSION_PACKAGE.md` as the final read path and then mark th
 4. `ai_first/competition/fork-modifications.md`
 5. `docs/contest/VALIDATION_REPORT.md`
 6. `docs/contest/screenshots/`
+
+If any wording here disagrees with Session B-owned freshness files, prefer the Session B file and update this handoff later rather than overriding proof status locally.
 
 ## Expected End State
 
