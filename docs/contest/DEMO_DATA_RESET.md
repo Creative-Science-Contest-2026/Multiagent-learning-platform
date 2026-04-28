@@ -38,7 +38,7 @@ Use the safest available mode for the environment.
 Run this from the repository root:
 
 ```bash
-python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
+/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
 ```
 
 The command:
@@ -52,8 +52,11 @@ The command:
 After reset plus smoke, the automation helper can write a machine-readable command-evidence snapshot:
 
 ```bash
-python3 -m scripts.contest.refresh_evidence_status --project-root . --api-base http://localhost:8001
+PATH="/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin:$PATH" \
+  /Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m scripts.contest.refresh_evidence_status --project-root . --api-base http://localhost:8001
 ```
+
+This `PATH` prefix matters because the helper currently invokes `python3` internally for the reset check.
 
 Generated local `data/` changes are not committed.
 

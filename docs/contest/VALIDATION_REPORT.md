@@ -1,6 +1,6 @@
 # Validation Report
 
-Last updated: 2026-04-26
+Last updated: 2026-04-28
 
 ## Scope
 
@@ -12,16 +12,16 @@ This report validates prototype behavior and contest evidence only. It is not a 
 
 ## Evidence Freshness Status
 
-Latest smoke-backed refresh: 2026-04-26
+Latest smoke-backed refresh: 2026-04-28
 
 Structured command-backed status artifact: `../../ai_first/evidence/evidence_status.json`
 
 | Evidence group | Refresh mode | Status | Latest source |
 | --- | --- | --- | --- |
-| Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run recorded in `ai_first/daily/2026-04-26.md`. |
-| Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-26 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the lane-6 worktree. |
-| Screenshot bundle | Browser capture after smoke when the UI changes | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`, including the Lane 5 evidence-first dashboard workflow. |
-| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Current | Refreshed on 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; combine these with the bounded runtime-binding automated proof before claiming live Tutor behavior impact. |
+| Backend and API reachability | Auto after smoke | Current | Scripted-reset smoke run repeated on 2026-04-28 and recorded in `ai_first/daily/2026-04-28.md`. |
+| Frontend production build | Auto after smoke | Current | `npm ci && npm run build` passed on 2026-04-28 with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` in the Session B worktree. |
+| Screenshot bundle | Browser capture after smoke when the UI changes | Current | Last real browser recapture remains 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; Session B did not recapture screenshots on 2026-04-28. |
+| Hybrid authoring screenshots (`/agents`) | Browser capture after smoke when hybrid story is presented | Current | Last real browser recapture remains 2026-04-26 in `docs/evidence-dashboard-agents-recapture`; combine these with the bounded runtime-binding automated proof before claiming live Tutor behavior impact. |
 | Optional video | Human capture only | Deferred | No external video is required yet. |
 
 Use these status values consistently:
@@ -35,14 +35,14 @@ Use these status values consistently:
 
 | Area | Command | Result |
 | --- | --- | --- |
-| Scripted demo reset | `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Passed on 2026-04-26; it recreated `contest-demo-quadratics`, `contest-assessment-demo`, and `contest-tutor-demo` in the lane-6 worktree. |
-| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed on 2026-04-26 with backend `online`, configured `gpt-4.1`, embeddings not configured, and fallback search provider `duckduckgo`. |
-| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed on 2026-04-26; `contest-demo-quadratics` was present with demo-safe metadata and team-safe sharing status. |
-| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed on 2026-04-26 with recent activity including the contest assessment and tutor sessions grounded in `contest-demo-quadratics`. |
-| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed on 2026-04-26 with assessment and tutor activity grounded in `contest-demo-quadratics`. |
-| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed on 2026-04-26 and returned `context_support` plus demo-safe Knowledge Pack references. |
-| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed on 2026-04-26 and returned `context_support` plus demo-safe Knowledge Pack references. |
-| Frontend production build | `cd web && npm ci && npm run build` | Passed on 2026-04-26 in lane 6, with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing multiple-lockfile warning. |
+| Scripted demo reset | `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Passed on 2026-04-28; it recreated `contest-demo-quadratics`, `contest-assessment-demo`, and `contest-tutor-demo` in the Session B worktree. |
+| Backend health | `curl -s http://127.0.0.1:8001/api/v1/system/status` | Passed on 2026-04-28 with backend `online`, configured `gpt-4o-mini`, embeddings not configured, and fallback search provider `duckduckgo`. |
+| Knowledge Pack presence | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Passed on 2026-04-28; `contest-demo-quadratics` was present with demo-safe metadata and `sharing_status: demo`. |
+| Dashboard overview | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Passed on 2026-04-28 with recent activity including the contest assessment and tutor sessions grounded in `contest-demo-quadratics`. |
+| Dashboard recent activity | `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Passed on 2026-04-28 with assessment and tutor activity grounded in `contest-demo-quadratics`. |
+| Assessment evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Passed on 2026-04-28 and returned `context_support` plus demo-safe Knowledge Pack references. |
+| Tutor evidence session | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Passed on 2026-04-28 and returned `context_support` plus demo-safe Knowledge Pack references. |
+| Frontend production build | `cd web && npm ci && npm run build` | Passed on 2026-04-28 in Session B, with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local` and the existing multiple-lockfile warning. |
 
 ## Current Known Limitations
 
@@ -56,13 +56,14 @@ Use these status values consistently:
 - The repository currently documents no pilot cohort, classroom rollout, or real-user study. Use `PILOT_STATUS.md` for the explicit external-feedback status.
 - Local provider-backed assessment generation was unavailable during the 2026-04-25 screenshot refresh because the configured model key was still a placeholder. The refreshed `07` and `08` screenshots therefore use demo-safe local session content in the worktree data store instead of a live provider response.
 - Provider-backed AI quality depends on configured model credentials. If credentials are unavailable during a demo, use the command validation and recorded UI flow as fallback evidence.
+- The 2026-04-28 smoke pass verified seeded demo-safe assessment and tutor sessions plus Knowledge Pack grounding through API responses. It did not freshly recapture browser evidence for diagnosis or intervention surfaces.
 - This report uses demo-safe descriptions only. Do not add real student data.
 
 ## Local Demo Run
 
-The latest smoke-backed evidence refresh used local demo data only (2026-04-26):
+The latest smoke-backed evidence refresh used local demo data only (2026-04-28):
 
-- Reset: `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001`
+- Reset: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001`
 - Backend: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m deeptutor_cli.main serve --host 127.0.0.1 --port 8001`
 - Frontend validation: `npm ci && npm run build` in `web/` with `NEXT_PUBLIC_API_BASE=http://localhost:8001` from `web/.env.local`
 - Knowledge Pack: `contest-demo-quadratics`
@@ -70,17 +71,17 @@ The latest smoke-backed evidence refresh used local demo data only (2026-04-26):
   - `contest-assessment-demo`
   - `contest-tutor-demo`
 - Screenshot refresh follow-up:
-  - browser-backed recapture completed on 2026-04-26 for the dashboard evidence-first workflow and `/agents` authoring proof;
-  - Knowledge Pack, assessment, and tutor screenshots remain valid from the 2026-04-25 refresh;
-  - dashboard screenshots now point to the new evidence-first workflow captures;
-  - hybrid `/agents` screenshot rows are current, and runtime-binding claims are now backed by bounded automated proof for the unified Tutor turn path rather than authoring-only wording.
+  - Session B did not perform a fresh browser recapture on 2026-04-28;
+  - dashboard and `/agents` screenshots remain current from the 2026-04-26 browser recapture;
+  - Knowledge Pack, assessment, and tutor screenshots remain current from the 2026-04-25 browser refresh;
+  - hybrid `/agents` screenshot rows still require the bounded runtime-binding automated proof when discussing live Tutor behavior impact.
 
 Before future smoke or evidence refresh runs, use `DEMO_DATA_RESET.md` when local demo state may be missing or stale.
 
 The local reset command is:
 
 ```bash
-python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
+/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
 ```
 
 The first backend attempt with `.venv/bin/python -m deeptutor.api.run_server` failed before binding because the reload configuration passed absolute `reload_excludes` paths to the installed `uvicorn`, which rejects non-relative glob patterns. The smoke run used the existing CLI server path with reload disabled instead.
@@ -89,16 +90,17 @@ The frontend build in this smoke pass completed successfully. It still emits the
 
 ## Smoke-backed Verification Record
 
-The 2026-04-26 scripted-reset smoke run verified the MVP path in the current merged state:
+The 2026-04-28 scripted-reset smoke run verified the MVP path in the current merged state:
 
 1. scripted reset recreated the demo-safe Knowledge Pack and assessment/tutor sessions in the fresh worktree;
 2. backend started successfully with the repository-local virtual environment through the CLI server path;
 3. system status, knowledge list, dashboard overview, dashboard recent, assessment session, and tutor session endpoints all returned the expected demo-safe data;
-4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the lane-6 worktree;
-5. smoke-backed command evidence stayed `Current`, and browser-captured dashboard plus hybrid `/agents` rows were refreshed on 2026-04-26 against the current merged UI;
-6. focused automated tests now prove the unified Tutor turn path can accept `config.agent_spec_id`, assemble the matching runtime policy, and produce a deterministic behavior difference between two contrasting spec packs without claiming full entry-point coverage.
-7. diagnosis credibility is supported by focused rule-based cases in repository tests and a reviewer-facing case-study packet in `DIAGNOSIS_CASE_STUDIES.md`, not by fabricated accuracy metrics.
-8. reusable validation examples now also exist as a machine-readable casepack in `ai_first/evidence/casepack.json`, which is intended for future regression and evidence-automation work rather than runtime scoring.
+4. the frontend production build passed against `http://localhost:8001` after `npm ci` in the Session B worktree;
+5. smoke-backed command evidence is current on 2026-04-28, while browser-captured dashboard plus hybrid `/agents` rows remain current from the 2026-04-26 recapture rather than a same-day refresh;
+6. this smoke pass proves the command-backed Knowledge Pack -> Assessment session -> Tutor session -> Dashboard path with demo-safe seeded content and retained Knowledge Pack grounding, but it does not newly prove diagnosis or intervention UI behavior in-browser;
+7. focused automated tests still provide the bounded proof that the unified Tutor turn path can accept `config.agent_spec_id`, assemble the matching runtime policy, and produce a deterministic behavior difference between two contrasting spec packs without claiming full entry-point coverage;
+8. diagnosis credibility remains supported by focused rule-based cases and the reviewer-facing case-study packet in `DIAGNOSIS_CASE_STUDIES.md`, not by fabricated accuracy metrics or a fresh Session B browser run;
+9. reusable validation examples remain available as a machine-readable casepack in `ai_first/evidence/casepack.json`, intended for future regression and evidence-automation work rather than runtime scoring.
 
 ## Manual Verification Template
 

@@ -1,21 +1,56 @@
 {
-  "generated_at": "2026-04-28T00:00:00+00:00",
-  "project_root": ".",
+  "generated_at": "2026-04-28T13:10:37.602912+00:00",
+  "project_root": "/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/submission-close-b",
   "api_base": "http://localhost:8001",
   "proof_level": "validated_prototype",
   "checks": [
     {
       "name": "demo_reset",
       "command": "python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001",
-      "status": "planned",
-      "summary": "execution skipped",
+      "status": "passed",
+      "summary": "{\n  \"knowledge_pack\": \"contest-demo-quadratics\",\n  \"sessions\": [\n    \"contest-assessment-demo\",\n    \"contest-tutor-demo\"\n  ],\n  \"paths\": {\n    \"knowledge_pack\": \"/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/submission-close-b/data/knowledge_bases/contest-demo-quadratics\",\n    \"session_db\": \"/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/submission-close-b/data/user/chat_history.db\"\n  },\n  \"api_base\": \"http://localhost:8001\"\n}",
       "manual_followup_required": false
     },
     {
       "name": "system_status",
       "command": "curl -s http://localhost:8001/api/v1/system/status",
-      "status": "planned",
-      "summary": "execution skipped",
+      "status": "passed",
+      "summary": "{\"backend\":{\"status\":\"online\",\"timestamp\":\"2026-04-28T20:10:37.505807\"},\"llm\":{\"status\":\"configured\",\"model\":\"gpt-4o-mini\",\"testable\":true},\"embeddings\":{\"status\":\"not_configured\",\"model\":null,\"testable\":true,\"error\":\"No active embedding model is configured. Please set it in Settings > Catalog.\"},\"search\":{\"status\":\"fallback\",\"provider\":\"duckduckgo\",\"testable\":true,\"error\":\"brave requires api_key, falling back to duckduckgo\"}}",
+      "manual_followup_required": false
+    },
+    {
+      "name": "knowledge_list",
+      "command": "curl -s http://localhost:8001/api/v1/knowledge/list",
+      "status": "passed",
+      "summary": "[{\"name\":\"contest-demo-quadratics\",\"is_default\":true,\"statistics\":{\"raw_documents\":0,\"images\":0,\"content_lists\":0,\"rag_initialized\":true,\"rag_provider\":\"llamaindex\",\"needs_reindex\":false,\"status\":\"ready\",\"progress\":null},\"status\":\"ready\",\"progress\":null,\"metadata\":{\"name\":\"contest-demo-quadratics\",\"description\":\"Contest demo Knowledge Pack for quadratic equations.\",\"rag_provider\":\"llamaindex\",\"needs_reindex\":false,\"subject\":\"Mathematics\",\"grade\":\"Grade 9\",\"curriculum\":\"Vietnam secondary algebra\"",
+      "manual_followup_required": false
+    },
+    {
+      "name": "dashboard_overview",
+      "command": "curl -s http://localhost:8001/api/v1/dashboard/overview",
+      "status": "passed",
+      "summary": "{\"totals\":{\"total_sessions\":2,\"assessments\":1,\"tutoring_sessions\":1,\"running\":0,\"completed\":2,\"failed\":0},\"knowledge_packs\":[{\"name\":\"contest-demo-quadratics\",\"session_count\":2}],\"analytics\":{\"engagement\":{\"active_days\":1,\"streak_days\":1,\"knowledge_packs_used\":1},\"assessment_trend\":{\"assessments_completed\":0,\"average_score_percent\":0,\"latest_score_percent\":0,\"score_delta\":0},\"learning_signals\":{\"focus_topics\":[],\"mastered_topics\":[]}},\"recent_activity\":[{\"id\":\"contest-tutor-demo\",\"type\":\"tutorin",
+      "manual_followup_required": false
+    },
+    {
+      "name": "dashboard_recent",
+      "command": "curl -s http://localhost:8001/api/v1/dashboard/recent",
+      "status": "passed",
+      "summary": "[{\"id\":\"contest-tutor-demo\",\"type\":\"tutoring\",\"capability\":\"chat\",\"title\":\"Contest Demo Tutor\",\"timestamp\":1777381837.456834,\"summary\":\"The Tutor Agent explains how to check factoring steps and compare both roots against the original equation.\",\"session_ref\":\"sessions/contest-tutor-demo\",\"message_count\":2,\"status\":\"completed\",\"active_turn_id\":\"\",\"knowledge_bases\":[\"contest-demo-quadratics\"],\"cohort\":null,\"assessment_summary\":null,\"review_ref\":null,\"replay_ref\":\"dashboard/sessions/contest-tutor-d",
+      "manual_followup_required": false
+    },
+    {
+      "name": "assessment_session",
+      "command": "curl -s http://localhost:8001/api/v1/sessions/contest-assessment-demo",
+      "status": "passed",
+      "summary": "{\"id\":\"contest-assessment-demo\",\"title\":\"Contest Demo Assessment\",\"created_at\":1777381837.4549298,\"updated_at\":1777381837.4549298,\"compressed_summary\":\"\",\"summary_up_to_msg_id\":0,\"status\":\"completed\",\"active_turn_id\":\"\",\"capability\":\"deep_question\",\"session_id\":\"contest-assessment-demo\",\"preferences\":{\"capability\":\"deep_question\",\"tools\":[\"rag\"],\"knowledge_bases\":[\"contest-demo-quadratics\"],\"language\":\"en\",\"demo\":true},\"messages\":[{\"id\":5,\"session_id\":\"contest-assessment-demo\",\"role\":\"user\",\"con",
+      "manual_followup_required": false
+    },
+    {
+      "name": "tutor_session",
+      "command": "curl -s http://localhost:8001/api/v1/sessions/contest-tutor-demo",
+      "status": "passed",
+      "summary": "{\"id\":\"contest-tutor-demo\",\"title\":\"Contest Demo Tutor\",\"created_at\":1777381837.456834,\"updated_at\":1777381837.456834,\"compressed_summary\":\"\",\"summary_up_to_msg_id\":0,\"status\":\"completed\",\"active_turn_id\":\"\",\"capability\":\"chat\",\"session_id\":\"contest-tutor-demo\",\"preferences\":{\"capability\":\"chat\",\"tools\":[\"rag\"],\"knowledge_bases\":[\"contest-demo-quadratics\"],\"language\":\"en\",\"demo\":true},\"messages\":[{\"id\":7,\"session_id\":\"contest-tutor-demo\",\"role\":\"user\",\"content\":\"Help a student understand a commo",
       "manual_followup_required": false
     }
   ],

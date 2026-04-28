@@ -1,17 +1,22 @@
 # Screenshots and Video Checklist
 
-## Required screenshots
+## Screenshot freshness
 
-- [ ] Knowledge Pack creation.
-- [ ] Assessment Builder result.
-- [ ] Student Tutor conversation.
-- [ ] Teacher Dashboard.
-- [ ] Main architecture Mermaid map rendered.
+| Artifact | Status | Last real capture | Notes |
+| --- | --- | --- | --- |
+| Knowledge Pack creation | Current | 2026-04-25 | No Session B recapture on 2026-04-28. |
+| Assessment Builder result | Current | 2026-04-25 | Uses demo-safe local session content. |
+| Student Tutor conversation | Current | 2026-04-25 | Uses seeded demo response. |
+| Teacher Dashboard | Current | 2026-04-26 | Evidence-first dashboard workflow recaptured after the dashboard polish merge. |
+| `/agents` authoring proof | Current | 2026-04-26 | Pair with bounded runtime-binding automated proof. |
+| Main architecture Mermaid map rendered | Pending review | N/A | Session A owns the narrative/submission package refresh. |
 
-## Required video clips
+## Video freshness
 
-- [ ] End-to-end demo under 3 minutes.
-- [ ] Short technical walkthrough under 2 minutes.
+| Artifact | Status | Notes |
+| --- | --- | --- |
+| End-to-end demo under 3 minutes | Deferred | Capture only if the final submission requires video. |
+| Short technical walkthrough under 2 minutes | Deferred | Capture only if the final submission requires video. |
 
 ## Storage
 

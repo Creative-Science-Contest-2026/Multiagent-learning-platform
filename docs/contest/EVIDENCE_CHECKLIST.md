@@ -35,14 +35,14 @@ Automation source-of-truth for command-backed freshness: `../../ai_first/evidenc
 
 | Command | Refresh mode | Status | Source |
 | --- | --- | --- | --- |
-| `python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
-| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed on 2026-04-26; see `VALIDATION_REPORT.md`. |
-| `cd web && npm ci && npm run build` | Auto after smoke | Current | Passed on 2026-04-26 in lane 6, with the existing lockfile warning. |
+| `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001` | Auto before smoke | Current | Passed on 2026-04-28 in Session B; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/system/status` | Auto after smoke | Current | Passed on 2026-04-28; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` | Auto after smoke | Current | Passed on 2026-04-28; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview` | Auto after smoke | Current | Passed on 2026-04-28; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` | Auto after smoke | Current | Passed on 2026-04-28; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo` | Auto after smoke | Current | Passed on 2026-04-28; see `VALIDATION_REPORT.md`. |
+| `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` | Auto after smoke | Current | Passed on 2026-04-28; see `VALIDATION_REPORT.md`. |
+| `cd web && npm ci && npm run build` | Auto after smoke | Current | Passed on 2026-04-28 in Session B, with the existing lockfile warning. |
 
 Screenshots and optional video remain manual even when command-backed evidence is refreshed through automation.
 
@@ -74,7 +74,7 @@ Video status follows the same freshness states:
 | --- | --- | --- |
 | Full MVP story can be followed from docs | Passed | Start with `docs/contest/README.md`. |
 | Hybrid authoring plus evidence-loop claim is calibrated | Passed | Hybrid authoring is documented with bounded runtime-binding proof for the unified Tutor turn path and still avoids universal entry-point claims. |
-| Product commands have smoke-backed validation evidence | Passed | See `VALIDATION_REPORT.md`. |
-| Screenshots are captured and linked | Passed | Knowledge, assessment, tutor, dashboard, and `/agents` authoring screenshots are current as of the 2026-04-26 recapture run. |
+| Product commands have smoke-backed validation evidence | Passed | Session B refreshed command-backed evidence on 2026-04-28; see `VALIDATION_REPORT.md` and `../../ai_first/evidence/evidence_status.json`. |
+| Screenshots are captured and linked | Passed | Knowledge, assessment, and tutor screenshots remain current from 2026-04-25; dashboard and `/agents` authoring screenshots remain current from 2026-04-26 because Session B did not recapture them on 2026-04-28. |
 | Video is captured or explicitly deferred | Deferred | Optional unless submission requires it. |
 | No secrets or private data in evidence | Passed | Screenshots use demo-safe Knowledge Pack and session data. |
