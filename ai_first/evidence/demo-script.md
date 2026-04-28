@@ -13,6 +13,7 @@ Optional hybrid add-on before Scene 1:
 - export a spec pack.
 
 Keep this claim scoped to authoring proof unless the current smoke run verifies full turn-time runtime binding.
+For the 2026-04-28 Session B pass, command-backed smoke is current, but browser screenshots remain on their last real capture dates and diagnosis/intervention were not freshly recaptured in-browser.
 
 ## Scene 1: Teacher creates Knowledge Pack
 

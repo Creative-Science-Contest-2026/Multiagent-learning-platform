@@ -54,3 +54,11 @@ Validate the current contest loop on `main`, refresh the demo-data and smoke con
 
 - Validation wording must align to Session A's claim contract once it is frozen.
 - Evidence freshness status must reflect actual smoke-backed behavior, not aspirational cleanup.
+
+## 2026-04-28 execution notes
+
+- `C204_CORE_LOOP_RUNTIME_REVALIDATION`: passed for the command-backed Knowledge Pack -> Assessment session -> Tutor session -> Dashboard path using repo `.venv` plus the local demo reset utility.
+- `C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH`: completed by pinning the runbooks to the repo `.venv` and documenting the `PATH` requirement for the evidence-status helper.
+- `C206_EVIDENCE_BUNDLE_REFRESH`: completed for command-backed evidence and freshness wording; Session B did not perform a new browser screenshot recapture.
+- `C215_POST_POLISH_EVIDENCE_RECAPTURE`: not started because no Session C Phase 2 polish event occurred during this lane.
+- Blockers raised: none for the command-backed loop; no new Session C runtime fix request was required from this pass.

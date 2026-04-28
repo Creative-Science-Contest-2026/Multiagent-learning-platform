@@ -4,17 +4,20 @@ This runbook verifies the contest MVP path in the same order as the demo story:
 
 Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with Tutor Agent -> Teacher sees dashboard.
 
-If local demo data may be stale, missing, or private, run `DEMO_DATA_RESET.md` before starting this smoke lane. The scripted local reset command is:
+If local demo data may be stale, missing, or private, run `DEMO_DATA_RESET.md` before starting this smoke lane. Use the repository virtualenv so the reset and evidence helpers resolve the same Python dependencies as the backend:
 
 ```bash
-python3 -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
+/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m scripts.contest.reset_demo_data --project-root . --api-base http://localhost:8001
 ```
 
 After a successful command-backed smoke pass, the bounded automation helper can refresh the structured status artifact:
 
 ```bash
-python3 -m scripts.contest.refresh_evidence_status --project-root . --api-base http://localhost:8001
+PATH="/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin:$PATH" \
+  /Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.venv/bin/python -m scripts.contest.refresh_evidence_status --project-root . --api-base http://localhost:8001
 ```
+
+The helper currently shells out to `python3` for the reset check, so the repo `.venv/bin` path must come first in `PATH` during evidence refresh.
 
 Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTION_QUEUE.md` and `ai_first/daily/YYYY-MM-DD.md`.
 
@@ -60,3 +63,4 @@ Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTIO
 - If a product/runtime stage fails: create or update a follow-up task packet before starting broad new work.
 - If an environment or credential blocker prevents completion: record the blocker clearly and do not report smoke as passing.
 - If demo data is missing: use `DEMO_DATA_RESET.md`, then restart the smoke lane from Stage 1.
+- If command-backed smoke passes but browser recapture does not run, keep screenshot/video rows on their last real capture date instead of silently moving them to the smoke date.

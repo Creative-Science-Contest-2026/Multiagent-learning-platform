@@ -58,19 +58,19 @@ Rules:
 - Next action: start `PR-CLOSE-01`
 - Blocker:
 
-### Planned Assignment
+### Assignment
 
 - Owner: Session B
-- Machine:
+- Machine: local
 - Worktree: `.worktrees/submission-close-b`
 - Task: `OPS_SUBMISSION_CLOSE_B`
-- Status: planned
+- Status: in-progress
 - Branch: `docs/submission-close-session-b`
 - Task packet: `docs/superpowers/tasks/2026-04-28-session-b-validation-and-evidence.md`
 - Owned files: validation, smoke, demo-data, and evidence docs
 - PR:
 - Last update: 2026-04-28
-- Next action: start `PR-CLOSE-03`
+- Next action: self-review the Session B evidence refresh and open or update the draft PR for `PR-CLOSE-03` through `PR-CLOSE-05`
 - Blocker:
 
 ### Planned Assignment
