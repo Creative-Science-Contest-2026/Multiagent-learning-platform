@@ -8,9 +8,9 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 1. Complete human review of the submission package, IP commitment, and final product-description wording.
 2. Decide whether an optional contest video artifact is required.
-3. Complete final package sign-off using the current `docs/contest/` read path.
-4. Treat any future smoke failure as the next product task before opening another polish slice.
-5. Open optional Phase 2 polish only if the human explicitly requests work from `C211-C215`.
+3. Decide whether stale browser screenshots need one fresh manual recapture pass before submission.
+4. Complete final package sign-off using the current `docs/contest/` read path.
+5. Treat any future smoke failure as the next product task before opening another lane.
 6. Use `ai_first/ACTIVE_ASSIGNMENTS.md` before starting any new AI lane or docs sync.
 
 ## After Milestone 0
@@ -33,4 +33,4 @@ Use this file only as a compact queue mirror. Do not rely on it for the full ope
 2. Use the matching packet before code edits.
 3. If no packet exists and the remaining work is human-only, stop instead of inventing a new AI lane.
 4. Keep contest wording at validated-prototype level unless a stronger repository artifact is added.
-5. If optional polish is reopened, prefer the existing Phase 2 submission-close tasks `C211-C215` instead of inventing a new split.
+5. If screenshot freshness must be restored, open a fresh browser-recapture packet instead of editing evidence mirrors ad hoc.

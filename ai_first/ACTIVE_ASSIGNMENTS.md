@@ -88,17 +88,17 @@ Rules:
 - Next action: keep the 2026-04-28 command-backed validation refresh as the authoritative proof baseline unless a later smoke pass replaces it
 - Blocker:
 
-### Active Assignment
+### Assignment
 
 - Owner: Session C
 - Machine: local
 - Worktree: `.worktrees/submission-close-c`
 - Task: `C215_POST_POLISH_EVIDENCE_RECAPTURE`
-- Status: in-progress
+- Status: merged
 - Branch: `fix/submission-close-c215`
 - Task packet: `docs/superpowers/tasks/2026-04-28-c215-post-polish-evidence-recapture.md`
 - Owned files: evidence freshness docs plus required AI-first mirrors after the latest optional polish merges
-- PR:
+- PR: `#217`
 - Last update: 2026-04-28
-- Next action: mark browser screenshot freshness states honestly after Phase 2 polish while preserving the current command-backed smoke baseline
+- Next action: keep 2026-04-28 command-backed smoke evidence current, and treat browser screenshot recapture as a separate future packet if needed
 - Blocker:
