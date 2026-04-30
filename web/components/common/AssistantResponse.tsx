@@ -10,7 +10,7 @@ interface AssistantResponseProps {
 
 export default function AssistantResponse({
   content,
-  className = "text-[14px] leading-[1.8]",
+  className = "text-[15px] leading-[1.85]",
 }: AssistantResponseProps) {
   if (!hasVisibleMarkdownContent(content)) return null;
 
