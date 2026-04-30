@@ -261,6 +261,7 @@ class TurnRuntimeManager:
 
     async def start_turn(self, payload: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
         capability = str(payload.get("capability") or "chat")
+        tutor_pack = payload.get("tutor_pack")
         raw_config = dict(payload.get("config", {}) or {})
         runtime_only_keys = ("_persist_user_message", "followup_question_context")
         runtime_only_config = {
@@ -280,6 +281,18 @@ class TurnRuntimeManager:
             "config": {**validated_public_config, **runtime_only_config},
         }
         session = await self.store.ensure_session(payload.get("session_id"))
+        normalized_tutor_pack = None
+        if isinstance(tutor_pack, dict):
+            name = str(tutor_pack.get("name") or "").strip()
+            knowledge_base = str(tutor_pack.get("knowledge_base") or "").strip()
+            if name and knowledge_base:
+                normalized_tutor_pack = {
+                    "name": name,
+                    "knowledge_base": knowledge_base,
+                    "status": "missing"
+                    if str(tutor_pack.get("status") or "").strip() == "missing"
+                    else "available",
+                }
         await self.store.update_session_preferences(
             session["id"],
             {
@@ -287,6 +300,7 @@ class TurnRuntimeManager:
                 "tools": list(payload.get("tools") or []),
                 "knowledge_bases": list(payload.get("knowledge_bases") or []),
                 "language": str(payload.get("language") or "en"),
+                **({"tutor_pack": normalized_tutor_pack} if normalized_tutor_pack else {}),
             },
         )
         await _ensure_agent_spec_pin(

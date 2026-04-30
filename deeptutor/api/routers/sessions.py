@@ -74,6 +74,25 @@ def _session_knowledge_bases(session: dict[str, Any]) -> list[str]:
     return [str(item).strip() for item in raw if str(item).strip()]
 
 
+def _session_tutor_pack(session: dict[str, Any]) -> dict[str, Any] | None:
+    preferences = session.get("preferences")
+    if not isinstance(preferences, dict):
+        return None
+    raw = preferences.get("tutor_pack")
+    if not isinstance(raw, dict):
+        return None
+    name = str(raw.get("name") or "").strip()
+    knowledge_base = str(raw.get("knowledge_base") or "").strip()
+    if not name or not knowledge_base:
+        return None
+    status = str(raw.get("status") or "available").strip() or "available"
+    return {
+        "name": name,
+        "knowledge_base": knowledge_base,
+        "status": "missing" if status == "missing" else "available",
+    }
+
+
 def _latest_message_content(session: dict[str, Any], role: str) -> str | None:
     for message in reversed(session.get("messages", [])):
         if str(message.get("role") or "") != role:
@@ -183,8 +202,13 @@ async def get_session(session_id: str):
     session = await store.get_session_with_messages(session_id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
+    preferences = dict(session.get("preferences") or {})
+    tutor_pack = _session_tutor_pack(session)
+    if tutor_pack is not None:
+        preferences["tutor_pack"] = tutor_pack
     return {
         **session,
+        "preferences": preferences,
         "context_support": _build_context_support(session),
     }
 

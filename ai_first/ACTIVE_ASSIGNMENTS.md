@@ -35,14 +35,14 @@ Rules:
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: Hide the right-panel mode and tool switcher on `/playground` while keeping the underlying capability logic intact
-- Status: implementation complete
-- Branch: `fix/playground-hide-mode-switcher`
-- Task packet: `docs/superpowers/tasks/2026-04-30-playground-hide-mode-switcher.md`
-- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/chat/home/PlaygroundRightPanel.tsx`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-hide-mode-switcher.md`, `docs/superpowers/specs/2026-04-30-playground-hide-mode-switcher-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-hide-mode-switcher.md`
+- Task: Add `Gói gia sư` selection and session binding for `/playground` chat using imported marketplace packs
+- Status: writing spec
+- Branch: `fix/playground-tutor-pack-chat`
+- Task packet: `docs/superpowers/tasks/2026-04-30-playground-tutor-pack-chat.md`
+- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/context/UnifiedChatContext.tsx`, `web/components/sidebar/WorkspaceSidebar.tsx`, `web/lib/session-api.ts`, `web/lib/marketplace-api.ts`, `deeptutor/api/routers/sessions.py`, `deeptutor/services/session/turn_runtime.py`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-tutor-pack-chat.md`, `docs/superpowers/specs/2026-04-30-playground-tutor-pack-chat-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-tutor-pack-chat.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: write the bounded spec for removing the visible mode/tool chooser from the right panel before implementation
+- Next action: write the bounded spec for binding each chat session to one imported `Gói gia sư`
 - Blocker: none
 
 ### Assignment

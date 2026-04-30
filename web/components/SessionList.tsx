@@ -23,6 +23,19 @@ interface SessionListProps {
   onDelete: (sessionId: string) => void | Promise<void>;
 }
 
+function getTutorPackLabel(session: SessionSummary): string | null {
+  const value = session.preferences?.tutor_pack?.name;
+  const text = typeof value === "string" ? value.trim() : "";
+  return text || null;
+}
+
+function getTutorPackStatus(session: SessionSummary): "available" | "missing" | null {
+  const raw = session.preferences?.tutor_pack?.status;
+  if (raw === "missing") return "missing";
+  if (raw === "available") return "available";
+  return session.preferences?.tutor_pack ? "available" : null;
+}
+
 function statusColor(status?: SessionRuntimeStatus): string {
   switch (status) {
     case "running":
@@ -186,6 +199,8 @@ export default function SessionList({
             {items.map((session) => {
               const active = activeSessionId === session.session_id;
               const isEditing = editingId === session.session_id;
+              const tutorPackLabel = getTutorPackLabel(session);
+              const tutorPackStatus = getTutorPackStatus(session);
               return (
                 <div
                   key={session.session_id}
@@ -224,9 +239,21 @@ export default function SessionList({
                       className="min-w-0 flex-1 rounded border border-[var(--border)] bg-[var(--background)] px-1.5 py-px text-[12px] text-[var(--foreground)] outline-none focus:ring-1 focus:ring-[var(--primary)]/40"
                     />
                   ) : (
-                    <span className={`min-w-0 flex-1 truncate text-[13px] ${active ? "font-medium" : ""}`}>
-                      {session.title || t("Untitled chat")}
-                    </span>
+                    <div className="min-w-0 flex-1">
+                      <span className={`block truncate text-[13px] ${active ? "font-medium" : ""}`}>
+                        {session.title || t("Untitled chat")}
+                      </span>
+                      {tutorPackLabel ? (
+                        <div className="mt-1 flex items-center gap-1.5">
+                          <span className="inline-flex max-w-full items-center truncate rounded-full bg-[var(--muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--muted-foreground)]">
+                            {tutorPackLabel}
+                          </span>
+                          {tutorPackStatus === "missing" ? (
+                            <span className="text-[10px] text-amber-700">{t("Unavailable")}</span>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </div>
                   )}
                   <div className="flex shrink-0 items-center gap-px opacity-0 transition-opacity group-hover:opacity-100">
                     {isEditing ? (
@@ -275,6 +302,8 @@ export default function SessionList({
             {items.map((session) => {
               const active = activeSessionId === session.session_id;
               const isEditing = editingId === session.session_id;
+              const tutorPackLabel = getTutorPackLabel(session);
+              const tutorPackStatus = getTutorPackStatus(session);
               return (
                 <div
                   key={session.session_id}
@@ -327,9 +356,21 @@ export default function SessionList({
                         </div>
                       )}
                       {!isEditing && (
-                        <div className="mt-0.5 line-clamp-1 text-[11px] leading-tight text-[var(--muted-foreground)]">
-                          {session.last_message || relativeTime(session.updated_at, i18n.language)}
-                        </div>
+                        <>
+                          {tutorPackLabel ? (
+                            <div className="mt-1 flex items-center gap-1.5">
+                              <span className="inline-flex max-w-full items-center truncate rounded-full bg-[var(--muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--muted-foreground)]">
+                                {tutorPackLabel}
+                              </span>
+                              {tutorPackStatus === "missing" ? (
+                                <span className="text-[10px] text-amber-700">{t("Unavailable")}</span>
+                              ) : null}
+                            </div>
+                          ) : null}
+                          <div className="mt-0.5 line-clamp-1 text-[11px] leading-tight text-[var(--muted-foreground)]">
+                            {session.last_message || relativeTime(session.updated_at, i18n.language)}
+                          </div>
+                        </>
                       )}
                     </div>
                     <div className="flex shrink-0 items-center gap-0.5 pt-px opacity-0 transition-opacity group-hover:opacity-100">

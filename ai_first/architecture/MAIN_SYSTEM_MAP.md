@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-28
+Last updated: 2026-04-30
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -95,6 +95,10 @@ flowchart TD
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
   StudentTutor --> TutorKBBadges["KB Context Badges in Chat Messages"]
   StudentTutor --> TutorFollowups["Optional follow-up questions in tutor replies"]
+  StudentTutor --> TutorPackBinding["Tutor Pack binding for /playground chat sessions"]
+  TutorPackBinding --> TutorPackUI["UI term: Gói gia sư"]
+  TutorPackBinding --> TutorPackSessionPrefs["Session preferences: tutor_pack + knowledge_bases[0]"]
+  TutorPackBinding --> TutorPackHistory["Session history restore + sidebar badge + unavailable-send gate"]
   TutorKBBadges --> SnapshotKBs["Message requestSnapshot.knowledgeBases"]
   TutorFollowups --> ChatResponse["Agentic chat final response section: Follow-up questions"]
   
