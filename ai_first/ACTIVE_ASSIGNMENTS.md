@@ -40,9 +40,9 @@ Rules:
 - Branch: `fix/marketplace-dashboard-fetch-recovery`
 - Task packet: `docs/superpowers/tasks/2026-04-30-marketplace-dashboard-fetch-recovery.md`
 - Owned files: `web/app/(utility)/marketplace/page.tsx`, `web/app/(workspace)/dashboard/page.tsx`, `web/components/agents/SpecPackAuthoringTab.tsx`, `web/lib/marketplace-api.ts`, `web/lib/dashboard-api.ts`, `deeptutor/api/routers/marketplace.py`, `deeptutor/api/routers/dashboard.py`, `web/tests/*marketplace*`, `web/tests/*dashboard*`, `web/tests/api-base-url.test.ts`, `web/tests/agents-boolean-field-layout.test.ts`, `tests/api/test_marketplace_router.py`, `tests/api/test_dashboard_router.py`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-marketplace-dashboard-fetch-recovery.md`, `docs/superpowers/pr-notes/2026-04-30-marketplace-dashboard-fetch-recovery.md`
-- PR: uncreated
+- PR: `#271`
 - Last update: 2026-04-30
-- Next action: commit the bounded lane diff, push the branch, and open a draft PR
+- Next action: wait for review or move the draft PR to Ready after any final self-review updates
 - Blocker: none
 
 ### Assignment
