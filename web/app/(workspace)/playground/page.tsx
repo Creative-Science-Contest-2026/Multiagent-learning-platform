@@ -34,6 +34,7 @@ import { PlaygroundWorkspaceShell } from "@/components/chat/home/PlaygroundWorks
 import AssistantResponse from "@/components/common/AssistantResponse";
 import MarkdownRenderer from "@/components/common/MarkdownRenderer";
 import ProcessLogs from "@/components/common/ProcessLogs";
+import { useUnifiedChat, type MessageItem } from "@/context/UnifiedChatContext";
 import ResearchConfigPanel from "@/components/research/ResearchConfigPanel";
 import { extractBase64FromDataUrl, readFileAsDataUrl } from "@/lib/file-attachments";
 import { listKnowledgeBases } from "@/lib/knowledge-api";
@@ -184,6 +185,10 @@ interface TesterMessage {
   error?: string | null;
 }
 
+interface PlaygroundChatMessage extends TesterMessage {
+  role: "user" | "assistant";
+}
+
 type DeepQuestionMode = "custom" | "mimic";
 
 interface DeepQuestionFormConfig {
@@ -314,6 +319,23 @@ function getResultResponse(result: CapabilityExecResult | null | undefined): str
   return typeof result?.data.response === "string" ? result.data.response.trim() : "";
 }
 
+function toPlaygroundChatMessages(messages: MessageItem[]): PlaygroundChatMessage[] {
+  return messages.flatMap((message) => {
+    if (message.role === "system") return [];
+    const errorEvent = message.events?.find((event) => event.type === "error");
+    return [
+      {
+        role: message.role,
+        content: message.content,
+        events: message.events ?? [],
+        result: null,
+        processLogs: [],
+        error: errorEvent?.content || null,
+      },
+    ];
+  });
+}
+
 function PlaygroundChatTurn({
   msg,
   isStreaming,
@@ -372,6 +394,81 @@ function PlaygroundChatTurn({
             ) : null}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function PlaygroundSharedChat({
+  messages,
+  isStreaming,
+  title,
+  onSend,
+  onCancel,
+}: {
+  messages: MessageItem[];
+  isStreaming: boolean;
+  title: string;
+  onSend: (content: string) => void;
+  onCancel: () => void;
+}) {
+  const { t } = useTranslation();
+  const [input, setInput] = useState("");
+  const chatMessages = useMemo(() => toPlaygroundChatMessages(messages), [messages]);
+
+  const send = () => {
+    const content = input.trim();
+    if (!content || isStreaming) return;
+    onSend(content);
+    setInput("");
+  };
+
+  return (
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="space-y-5 pb-4">
+          {chatMessages.map((msg, i) => (
+            <PlaygroundChatTurn
+              key={`${msg.role}-${i}`}
+              msg={msg}
+              isStreaming={isStreaming}
+              isLatestAssistant={i === chatMessages.length - 1}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-[var(--border)] bg-[var(--background)]/96 pt-2 backdrop-blur">
+        <div className="rounded-[22px] border border-[var(--border)]/60 bg-[var(--background)]/84 px-3 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (isStreaming) onCancel();
+                else send();
+              }
+            }}
+            rows={2}
+            placeholder={`${t("Try")} ${title}...`}
+            className="w-full resize-none bg-transparent text-[13px] leading-5 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+          />
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <div className="text-[11px] text-[var(--muted-foreground)]">
+              {isStreaming
+                ? t("Press Enter to stop the current answer.")
+                : t("Enter to send, Shift+Enter for a new line.")}
+            </div>
+            <button
+              onClick={isStreaming ? onCancel : send}
+              disabled={!isStreaming && !input.trim()}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--muted)] px-4 py-1.5 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]/80 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {isStreaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
+              {isStreaming ? t("Stop") : t("Send")}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -1525,7 +1622,17 @@ function CapabilityTester({
 /* ------------------------------------------------------------------ */
 
 export default function PlaygroundPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const {
+    state: unifiedChatState,
+    sendMessage,
+    cancelStreamingTurn,
+    setTools,
+    setCapability,
+    setKBs,
+    setLanguage,
+    selectedSessionId,
+  } = useUnifiedChat();
   const [tools, setToolsList] = useState<ToolInfo[]>([]);
   const [capabilities, setCapabilities] = useState<CapabilityInfo[]>([]);
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBase[]>([]);
@@ -1727,6 +1834,23 @@ export default function PlaygroundPage() {
     });
   };
 
+  useEffect(() => {
+    if (!activeCapability || activeCapability.name !== "chat" || !activeCapabilityConfig) return;
+    setCapability("chat");
+    setTools(activeCapabilityConfig.enabledTools);
+    setKBs(activeCapabilityConfig.knowledgeBase ? [activeCapabilityConfig.knowledgeBase] : []);
+  }, [activeCapability, activeCapabilityConfig, setCapability, setKBs, setTools]);
+
+  useEffect(() => {
+    setLanguage(i18n.language);
+  }, [i18n.language, setLanguage]);
+
+  useEffect(() => {
+    if (!selectedSessionId) return;
+    setActiveKind("capability");
+    setActiveName("chat");
+  }, [selectedSessionId]);
+
   const selectionPanel = (
     <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
       <div className="flex items-center justify-between gap-3">
@@ -1858,7 +1982,15 @@ export default function PlaygroundPage() {
         ) : activeKind === "tool" && activeTool ? (
           <ToolExecutor tool={activeTool} knowledgeBases={knowledgeBases} />
         ) : activeCapability ? (
-          activeCapability.name === "deep_question" ? (
+          activeCapability.name === "chat" ? (
+            <PlaygroundSharedChat
+              title={t(getCapabilityLabel(activeCapability.name))}
+              messages={unifiedChatState.messages}
+              isStreaming={unifiedChatState.isStreaming}
+              onSend={(content) => sendMessage(content)}
+              onCancel={cancelStreamingTurn}
+            />
+          ) : activeCapability.name === "deep_question" ? (
             <DeepQuestionTester
               key={activeCapability.name}
               capability={activeCapability}
