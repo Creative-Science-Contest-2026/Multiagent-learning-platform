@@ -6,11 +6,10 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. If splitting work across sessions, give the next AI lane to `C219_CLASSROOM_CASE_STUDY_AND_BOUNDED_METRIC_CARD`.
-2. If final judge-facing freshness matters more, recapture the stale Knowledge, Tutor, Dashboard, and `/agents` browser screenshots from `main`.
-3. Complete human review of the submission package, IP commitment, and final product-description wording.
-4. Decide whether an optional contest video artifact is required.
-5. Complete final package sign-off using the current `docs/contest/` read path.
+1. If final judge-facing freshness matters, recapture the stale Knowledge, Tutor, Dashboard, and `/agents` browser screenshots from `main`.
+2. Complete human review of the submission package, IP commitment, and final product-description wording.
+3. Decide whether an optional contest video artifact is required.
+4. Complete final package sign-off using the current `docs/contest/` read path.
 
 ## After Milestone 0
 
@@ -29,7 +28,7 @@ Use this file only as a compact queue mirror. Do not rely on it for the full ope
 ## 2026-04-30
 
 1. Start new AI sessions from `main` only if a new task packet is explicitly opened.
-2. Use `C219` for the remaining docs-only contest-differentiation follow-up.
+2. Open a new packet only if a new AI-owned task is explicitly approved from `main`.
 3. If no packet exists and the remaining work is human-only, stop instead of inventing a new AI lane.
 4. Keep contest wording at validated-prototype level unless a stronger repository artifact is added.
 5. Reuse or replace the browser-recapture packet only after confirming whether the authoritative contest evidence docs still mark the screenshot rows stale.

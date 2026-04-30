@@ -2291,10 +2291,10 @@
         "C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH",
         "C207_SUBMISSION_NARRATIVE_PACK"
       ],
-      "status": "in_progress",
+      "status": "completed",
       "recommended_session_bucket": "session-a-docs",
       "layer": "submission-docs",
-      "notes": "In progress on 2026-04-30. This lane consolidates the existing contest-demo-quadratics evidence into one explicit classroom case study plus a compact metric card that stays inside smoke-backed and casepack-backed proof."
+      "notes": "Merged to main through PR #241 on 2026-04-30. This lane consolidates the existing contest-demo-quadratics evidence into one explicit classroom case study plus one compact metric card that stays inside smoke-backed and casepack-backed proof."
     }
   ],
   "github_issues_template": {
