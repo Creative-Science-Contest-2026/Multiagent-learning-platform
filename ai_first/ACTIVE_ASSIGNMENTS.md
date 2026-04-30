@@ -34,15 +34,15 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-teacher-dashboard-decision-flow`
-- Task: Refactor the teacher dashboard into a decision-first intervention workflow with non-technical teacher-facing copy
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-agents-tutor-setup-cleanup`
+- Task: Clean up only the `Gia sư lớp học / Tutor setup` tab on `/agents` for production-ready teacher UX
 - Status: implemented, pending PR
-- Branch: `fix/teacher-dashboard-decision-flow`
-- Task packet: `docs/superpowers/tasks/2026-04-30-teacher-dashboard-decision-flow.md`
-- Owned files: `web/app/(workspace)/dashboard/page.tsx`, `web/components/dashboard/TeacherInsightPanel.tsx`, `web/components/dashboard/StudentInsightCard.tsx`, `web/components/dashboard/dashboard-presenters.ts`, `web/locales/vi/app.json`, `web/locales/en/app.json`, `web/tests/teacher-dashboard-copy.test.ts`, any focused dashboard shell/decision-flow tests added during implementation, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-teacher-dashboard-decision-flow.md`, `docs/superpowers/specs/2026-04-30-teacher-dashboard-decision-flow-design.md`, `docs/superpowers/plans/2026-04-30-teacher-dashboard-decision-flow.md`, `docs/superpowers/pr-notes/2026-04-30-teacher-dashboard-decision-flow.md`
-- PR: uncreated
+- Branch: `fix/agents-tutor-setup-cleanup`
+- Task packet: `docs/superpowers/tasks/2026-04-30-agents-tutor-setup-cleanup.md`
+- Owned files: `web/components/agents/SpecPackAuthoringTab.tsx`, `web/components/agents/class-tutor-pack-presenters.ts`, `web/components/sidebar/WorkspaceSidebar.tsx`, `web/components/sidebar/SidebarShell.tsx`, `web/app/(workspace)/agents/page.tsx`, `web/locales/vi/app.json`, `web/locales/en/app.json`, `web/tests/contest-terminology.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-agents-tutor-setup-cleanup.md`, `docs/superpowers/specs/2026-04-30-agents-tutor-setup-cleanup-design.md`, `docs/superpowers/pr-notes/2026-04-30-agents-tutor-setup-cleanup.md`
+- PR: `#268`
 - Last update: 2026-04-30
-- Next action: stage the bounded dashboard/docs diff and open a draft PR if requested
+- Next action: sync the lane cleanly, then merge once CI is green
 - Blocker: none
 
 ### Assignment
