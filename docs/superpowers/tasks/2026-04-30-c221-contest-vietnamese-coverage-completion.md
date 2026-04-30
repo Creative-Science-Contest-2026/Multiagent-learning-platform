@@ -4,7 +4,7 @@
 - Commit tag: `C221`
 - Branch: `fix/contest-vietnamese-coverage-completion`
 - Worktree: `.worktrees/contest-vietnamese-coverage-completion`
-- Status: `not_started`
+- Status: `in_progress`
 
 ## Goal
 

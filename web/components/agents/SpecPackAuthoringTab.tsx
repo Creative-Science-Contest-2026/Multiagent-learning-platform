@@ -1,6 +1,7 @@
 "use client";
 
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import type { TFunction } from "i18next";
 import { Download, Loader2, Plus, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -20,21 +21,21 @@ import {
 const MANUAL_FILES = ["CURRICULUM.md", "ASSESSMENT.md", "WORKFLOW.md", "KNOWLEDGE.md", "MARKETPLACE.md"] as const;
 type ManualFile = (typeof MANUAL_FILES)[number];
 
-function emptyDraft(): AgentSpecDetail {
+function createEmptyDraft(t: TFunction): AgentSpecDetail {
   return {
     agent_id: "",
     display_name: "",
     description: "",
     version: 0,
     files: {
-      "IDENTITY.md": "# Identity\n",
-      "SOUL.md": "# Soul\n",
-      "CURRICULUM.md": "# Curriculum\n\n## Core Topics\n\n- Add the priority topics for this agent.\n",
-      "RULES.md": "# Rules\n",
-      "ASSESSMENT.md": "# Assessment\n\n## Evidence Signals\n\n- Define what the agent should watch for.\n",
-      "WORKFLOW.md": "# Workflow\n\n## Session Flow\n\n1. Teach\n2. Practice\n3. Check\n4. Remediate\n",
-      "KNOWLEDGE.md": "# Knowledge\n\n## Retrieval Policy\n\n- Prefer teacher-authored materials first.\n",
-      "MARKETPLACE.md": "# Marketplace\n\n## Metadata\n\n- Audience:\n- Difficulty:\n- Share status: private\n",
+      "IDENTITY.md": t("Spec template IDENTITY.md"),
+      "SOUL.md": t("Spec template SOUL.md"),
+      "CURRICULUM.md": t("Spec template CURRICULUM.md"),
+      "RULES.md": t("Spec template RULES.md"),
+      "ASSESSMENT.md": t("Spec template ASSESSMENT.md"),
+      "WORKFLOW.md": t("Spec template WORKFLOW.md"),
+      "KNOWLEDGE.md": t("Spec template KNOWLEDGE.md"),
+      "MARKETPLACE.md": t("Spec template MARKETPLACE.md"),
     },
     structured: {
       identity: {
@@ -74,10 +75,11 @@ function slugify(value: string): string {
 
 export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: string) => void }) {
   const { t } = useTranslation();
+  const buildEmptyDraft = useCallback(() => createEmptyDraft(t), [t]);
   const [packs, setPacks] = useState<AgentSpecDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string>("");
-  const [draft, setDraft] = useState<AgentSpecDetail>(emptyDraft());
+  const [draft, setDraft] = useState<AgentSpecDetail>(() => buildEmptyDraft());
   const [activeManualFile, setActiveManualFile] = useState<ManualFile>("CURRICULUM.md");
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -85,13 +87,13 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
   const [runtimeAudit, setRuntimeAudit] = useState<RuntimePolicyAuditPayload | null>(null);
   const [auditLoading, setAuditLoading] = useState(false);
 
-  async function reloadList(preferredId?: string) {
+  const reloadList = useCallback(async (preferredId?: string) => {
     const items = await listAgentSpecs();
     const details = await Promise.all(items.map((item) => getAgentSpec(item.agent_id)));
     setPacks(details);
     if (!details.length) {
       setSelectedId("");
-      setDraft(emptyDraft());
+      setDraft(buildEmptyDraft());
       return;
     }
     const nextId = preferredId && details.some((item) => item.agent_id === preferredId)
@@ -102,7 +104,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
     if (selected) {
       setDraft(selected);
     }
-  }
+  }, [buildEmptyDraft]);
 
   useEffect(() => {
     void (async () => {
@@ -113,7 +115,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
         setLoading(false);
       }
     })();
-  }, []);
+  }, [reloadList]);
 
   useEffect(() => {
     if (!draft.agent_id) {
@@ -146,7 +148,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
 
   function beginNewPack() {
     setSelectedId("");
-    setDraft(emptyDraft());
+    setDraft(buildEmptyDraft());
     setActiveManualFile("CURRICULUM.md");
   }
 
@@ -496,7 +498,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
           </p>
           <h3 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">{activeManualFile}</h3>
           <div className="mt-4 max-h-[520px] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--background)]/60 p-3">
-            <MarkdownRenderer content={currentPreview || "_No content yet._"} variant="prose" />
+            <MarkdownRenderer content={currentPreview || `_${t("No content yet.")}_`} variant="prose" />
           </div>
         </div>
       </aside>

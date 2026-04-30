@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-30T11:30:00Z",
+    "last_updated": "2026-04-30T15:55:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 94
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 92,
+      "count": 93,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -108,7 +108,7 @@
       "description": "Features partially implemented, need completion",
       "count": 1,
       "tasks": [
-        "C220_CONTEST_LAYOUT_BREAKAGE_SWEEP"
+        "C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION"
       ]
     },
     "blocked": {
@@ -118,10 +118,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 1,
-      "tasks": [
-        "C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION"
-      ]
+      "count": 0,
+      "tasks": []
     }
   },
   "tasks": [
@@ -2343,10 +2341,10 @@
         "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
         "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY"
       ],
-      "status": "not-started",
+      "status": "in_progress",
       "recommended_session_bucket": "session-c-polish",
       "layer": "post-contest-recovery",
-      "notes": "Opened from `main` on 2026-04-30 after a screen audit found mixed EN/VI copy on the teacher cockpit and hard-coded English seed content plus fallback labels inside `/agents` spec-pack authoring."
+      "notes": "Opened from `main` on 2026-04-30 after a screen audit found mixed EN/VI copy on the teacher cockpit and hard-coded English seed content plus fallback labels inside `/agents` spec-pack authoring. The active implementation lane now replaces those hard-coded contest-path fallbacks with locale-backed strings and adds regression coverage for the Vietnamese cockpit plus spec-template seeds."
     }
   ],
   "github_issues_template": {
