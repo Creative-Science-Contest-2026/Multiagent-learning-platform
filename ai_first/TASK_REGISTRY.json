@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "last_updated": "2026-04-30T09:45:00Z",
+    "last_updated": "2026-04-30T11:30:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 92
+    "total_tasks": 94
   },
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 73,
+      "count": 92,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -60,47 +60,30 @@
         "R5_DASHBOARD_ACTIONABILITY",
         "R6_CLAIM_CALIBRATION_PILOT",
         "F101_TEACHER_ACTION_EXECUTION_LOOP",
-        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
         "F102_INTERVENTION_ASSIGNMENT_FLOW",
+        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
         "F104_SMALL_GROUP_MANAGEMENT_SURFACE",
         "F105_CLASS_INTERVENTION_QUEUE",
-        "F114_SPEC_VERSION_PINNING_PER_SESSION",
-        "F115_RUNTIME_POLICY_AUDIT_TRACE",
-        "F103_RECOMMENDATION_ACKNOWLEDGEMENT_AND_STATUS",
-        "F116_STUDENT_MODEL_ENRICHMENT",
-        "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
+        "F106_STUDENT_INSIGHT_TIMELINE",
         "F107_INTERVENTION_HISTORY_VIEW",
+        "F108_DIAGNOSIS_FEEDBACK_CAPTURE",
         "F109_RECOMMENDATION_FEEDBACK_CAPTURE",
         "F110_TEACHER_OVERRIDE_LOG",
         "F111_ASSESSMENT_REVIEW_RUBRIC_CONTROLS",
-        "F106_STUDENT_INSIGHT_TIMELINE",
-        "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
+        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
+        "F113_CAPABILITY_WIDE_RUNTIME_BINDING_COVERAGE",
+        "F114_SPEC_VERSION_PINNING_PER_SESSION",
+        "F115_RUNTIME_POLICY_AUDIT_TRACE",
+        "F116_STUDENT_MODEL_ENRICHMENT",
         "F117_CONFIDENCE_CALIBRATION_REFINEMENT",
         "F118_MISCONCEPTION_TAXONOMY_EXPANSION",
+        "F119_ABSTAIN_AND_WEAK_EVIDENCE_REFINEMENT",
         "F120_INTERVENTION_EFFECTIVENESS_TRACKING",
         "F121_CLASS_ROSTER_AND_GROUP_FOUNDATION",
-        "F112_PROVENANCE_AND_REASON_TRACE_SURFACES",
         "F122_PILOT_FEEDBACK_INGESTION_PATH",
         "F123_CASEPACK_AND_EVALUATION_DATASET_EXPANSION",
-        "F124_EVIDENCE_AUTOMATION_REFRESH"
-      ]
-    },
-    "in_progress": {
-      "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "C201_SUBMISSION_CLOSE_MASTER_COORDINATION"
-      ]
-    },
-    "blocked": {
-      "description": "Tasks blocked by dependencies",
-      "count": 0,
-      "tasks": []
-    },
-    "pending": {
-      "description": "Tasks not started, ordered by priority",
-      "count": 18,
-      "tasks": [
+        "F124_EVIDENCE_AUTOMATION_REFRESH",
+        "C201_SUBMISSION_CLOSE_MASTER_COORDINATION",
         "C202_SUBMISSION_SCOPE_FREEZE",
         "C203_CLAIM_AND_PROOF_CONTRACT_FREEZE",
         "C204_CORE_LOOP_RUNTIME_REVALIDATION",
@@ -119,6 +102,24 @@
         "C217_TEACHER_COCKPIT_DEFAULT_ENTRY",
         "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY",
         "C219_CLASSROOM_CASE_STUDY_AND_BOUNDED_METRIC_CARD"
+      ]
+    },
+    "in_progress": {
+      "description": "Features partially implemented, need completion",
+      "count": 0,
+      "tasks": []
+    },
+    "blocked": {
+      "description": "Tasks blocked by dependencies",
+      "count": 0,
+      "tasks": []
+    },
+    "pending": {
+      "description": "Tasks not started, ordered by priority",
+      "count": 2,
+      "tasks": [
+        "C220_CONTEST_LAYOUT_BREAKAGE_SWEEP",
+        "C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION"
       ]
     }
   },
@@ -2295,6 +2296,56 @@
       "recommended_session_bucket": "session-a-docs",
       "layer": "submission-docs",
       "notes": "Merged to main through PR #241 on 2026-04-30. This lane consolidates the existing contest-demo-quadratics evidence into one explicit classroom case study plus one compact metric card that stays inside smoke-backed and casepack-backed proof."
+    },
+    {
+      "id": "C220_CONTEST_LAYOUT_BREAKAGE_SWEEP",
+      "category": "Contest UI Recovery",
+      "priority": 93,
+      "title": "Contest Layout Breakage Sweep",
+      "description": "Fix the broken responsive layouts that appeared on the teacher-first contest path, prioritizing `/agents` spec-pack authoring and then verifying `/`, `Knowledge`, `Marketplace`, and `Dashboard` under longer Vietnamese content.",
+      "scope": {
+        "frontend": "web/components/agents/SpecPackAuthoringTab.tsx, web/app/(workspace)/agents/page.tsx, web/components/contest/*.tsx, and any bounded `Knowledge` or `Dashboard` layout containers needed to remove overlap, clipping, and column collapse"
+      },
+      "affected_features": [
+        "Contest UI",
+        "Responsive Layout",
+        "Teacher Authoring"
+      ],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": [
+        "C217_TEACHER_COCKPIT_DEFAULT_ENTRY",
+        "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-b-runtime",
+      "layer": "post-contest-recovery",
+      "notes": "Opened from `main` on 2026-04-30 after a visual audit found severe column collapse, button overlap, and poor wrapping on `/agents`, plus follow-on layout risk across the teacher cockpit, Knowledge, and Dashboard screens."
+    },
+    {
+      "id": "C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION",
+      "category": "Contest UI Recovery",
+      "priority": 94,
+      "title": "Contest Vietnamese Coverage Completion",
+      "description": "Complete the remaining Vietnamese coverage on the primary contest path so `/`, `/agents`, `Knowledge`, `Marketplace`, and `Dashboard` no longer leak English fallback copy during the classroom demo flow.",
+      "scope": {
+        "frontend": "contest-facing page copy, `web/components/contest/teacher-cockpit-content.ts`, `web/components/agents/SpecPackAuthoringTab.tsx`, related workspace pages, and `web/locales/en/app.json` plus `web/locales/vi/app.json`"
+      },
+      "affected_features": [
+        "Localization",
+        "Contest UI",
+        "Teacher Experience"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 5,
+      "dependencies": [
+        "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
+        "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY"
+      ],
+      "status": "not-started",
+      "recommended_session_bucket": "session-c-polish",
+      "layer": "post-contest-recovery",
+      "notes": "Opened from `main` on 2026-04-30 after a screen audit found mixed EN/VI copy on the teacher cockpit and hard-coded English seed content plus fallback labels inside `/agents` spec-pack authoring."
     }
   ],
   "github_issues_template": {
@@ -2488,6 +2539,14 @@
     "C219": [
       "C205",
       "C207"
+    ],
+    "C220": [
+      "C217",
+      "C218"
+    ],
+    "C221": [
+      "T044",
+      "C218"
     ]
   },
   "milestones": {
@@ -2580,6 +2639,14 @@
         "C219"
       ],
       "target_date": "2026-05-12"
+    },
+    "POST_CONTEST_UI_RECOVERY": {
+      "title": "Contest UI Recovery",
+      "tasks": [
+        "C220",
+        "C221"
+      ],
+      "target_date": "2026-05-14"
     }
   }
 }
