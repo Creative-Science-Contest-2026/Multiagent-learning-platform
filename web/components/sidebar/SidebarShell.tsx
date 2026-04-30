@@ -76,10 +76,10 @@ function resolveNavIcon(icon: SidebarNavItem["icon"]): LucideIcon {
 }
 
 interface SidebarShellProps {
+  shellMode?: "chat" | "business";
   sessions?: SessionSummary[];
   activeSessionId?: string | null;
   loadingSessions?: boolean;
-  showSessions?: boolean;
   onNewChat?: () => void;
   onSelectSession?: (sessionId: string) => void | Promise<void>;
   onRenameSession?: (sessionId: string, title: string) => void | Promise<void>;
@@ -88,10 +88,10 @@ interface SidebarShellProps {
 }
 
 export function SidebarShell({
+  shellMode = "business",
   sessions = [],
   activeSessionId = null,
   loadingSessions = false,
-  showSessions = false,
   onNewChat,
   onSelectSession,
   onRenameSession,
@@ -104,8 +104,9 @@ export function SidebarShell({
   const [collapsed, setCollapsed] = useState(false);
   const collapsedNav = getCollapsedSidebarNav();
   const expandedNavGroups = getExpandedSidebarGroups();
+  const isChatWorkspace = shellMode === "chat";
   const sessionControls =
-    showSessions && onSelectSession && onRenameSession && onDeleteSession
+    isChatWorkspace && onSelectSession && onRenameSession && onDeleteSession
       ? {
           onSelectSession,
           onRenameSession,
@@ -133,13 +134,15 @@ export function SidebarShell({
           <PanelLeftOpen size={15} />
         </button>
 
-        <button
-          onClick={handleNewChat}
-          className="mb-3 rounded-lg p-2 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--background)]/60 hover:text-[var(--foreground)]"
-          aria-label={t("New Chat")}
-        >
-          <Plus size={16} strokeWidth={2} />
-        </button>
+        {isChatWorkspace ? (
+          <button
+            onClick={handleNewChat}
+            className="mb-3 rounded-lg p-2 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--background)]/60 hover:text-[var(--foreground)]"
+            aria-label={t("New Chat")}
+          >
+            <Plus size={16} strokeWidth={2} />
+          </button>
+        ) : null}
 
         <nav className="flex flex-col items-center gap-px pt-1">
           {collapsedNav.map((item) => {
