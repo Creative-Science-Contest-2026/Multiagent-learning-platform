@@ -35,12 +35,12 @@ Rules:
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: Realign `/playground` chat turns to the original consumer-chat style while keeping trace stages visible and compact
+- Task: Restore chat history loading on `/playground` for the `chat` capability by reconnecting the page to `UnifiedChatContext`
 - Status: writing spec
-- Branch: `fix/playground-chat-consumer-trace`
-- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-consumer-trace.md`
-- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/common/AssistantResponse.tsx`, `web/components/common/ProcessLogs.tsx`, `web/components/chat/home/ChatMessages.tsx`, `web/components/chat/home/TracePanels.tsx`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-chat-consumer-trace.md`, `docs/superpowers/specs/2026-04-30-playground-chat-consumer-trace-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-consumer-trace.md`
+- Branch: `fix/playground-chat-history-restore`
+- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-history-restore.md`
+- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/context/UnifiedChatContext.tsx`, `web/components/chat/home/ChatMessages.tsx`, `web/components/chat/home/ChatComposer.tsx`, `web/components/sidebar/WorkspaceSidebar.tsx`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-chat-history-restore.md`, `docs/superpowers/specs/2026-04-30-playground-chat-history-restore-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-history-restore.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: write the bounded design spec for restoring the original lightweight trace language and compact chat turn layout before implementation
+- Next action: write the bounded bugfix spec for reconnecting `/playground` chat mode to session history hydration before implementation
 - Blocker: none
