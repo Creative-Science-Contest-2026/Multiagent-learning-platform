@@ -6,10 +6,9 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. If final judge-facing freshness matters, recapture the stale Knowledge, Tutor, Dashboard, and `/agents` browser screenshots from `main`.
-2. Complete human review of the submission package, IP commitment, and final product-description wording.
-3. Decide whether an optional contest video artifact is required.
-4. Complete final package sign-off using the current `docs/contest/` read path.
+1. Complete human review of the submission package, IP commitment, and final product-description wording.
+2. Decide whether an optional contest video artifact is required.
+3. Complete final package sign-off using the current `docs/contest/` read path.
 
 ## After Milestone 0
 
@@ -20,7 +19,7 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Human Review Needed
 
-- Review IP commitment, product-description wording, optional video requirement, screenshot freshness expectations, and final submission sign-off.
+- Review IP commitment, product-description wording, optional video requirement, and final submission sign-off.
 
 ## Mirror Policy
 
@@ -31,4 +30,4 @@ Use this file only as a compact queue mirror. Do not rely on it for the full ope
 2. Open a new packet only if a new AI-owned task is explicitly approved from `main`.
 3. If no packet exists and the remaining work is human-only, stop instead of inventing a new AI lane.
 4. Keep contest wording at validated-prototype level unless a stronger repository artifact is added.
-5. Reuse or replace the browser-recapture packet only after confirming whether the authoritative contest evidence docs still mark the screenshot rows stale.
+5. Open a new browser-recapture packet only if a later visible UI change makes the authoritative screenshot rows stale again.
