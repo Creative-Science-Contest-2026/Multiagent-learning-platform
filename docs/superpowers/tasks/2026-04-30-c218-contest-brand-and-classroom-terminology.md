@@ -4,7 +4,7 @@
 - Commit tag: `C218`
 - Branch: `fix/contest-brand-classroom-terminology`
 - Worktree: `.worktrees/contest-brand-classroom-terminology`
-- Status: `pending`
+- Status: `in_progress`
 
 ## Goal
 
@@ -94,3 +94,4 @@ Add a bounded contest-facing brand and classroom-first terminology layer so judg
 ## Handoff
 
 - The next expected follow-up after this packet is `C219_CLASSROOM_CASE_STUDY_AND_BOUNDED_METRIC_CARD`, which can assume the product wording already reads like a bounded classroom offering.
+- This lane keeps `DeepTutor` intact on attribution-facing brand surfaces and limits the sweep to classroom-first terminology across the contest path.

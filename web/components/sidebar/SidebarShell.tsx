@@ -38,6 +38,23 @@ interface NavEntry {
 const SECONDARY_NAV: NavEntry[] = [{ href: "/settings", label: "Settings", icon: Settings }];
 const DEFAULT_SESSION_VIEWPORT_CLASS_NAME = "max-h-[112px]";
 
+function getContestLabel(label: string): string {
+  switch (label) {
+    case "Knowledge":
+      return "Knowledge Packs";
+    case "Dashboard":
+      return "Teacher dashboard";
+    case "TutorBot":
+      return "Class tutor";
+    case "Contest core":
+      return "Classroom workflow";
+    case "Secondary tools":
+      return "Other tools";
+    default:
+      return label;
+  }
+}
+
 function resolveNavIcon(icon: SidebarNavItem["icon"]): LucideIcon {
   switch (icon) {
     case "message-square":
@@ -201,7 +218,7 @@ export function SidebarShell({
           {expandedNavGroups.map((group, index) => (
             <div key={group.id} className={index > 0 ? "pt-3" : ""}>
               <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]/80">
-                {t(group.label)}
+                {t(getContestLabel(group.label))}
               </div>
               {group.items.map((item) => {
                 const Icon = resolveNavIcon(item.icon);
@@ -218,9 +235,9 @@ export function SidebarShell({
                           ? "bg-[var(--background)]/70 font-medium text-[var(--foreground)]"
                           : "text-[var(--muted-foreground)] hover:bg-[var(--background)]/50 hover:text-[var(--foreground)]"
                       }`}
-                    >
+                      >
                       <Icon size={16} strokeWidth={active ? 1.9 : 1.5} />
-                      <span>{t(item.label)}</span>
+                      <span>{t(getContestLabel(item.label))}</span>
                     </Link>
                     {hasSessionsBelow && (
                       <div className={`${sessionViewportClassName} overflow-y-auto`}>

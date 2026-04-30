@@ -147,6 +147,15 @@
   "This assessment session does not have question-level review data yet.": "Phiên đánh giá này chưa có dữ liệu đánh giá ở cấp độ câu hỏi.",
   "Store": "Cửa hàng",
   "Marketplace": "Thị trường",
+  "Knowledge Pack name": "Tên gói kiến thức",
+  "Teacher dashboard": "Bảng điều khiển giáo viên",
+  "Class tutor": "Gia sư lớp học",
+  "Class tutor setup": "Thiết lập gia sư lớp học",
+  "Set how the teacher-controlled class tutor explains, encourages, and gives hints before students start guided practice.": "Thiết lập cách gia sư lớp học do giáo viên kiểm soát sẽ giải thích, khích lệ và đưa gợi ý trước khi học sinh bắt đầu luyện tập có hướng dẫn.",
+  "New class tutor": "Gia sư lớp học mới",
+  "Create class tutor": "Tạo gia sư lớp học",
+  "Classroom workflow": "Luồng lớp học",
+  "Other tools": "Công cụ khác",
   "Browse teacher-shared knowledge packs": "Duyệt các gói kiến thức được chia sẻ bởi giáo viên",
   "Search knowledge packs": "Tìm kiếm gói kiến thức",
   "Filter by subject": "Lọc theo chủ đề",
@@ -165,6 +174,7 @@
   "Sharing": "Chia sẻ",
   "Create Knowledge Pack": "Tạo gói kiến thức",
   "Manage Knowledge Packs": "Quản lý gói kiến thức",
+  "Manage classroom knowledge packs and notebooks in one place.": "Quản lý gói kiến thức và sổ tay của lớp học tại một nơi.",
   "Loading": "Đang tải",
   "Teacher Dashboard": "Bảng điều khiển giáo viên",
   "Class activity": "Hoạt động lớp học",
@@ -314,4 +324,23 @@
   "Tutor": "Trợ lý học tập",
   "System": "Hệ thống",
   "This tutoring session does not have replayable message content yet.": "Phiên học với trợ lý này chưa có nội dung tin nhắn để phát lại."
+  ,"Tutor setup": "Thiết lập gia sư"
+  ,"Class tutors": "Gia sư lớp học"
+  ,"Tutor files": "Tệp gia sư"
+  ,"Teaching styles": "Phong cách giảng dạy"
+  ,"e.g. Algebra support tutor": "ví dụ: Gia sư hỗ trợ đại số"
+  ,"A brief description of what this class tutor does": "Mô tả ngắn về cách gia sư lớp học này hỗ trợ học sinh"
+  ,"Teaching style": "Phong cách giảng dạy"
+  ,"Define how this class tutor explains, encourages, and gives hints in markdown...": "Mô tả bằng markdown cách gia sư lớp học này giải thích, khích lệ và gợi ý cho học sinh..."
+  ,"Pick a teaching style from the library above, or write your own. Manage the library in the Teaching styles tab.": "Chọn một phong cách giảng dạy từ thư viện bên trên hoặc tự viết mới. Quản lý thư viện trong tab Phong cách giảng dạy."
+  ,"No class tutors yet": "Chưa có gia sư lớp học nào"
+  ,"Create your first class tutor to shape how guided help works for this classroom.": "Tạo gia sư lớp học đầu tiên để định hình cách hỗ trợ có hướng dẫn cho lớp này."
+  ,"No class tutors to configure": "Chưa có gia sư lớp học nào để cấu hình"
+  ,"Create a class tutor first in the Class tutors tab.": "Hãy tạo gia sư lớp học trước trong tab Gia sư lớp học."
+  ,"Reusable soul templates for shaping class tutors with clear classroom boundaries.": "Các mẫu phong cách giảng dạy có thể tái sử dụng để định hình gia sư lớp học với ranh giới lớp học rõ ràng."
+  ,"New teaching style": "Phong cách giảng dạy mới"
+  ,"e.g. Socratic coach": "ví dụ: Huấn luyện viên Socrates"
+  ,"Define this teaching style in markdown...": "Mô tả phong cách giảng dạy này bằng markdown..."
+  ,"No teaching styles yet": "Chưa có phong cách giảng dạy nào"
+  ,"Create your first teaching style. Default presets will be seeded automatically on next server restart.": "Tạo phong cách giảng dạy đầu tiên của bạn. Các mẫu mặc định sẽ được nạp tự động ở lần khởi động máy chủ tiếp theo."
 }
