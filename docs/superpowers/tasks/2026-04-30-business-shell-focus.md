@@ -5,7 +5,7 @@
 - Date: 2026-04-30
 - Branch: `fix/business-shell-focus`
 - Worktree: `.worktrees/fix-business-shell-focus`
-- Status: Proposed
+- Status: Implemented, pending PR
 
 ## Objective
 
@@ -121,3 +121,16 @@ Create a business-facing shell mode that keeps product navigation but removes ch
 
 - Must include Mermaid diagram.
 - `ai_first/architecture/MAIN_SYSTEM_MAP.md` likely does not need an update unless shell-mode differences become part of the documented primary product structure.
+
+## Implementation notes
+
+- The actual impact surface included `web/components/sidebar/UtilitySidebar.tsx` because utility routes were also forcing chat-history loading through the shared shell.
+- The implementation used an explicit `shellMode` contract instead of a route-local CSS hide so the shell boundary is reusable.
+- `/playground` remains the only route using the dominant chat-history mode in this lane.
+
+## Validation results
+
+- `cd web && node --test tests/sidebar-shell-layout.test.ts tests/sidebar-nav-groups.test.ts`
+- `cd web && npx eslint 'components/sidebar/SidebarShell.tsx' 'components/sidebar/WorkspaceSidebar.tsx' 'components/sidebar/UtilitySidebar.tsx' 'tests/sidebar-shell-layout.test.ts' 'tests/sidebar-nav-groups.test.ts'`
+- `cd web && npm run build`
+- `git diff --check`
