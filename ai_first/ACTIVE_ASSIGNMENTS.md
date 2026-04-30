@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-demo-realistic-seed-data`
+- Task: Expand the local contest demo seed so every core teacher-first screen has realistic, diverse, demo-safe data for video capture
+- Status: implemented, pending PR
+- Branch: `fix/demo-realistic-seed-data`
+- Task packet: `docs/superpowers/tasks/2026-04-30-demo-realistic-seed-data.md`
+- Owned files: `scripts/contest/reset_demo_data.py`, `tests/scripts/test_reset_demo_data.py`, `docs/contest/DEMO_DATA_RESET.md`, `docs/contest/SMOKE_RUNBOOK.md`, `docs/superpowers/tasks/2026-04-30-demo-realistic-seed-data.md`, `docs/superpowers/specs/2026-04-30-demo-realistic-seed-data-design.md`, `docs/superpowers/pr-notes/2026-04-30-demo-realistic-seed-data.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `ai_first/AI_OPERATING_PROMPT.md` only if repo-level operating guidance changes
+- PR: uncreated
+- Last update: 2026-04-30
+- Next action: run final verification, commit the lane, open a draft PR, then merge once CI is green
+- Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-marketplace-dashboard-fetch-recovery`
 - Task: Recover marketplace and teacher-dashboard fetch paths, then harden the related error-state layout for the contest UI
 - Status: implemented, pending PR

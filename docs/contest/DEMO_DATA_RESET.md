@@ -10,16 +10,18 @@ This runbook is backed by a local demo-safe reset utility. It writes only local 
 
 | State | Required value | Why it exists |
 | --- | --- | --- |
-| Knowledge Pack identifier | `contest-demo-quadratics` | Shared context for Knowledge Pack, assessment, tutor, and dashboard evidence. |
+| Anchor Knowledge Pack identifier | `contest-demo-quadratics` | Shared context for the flagship contest algebra story. |
+| Shareable marketplace packs | At least `6` public/team packs with varied metadata | Makes marketplace search, sort, preview, and import look real during video capture. |
+| Imported workspace packs | At least `2` private `__imported` packs | Shows that a teacher has already brought packs into the local workspace. |
 | Subject | `Mathematics` | Keeps the assessment and tutor story consistent. |
 | Grade | `Grade 9` | Gives the demo a realistic classroom level. |
 | Curriculum | `Vietnam secondary algebra` | Makes the contest story local and teacher-oriented. |
 | Learning objective | Solve quadratic equations and explain common mistakes | Connects generated assessment, feedback, and tutoring. |
 | Owner | `Contest Demo Teacher` | Shows teacher-owned pack metadata without private data. |
-| Sharing status | `demo` or equivalent non-private status | Makes clear that this is safe public demo data. |
-| Assessment session | `contest-assessment-demo` | Lets smoke checks confirm assessment activity exists. |
-| Tutor session | `contest-tutor-demo` | Lets smoke checks confirm student tutoring activity exists. |
-| Dashboard activity | Assessment and tutor records referencing the demo Knowledge Pack | Proves the teacher can review recent learning activity. |
+| Sharing status | Public/team for marketplace packs, private for imported packs | Separates browseable packs from teacher-owned workspace copies. |
+| Assessment sessions | `contest-assessment-demo` plus additional classroom sessions | Lets review and dashboard pages show believable trends instead of one stub. |
+| Tutor sessions | `contest-tutor-demo` plus additional follow-up sessions | Gives replay pages multiple realistic teacher/student conversations. |
+| Dashboard activity | Observations, student states, acknowledgements, feedback, overrides, actions, and intervention assignments | Proves the teacher can review and act on evidence across the full loop. |
 
 Do not use real student names, private class data, API keys, or provider credentials in demo data.
 
@@ -44,8 +46,10 @@ Run this from the repository root:
 The command:
 
 - validates that `--api-base` is local;
-- creates or updates Knowledge Pack `contest-demo-quadratics`;
-- creates or replaces sessions `contest-assessment-demo` and `contest-tutor-demo`;
+- creates or updates a richer set of shareable and imported demo-safe Knowledge Packs;
+- creates or replaces the anchor sessions `contest-assessment-demo` and `contest-tutor-demo`;
+- seeds additional assessment and tutor sessions for the same classroom story;
+- seeds dashboard evidence tables so recommendation, acknowledgement, feedback, override, and intervention cards are non-empty;
 - prints the ids and local paths it touched;
 - can be run repeatedly without duplicating demo sessions.
 
@@ -79,9 +83,9 @@ Use this only for local demo data that can be safely recreated.
 
 1. Back up any local data you may need before changing `data/`.
 2. Remove or replace only demo-specific records for:
-   - Knowledge Pack `contest-demo-quadratics`;
-   - session `contest-assessment-demo`;
-   - session `contest-tutor-demo`.
+   - demo-safe Knowledge Packs created by the reset utility;
+   - all `contest-...` sessions created by the reset utility;
+   - demo student observations and teacher-evidence rows created by the reset utility.
 3. Recreate the inventory in this runbook through the UI or local API.
 4. Re-run the smoke runbook.
 5. If smoke fails, record the failure as `Blocked` in the validation report instead of marking evidence current.
@@ -95,7 +99,7 @@ The reset script must:
 - create or update only demo-safe records;
 - be idempotent;
 - avoid provider credentials and private data;
-- print the Knowledge Pack id and session ids it created;
+- print the anchor Knowledge Pack id and the session ids it created;
 - refuse to run against production or unknown environments;
 - leave screenshots and optional video as manual refresh steps.
 
@@ -108,10 +112,11 @@ Current location:
 
 | Check | Expected result | Evidence file |
 | --- | --- | --- |
-| Knowledge Pack exists | `contest-demo-quadratics` appears with demo-safe metadata | `VALIDATION_REPORT.md` |
-| Assessment session exists | `contest-assessment-demo` can be fetched locally | `VALIDATION_REPORT.md` |
-| Tutor session exists | `contest-tutor-demo` can be fetched locally | `VALIDATION_REPORT.md` |
-| Dashboard sees activity | Dashboard overview and recent endpoints show demo context | `VALIDATION_REPORT.md` |
+| Marketplace breadth exists | At least 6 public/team packs and at least 2 imported private packs exist locally | `VALIDATION_REPORT.md` |
+| Anchor Knowledge Pack exists | `contest-demo-quadratics` appears with demo-safe metadata | `VALIDATION_REPORT.md` |
+| Assessment sessions exist | `contest-assessment-demo` and additional classroom assessments can be fetched locally | `VALIDATION_REPORT.md` |
+| Tutor sessions exist | `contest-tutor-demo` and additional replay sessions can be fetched locally | `VALIDATION_REPORT.md` |
+| Dashboard sees full evidence | Overview, recent activity, and teacher-insight cards show demo context with non-empty intervention traces | `VALIDATION_REPORT.md` |
 | Screenshots remain meaningful | Existing screenshot status is `Current`, or updated to `Stale`/`Blocked` | `EVIDENCE_CHECKLIST.md` |
 
 ## Mermaid Flow
@@ -119,16 +124,21 @@ Current location:
 ```mermaid
 flowchart TD
   Reset["Demo data reset"]
-  Pack["Knowledge Pack: contest-demo-quadratics"]
-  Assessment["Assessment session"]
-  Tutor["Tutor session"]
-  Dashboard["Dashboard activity"]
+  Marketplace["Shareable marketplace packs"]
+  Imported["Imported workspace packs"]
+  Pack["Anchor pack: contest-demo-quadratics"]
+  Assessment["Multiple assessment sessions"]
+  Tutor["Multiple tutor sessions"]
+  Dashboard["Dashboard evidence + intervention traces"]
   Smoke["SMOKE_RUNBOOK.md"]
   Evidence["VALIDATION_REPORT.md"]
 
+  Reset --> Marketplace
+  Reset --> Imported
   Reset --> Pack
   Pack --> Assessment
   Pack --> Tutor
+  Marketplace --> Imported
   Assessment --> Dashboard
   Tutor --> Dashboard
   Dashboard --> Smoke
