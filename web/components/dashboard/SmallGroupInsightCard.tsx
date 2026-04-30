@@ -49,7 +49,7 @@ export function SmallGroupInsightCard({
   return (
     <article className="rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
-        <InsightSectionLabel eyebrow={t("Điểm vướng chung")} title={group.topic}>
+        <InsightSectionLabel eyebrow={t("Nhóm học sinh có thể xử lý cùng một hướng")} title={group.topic}>
           {formatDiagnosisLabel(group.diagnosis_type)}
         </InsightSectionLabel>
         <span className="rounded-full bg-[var(--muted)] px-2.5 py-1 text-[11px] text-[var(--muted-foreground)]">
@@ -58,18 +58,27 @@ export function SmallGroupInsightCard({
       </div>
 
       <div className="mt-4 rounded-2xl bg-emerald-50 p-3">
-        <InsightSectionLabel
-          eyebrow={t("Hướng can thiệp chung")}
-          title={formatTeacherMoveLabel(group.recommended_action)}
-          toneClassName="text-emerald-700"
-        />
+        <InsightSectionLabel eyebrow={t("Việc giáo viên có thể giao cho cả nhóm")} title={formatTeacherMoveLabel(group.recommended_action)} toneClassName="text-emerald-700" />
+        <div className="mt-3 rounded-2xl border border-[var(--border)] bg-white/80 p-3">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
+            {t("Dấu hiệu chung của nhóm")}
+          </div>
+          <div className="mt-2 text-[12px] text-[var(--muted-foreground)]">
+            {t("Khối này giúp giáo viên biết vì sao nên gom nhóm học sinh này trước khi giao cùng một hướng hỗ trợ.")}
+          </div>
+        </div>
+        <div className="mt-2 text-[12px] text-emerald-900/80">
+          {t("Đây là bước giáo viên có thể áp dụng cho cả nhóm sau khi đã xác nhận các em thực sự đang vướng cùng một điểm.")}
+        </div>
         <div className="mt-3 text-[12px] text-emerald-900/80">
           {reasonTrace
             ? t("Nhóm này được gom vì các học sinh đang vướng cùng một chủ đề và cần hướng hỗ trợ tương tự.")
             : t("Nhóm này được gom vì các học sinh đang có cùng một tín hiệu học tập nổi bật.")}
         </div>
         <div className="mt-3 text-[12px] text-[var(--muted-foreground)]">
-          {t("Các học sinh trong nhóm: {{students}}", { students: group.student_ids.join(", ") })}
+          {t("Nhóm này đang gom {{count}} học sinh có tín hiệu cần hỗ trợ tương tự.", {
+            count: group.student_ids.length,
+          })}
         </div>
         {reasonTrace ? (
           <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">

@@ -5,7 +5,7 @@
 - Date: 2026-04-30
 - Branch: `fix/teacher-dashboard-decision-flow`
 - Worktree: `.worktrees/fix-teacher-dashboard-decision-flow`
-- Status: Proposed
+- Status: implemented, pending PR
 
 ## Objective
 
@@ -24,10 +24,12 @@ Refactor the `Bảng điều khiển giáo viên` screen into a decision-first d
 - `web/app/(workspace)/dashboard/page.tsx`
 - `web/components/dashboard/TeacherInsightPanel.tsx`
 - `web/components/dashboard/StudentInsightCard.tsx`
+- `web/components/dashboard/SmallGroupInsightCard.tsx`
 - `web/components/dashboard/dashboard-presenters.ts`
 - `web/locales/vi/app.json`
 - `web/locales/en/app.json`
 - `web/tests/teacher-dashboard-copy.test.ts`
+- `web/tests/teacher-dashboard-decision-flow.test.ts`
 - any focused dashboard shell/decision-flow tests added during implementation
 - `ai_first/ACTIVE_ASSIGNMENTS.md`
 - `ai_first/daily/2026-04-30.md`
@@ -66,6 +68,7 @@ Refactor the `Bảng điều khiển giáo viên` screen into a decision-first d
 - Primary logic/service/use-case modules to inspect:
   - `web/components/dashboard/TeacherInsightPanel.tsx`
   - `web/components/dashboard/StudentInsightCard.tsx`
+  - `web/components/dashboard/SmallGroupInsightCard.tsx`
   - any existing dashboard presenter/helper layer
 - Shared contracts/schemas/types to inspect:
   - dashboard API response fields that currently feed names, topics, confidence, and recommendation text
@@ -88,6 +91,7 @@ Refactor the `Bảng điều khiển giáo viên` screen into a decision-first d
   - dashboard page
   - teacher insight panel
   - student card
+  - small-group card
   - dashboard presenters
   - locale and copy tests
 - Files/modules that must be reviewed even if they remain unchanged:
