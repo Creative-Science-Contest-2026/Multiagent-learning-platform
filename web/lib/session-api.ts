@@ -37,6 +37,20 @@ export interface SessionContextSupport {
   }>;
 }
 
+export interface SessionTutorPackPreference {
+  name: string;
+  knowledge_base: string;
+  status?: "available" | "missing";
+}
+
+export interface SessionPreferences {
+  capability?: string;
+  tools?: string[];
+  knowledge_bases?: string[];
+  language?: string;
+  tutor_pack?: SessionTutorPackPreference;
+}
+
 export interface SessionSummary {
   id: string;
   session_id: string;
@@ -47,12 +61,7 @@ export interface SessionSummary {
   last_message: string;
   status?: "idle" | "running" | "completed" | "failed" | "cancelled" | "rejected";
   active_turn_id?: string;
-  preferences?: {
-    capability?: string;
-    tools?: string[];
-    knowledge_bases?: string[];
-    language?: string;
-  };
+  preferences?: SessionPreferences;
 }
 
 export interface ActiveTurnSummary {
@@ -78,12 +87,7 @@ export interface SessionDetail {
   active_turn_id?: string;
   compressed_summary?: string;
   summary_up_to_msg_id?: number;
-  preferences?: {
-    capability?: string;
-    tools?: string[];
-    knowledge_bases?: string[];
-    language?: string;
-  };
+  preferences?: SessionPreferences;
   messages: SessionMessage[];
   active_turns?: ActiveTurnSummary[];
   context_support?: SessionContextSupport;
