@@ -53,13 +53,13 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Submission-close Phase 1 (`C201-C210`) is fully merged on `main`.
 - Optional Phase 2 contest polish (`C211-C215`) is fully merged on `main`.
 - Contest-differentiation follow-up `C216`, `C217`, `C218`, and `C219` are merged on `main`.
-- Command-backed contest evidence is current on `main`, but browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshot rows remain stale in the authoritative contest docs until a fresh recapture is executed.
+- Command-backed contest evidence is current on `main`, and the browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshot rows were recaptured on 2026-04-30 in the authoritative contest docs.
 
 ## Next recommended task
 
-- No further contest-differentiation lane is queued. The next AI-owned follow-up should be browser screenshot recapture only if judge-facing freshness is required.
-- Otherwise, the repository is back to human review plus optional final-submission decisions.
-- If judge-facing browser freshness matters more than further differentiation polish, execute a fresh browser recapture lane from `main` and update the authoritative contest evidence docs.
+- No further contest-differentiation lane is queued.
+- No browser-freshness blocker remains in the authoritative contest docs.
+- The repository is back to human review plus optional final-submission decisions unless a new packet is explicitly opened.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
@@ -74,7 +74,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- Browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshots are still stale in `docs/contest/VALIDATION_REPORT.md` and `docs/contest/EVIDENCE_CHECKLIST.md`; recapture is the next AI-owned follow-up if final judge-facing freshness is required.
+- None at the moment. Open a new packet only if a new AI-owned lane is explicitly approved from `main`.
 
 ## Human-review blockers
 
