@@ -42,8 +42,9 @@ test("student and small-group cards are framed as one evidence-to-action story",
   const studentSource = readSource(STUDENT_CARD_PATH);
   const groupSource = readSource(SMALL_GROUP_CARD_PATH);
 
-  assert.match(studentSource, /Đang vướng/);
-  assert.match(studentSource, /Gợi ý tiếp theo/);
+  assert.match(studentSource, /1\. Dấu hiệu hệ thống vừa thấy/);
+  assert.match(studentSource, /2\. Cách hệ thống đang hiểu/);
+  assert.match(studentSource, /3\. Việc giáo viên có thể làm tiếp/);
   assert.match(studentSource, /Chi tiết hệ thống/);
   assert.doesNotMatch(studentSource, /UNIFIED_/);
 

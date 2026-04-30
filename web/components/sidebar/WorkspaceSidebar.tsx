@@ -21,6 +21,8 @@ export default function WorkspaceSidebar() {
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [loadingSessions, setLoadingSessions] = useState(false);
   const hasLoadedSessionsRef = useRef(false);
+  const shellMode = pathname.startsWith("/playground") ? "chat" : "business";
+  const shouldShowChatHistory = shellMode === "chat";
 
   const refreshSessions = useCallback(async () => {
     if (!hasLoadedSessionsRef.current) {
@@ -37,8 +39,12 @@ export default function WorkspaceSidebar() {
   }, []);
 
   useEffect(() => {
+    if (!shouldShowChatHistory) {
+      setLoadingSessions(false);
+      return;
+    }
     void refreshSessions();
-  }, [refreshSessions, sidebarRefreshToken]);
+  }, [refreshSessions, shouldShowChatHistory, sidebarRefreshToken]);
 
   const orderedSessions = sessions
     .map((session, index) => {
@@ -101,14 +107,14 @@ export default function WorkspaceSidebar() {
 
   return (
     <SidebarShell
-      showSessions
-      sessions={orderedSessions}
+      shellMode={shellMode}
+      sessions={shouldShowChatHistory ? orderedSessions : []}
       activeSessionId={selectedSessionId}
       loadingSessions={loadingSessions}
-      onNewChat={handleNewChat}
-      onSelectSession={handleSelectSession}
-      onRenameSession={handleRenameSession}
-      onDeleteSession={handleDeleteSession}
+      onNewChat={shouldShowChatHistory ? handleNewChat : undefined}
+      onSelectSession={shouldShowChatHistory ? handleSelectSession : undefined}
+      onRenameSession={shouldShowChatHistory ? handleRenameSession : undefined}
+      onDeleteSession={shouldShowChatHistory ? handleDeleteSession : undefined}
     />
   );
 }

@@ -5,7 +5,7 @@
 - Date: 2026-04-30
 - Branch: `fix/teacher-dashboard-decision-flow`
 - Worktree: `.worktrees/fix-teacher-dashboard-decision-flow`
-- Status: Proposed
+- Status: implemented, pending PR
 
 ## Objective
 
