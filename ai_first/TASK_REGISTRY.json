@@ -2242,10 +2242,10 @@
         "C211_TEACHER_FIRST_ENTRY_POLISH",
         "C216_CONTEST_SHELL_SCOPE_TRIM"
       ],
-      "status": "in_progress",
+      "status": "completed",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
-      "notes": "The current `/` workspace entry is still the broad multi-capability DeepTutor chat surface, which conflicts with the requested teacher-cockpit first impression."
+      "notes": "Merged to main through PR #237 on 2026-04-30. `/` now opens a bounded teacher-first cockpit that points users to Knowledge, TutorBot, Dashboard, and Marketplace, while the broader exploratory chat workspace remains available at `/playground`."
     },
     {
       "id": "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY",

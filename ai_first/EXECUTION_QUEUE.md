@@ -1,6 +1,6 @@
 # Execution Queue
 
-Last updated: 2026-04-28
+Last updated: 2026-04-30
 
 This is the compact status board for humans and AI workers.  
 The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
@@ -8,7 +8,8 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 ## Latest merged result
 
 - Latest optional Phase 2 polish merges: `#214` (`C212` core-loop visibility polish), `#215` (`C213` differentiation wording sweep), `#216` (`C214` judge-facing visual asset polish), `#217` (`C215` post-polish evidence freshness sync), and `#219` (`C211` teacher-first entry polish).
-- Latest docs/control-plane merges: `#210` (submission-close master coordination), `#212` (validation and evidence refresh), `#211` (submission narrative and final package readiness), `#220` (browser recapture packet), `#221` (browser recapture execution), and `#222` (post-221 control-plane sync).
+- Latest contest-differentiation follow-up merges: `#234` (packet publication), `#235` (`C216` shell trim), `#236` (post-`C216` closeout), and `#237` (`C217` teacher cockpit default entry).
+- Latest docs/control-plane merges before the current closeout lane: `#210` (submission-close master coordination), `#212` (validation and evidence refresh), `#211` (submission narrative and final package readiness), `#220` (browser recapture packet), `#221` (browser recapture execution), and `#222` (post-221 control-plane sync).
 - Latest feature-risk merge: `#206 [F124] feat(validation): automate evidence refresh status`
 - Lane 1 (`2026-04-26-lane-1-agent-spec-authoring`) merged to `main` through PR `#136`.
 - Lane 2 (`2026-04-26-lane-2-spec-runtime-assembly`) merged to `main` through PR `#135`.
@@ -51,12 +52,15 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - The post-contest future backlog `F101-F124` is fully merged on `main`.
 - Submission-close Phase 1 (`C201-C210`) is fully merged on `main`.
 - Optional Phase 2 contest polish (`C211-C215`) is fully merged on `main`.
+- Contest-differentiation follow-up `C216` and `C217` are merged on `main`.
+- `C218` and `C219` remain open from the follow-up queue.
 - Command-backed contest evidence is current on `main`, but browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshot rows remain stale in the authoritative contest docs until a fresh recapture is executed.
 
 ## Next recommended task
 
-- If judge-facing browser freshness matters, execute a fresh browser recapture lane from `main` and update the authoritative contest evidence docs.
-- Otherwise, complete the remaining human review gates: product wording confirmation, IP commitment, optional video decision, and final sign-off.
+- Safest parallel lane: execute `C219_CLASSROOM_CASE_STUDY_AND_BOUNDED_METRIC_CARD` from `main` because it is docs-only and does not overlap the runtime/UI surfaces touched by `C216` and `C217`.
+- Next runtime lane: execute `C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY` from `main` if the teacher cockpit and trimmed shell now need a bounded contest/classroom wording pass.
+- If judge-facing browser freshness matters more than further differentiation polish, execute a fresh browser recapture lane from `main` and update the authoritative contest evidence docs.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
