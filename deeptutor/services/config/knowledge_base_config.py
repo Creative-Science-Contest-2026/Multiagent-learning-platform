@@ -87,6 +87,9 @@ class KnowledgeBaseConfigService:
         with open(self.config_path, "w", encoding="utf-8") as handle:
             json.dump(self._config, handle, indent=2, ensure_ascii=False)
 
+    def _reload(self) -> None:
+        self._config = self._load_config()
+
     def _ensure_kb(self, kb_name: str) -> dict[str, Any]:
         knowledge_bases = self._config.setdefault("knowledge_bases", {})
         if kb_name not in knowledge_bases:
@@ -111,8 +114,20 @@ class KnowledgeBaseConfigService:
         return merged
 
     def set_kb_config(self, kb_name: str, config: dict[str, Any]) -> None:
+        self._reload()
+        current_entry = dict(self._config.get("knowledge_bases", {}).get(kb_name, {}))
         entry = self._ensure_kb(kb_name)
+
+        runtime_fields = {
+            "status": current_entry.get("status"),
+            "progress": current_entry.get("progress"),
+            "updated_at": current_entry.get("updated_at"),
+        }
+
         entry.update(config)
+        for field, value in runtime_fields.items():
+            if value is not None and field not in config:
+                entry[field] = value
         self._save()
 
     def get_rag_provider(self, kb_name: str) -> str:
