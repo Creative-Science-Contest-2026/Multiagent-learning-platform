@@ -35,12 +35,12 @@ Rules:
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: Refine the `/playground` chat presentation so traces stay visible but feel lighter, calmer, and more product-like
+- Task: Realign `/playground` chat turns to the original consumer-chat style while keeping trace stages visible and compact
 - Status: writing spec
-- Branch: `fix/playground-chat-visual-refinement`
-- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-visual-refinement.md`
-- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/common/AssistantResponse.tsx`, `web/components/common/ProcessLogs.tsx`, `web/components/chat/home/PlaygroundRightPanel.tsx`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-chat-visual-refinement.md`, `docs/superpowers/specs/2026-04-30-playground-chat-visual-refinement-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-visual-refinement.md`
+- Branch: `fix/playground-chat-consumer-trace`
+- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-consumer-trace.md`
+- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/common/AssistantResponse.tsx`, `web/components/common/ProcessLogs.tsx`, `web/components/chat/home/ChatMessages.tsx`, `web/components/chat/home/TracePanels.tsx`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-chat-consumer-trace.md`, `docs/superpowers/specs/2026-04-30-playground-chat-consumer-trace-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-consumer-trace.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: write the bounded visual refinement spec for calmer chat bubbles, softer trace cards, and lighter debug surfaces before implementation
+- Next action: write the bounded design spec for restoring the original lightweight trace language and compact chat turn layout before implementation
 - Blocker: none

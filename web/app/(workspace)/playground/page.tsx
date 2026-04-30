@@ -263,46 +263,116 @@ function TracePanel({ events }: { events: StreamEvent[] }) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {Array.from(grouped.entries()).map(([stage, stageEvents]) => {
         const renderable = stageEvents.filter((e) =>
           ["thinking", "progress", "tool_call", "tool_result", "error"].includes(e.type),
         );
         if (!renderable.length) return null;
         return (
-          <details key={stage} className="group overflow-hidden rounded-2xl border border-[var(--border)]/60 bg-[var(--background)]/70">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3.5 py-2.5 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]/35">
+          <details key={stage} className="group rounded-2xl">
+            <summary className="flex cursor-pointer list-none items-center gap-2 py-1 text-[12px] font-medium text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)] [&::-webkit-details-marker]:hidden">
+              <ChevronDown
+                size={12}
+                className="shrink-0 text-[var(--muted-foreground)] transition-transform group-open:rotate-180"
+              />
               <span className="inline-flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--muted-foreground)]/45" />
-                {stage === "session" ? t("Details") : titleCase(stage)}
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--muted-foreground)]/40" />
+                {stage === "session" ? t("Details") : t(titleCase(stage))}
               </span>
-              <ChevronDown size={13} className="text-[var(--muted-foreground)] transition-transform group-open:rotate-180" />
             </summary>
-            <div className="space-y-2 border-t border-[var(--border)]/55 px-3.5 py-3">
+            <div className="ml-3 space-y-1.5 border-l border-[var(--border)]/35 pl-4">
               {renderable.map((ev, i) => {
-                if (ev.type === "thinking") return <p key={`${stage}-t-${i}`} className="text-[12px] italic leading-relaxed text-[var(--muted-foreground)]/90">{ev.content}</p>;
+                if (ev.type === "thinking") return <p key={`${stage}-t-${i}`} className="text-[12px] italic leading-relaxed text-[var(--muted-foreground)]/88">{ev.content}</p>;
                 if (ev.type === "progress") {
                   const cur = Number(ev.metadata?.current ?? 0), tot = Number(ev.metadata?.total ?? 0);
                   return (
-                    <div key={`${stage}-p-${i}`} className="rounded-xl bg-[var(--muted)]/45 px-3 py-2 text-[12px] text-[var(--muted-foreground)]">
+                    <div key={`${stage}-p-${i}`} className="rounded-2xl bg-[var(--muted)]/38 px-3 py-2 text-[12px] text-[var(--muted-foreground)]">
                       <div>{ev.content}</div>
                       {tot > 0 && <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-[var(--border)]"><div className="h-full rounded-full bg-[var(--primary)] transition-all duration-300" style={{ width: `${Math.min(100, (cur / tot) * 100)}%` }} /></div>}
                     </div>
                   );
                 }
                 if (ev.type === "tool_call" || ev.type === "tool_result") return (
-                  <div key={`${stage}-tc-${i}`} className="rounded-xl border border-[var(--border)]/55 bg-[var(--background)]/82 px-3 py-2">
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)]/90">{ev.type === "tool_call" ? t("Tool call") : t("Tool result")}</div>
-                    <div className="mt-1 text-[12px] leading-5 text-[var(--foreground)]">{ev.content || String(ev.metadata?.tool ?? "")}</div>
+                  <div key={`${stage}-tc-${i}`} className="rounded-2xl border border-[var(--border)]/40 bg-[var(--background)]/66 px-3 py-2">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]/82">{ev.type === "tool_call" ? t("Tool call") : t("Tool result")}</div>
+                    <div className="mt-1 text-[12px] leading-5 text-[var(--foreground)]/88">{ev.content || String(ev.metadata?.tool ?? "")}</div>
                   </div>
                 );
-                if (ev.type === "error") return <div key={`${stage}-e-${i}`} className="rounded-xl border border-red-200/70 bg-red-50/85 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">{ev.content}</div>;
+                if (ev.type === "error") return <div key={`${stage}-e-${i}`} className="rounded-2xl border border-red-200/60 bg-red-50/72 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">{ev.content}</div>;
                 return null;
               })}
             </div>
           </details>
         );
       })}
+    </div>
+  );
+}
+
+function getResultResponse(result: CapabilityExecResult | null | undefined): string {
+  return typeof result?.data.response === "string" ? result.data.response.trim() : "";
+}
+
+function PlaygroundChatTurn({
+  msg,
+  isStreaming,
+  isLatestAssistant,
+}: {
+  msg: TesterMessage;
+  isStreaming: boolean;
+  isLatestAssistant: boolean;
+}) {
+  const { t } = useTranslation();
+  const resultResponse = getResultResponse(msg.result);
+  const displayedContent = msg.content.trim();
+  const shouldRenderAssistantContent = Boolean(displayedContent);
+  const shouldRenderCapabilityResult =
+    Boolean(msg.result) &&
+    ((!resultResponse && Object.keys(msg.result?.data ?? {}).length > 0) ||
+      (resultResponse && resultResponse !== displayedContent));
+
+  return (
+    <div className={`mx-auto max-w-4xl ${msg.role === "user" ? "flex justify-end" : ""}`}>
+      <div className={msg.role === "user" ? "w-full max-w-[min(42rem,64%)]" : "w-full max-w-[82%]"}>
+        <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+          {msg.role === "user" ? <MessageSquare size={12} /> : <Sparkles size={12} />}
+          <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
+        </div>
+        {msg.role === "user" ? (
+          <div className="rounded-[22px] border border-[var(--border)]/45 bg-[var(--muted)]/78 px-4 py-3 text-[15px] leading-7 text-[var(--foreground)] shadow-[0_10px_28px_rgba(15,23,42,0.04)]">
+            {msg.content}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {(msg.events || []).length > 0 ? (
+              <div className="mb-1">
+                <TracePanel events={msg.events || []} />
+              </div>
+            ) : null}
+            {msg.error && (
+              <div className="rounded-[18px] border border-red-200/70 bg-red-50/80 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                {msg.error}
+              </div>
+            )}
+            {shouldRenderAssistantContent ? (
+              <AssistantResponse
+                content={msg.content}
+                className="rounded-[22px] border border-[var(--border)]/38 bg-[var(--background)]/70 px-5 py-4 shadow-[0_8px_24px_rgba(15,23,42,0.03)]"
+              />
+            ) : null}
+            {shouldRenderCapabilityResult ? (
+              <CapabilityResultPanel result={msg.result} streamedContent={msg.content} />
+            ) : null}
+            {!msg.error && isStreaming && isLatestAssistant && !shouldRenderAssistantContent ? (
+              <div className="inline-flex items-center gap-2 rounded-full bg-[var(--muted)]/55 px-3 py-1.5 text-[12px] text-[var(--muted-foreground)]">
+                <Loader2 size={12} className="animate-spin" />
+                {t("Running...")}
+              </div>
+            ) : null}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -569,62 +639,67 @@ function ToolExecutor({ tool, knowledgeBases }: { tool: ToolInfo; knowledgeBases
 /*  CapabilityResultPanel                                              */
 /* ------------------------------------------------------------------ */
 
-function CapabilityResultPanel({ result }: { result: CapabilityExecResult | null | undefined }) {
+function CapabilityResultPanel({
+  result,
+  streamedContent = "",
+}: {
+  result: CapabilityExecResult | null | undefined;
+  streamedContent?: string;
+}) {
   const { t } = useTranslation();
   if (!result) return null;
 
-  const response = typeof result.data.response === "string" ? result.data.response : "";
+  const response = getResultResponse(result);
+  const normalizedStreamedContent = streamedContent.trim();
+  const shouldRenderResponse = Boolean(response) && response !== normalizedStreamedContent;
   const extraData = Object.fromEntries(
     Object.entries(result.data).filter(([key]) => key !== "response"),
   );
   const extraKeys = Object.keys(extraData);
+  const shouldRenderStructuredFallback = !response && extraKeys.length > 0;
+  const shouldRenderStatus =
+    !result.success ||
+    (!shouldRenderResponse && !shouldRenderStructuredFallback && !normalizedStreamedContent);
+
+  if (!shouldRenderResponse && !shouldRenderStructuredFallback && !shouldRenderStatus) {
+    return null;
+  }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        {result.success ? (
-          <span className="inline-flex items-center gap-1 rounded-md bg-green-50 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:bg-green-950/30 dark:text-green-400">
-            <Check size={10} /> {t("Success")}
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700 dark:bg-red-950/30 dark:text-red-400">
-            <X size={10} /> {t("Failed")}
-          </span>
-        )}
-        {typeof result.elapsedMs === "number" && (
-          <span className="text-[11px] text-[var(--muted-foreground)]">
-            {result.elapsedMs} {t("ms")}
-          </span>
-        )}
-      </div>
-
-      {response && (
-        <div className="max-h-[400px] overflow-y-auto rounded-[24px] border border-[var(--border)]/60 bg-[var(--background)]/78 p-4">
-          <MarkdownRenderer content={response} variant="prose" />
+    <div className="space-y-2">
+      {shouldRenderStatus ? (
+        <div className="flex items-center gap-2 text-[11px] text-[var(--muted-foreground)]">
+          {!result.success ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-red-700 dark:bg-red-950/30 dark:text-red-300">
+              <X size={10} /> {t("Failed")}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-green-700 dark:bg-green-950/30 dark:text-green-400">
+              <Check size={10} /> {t("Success")}
+            </span>
+          )}
+          {typeof result.elapsedMs === "number" ? (
+            <span>
+              {result.elapsedMs} {t("ms")}
+            </span>
+          ) : null}
         </div>
-      )}
+      ) : null}
 
-      {!response && extraKeys.length > 0 && (
-        <div className="rounded-[20px] border border-[var(--border)]/55 bg-[var(--background)]/72 p-3">
+      {shouldRenderResponse ? (
+        <AssistantResponse
+          content={response}
+          className="rounded-[22px] border border-[var(--border)]/38 bg-[var(--background)]/66 px-5 py-4 shadow-[0_8px_24px_rgba(15,23,42,0.03)]"
+        />
+      ) : null}
+
+      {shouldRenderStructuredFallback ? (
+        <div className="rounded-[20px] border border-[var(--border)]/45 bg-[var(--background)]/64 p-3">
           <pre className="overflow-x-auto whitespace-pre-wrap break-all text-[12px] leading-6 text-[var(--muted-foreground)]/90">
             {JSON.stringify(extraData, null, 2)}
           </pre>
         </div>
-      )}
-
-      {extraKeys.length > 0 && response && (
-        <details className="group rounded-2xl border border-[var(--border)]/60 bg-[var(--background)]/68">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-3.5 py-2.5 text-[12px] font-medium text-[var(--foreground)]">
-            {t("Metadata")}
-            <ChevronDown size={13} className="text-[var(--muted-foreground)] transition-transform group-open:rotate-180" />
-          </summary>
-          <div className="border-t border-[var(--border)]/55 px-3.5 py-3">
-            <pre className="overflow-x-auto whitespace-pre-wrap break-all text-[12px] leading-6 text-[var(--muted-foreground)]/88">
-              {JSON.stringify(extraData, null, 2)}
-            </pre>
-          </div>
-        </details>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -988,43 +1063,12 @@ function DeepQuestionTester({
       </div>
 
       {messages.map((msg, i) => (
-        <div
+        <PlaygroundChatTurn
           key={`${msg.role}-${i}`}
-          className={`mx-auto max-w-4xl ${msg.role === "user" ? "flex justify-end" : ""}`}
-        >
-          <div className={msg.role === "user" ? "w-full max-w-[78%]" : "w-full max-w-[88%]"}>
-            <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-              {msg.role === "user" ? <MessageSquare size={12} /> : <Sparkles size={12} />}
-              <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
-            </div>
-            {msg.role === "user" ? (
-              <div className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--muted)]/72 px-5 py-4 text-[15px] leading-7 text-[var(--foreground)] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-                {msg.content}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="rounded-[24px] border border-[var(--border)]/55 bg-[var(--background)]/58 p-3">
-                  <TracePanel events={msg.events || []} />
-                </div>
-                <ProcessLogs
-                  logs={msg.processLogs || []}
-                  executing={streaming && i === messages.length - 1}
-                  title={t("Process")}
-                />
-                {msg.error && (
-                  <div className="rounded-[18px] border border-red-200/70 bg-red-50/80 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                    {msg.error}
-                  </div>
-                )}
-                <AssistantResponse
-                  content={msg.content}
-                  className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--background)]/88 px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)]"
-                />
-                <CapabilityResultPanel result={msg.result} />
-              </div>
-            )}
-          </div>
-        </div>
+          msg={msg}
+          isStreaming={streaming}
+          isLatestAssistant={i === messages.length - 1}
+        />
       ))}
 
       <div className="sticky bottom-0 z-10 -mx-2 border-t border-[var(--border)] bg-[var(--background)]/94 px-2 pb-2 pt-2 backdrop-blur">
@@ -1247,43 +1291,12 @@ function DeepResearchTester({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="space-y-5 pb-4">
           {messages.map((msg, i) => (
-            <div
+            <PlaygroundChatTurn
               key={`${msg.role}-${i}`}
-              className={`mx-auto max-w-4xl ${msg.role === "user" ? "flex justify-end" : ""}`}
-            >
-              <div className={msg.role === "user" ? "w-full max-w-[78%]" : "w-full max-w-[88%]"}>
-                <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-                  {msg.role === "user" ? <MessageSquare size={12} /> : <Sparkles size={12} />}
-                  <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
-                </div>
-                {msg.role === "user" ? (
-                  <div className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--muted)]/72 px-5 py-4 text-[15px] leading-7 text-[var(--foreground)] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-                    {msg.content}
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="rounded-[24px] border border-[var(--border)]/55 bg-[var(--background)]/58 p-3">
-                      <TracePanel events={msg.events || []} />
-                    </div>
-                    <ProcessLogs
-                      logs={msg.processLogs || []}
-                      executing={streaming && i === messages.length - 1}
-                      title={t("Process")}
-                    />
-                    {msg.error && (
-                      <div className="rounded-[18px] border border-red-200/70 bg-red-50/80 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                        {msg.error}
-                      </div>
-                    )}
-                    <AssistantResponse
-                      content={msg.content}
-                      className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--background)]/88 px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)]"
-                    />
-                    <CapabilityResultPanel result={msg.result} />
-                  </div>
-                )}
-              </div>
-            </div>
+              msg={msg}
+              isStreaming={streaming}
+              isLatestAssistant={i === messages.length - 1}
+            />
           ))}
         </div>
       </div>
@@ -1469,43 +1482,12 @@ function CapabilityTester({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="space-y-5 pb-4">
           {messages.map((msg, i) => (
-            <div
+            <PlaygroundChatTurn
               key={`${msg.role}-${i}`}
-              className={`mx-auto max-w-4xl ${msg.role === "user" ? "flex justify-end" : ""}`}
-            >
-              <div className={msg.role === "user" ? "w-full max-w-[78%]" : "w-full max-w-[88%]"}>
-                <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-                  {msg.role === "user" ? <MessageSquare size={12} /> : <Sparkles size={12} />}
-                  <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
-                </div>
-                {msg.role === "user" ? (
-                  <div className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--muted)]/72 px-5 py-4 text-[15px] leading-7 text-[var(--foreground)] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-                    {msg.content}
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="rounded-[24px] border border-[var(--border)]/55 bg-[var(--background)]/58 p-3">
-                      <TracePanel events={msg.events || []} />
-                    </div>
-                    <ProcessLogs
-                      logs={msg.processLogs || []}
-                      executing={streaming && i === messages.length - 1}
-                      title={t("Process")}
-                    />
-                    {msg.error && (
-                      <div className="rounded-[18px] border border-red-200/70 bg-red-50/80 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                        {msg.error}
-                      </div>
-                    )}
-                    <AssistantResponse
-                      content={msg.content}
-                      className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--background)]/88 px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)]"
-                    />
-                    <CapabilityResultPanel result={msg.result} />
-                  </div>
-                )}
-              </div>
-            </div>
+              msg={msg}
+              isStreaming={streaming}
+              isLatestAssistant={i === messages.length - 1}
+            />
           ))}
         </div>
       </div>
