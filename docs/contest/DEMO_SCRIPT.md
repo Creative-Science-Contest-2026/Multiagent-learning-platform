@@ -10,6 +10,32 @@ Use this script to present the MVP in the same order as the project goal.
 4. Open the web workspace in a browser.
 5. Use demo-safe sample content. Do not use private student data.
 
+## Anchor Case Study
+
+Keep the full presentation anchored to one classroom-safe story:
+
+- Class: Grade 9 mathematics
+- Knowledge Pack: `contest-demo-quadratics`
+- Curriculum context: `Vietnam secondary algebra`
+- Teacher goal: help students solve quadratic equations and explain common mistakes
+- Student weakness pattern to narrate: factoring confusion plus missed root-checking
+- Teacher decision point: use dashboard signals to choose one bounded remediation step or a small-group follow-up
+
+If a presenter needs one sentence, use this:
+
+> A Grade 9 math teacher prepares one quadratics Knowledge Pack, drafts one assessment from it, lets the student ask one grounded follow-up, then uses the dashboard to decide one bounded remediation move for the same misconception cluster.
+
+## Presenter Metric Card
+
+If a judge asks for a compact proof summary during the demo, use only these bounded metrics:
+
+- `1` anchor Knowledge Pack: `contest-demo-quadratics`
+- `2` verified demo sessions: `contest-assessment-demo` and `contest-tutor-demo`
+- `2/2` verified sessions grounded in the same Knowledge Pack
+- teacher-reviewed recommendation/intervention framing present in the dashboard and casepack docs
+
+Do not expand this into diagnosis accuracy, learning gain, or classroom outcome claims.
+
 ## Hybrid Presenter Check
 
 Before the learning loop, optionally show a short teacher-authoring proof on `/agents`:
@@ -65,6 +91,11 @@ Steps:
 6. Review generated questions and common-mistake feedback.
 7. Explain that a teacher can approve, edit, or reject before student-facing reuse.
 
+Presenter framing for the anchor case:
+
+- the assessment is still about quadratic equations from the same pack
+- the weakness pattern to watch for is factoring and root-checking, not a random generic topic
+
 Evidence to capture:
 
 - Screenshot of the quiz configuration.
@@ -82,6 +113,10 @@ Steps:
 3. Ask a student-style follow-up question.
 4. Confirm the tutor response is grounded in the selected learning context.
 
+Anchor follow-up prompt example:
+
+- ask the tutor to help a student understand a common factoring mistake and why both roots still need to be checked against the original equation
+
 Evidence to capture:
 
 - Screenshot of the selected Knowledge Pack context.
@@ -98,11 +133,11 @@ Steps:
 3. Confirm small-group recommendation cards are visible when grouped signals exist.
 4. Confirm recent activity still distinguishes assessment and tutoring sessions.
 5. Confirm Knowledge Pack references appear when sessions used a selected pack.
-6. Explain one concrete teacher move, such as reteaching one concept to a small group or giving a gentler scaffold to one student next session.
-7. Reuse one of the prepared dashboard stories:
-   - repeated misses on one topic -> reteach one prerequisite with one scaffolded example
-   - quick but inconsistent answers -> ask for one reasoning step before another hint
-   - shared misconception cluster -> pull a remediation mini-group before the next check
+6. Explain one concrete teacher move for the same quadratics case: the teacher sees repeated factoring confusion and decides to reteach one prerequisite plus pull a remediation mini-group before the next check.
+7. Keep the dashboard explanation inside one bounded story:
+   - observed: repeated difficulty on one quadratics sub-skill
+   - inferred: likely misconception cluster worth teacher review
+   - teacher move: one scaffolded reteach or one mini-group follow-up
 
 Evidence to capture:
 
@@ -115,6 +150,7 @@ Evidence to capture:
 
 - Keep the demo short and linear.
 - Use one consistent sample topic across all screens.
+- Prefer the same quadratics story on every screen instead of switching examples mid-demo.
 - When explaining `/agents`, start with classroom outcomes before architecture words.
 - If an external LLM provider is unavailable, explain the unavailable credential and show the local validation report instead of inventing evidence.
 - After the demo, open `VALIDATION_REPORT.md` to show exact commands and known limitations.

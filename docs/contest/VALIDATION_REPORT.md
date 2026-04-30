@@ -10,6 +10,34 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 This report validates prototype behavior and contest evidence only. It is not a classroom outcome study or deployment report.
 
+## Anchor Case And Bounded Metrics
+
+Primary docs story for this report:
+
+- Knowledge Pack: `contest-demo-quadratics`
+- Class level: `Grade 9`
+- Curriculum: `Vietnam secondary algebra`
+- Learning objective: solve quadratic equations and explain common mistakes
+- Weakness pattern used in the demo story: factoring confusion and missed root-checking
+- Teacher decision surface: dashboard-reviewed remediation, not autonomous intervention
+
+Bounded metric card for the current evidence set:
+
+| Metric | Current value | Evidence basis |
+| --- | --- | --- |
+| Demo-safe Knowledge Packs in the anchor story | `1` | `contest-demo-quadratics` from the reset inventory and knowledge-list validation |
+| Verified demo sessions tied to that pack | `2` | `contest-assessment-demo` and `contest-tutor-demo` from local validation |
+| Verified command-backed loop checkpoints | `4` | Knowledge Pack presence, assessment session, tutor session, and dashboard review endpoints |
+| Knowledge Pack grounding coverage in verified sessions | `2/2` | both validated sessions reference `contest-demo-quadratics` |
+| Teacher recommendation/intervention framing present | `Yes` | dashboard review flow, diagnosis case studies, and casepack framing |
+
+Explicit non-claims:
+
+- no diagnosis accuracy benchmark
+- no classroom outcome metric
+- no learning-gain claim
+- no pilot effectiveness claim
+
 ## Evidence Freshness Status
 
 Latest smoke-backed refresh: 2026-04-28

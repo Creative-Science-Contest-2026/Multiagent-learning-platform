@@ -12,6 +12,38 @@ Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 
 The teacher dashboard is the operating surface that helps a teacher inspect diagnosis and choose interventions. It supports the loop; it is not a substitute for the loop.
 
+## Anchor Classroom Case
+
+Use one bounded classroom story throughout the contest package:
+
+- Teacher: a Grade 9 math teacher
+- Topic: quadratic equations in `Vietnam secondary algebra`
+- Shared Knowledge Pack: `contest-demo-quadratics`
+- Learning objective: solve quadratic equations and explain common mistakes
+- Student weakness pattern: repeated confusion around factoring steps and checking both roots against the original equation
+- Teacher move: review the dashboard signals, then assign one bounded remediation step or small-group follow-up instead of accepting the diagnosis as an autonomous verdict
+
+This case is intentionally narrow. It is not a claim about broad classroom coverage; it is the single demo-safe story already backed by the repository reset runbook, smoke validation, and casepack framing.
+
+## Bounded Metric Card
+
+What is evidenced today for the anchor case:
+
+| Metric | Current bounded claim | Source |
+| --- | --- | --- |
+| Demo-safe Knowledge Packs in the anchor story | `1` (`contest-demo-quadratics`) | `DEMO_DATA_RESET.md`, `VALIDATION_REPORT.md` |
+| Verified demo sessions tied to that pack | `2` (`contest-assessment-demo`, `contest-tutor-demo`) | `VALIDATION_REPORT.md` |
+| Verified command-backed loop surfaces | `4` (Knowledge Pack presence, assessment session, tutor session, dashboard review endpoints) | `VALIDATION_REPORT.md` |
+| Verified session grounding coverage | `2/2` verified sessions carry the same Knowledge Pack context | `VALIDATION_REPORT.md` |
+| Teacher-action framing present | `Yes` — recommendation, remediation, and intervention remain teacher-reviewed surfaces | `DEMO_SCRIPT.md`, `CASEPACK_AND_EVALUATION_DATASET.md`, `DIAGNOSIS_CASE_STUDIES.md` |
+
+What this metric card does **not** claim:
+
+- diagnosis accuracy percentages
+- learning-gain or classroom-outcome impact
+- pilot-scale effectiveness
+- autonomous intervention quality without teacher review
+
 ## Submission Scope Freeze
 
 Core submission scope:
