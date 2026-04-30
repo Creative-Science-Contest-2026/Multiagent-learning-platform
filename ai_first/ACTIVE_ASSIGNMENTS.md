@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-sidebar-shell-rebalance`
+- Task: Rebalance the shared sidebar shell so chat history owns the middle space and the shell is wider
+- Status: implemented, pending PR
+- Branch: `fix/sidebar-shell-rebalance`
+- Task packet: `docs/superpowers/tasks/2026-04-30-sidebar-shell-rebalance.md`
+- Owned files: `web/components/sidebar/SidebarShell.tsx`, `web/components/SessionList.tsx`, `web/components/sidebar/nav-groups.ts`, `web/tests/sidebar-nav-groups.test.ts`, `web/tests/sidebar-shell-layout.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-sidebar-shell-rebalance.md`, `docs/superpowers/specs/2026-04-30-sidebar-shell-rebalance-design.md`, `docs/superpowers/plans/2026-04-30-sidebar-shell-rebalance.md`, `docs/superpowers/pr-notes/2026-04-30-sidebar-shell-rebalance.md`
+- PR: uncreated
+- Last update: 2026-04-30
+- Next action: stage the bounded shell/docs diff and open a draft PR if requested
+- Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
 - Task: Add `Gói gia sư` selection and session binding for `/playground` chat using imported marketplace packs
 - Status: writing spec
