@@ -30,17 +30,4 @@ Rules:
 
 ## Active
 
-### Assignment
-
-- Owner: Codex
-- Machine: local
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/contest-layout-breakage-sweep`
-- Task: `C220_CONTEST_LAYOUT_BREAKAGE_SWEEP`
-- Status: `in_progress`
-- Branch: `fix/contest-layout-breakage-sweep`
-- Task packet: `docs/superpowers/tasks/2026-04-30-c220-contest-layout-breakage-sweep.md`
-- Owned files: `web/components/agents/SpecPackAuthoringTab.tsx`, `web/app/(workspace)/agents/page.tsx`, `web/components/contest/TeacherCockpit.tsx`, `web/components/contest/CoreLoopVisibilityStrip.tsx`, `web/app/(workspace)/dashboard/page.tsx`, `web/app/(utility)/knowledge/page.tsx`, and `web/app/(utility)/marketplace/page.tsx` only if the same layout issue is confirmed there
-- PR: `not opened`
-- Last update: `2026-04-30`
-- Next action: `finish codebase survey, then implement the responsive hardening sweep`
-- Blocker: `none`
+- None.
