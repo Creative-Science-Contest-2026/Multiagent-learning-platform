@@ -79,16 +79,16 @@ function StatusIndicator({ status }: { status?: SessionRuntimeStatus }) {
   return null;
 }
 
-function groupLabel(timestamp: number): string {
+function groupLabel(timestamp: number, t: (key: string) => string): string {
   const now = new Date();
   const date = new Date(timestamp * 1000);
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const startOfItemDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
   const diffDays = Math.floor((startOfToday - startOfItemDay) / 86400000);
-  if (diffDays <= 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return "Last 7 days";
-  return "Earlier";
+  if (diffDays <= 0) return t("Today");
+  if (diffDays === 1) return t("Yesterday");
+  if (diffDays < 7) return t("Last 7 days");
+  return t("Earlier");
 }
 
 function relativeTime(timestamp: number): string {
@@ -117,13 +117,13 @@ export default function SessionList({
   const grouped = useMemo(() => {
     const buckets = new Map<string, SessionSummary[]>();
     for (const session of sessions) {
-      const label = groupLabel(session.updated_at);
+      const label = groupLabel(session.updated_at, t);
       const current = buckets.get(label) ?? [];
       current.push(session);
       buckets.set(label, current);
     }
     return Array.from(buckets.entries());
-  }, [sessions]);
+  }, [sessions, t]);
 
   const startEdit = (session: SessionSummary) => {
     setEditingId(session.session_id);
@@ -225,7 +225,7 @@ export default function SessionList({
                     />
                   ) : (
                     <span className={`min-w-0 flex-1 truncate text-[13px] ${active ? "font-medium" : ""}`}>
-                      {session.title || "Untitled chat"}
+                      {session.title || t("Untitled chat")}
                     </span>
                   )}
                   <div className="flex shrink-0 items-center gap-px opacity-0 transition-opacity group-hover:opacity-100">
@@ -321,7 +321,7 @@ export default function SessionList({
                               active ? "font-medium" : "font-normal"
                             }`}
                           >
-                            {session.title || "Untitled chat"}
+                            {session.title || t("Untitled chat")}
                           </span>
                           <StatusIndicator status={session.status} />
                         </div>
