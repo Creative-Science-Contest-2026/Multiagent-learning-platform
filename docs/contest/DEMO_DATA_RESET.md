@@ -45,6 +45,7 @@ Run this from the repository root:
 
 The command:
 
+- xoá dữ liệu demo cũ thuộc namespace của script trước khi mock lại để tránh bị duplicate;
 - validates that `--api-base` is local;
 - creates or updates a richer set of shareable and imported demo-safe Knowledge Packs;
 - creates or replaces the anchor sessions `contest-assessment-demo` and `contest-tutor-demo`;
