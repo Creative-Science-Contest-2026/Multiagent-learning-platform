@@ -36,11 +36,26 @@ Rules:
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
 - Task: Hide the right-panel mode and tool switcher on `/playground` while keeping the underlying capability logic intact
-- Status: writing spec
+- Status: implementation complete
 - Branch: `fix/playground-hide-mode-switcher`
 - Task packet: `docs/superpowers/tasks/2026-04-30-playground-hide-mode-switcher.md`
 - Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/chat/home/PlaygroundRightPanel.tsx`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-hide-mode-switcher.md`, `docs/superpowers/specs/2026-04-30-playground-hide-mode-switcher-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-hide-mode-switcher.md`
 - PR: uncreated
 - Last update: 2026-04-30
 - Next action: write the bounded spec for removing the visible mode/tool chooser from the right panel before implementation
+- Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/code-review-graph-integration`
+- Task: Install and integrate `code-review-graph` into this repository for Codex, including committing generated repo-local artifacts if the tool creates them
+- Status: writing spec
+- Branch: `fix/code-review-graph-integration`
+- Task packet: `docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md`
+- Owned files: `.gitignore`, `.claude/skills/`, `.code-review-graph/`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md`, `docs/superpowers/specs/2026-04-30-code-review-graph-integration-design.md`, `docs/superpowers/plans/2026-04-30-code-review-graph-integration.md`, `docs/superpowers/pr-notes/2026-04-30-code-review-graph-integration.md`
+- PR: uncreated
+- Last update: 2026-04-30
+- Next action: stage the bounded integration files, commit the lane, and prepare review handoff
 - Blocker: none
