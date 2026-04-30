@@ -28,6 +28,8 @@ The teacher dashboard remains the operating surface that helps the teacher inspe
 
 Within that loop, diagnosis and recommendation outputs are positioned as evidence-backed, confidence-tagged, teacher-reviewed hypotheses rather than autonomous final judgments. The `/agents` flow adds one more teacher-control layer: the teacher can decide who the tutor is for, how it should respond when students are wrong or stuck, and which classroom guardrails it must respect.
 
+Contest-safe case study anchor: a Grade 9 math teacher prepares `contest-demo-quadratics`, notices a learner repeatedly mixing up sign reasoning and factor pairs, uses the tutor for grounded scaffolded follow-up, and then reviews the dashboard to choose whether one student or a small group needs prerequisite reteaching next.
+
 ## Concrete Teacher Use Cases
 
 1. A lower-secondary math teacher can set a calmer tone, simpler language, and stronger hint scaffolding for students who lose confidence quickly.
@@ -89,6 +91,7 @@ This repository does not currently claim classroom outcome evidence or a scaled 
 - Reduces manual work needed to turn teaching materials into assessments.
 - Gives students immediate tutoring support based on the same approved knowledge source.
 - Gives teachers a faster feedback loop through dashboard activity, assessment review, and next-step intervention suggestions.
+- The current bounded proof is operational: one demo-safe Knowledge Pack, two verified demo-safe sessions, and one teacher-review loop. It is not classroom outcome proof.
 
 ## Development Potential
 

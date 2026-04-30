@@ -12,6 +12,18 @@ Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention.
 
 The teacher dashboard is the operating surface that helps a teacher inspect diagnosis and choose interventions. It supports the loop; it is not a substitute for the loop.
 
+## Anchor Classroom Case Study
+
+Use one presenter-safe classroom story across the entire contest bundle:
+
+- Teacher: a Grade 9 math teacher preparing a quadratics review lesson.
+- Shared source: the teacher creates the demo-safe Knowledge Pack `contest-demo-quadratics`.
+- Weakness pattern: one student can start solving but mixes up sign reasoning and factor pairs, so repeated misses point to a prerequisite gap rather than lack of effort.
+- Tutor contribution: the tutor stays grounded in the same pack and gives scaffolded help without turning the session into answer dumping.
+- Dashboard contribution: the teacher reviews the observed evidence, the bounded diagnosis hypothesis, and the recommended next move before deciding whether to reteach the prerequisite for one student or a small group.
+
+This is a walkthrough frame for judges and reviewers, not a claim that the repository already proves classroom learning gains.
+
 ## Submission Scope Freeze
 
 Core submission scope:
@@ -89,6 +101,19 @@ The current product can be described as `agent-native` today and `multi-agent by
 1. A student misses several items on one topic and needs repeated support, so the teacher move is to reteach one prerequisite with one more scaffolded example.
 2. A student answers quickly but inconsistently, so the teacher move is to slow the next check and require one reasoning step before another hint.
 3. A small group shares the same misconception, so the teacher move is to pull them into one remediation mini-group before the next assessment.
+
+## Bounded Metric Card
+
+These metrics are safe to repeat because they describe documented prototype operation, not classroom impact:
+
+| Metric | Current bounded value | Evidence source |
+| --- | --- | --- |
+| Demo loop stages documented in the current contest path | `5/5` (`Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`) | [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
+| Demo-safe sessions verified with Knowledge Pack grounding in payloads | `2/2` (`contest-assessment-demo`, `contest-tutor-demo`) | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
+| Demo-safe Knowledge Pack verified in the latest smoke-backed check | `1` (`contest-demo-quadratics`) | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
+| Teacher review surface present for diagnosis and next action | `Present` | [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
+
+Do not turn this card into claims about diagnosis accuracy, learning gain, classroom improvement, or pilot-scale effectiveness. Those are intentionally out of scope for the current repository evidence.
 
 ## Evidence Refresh Rules
 

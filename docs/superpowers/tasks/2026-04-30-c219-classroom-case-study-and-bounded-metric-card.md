@@ -4,7 +4,7 @@
 - Commit tag: `C219`
 - Branch: `docs/classroom-case-study-metric-card`
 - Worktree: `.worktrees/classroom-case-study-metric-card`
-- Status: `pending`
+- Status: `in-progress`
 
 ## Goal
 

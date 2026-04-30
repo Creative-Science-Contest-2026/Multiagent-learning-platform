@@ -20,6 +20,13 @@ Teacher-facing use cases:
 2. A grade 10 teacher can make the tutor more Socratic, push for reasoning steps, and escalate when students keep repeating the same mistake.
 3. A teacher reviewing the dashboard can spot which students need remediation now and which small group should revisit the same misconception together.
 
+Anchor case study for judges:
+
+- A Grade 9 math teacher uses `contest-demo-quadratics`.
+- One learner keeps mixing up sign reasoning and factor pairs.
+- The tutor gives scaffolded support inside the same pack and teacher-set guardrails.
+- The dashboard then helps the teacher decide whether to reteach that prerequisite individually or in a small group.
+
 Dashboard actionability stories:
 
 1. Repeated misses on one topic -> teacher move: reteach one prerequisite with one scaffolded example.
@@ -46,6 +53,13 @@ Official scope freeze:
 - Operator surface: the dashboard helps the teacher inspect and act on the loop
 - Claim level: validated prototype, not classroom deployment
 - Architecture claim: agent-native today, multi-agent by design as a future direction
+
+Bounded metric reminder:
+
+- `1` demo-safe Knowledge Pack verified in the smoke-backed flow: `contest-demo-quadratics`
+- `2` demo-safe sessions verified with Knowledge Pack grounding: assessment plus tutor
+- teacher review surface is present for diagnosis and intervention choice
+- do not convert those metrics into learning-gain or diagnosis-accuracy claims
 
 Behavior-diff story for judges:
 

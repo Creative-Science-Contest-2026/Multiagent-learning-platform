@@ -26,6 +26,18 @@ Before the learning loop, optionally show a short teacher-authoring proof on `/a
 
 You may claim bounded proof that the unified Tutor turn path can bind `config.agent_spec_id` and change runtime behavior between two contrasting spec packs. Do not expand that into a claim about every entry point unless the broader path is re-verified in the current smoke run.
 
+## Anchor Case Study
+
+Use one consistent classroom frame from start to finish:
+
+- Teacher: Grade 9 math teacher
+- Topic: quadratics review
+- Knowledge Pack: `contest-demo-quadratics`
+- Weakness pattern: the student starts the problem but confuses sign reasoning and factor pairs
+- Teacher goal: decide whether the next move is one more scaffolded individual hint path or one short small-group reteach
+
+This framing keeps the walkthrough concrete without claiming that the repository already proves measured classroom outcomes.
+
 ## Demo Path
 
 ### 1. Teacher Creates A Knowledge Pack
@@ -35,12 +47,12 @@ Goal: show that a teacher can prepare class context before asking AI to generate
 Steps:
 
 1. Open the Knowledge page.
-2. Create or select a Knowledge Pack.
+2. Create or select the demo-safe Knowledge Pack `contest-demo-quadratics`.
 3. Fill the metadata fields:
-   - subject;
-   - grade;
+   - subject: math;
+   - grade: Grade 9;
    - curriculum;
-   - learning objectives;
+   - learning objectives centered on solving quadratics;
    - owner;
    - sharing status.
 4. Save the pack.
@@ -58,12 +70,13 @@ Goal: show that the assessment workflow can use the teacher's subject and Knowle
 Steps:
 
 1. Open the assessment or quiz generation UI.
-2. Select or reference the demo Knowledge Pack.
+2. Select or reference `contest-demo-quadratics`.
 3. Set subject and quiz parameters.
 4. Generate the assessment.
 5. Show that the generated assessment is treated as a draft requiring teacher review.
 6. Review generated questions and common-mistake feedback.
-7. Explain that a teacher can approve, edit, or reject before student-facing reuse.
+7. Explain that the teacher is looking for the same weakness pattern throughout the loop: confusion around sign reasoning and factor pairs.
+8. Explain that a teacher can approve, edit, or reject before student-facing reuse.
 
 Evidence to capture:
 
@@ -79,8 +92,9 @@ Steps:
 
 1. Open the student tutoring/chat workspace.
 2. Select the same Knowledge Pack when available.
-3. Ask a student-style follow-up question.
+3. Ask a student-style follow-up question about a quadratics step the student is getting wrong.
 4. Confirm the tutor response is grounded in the selected learning context.
+5. Explain that the safe claim is not "the tutor solved learning" but "the tutor kept support inside the same teacher-approved topic and guardrails."
 
 Evidence to capture:
 
@@ -98,7 +112,7 @@ Steps:
 3. Confirm small-group recommendation cards are visible when grouped signals exist.
 4. Confirm recent activity still distinguishes assessment and tutoring sessions.
 5. Confirm Knowledge Pack references appear when sessions used a selected pack.
-6. Explain one concrete teacher move, such as reteaching one concept to a small group or giving a gentler scaffold to one student next session.
+6. Explain one concrete teacher move for this case: reteach the prerequisite sign/factor reasoning to the affected student or a small remediation group before the next check.
 7. Reuse one of the prepared dashboard stories:
    - repeated misses on one topic -> reteach one prerequisite with one scaffolded example
    - quick but inconsistent answers -> ask for one reasoning step before another hint
@@ -114,9 +128,10 @@ Evidence to capture:
 ## Presenter Notes
 
 - Keep the demo short and linear.
-- Use one consistent sample topic across all screens.
+- Use one consistent sample topic across all screens, preferably `contest-demo-quadratics`.
 - When explaining `/agents`, start with classroom outcomes before architecture words.
 - If an external LLM provider is unavailable, explain the unavailable credential and show the local validation report instead of inventing evidence.
 - After the demo, open `VALIDATION_REPORT.md` to show exact commands and known limitations.
 - If you include the hybrid authoring check, keep it under one minute. The safe claim is: authoring is visible in UI, and the current repository also contains bounded automated proof that the unified Tutor turn path changes behavior across two contrasting spec packs.
 - For assessment safety, the safe claim is: teacher review is the primary quality gate, not hidden model infallibility.
+- If a reviewer asks for metrics, use the bounded metric card in `README.md` or `VALIDATION_REPORT.md`, not outcome or benchmark language.

@@ -10,6 +10,29 @@ Teacher creates Knowledge Pack -> AI generates assessment -> Student learns with
 
 This report validates prototype behavior and contest evidence only. It is not a classroom outcome study or deployment report.
 
+## Anchor Classroom Scenario
+
+Use one bounded classroom story when presenting the current evidence:
+
+- teacher: Grade 9 math teacher
+- topic: quadratics review
+- demo-safe pack: `contest-demo-quadratics`
+- weakness pattern: the student needs help with sign reasoning and factor pairs
+- teacher decision point: whether to reteach the prerequisite for one learner or a small group
+
+This is a presenter-safe walkthrough scenario built from demo-safe assets. It is not a measured classroom-effectiveness result.
+
+## Bounded Metric Card
+
+| Metric | Current bounded value | Why this is safe | Source |
+| --- | --- | --- | --- |
+| Demo loop stages documented in the contest MVP path | `5/5` | Describes the documented product path, not an outcome claim | This report, `DEMO_SCRIPT.md` |
+| Demo-safe Knowledge Pack verified in latest smoke-backed check | `1` pack (`contest-demo-quadratics`) | Confirms the anchor pack exists in demo data | `curl -s http://127.0.0.1:8001/api/v1/knowledge/list` |
+| Demo-safe sessions verified with Knowledge Pack grounding | `2/2` sessions (`contest-assessment-demo`, `contest-tutor-demo`) | Reports payload checks already recorded in this repository | `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-assessment-demo`; `curl -s http://127.0.0.1:8001/api/v1/sessions/contest-tutor-demo` |
+| Teacher review surface for diagnosis and next action | `Present` | Confirms the operating surface exists; it does not claim the recommendations are correct in every case | `curl -s http://127.0.0.1:8001/api/v1/dashboard/overview`; `curl -s http://127.0.0.1:8001/api/v1/dashboard/recent` |
+
+Do not replace this card with benchmark metrics, diagnosis accuracy rates, learning gains, classroom improvement claims, or pilot-effectiveness language unless the repository later adds direct evidence for those claims.
+
 ## Evidence Freshness Status
 
 Latest smoke-backed refresh: 2026-04-28

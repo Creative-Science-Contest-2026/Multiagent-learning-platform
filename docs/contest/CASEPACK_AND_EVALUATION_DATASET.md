@@ -36,6 +36,35 @@ Each case combines:
 
 Use the casepack to understand how the current product should be described and validated, not to claim benchmark-grade accuracy.
 
+## Anchor Classroom Case
+
+When a judge or reviewer wants one compact story, reuse the same classroom frame already used in the demo bundle:
+
+- a Grade 9 math teacher prepares `contest-demo-quadratics`
+- the learner shows repeated weakness around sign reasoning and factor-pair selection
+- the tutor stays grounded in the same pack and gives scaffolded support
+- the dashboard helps the teacher review evidence and decide the next reteach move
+
+The casepack exists to keep that narrative bounded and repeatable. It does not convert the story into a measured classroom-outcome claim.
+
+## Bounded Metric Card
+
+Use the following metric set only as an operational evidence card:
+
+| Metric | Current bounded value | Source |
+| --- | --- | --- |
+| Current demo-safe Knowledge Pack used as the anchor scenario | `contest-demo-quadratics` | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
+| Verified demo-safe sessions carrying the anchor scenario | `2` sessions (`contest-assessment-demo`, `contest-tutor-demo`) | [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
+| Teacher-review step in the documented loop | `Present` | [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
+| Claim level | `validated prototype`, not benchmark or classroom outcome proof | [`README.md`](./README.md), [`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md) |
+
+Explicit non-claims:
+
+- not diagnosis accuracy
+- not student learning gain
+- not classroom improvement
+- not pilot-scale effectiveness
+
 ## How AI Workers Should Reuse It
 
 - use the JSON casepack as the structured source-of-truth
