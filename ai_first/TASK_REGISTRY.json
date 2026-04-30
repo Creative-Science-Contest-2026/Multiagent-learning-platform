@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "last_updated": "2026-04-28T11:30:00Z",
+    "last_updated": "2026-04-30T09:45:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 88
+    "total_tasks": 92
   },
   "task_categories": {
     "completed": {
@@ -99,7 +99,7 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 14,
+      "count": 18,
       "tasks": [
         "C202_SUBMISSION_SCOPE_FREEZE",
         "C203_CLAIM_AND_PROOF_CONTRACT_FREEZE",
@@ -114,7 +114,11 @@
         "C212_CORE_LOOP_VISIBILITY_POLISH",
         "C213_DIFFERENTIATION_WORDING_SWEEP",
         "C214_JUDGE_FACING_VISUAL_ASSET_POLISH",
-        "C215_POST_POLISH_EVIDENCE_RECAPTURE"
+        "C215_POST_POLISH_EVIDENCE_RECAPTURE",
+        "C216_CONTEST_SHELL_SCOPE_TRIM",
+        "C217_TEACHER_COCKPIT_DEFAULT_ENTRY",
+        "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY",
+        "C219_CLASSROOM_CASE_STUDY_AND_BOUNDED_METRIC_CARD"
       ]
     }
   },
@@ -2193,6 +2197,104 @@
       "recommended_session_bucket": "session-b-validation",
       "layer": "optional-polish",
       "notes": "Merged to main through PR #217 on 2026-04-28. Scope stayed bounded to evidence freshness docs after the latest Phase 2 polish merges; no new smoke run or browser recapture was performed in this lane."
+    },
+    {
+      "id": "C216_CONTEST_SHELL_SCOPE_TRIM",
+      "category": "Contest Differentiation",
+      "priority": 89,
+      "title": "Contest Shell Scope Trim",
+      "description": "Demote or hide non-core DeepTutor-derived routes from the primary contest shell so the default product path stays anchored to Knowledge Pack, Assessment, Tutor, Diagnosis, and Intervention.",
+      "scope": {
+        "frontend": "web/components/sidebar/SidebarShell.tsx, workspace shell navigation, and any bounded contest-facing route affordances needed to keep the main demo linear"
+      },
+      "affected_features": [
+        "Contest UI",
+        "Demo Operations",
+        "Information Architecture"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": [
+        "C213_DIFFERENTIATION_WORDING_SWEEP"
+      ],
+      "status": "pending",
+      "recommended_session_bucket": "session-c-polish",
+      "layer": "optional-polish",
+      "notes": "Triggered by the 2026-04-27 contest differentiation audit: the primary shell still exposes generic `Chat`, `Co-Writer`, `Guided Learning`, `Memory`, and other inherited surfaces that dilute the contest story."
+    },
+    {
+      "id": "C217_TEACHER_COCKPIT_DEFAULT_ENTRY",
+      "category": "Contest Differentiation",
+      "priority": 90,
+      "title": "Teacher Cockpit Default Entry",
+      "description": "Replace the generic chat-first workspace landing with a teacher-first cockpit or redirect that foregrounds classroom setup, assessment, tutor setup, and students needing attention before free-form tooling.",
+      "scope": {
+        "frontend": "web/app/(workspace)/page.tsx, web/app/(workspace)/dashboard/page.tsx, and shared contest-facing summary components needed for a teacher-first entry"
+      },
+      "affected_features": [
+        "Contest UI",
+        "Teacher Experience",
+        "Dashboard Entry"
+      ],
+      "complexity": "High",
+      "estimated_hours": 6,
+      "dependencies": [
+        "C211_TEACHER_FIRST_ENTRY_POLISH",
+        "C216_CONTEST_SHELL_SCOPE_TRIM"
+      ],
+      "status": "pending",
+      "recommended_session_bucket": "session-c-polish",
+      "layer": "optional-polish",
+      "notes": "The current `/` workspace entry is still the broad multi-capability DeepTutor chat surface, which conflicts with the requested teacher-cockpit first impression."
+    },
+    {
+      "id": "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY",
+      "category": "Contest Differentiation",
+      "priority": 91,
+      "title": "Contest Brand And Classroom Terminology",
+      "description": "Add a bounded contest-facing brand and classroom-first terminology layer so judges see a Vietnamese classroom product rather than raw DeepTutor naming and generic agent-workspace labels.",
+      "scope": {
+        "frontend": "web/components/sidebar/SidebarShell.tsx, contest-facing page headers, and the relevant `web/locales/*/app.json` labels used on the primary demo path"
+      },
+      "affected_features": [
+        "Contest UI",
+        "Localization",
+        "Brand Identity"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": [
+        "C213_DIFFERENTIATION_WORDING_SWEEP"
+      ],
+      "status": "pending",
+      "recommended_session_bucket": "session-c-polish",
+      "layer": "optional-polish",
+      "notes": "DeepTutor branding and generic labels remain visible in the current sidebar, shell header, and locale strings even after the earlier wording polish."
+    },
+    {
+      "id": "C219_CLASSROOM_CASE_STUDY_AND_BOUNDED_METRIC_CARD",
+      "category": "Contest Differentiation",
+      "priority": 92,
+      "title": "Classroom Case Study And Bounded Metric Card",
+      "description": "Package one concrete classroom case study plus a small set of non-overclaim operational metrics so the contest story stays anchored to one teacher workflow instead of a long feature list.",
+      "scope": {
+        "docs": "docs/contest/DEMO_SCRIPT.md, docs/contest/README.md, docs/contest/CASEPACK_AND_EVALUATION_DATASET.md, docs/contest/VALIDATION_REPORT.md, and any aligned `ai_first/competition/` copy"
+      },
+      "affected_features": [
+        "Contest Narrative",
+        "Demo Operations",
+        "Evidence Calibration"
+      ],
+      "complexity": "Medium",
+      "estimated_hours": 4,
+      "dependencies": [
+        "C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH",
+        "C207_SUBMISSION_NARRATIVE_PACK"
+      ],
+      "status": "pending",
+      "recommended_session_bucket": "session-a-docs",
+      "layer": "submission-docs",
+      "notes": "The repository already has demo-safe reset data and a validation casepack, but it still lacks one explicit judge-facing case-study card and a compact metric set such as grounded-tutor coverage, recommendation count, or intervention follow-through for that same scenario."
     }
   ],
   "github_issues_template": {
@@ -2372,6 +2474,20 @@
       "C212",
       "C213",
       "C214"
+    ],
+    "C216": [
+      "C213"
+    ],
+    "C217": [
+      "C211",
+      "C216"
+    ],
+    "C218": [
+      "C213"
+    ],
+    "C219": [
+      "C205",
+      "C207"
     ]
   },
   "milestones": {
@@ -2454,6 +2570,16 @@
         "C215"
       ],
       "target_date": "2026-05-05"
+    },
+    "DIFFERENTIATION_HARDENING": {
+      "title": "Contest Differentiation Hardening",
+      "tasks": [
+        "C216",
+        "C217",
+        "C218",
+        "C219"
+      ],
+      "target_date": "2026-05-12"
     }
   }
 }
