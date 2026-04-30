@@ -800,9 +800,9 @@ function BooleanField({
   const { t } = useTranslation();
 
   return (
-    <label className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-transparent px-3 py-2.5">
-      <div className="pr-3">
-        <p className="text-[12px] font-medium text-[var(--foreground)]">{label}</p>
+    <label className="flex min-w-0 flex-col gap-3 rounded-xl border border-[var(--border)] bg-transparent px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0 pr-0 sm:pr-3">
+        <p className="break-words text-[12px] font-medium text-[var(--foreground)]">{label}</p>
         <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
           {checked ? t("On") : t("Off")}
         </p>
@@ -812,7 +812,7 @@ function BooleanField({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+        className={`relative h-6 w-11 shrink-0 self-start rounded-full transition-colors sm:self-center ${
           checked ? "bg-[var(--primary)]" : "bg-[var(--muted)]"
         }`}
       >
