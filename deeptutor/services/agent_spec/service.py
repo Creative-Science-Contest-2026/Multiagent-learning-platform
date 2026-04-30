@@ -57,6 +57,13 @@ def _slugify(value: str) -> str:
     return slug
 
 
+def _normalize_linked_knowledge_pack(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip()
+    return normalized or None
+
+
 def _parse_bullet_fields(markdown: str, fields: tuple[tuple[str, str], ...]) -> dict[str, str]:
     result = {key: "" for key, _ in fields}
     labels = {label: key for key, label in fields}
@@ -217,6 +224,7 @@ class AgentSpecService:
         agent_id: str,
         display_name: str,
         description: str = "",
+        linked_knowledge_pack: str | None = None,
         structured: dict[str, dict[str, str | bool]] | None = None,
         files: dict[str, str] | None = None,
     ) -> dict[str, object]:
@@ -230,6 +238,7 @@ class AgentSpecService:
             "agent_id": normalized_agent_id,
             "display_name": display_name.strip() or normalized_agent_id,
             "description": description.strip(),
+            "linked_knowledge_pack": _normalize_linked_knowledge_pack(linked_knowledge_pack),
             "created_at": now,
             "updated_at": now,
             "version": 1,
@@ -244,6 +253,7 @@ class AgentSpecService:
         agent_id: str,
         display_name: str,
         description: str = "",
+        linked_knowledge_pack: str | None = None,
         structured: dict[str, dict[str, str | bool]] | None = None,
         files: dict[str, str] | None = None,
     ) -> dict[str, object]:
@@ -255,6 +265,7 @@ class AgentSpecService:
         metadata = self._read_metadata(paths)
         metadata["display_name"] = display_name.strip() or normalized_agent_id
         metadata["description"] = description.strip()
+        metadata["linked_knowledge_pack"] = _normalize_linked_knowledge_pack(linked_knowledge_pack)
         metadata["updated_at"] = _now_iso()
         metadata["version"] = int(metadata.get("version", 0)) + 1
         current_files = self._read_current_files(paths.root)
@@ -347,6 +358,7 @@ class AgentSpecService:
             "agent_id": agent_id,
             "display_name": metadata.get("display_name") or agent_id,
             "description": metadata.get("description") or "",
+            "linked_knowledge_pack": metadata.get("linked_knowledge_pack"),
             "version": int(metadata.get("version", 1)),
             "updated_at": metadata.get("updated_at"),
         }
@@ -361,6 +373,7 @@ class AgentSpecService:
             "agent_id": agent_id,
             "display_name": metadata.get("display_name") or agent_id,
             "description": metadata.get("description") or "",
+            "linked_knowledge_pack": metadata.get("linked_knowledge_pack"),
             "version": int(metadata.get("version", 1)),
             "created_at": metadata.get("created_at"),
             "updated_at": metadata.get("updated_at"),

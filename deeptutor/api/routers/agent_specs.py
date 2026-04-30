@@ -44,6 +44,7 @@ class AgentSpecUpsertRequest(BaseModel):
     agent_id: str
     display_name: str
     description: str = ""
+    linked_knowledge_pack: str | None = None
     structured: StructuredPayload = Field(default_factory=StructuredPayload)
     files: dict[str, str] = Field(default_factory=dict)
 
@@ -61,6 +62,7 @@ async def create_agent_spec(payload: AgentSpecUpsertRequest):
             agent_id=payload.agent_id,
             display_name=payload.display_name,
             description=payload.description,
+            linked_knowledge_pack=payload.linked_knowledge_pack,
             structured=payload.structured.model_dump(),
             files=payload.files,
         )
@@ -101,6 +103,7 @@ async def update_agent_spec(agent_id: str, payload: AgentSpecUpsertRequest):
             agent_id=agent_id,
             display_name=payload.display_name,
             description=payload.description,
+            linked_knowledge_pack=payload.linked_knowledge_pack,
             structured=payload.structured.model_dump(),
             files=payload.files,
         )

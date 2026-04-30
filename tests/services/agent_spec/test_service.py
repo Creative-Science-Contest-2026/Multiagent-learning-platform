@@ -39,14 +39,19 @@ def test_create_pack_writes_markdown_and_versions(tmp_path) -> None:
         agent_id="Fraction Coach",
         display_name="Fraction Coach",
         description="Middle-school fraction remediation",
+        linked_knowledge_pack="fractions-pack",
         structured=_sample_structured(),
         files={"CURRICULUM.md": "# Curriculum\n\n- Fractions first.\n"},
     )
 
     assert payload["agent_id"] == "fraction-coach"
     assert payload["version"] == 1
+    assert payload["linked_knowledge_pack"] == "fractions-pack"
     assert (tmp_path / "agent_specs" / "fraction-coach" / "IDENTITY.md").exists()
     assert (tmp_path / "agent_specs" / "fraction-coach" / "versions" / "v0001" / "SOUL.md").exists()
+    assert '"linked_knowledge_pack": "fractions-pack"' in (
+        tmp_path / "agent_specs" / "fraction-coach" / "metadata.json"
+    ).read_text(encoding="utf-8")
     assert "Agent Name: Fraction Coach" in payload["files"]["IDENTITY.md"]
     assert "## Teaching Philosophy" in payload["files"]["SOUL.md"]
 
@@ -56,6 +61,7 @@ def test_save_pack_increments_version_and_preserves_raw_files(tmp_path) -> None:
     service.create_pack(
         agent_id="fraction-coach",
         display_name="Fraction Coach",
+        linked_knowledge_pack="fractions-pack",
         structured=_sample_structured(),
         files={"CURRICULUM.md": "# Curriculum\n\n- Fractions first.\n"},
     )
@@ -64,6 +70,7 @@ def test_save_pack_increments_version_and_preserves_raw_files(tmp_path) -> None:
         agent_id="fraction-coach",
         display_name="Fraction Coach v2",
         description="Updated authoring pack",
+        linked_knowledge_pack="ratios-pack",
         structured={
             **_sample_structured(),
             "identity": {**_sample_structured()["identity"], "tone": "Socratic and encouraging"},
@@ -73,6 +80,7 @@ def test_save_pack_increments_version_and_preserves_raw_files(tmp_path) -> None:
 
     assert updated["version"] == 2
     assert updated["display_name"] == "Fraction Coach v2"
+    assert updated["linked_knowledge_pack"] == "ratios-pack"
     assert "Tone: Socratic and encouraging" in updated["files"]["IDENTITY.md"]
     assert updated["files"]["CURRICULUM.md"].startswith("# Curriculum")
     assert (tmp_path / "agent_specs" / "fraction-coach" / "versions" / "v0002" / "CURRICULUM.md").exists()
@@ -83,6 +91,7 @@ def test_export_pack_archive_contains_all_markdown_files(tmp_path) -> None:
     service.create_pack(
         agent_id="fraction-coach",
         display_name="Fraction Coach",
+        linked_knowledge_pack="fractions-pack",
         structured=_sample_structured(),
     )
 
@@ -101,12 +110,14 @@ def test_get_pack_version_reads_historical_snapshot(tmp_path) -> None:
     service.create_pack(
         agent_id="fraction-coach",
         display_name="Fraction Coach",
+        linked_knowledge_pack="fractions-pack",
         structured=_sample_structured(),
         files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion one.\n"},
     )
     service.save_pack(
         agent_id="fraction-coach",
         display_name="Fraction Coach",
+        linked_knowledge_pack="ratios-pack",
         structured=_sample_structured(),
         files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion two.\n"},
     )
@@ -118,3 +129,5 @@ def test_get_pack_version_reads_historical_snapshot(tmp_path) -> None:
     assert "Version two." in version_two["files"]["WORKFLOW.md"]
     assert version_one["version"] == 1
     assert version_two["version"] == 2
+    assert version_one["linked_knowledge_pack"] == "fractions-pack"
+    assert version_two["linked_knowledge_pack"] == "ratios-pack"

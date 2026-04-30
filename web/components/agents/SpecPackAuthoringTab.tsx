@@ -2,10 +2,11 @@
 
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import type { TFunction } from "i18next";
-import { Download, Loader2, Plus, Save } from "lucide-react";
+import { ArrowRight, BookOpen, Download, Loader2, Plus, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import MarkdownRenderer from "@/components/common/MarkdownRenderer";
+import { buildTutorPackFlowViewModel, buildTutorPackOptions } from "@/components/agents/class-tutor-pack-presenters";
 import {
   createAgentSpec,
   exportAgentSpec,
@@ -17,6 +18,7 @@ import {
   type AgentSpecUpsertPayload,
   updateAgentSpec,
 } from "@/lib/agent-spec-api";
+import { listKnowledgeBases, type KnowledgeBaseSummary } from "@/lib/knowledge-api";
 
 const MANUAL_FILES = ["CURRICULUM.md", "ASSESSMENT.md", "WORKFLOW.md", "KNOWLEDGE.md", "MARKETPLACE.md"] as const;
 type ManualFile = (typeof MANUAL_FILES)[number];
@@ -26,6 +28,7 @@ function createEmptyDraft(t: TFunction): AgentSpecDetail {
     agent_id: "",
     display_name: "",
     description: "",
+    linked_knowledge_pack: null,
     version: 0,
     files: {
       "IDENTITY.md": t("Spec template IDENTITY.md"),
@@ -77,7 +80,9 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
   const { t } = useTranslation();
   const buildEmptyDraft = useCallback(() => createEmptyDraft(t), [t]);
   const [packs, setPacks] = useState<AgentSpecDetail[]>([]);
+  const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [knowledgeLoading, setKnowledgeLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string>("");
   const [draft, setDraft] = useState<AgentSpecDetail>(() => buildEmptyDraft());
   const [activeManualFile, setActiveManualFile] = useState<ManualFile>("CURRICULUM.md");
@@ -118,6 +123,17 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
   }, [reloadList]);
 
   useEffect(() => {
+    void (async () => {
+      setKnowledgeLoading(true);
+      try {
+        setKnowledgeBases(await listKnowledgeBases({ force: true }));
+      } finally {
+        setKnowledgeLoading(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
     if (!draft.agent_id) {
       setRuntimeAudit(null);
       return;
@@ -135,13 +151,33 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
     })();
   }, [draft.agent_id, auditCapability]);
 
-  const runtimeSummary = useMemo(
-    () => [
-      draft.structured.identity.subject || t("No subject yet"),
-      draft.structured.identity.primary_language || t("No language yet"),
-      draft.structured.rules.do_not_solve_directly || t("No direct-answer rule yet"),
-    ],
-    [draft, t],
+  const tutorFlowLabels = useMemo(
+    () => ({
+      noPackLinked: t("No linked Knowledge Pack yet"),
+      packNotFound: t("Linked Knowledge Pack no longer exists"),
+      noSubject: t("No subject yet"),
+      noDifficulty: t("No difficulty yet"),
+      noObjectives: t("No learning goals yet"),
+      noLanguage: t("No language yet"),
+      noTone: t("No teaching tone yet"),
+      noTeachingStyle: t("No teaching style summary yet"),
+      noEscalation: t("No teacher handoff rule yet"),
+      linkedStatus: t("Linked"),
+      unlinkedStatus: t("Not linked"),
+      missingStatus: t("Needs relinking"),
+      objectiveCount: (count: number) => t("{{count}} learning goals", { count }),
+    }),
+    [t],
+  );
+
+  const linkedPackView = useMemo(
+    () => buildTutorPackFlowViewModel(draft, knowledgeBases, tutorFlowLabels),
+    [draft, knowledgeBases, tutorFlowLabels],
+  );
+
+  const knowledgePackOptions = useMemo(
+    () => buildTutorPackOptions(knowledgeBases),
+    [knowledgeBases],
   );
 
   const currentPreview = draft.files[activeManualFile] || "";
@@ -168,6 +204,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
       agent_id: resolvedAgentId,
       display_name: draft.display_name.trim() || resolvedAgentId,
       description: draft.description,
+      linked_knowledge_pack: draft.linked_knowledge_pack,
       structured: draft.structured,
       files: Object.fromEntries(MANUAL_FILES.map((filename) => [filename, draft.files[filename] ?? ""])),
     };
@@ -220,10 +257,10 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
-              {t("Teacher setup")}
+              {t("Classroom step 2")}
             </p>
             <h2 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
-              {t("Shape the teacher-controlled tutor for this class")}
+              {t("Pick the class tutor that teaches each Knowledge Pack")}
             </h2>
           </div>
           <button
@@ -263,6 +300,11 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
                     </span>
                   </div>
                   <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">{pack.agent_id}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-[var(--background)] px-2 py-0.5 text-[10px] text-[var(--muted-foreground)]">
+                      {pack.linked_knowledge_pack || t("Not linked yet")}
+                    </span>
+                  </div>
                   <p className="mt-2 line-clamp-2 text-[12px] text-[var(--muted-foreground)]">
                     {pack.description || t("No description yet.")}
                   </p>
@@ -278,13 +320,13 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
           <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
-                {t("Teacher controls")}
+                {t("Step 2 of classroom setup")}
               </p>
               <h2 className="mt-1 text-[18px] font-semibold text-[var(--foreground)]">
-                {t("Choose class fit, support style, and guardrails")}
+                {t("Define how this class tutor teaches the selected Knowledge Pack")}
               </h2>
               <p className="mt-2 max-w-[680px] text-[13px] text-[var(--muted-foreground)]">
-                {t("IDENTITY defines who this class tutor supports, SOUL shapes how it coaches when students are wrong or stuck, and RULES keep every response inside your classroom boundaries.")}
+                {t("Link this class tutor to one Knowledge Pack so the teaching tone, support moves, and boundaries stay grounded in the same classroom context.")}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 lg:justify-end">
@@ -307,7 +349,83 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/60 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                    {t("Linked Knowledge Pack")}
+                  </p>
+                  <h3 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
+                    {linkedPackView.packName}
+                  </h3>
+                </div>
+                <span className={`rounded-full px-2.5 py-1 text-[10px] font-medium ${
+                  linkedPackView.statusTone === "linked"
+                    ? "bg-emerald-500/12 text-emerald-700"
+                    : linkedPackView.statusTone === "missing"
+                      ? "bg-amber-500/12 text-amber-700"
+                      : "bg-[var(--muted)] text-[var(--muted-foreground)]"
+                }`}>
+                  {linkedPackView.statusLabel}
+                </span>
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <SummaryTile label={t("Subject")} value={linkedPackView.subject} />
+                <SummaryTile label={t("Difficulty")} value={linkedPackView.difficulty} />
+                <SummaryTile label={t("Language")} value={linkedPackView.language} />
+                <SummaryTile label={t("Learning goals")} value={linkedPackView.objectiveSummary} />
+              </div>
+              <p className="mt-4 text-[13px] text-[var(--muted-foreground)]">
+                {t("Teachers use this link to keep the tutor voice, support moves, and classroom boundaries aligned with one chosen pack.")}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/60 p-4">
+              <div className="flex items-center gap-2 text-[13px] font-medium text-[var(--foreground)]">
+                <BookOpen className="h-4 w-4 text-[var(--primary)]" />
+                {t("Choose or change the linked pack")}
+              </div>
+              <p className="mt-2 text-[12px] text-[var(--muted-foreground)]">
+                {t("A class tutor should follow one pack at a time so students receive one consistent teaching style for that classroom flow.")}
+              </p>
+              <label className="mt-4 block">
+                <span className="mb-1 block text-[12px] font-medium text-[var(--muted-foreground)]">
+                  {t("Knowledge Pack")}
+                </span>
+                <select
+                  value={draft.linked_knowledge_pack ?? ""}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      linked_knowledge_pack: event.target.value || null,
+                    }))
+                  }
+                  className="w-full rounded-xl border border-[var(--border)] bg-transparent px-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--ring)]"
+                >
+                  <option value="">
+                    {knowledgeLoading ? t("Loading Knowledge Packs…") : t("Choose a Knowledge Pack")}
+                  </option>
+                  {knowledgePackOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="mt-4 rounded-xl border border-dashed border-[var(--border)] p-3 text-[12px] text-[var(--muted-foreground)]">
+                <div className="flex items-center gap-2 text-[var(--foreground)]">
+                  <ArrowRight className="h-3.5 w-3.5" />
+                  {t("Suggested flow")}
+                </div>
+                <p className="mt-2">
+                  {t("1. Finalize the Knowledge Pack. 2. Define how the class tutor teaches it. 3. Let students practice with one coherent classroom setup.")}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
             <LabeledInput label={t("Display name")} value={draft.display_name} onChange={(value) => setDraft((current) => ({ ...current, display_name: value }))} />
             <LabeledInput
               label={t("Agent ID")}
@@ -326,7 +444,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
 
         <StructuredSection
           title={t("IDENTITY.md")}
-          description={t("Choose the subject, student level, tone, and language students will experience.")}
+          description={t("Set who this tutor is for and how students should experience the linked pack in class.")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <LabeledInput label={t("Agent name")} value={draft.structured.identity.agent_name} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, identity: { ...current.structured.identity, agent_name: value } } }))} />
@@ -340,7 +458,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
 
         <StructuredSection
           title={t("SOUL.md")}
-          description={t("Decide how the tutor encourages, scaffolds, and responds when a student is wrong or losing confidence.")}
+          description={t("Define how this tutor explains the linked pack, encourages students, and responds when they are wrong or stuck.")}
         >
           <LabeledTextarea label={t("Teaching philosophy")} rows={4} value={draft.structured.soul.teaching_philosophy} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, soul: { ...current.structured.soul, teaching_philosophy: value } } }))} />
           <LabeledTextarea label={t("When the student is wrong")} rows={4} value={draft.structured.soul.when_student_wrong} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, soul: { ...current.structured.soul, when_student_wrong: value } } }))} />
@@ -350,7 +468,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
 
         <StructuredSection
           title={t("RULES.md")}
-          description={t("Set clear classroom boundaries such as hint limits, session expectations, and when the class tutor should escalate back to teacher review.")}
+          description={t("Set the classroom boundaries for this linked tutor, including hint limits and when the case should return to teacher review.")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <LabeledInput label={t("Do not solve directly")} value={draft.structured.rules.do_not_solve_directly} onChange={(value) => setDraft((current) => ({ ...current, structured: { ...current.structured, rules: { ...current.structured.rules, do_not_solve_directly: value } } }))} />
@@ -367,10 +485,10 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
               {t("Markdown source of truth")}
             </p>
             <h3 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
-              {t("Manual editing for the remaining files")}
+              {t("Extra classroom details in markdown")}
             </h3>
             <p className="mt-2 text-[13px] text-[var(--muted-foreground)]">
-              {t("Use these files when you want to define curriculum priorities, assessment signals, remediation flow, knowledge policy, or sharing metadata in your own words.")}
+              {t("Use these files only when you need extra detail for curriculum priorities, assessment signals, remediation flow, knowledge policy, or sharing metadata.")}
             </p>
           </div>
           <div className="mb-3 flex flex-wrap gap-2">
@@ -414,10 +532,13 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
             {draft.display_name || t("Unsaved spec pack")}
           </h3>
           <div className="mt-4 space-y-3 text-[13px]">
-            <SummaryRow label={t("Subject")} value={draft.structured.identity.subject} />
-            <SummaryRow label={t("Language")} value={draft.structured.identity.primary_language} />
-            <SummaryRow label={t("Tone")} value={draft.structured.identity.tone} />
-            <SummaryRow label={t("What students will feel")} value={runtimeSummary.join(" • ")} />
+            <SummaryRow label={t("Linked Knowledge Pack")} value={linkedPackView.packName} />
+            <SummaryRow label={t("Subject")} value={linkedPackView.subject} />
+            <SummaryRow label={t("Learning goals")} value={linkedPackView.objectiveSummary} />
+            <SummaryRow label={t("Language")} value={linkedPackView.language} />
+            <SummaryRow label={t("Tone")} value={linkedPackView.tone} />
+            <SummaryRow label={t("What the tutor will emphasize")} value={linkedPackView.teachingPromise} />
+            <SummaryRow label={t("When to send back to teacher")} value={linkedPackView.escalationSummary} />
             <SummaryRow label={t("Version")} value={draft.version > 0 ? `v${draft.version}` : t("New")} />
           </div>
         </div>
@@ -429,7 +550,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
                 {t("Runtime policy audit")}
               </p>
               <h3 className="mt-1 text-[16px] font-semibold text-[var(--foreground)]">
-                {t("What policy actually reaches the agent")}
+                {t("Technical runtime check")}
               </h3>
             </div>
             <select
@@ -579,6 +700,15 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
     <div className="min-w-0">
       <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--muted-foreground)]">{label}</p>
       <p className="mt-1 break-words text-[13px] text-[var(--foreground)]">{value || "—"}</p>
+    </div>
+  );
+}
+
+function SummaryTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card)]/60 p-3">
+      <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--muted-foreground)]">{label}</p>
+      <p className="mt-1 text-[13px] font-medium text-[var(--foreground)]">{value || "—"}</p>
     </div>
   );
 }

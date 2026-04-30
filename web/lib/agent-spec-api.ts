@@ -4,6 +4,7 @@ export interface AgentSpecSummary {
   agent_id: string;
   display_name: string;
   description: string;
+  linked_knowledge_pack?: string | null;
   version: number;
   updated_at: string;
 }
@@ -36,6 +37,7 @@ export interface AgentSpecDetail {
   agent_id: string;
   display_name: string;
   description: string;
+  linked_knowledge_pack?: string | null;
   version: number;
   created_at?: string;
   updated_at?: string;
@@ -57,6 +59,7 @@ export interface AgentSpecUpsertPayload {
   agent_id: string;
   display_name: string;
   description: string;
+  linked_knowledge_pack?: string | null;
   structured: AgentSpecDetail["structured"];
   files: Record<string, string>;
 }
