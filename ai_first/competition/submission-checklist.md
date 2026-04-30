@@ -38,5 +38,7 @@
 - HKUDS/DeepTutor credit retained: upstream credit remains visible in `README.md` and `AGENTS.md`.
 - No secrets committed: tracked-file grep on 2026-04-25 found only test/example placeholders, not live credentials or private keys.
 - Uploaded sample data is licensed or self-created: contest docs require demo-safe local data only via `docs/contest/DEMO_DATA_RESET.md`.
+- Screenshots captured: authoritative screenshot bundle was refreshed on 2026-04-30; see `docs/contest/EVIDENCE_CHECKLIST.md` and `docs/contest/VALIDATION_REPORT.md`.
 - Product description drafted: see `ai_first/competition/product-description.md`.
 - Fork modifications described: see `ai_first/competition/fork-modifications.md`.
+- Remaining human-only review gates: see `docs/contest/HUMAN_REVIEW_HANDOFF.md`.
