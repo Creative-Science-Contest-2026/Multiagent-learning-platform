@@ -15,6 +15,37 @@ Active assignment:
 
 ## API/data contract
 
+## Design before implementation
+
+- Runtime behavior change: yes/no
+- If no: state why this task is docs-only, mirror-only, or otherwise non-runtime.
+- If yes: confirm `.github/skills/brainstorming/SKILL.md` was read before implementation.
+- Current behavior:
+- Intended behavior change:
+- Candidate approach A:
+- Candidate approach B:
+- Chosen approach and reason:
+- Concrete files/modules expected to change:
+- Tests to add or update:
+
+## Required code reading
+
+- Entry points/handlers to inspect:
+- Primary logic/service/use-case modules to inspect:
+- Shared contracts/schemas/types to inspect:
+- Adjacent or reused flows to inspect:
+- Existing tests to inspect:
+- Notes from codebase survey:
+
+## Impact surface and stop conditions
+
+- Expected affected areas:
+- Files/modules likely to change:
+- Files/modules that must be reviewed even if they may remain unchanged:
+- Minimum validation paths before the task can stop:
+- What would count as a shallow fix for this task:
+- Conditions that must be checked before marking done:
+
 ## Acceptance criteria
 
 ## Required tests

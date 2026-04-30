@@ -54,6 +54,34 @@ Before edits:
 - Every commit must include the active task identifier from the task packet or task registry.
 - Do not broaden scope just because the repo contains more files; stay inside the task packet or bootstrap contract.
 
+## Runtime-change design gate
+
+- Any task that changes runtime behavior must read `.github/skills/brainstorming/SKILL.md` before implementation.
+- Docs-only, mirror-only, and other non-runtime control-plane updates are exempt from this gate.
+- Runtime implementation may start only after the worker records a bounded design artifact in one of these places:
+  - a dedicated spec under `docs/superpowers/specs/`, or
+  - a `Design before implementation` section inside the active task packet.
+- The design artifact must state at minimum:
+  - current behavior
+  - intended behavior change
+  - 2 candidate approaches with the chosen approach and reason
+  - concrete files or modules expected to change
+  - tests to add or update
+- For runtime tasks, reading the brainstorming skill is necessary but not sufficient. If no bounded design artifact exists yet, do not edit runtime code.
+- Runtime tasks must record a codebase survey before implementation that covers:
+  - entry points or handlers
+  - primary service or use-case modules
+  - shared contracts, schemas, or types
+  - adjacent or reused flows that may share the same logic
+  - the closest existing tests
+- Runtime tasks must declare the expected impact surface before implementation:
+  - files or modules likely to change
+  - files or modules reviewed but expected to remain unchanged
+  - validation paths that must be checked before the task can stop
+- Large runtime tasks must optimize for impact-surface coverage, not just minimal edits. The worker must inspect the relevant sibling paths and explain why each affected area was changed or intentionally left unchanged.
+- A runtime task is not complete if it only changes surface text, styling, or shallow wiring while leaving the underlying behavior, impact-surface review, test coverage, and design artifact unchanged.
+- A runtime task is also not complete if the worker edits a narrow cluster of files but does not show that the broader affected code paths were inspected.
+
 ## Commit message convention
 
 - Treat the task packet as the source of truth for commit tagging.
@@ -157,11 +185,13 @@ When starting work, do the following in order:
 2. Confirm the task ID and commit tag.
 3. Confirm owned files and do-not-touch files.
 4. Check whether the change is docs-only, workflow-only, or a runtime change.
-5. Read the minimum additional context needed.
-6. Make the smallest useful change.
-7. Run the relevant test or validation command.
-8. Update this file if the repo-level operating model changed.
-9. Update the daily log and handoff notes.
+5. If the change is a runtime change, read `.github/skills/brainstorming/SKILL.md` and write the bounded design artifact before editing code.
+6. If the change is a runtime change, complete the required codebase survey and declare the expected impact surface before editing code.
+7. Read the minimum additional context needed.
+8. Make the smallest useful change that still covers the declared impact surface.
+9. Run the relevant test or validation command.
+10. Update this file if the repo-level operating model changed.
+11. Update the daily log and handoff notes.
 
 ## Completion rules
 
@@ -171,10 +201,11 @@ Before handing off:
 2. Record tests and failures.
 3. Update `ai_first/daily/YYYY-MM-DD.md`.
 4. Update this file if status, workflow, or next actions changed.
-5. Confirm the PR is Ready for review (not Draft) before requesting merge.
-6. Confirm all required CI checks are green before merge.
-7. Check whether the PR is eligible for autonomous merge under the merge policy.
-8. Add handoff notes with changed files, risks, merge status, and the next recommended read path.
+5. For runtime tasks, confirm the declared impact surface was inspected and explain any reviewed files or modules that were intentionally left unchanged.
+6. Confirm the PR is Ready for review (not Draft) before requesting merge.
+7. Confirm all required CI checks are green before merge.
+8. Check whether the PR is eligible for autonomous merge under the merge policy.
+9. Add handoff notes with changed files, risks, merge status, and the next recommended read path.
 ## Task Tracking System
 
 The project uses a structured task registry to track MVP gaps, priorities, and progress:
