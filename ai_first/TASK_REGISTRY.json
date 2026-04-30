@@ -2318,10 +2318,10 @@
         "C217_TEACHER_COCKPIT_DEFAULT_ENTRY",
         "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY"
       ],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime",
       "layer": "post-contest-recovery",
-      "notes": "In progress on branch fix/contest-layout-breakage-sweep as of 2026-04-30. Local runtime hardening has landed for /agents plus bounded responsive guards on the teacher cockpit, Knowledge, and Dashboard; final merge status pending review."
+      "notes": "Merged to main through PR #246 on 2026-04-30. The contest-path responsive sweep restacked `/agents` spec-pack authoring, widened the `/agents` shell, and added bounded overflow guards on the teacher cockpit, Knowledge header, and dashboard metric grid."
     },
     {
       "id": "C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION",

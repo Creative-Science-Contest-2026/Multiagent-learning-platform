@@ -6,9 +6,9 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Immediate
 
-1. Execute `C220_CONTEST_LAYOUT_BREAKAGE_SWEEP` from `main`, starting with `/agents` spec-pack authoring and then verifying `/`, `Knowledge`, `Marketplace`, and `Dashboard`.
-2. Execute `C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION` after the layout sweep so longer Vietnamese strings land on stable responsive containers.
-3. Decide whether a new browser screenshot recapture packet is needed after those UI-visible fixes merge.
+1. Execute `C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION` from `main` now that `C220` has stabilized the contest-path responsive layout.
+2. Decide whether a new browser screenshot recapture packet is needed after the remaining Vietnamese-coverage fixes merge.
+3. Resume human review and final submission sign-off once `C221` is closed.
 
 ## After Milestone 0
 
@@ -19,15 +19,14 @@ This file is a compatibility snapshot. The authoritative action list lives in `a
 
 ## Human Review Needed
 
-- Review IP commitment, product-description wording, optional video requirement, and final submission sign-off after `C220/C221` close the remaining visible UI issues.
+- Review IP commitment, product-description wording, optional video requirement, and final submission sign-off after `C221` closes the last visible UI issue.
 
 ## Mirror Policy
 
 Use this file only as a compact queue mirror. Do not rely on it for the full operating contract. For a human-friendly quick start, read `ai_first/USAGE_GUIDE.md`.
 ## 2026-04-30
 
-1. `C220` is the first follow-up lane because layout breakage currently blocks a credible classroom demo more than wording drift alone.
-2. `C221` should follow `C220`, not precede it, because the Vietnamese pass will lengthen labels and needs the responsive containers fixed first.
-3. Keep contest wording at validated-prototype level unless a stronger repository artifact is added.
-4. Open a new browser-recapture packet only if `C220` or `C221` makes the authoritative screenshot rows stale again.
-5. Return to human-only sign-off work only after the current visible UI/runtime follow-ups are merged.
+1. `C220` is merged, so `C221` is now the next and only active runtime follow-up on the contest path.
+2. Keep contest wording at validated-prototype level unless a stronger repository artifact is added.
+3. Open a new browser-recapture packet only if `C221` makes the authoritative screenshot rows stale again.
+4. Return to human-only sign-off work only after `C221` is merged.
