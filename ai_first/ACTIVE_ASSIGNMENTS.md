@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-settings-hide-runtime-config`
+- Task: Hide runtime LLM/embedding/search configuration from the end-user settings page and move active runtime values to local `.env`
+- Status: implemented, pending PR
+- Branch: `fix/settings-hide-runtime-config`
+- Task packet: `docs/superpowers/tasks/2026-04-30-settings-hide-runtime-config.md`
+- Owned files: `web/app/(utility)/settings/page.tsx`, `web/tests/settings-page-runtime-privacy.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-settings-hide-runtime-config.md`, `docs/superpowers/specs/2026-04-30-settings-hide-runtime-config-design.md`, `docs/superpowers/plans/2026-04-30-settings-hide-runtime-config.md`, `docs/superpowers/pr-notes/2026-04-30-settings-hide-runtime-config.md`, local-only `.env`
+- PR: uncreated
+- Last update: 2026-04-30
+- Next action: self-review the settings shell diff, then open a draft PR
+- Blocker: targeted eslint in this worktree cannot resolve `eslint-config-next`
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-agents-tutor-setup-cleanup`
 - Task: Clean up only the `Gia sư lớp học / Tutor setup` tab on `/agents` for production-ready teacher UX
 - Status: implemented, pending PR
