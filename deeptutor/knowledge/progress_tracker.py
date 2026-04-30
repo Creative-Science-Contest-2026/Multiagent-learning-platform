@@ -9,6 +9,7 @@ from enum import Enum
 import json
 from pathlib import Path
 import logging
+from typing import Any
 
 # Use unified logging system
 from deeptutor.logging import get_logger
@@ -116,6 +117,7 @@ class ProgressTracker:
                     "current": progress.get("current", 0),
                     "total": progress.get("total", 0),
                     "file_name": progress.get("file_name"),
+                    "file_statuses": progress.get("file_statuses"),
                     "error": progress.get("error"),
                     "timestamp": progress.get("timestamp"),
                     "task_id": progress.get("task_id"),
@@ -124,6 +126,13 @@ class ProgressTracker:
         except Exception as e:
             _get_logger().warning("Failed to save progress to kb_config.json: %s", e)
 
+        try:
+            self.kb_dir.mkdir(parents=True, exist_ok=True)
+            with open(self.progress_file, "w", encoding="utf-8") as handle:
+                json.dump(progress, handle, indent=2, ensure_ascii=False)
+        except Exception as e:
+            _get_logger().warning("Failed to save progress to local file: %s", e)
+
     def update(
         self,
         stage: ProgressStage,
@@ -131,6 +140,7 @@ class ProgressTracker:
         current: int = 0,
         total: int = 0,
         file_name: str = "",
+        file_statuses: list[dict[str, Any]] | None = None,
         error: str | None = None,
     ):
         """Update progress"""
@@ -145,6 +155,9 @@ class ProgressTracker:
             "progress_percent": int(current / total * 100) if total > 0 else 0,
             "timestamp": datetime.now().isoformat(),
         }
+
+        if file_statuses is not None:
+            progress["file_statuses"] = file_statuses
 
         if error:
             progress["error"] = error

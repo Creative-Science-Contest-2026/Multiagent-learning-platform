@@ -2,24 +2,17 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
 import {
+  AlertCircle,
+  ArrowLeft,
   ArrowRight,
   BookOpen,
-  ChevronDown,
-  ChevronRight,
-  Database,
-  ExternalLink,
-  FileUp,
-  GraduationCap,
+  CheckCircle2,
+  FileText,
   Loader2,
-  MessageSquare,
-  NotebookPen,
-  PenLine,
+  PencilLine,
   Plus,
-  Search,
-  Star,
+  Sparkles,
   Trash2,
   Upload,
 } from "lucide-react";
@@ -27,23 +20,24 @@ import { apiUrl, wsUrl } from "@/lib/api";
 import {
   invalidateKnowledgeCaches,
   listKnowledgeBases,
-  listRagProviders,
   type TeacherPackMetadata,
   updateKnowledgeBaseConfig,
 } from "@/lib/knowledge-api";
-import {
-  getNotebookDetail,
-  invalidateNotebookCaches,
-  listNotebooks,
-} from "@/lib/notebook-api";
 import { CoreLoopVisibilityStrip } from "@/components/contest/CoreLoopVisibilityStrip";
 
-const MarkdownRenderer = dynamic(() => import("@/components/common/MarkdownRenderer"), {
-  ssr: false,
-});
 const ProcessLogs = dynamic(() => import("@/components/common/ProcessLogs"), {
   ssr: false,
 });
+
+type WizardStep = "info" | "files" | "done";
+type DifficultyValue = "beginner" | "intermediate" | "advanced";
+
+interface FileStatusInfo {
+  name: string;
+  status: string;
+  error?: string;
+  updated_at?: string;
+}
 
 interface ProgressInfo {
   task_id?: string;
@@ -53,6 +47,9 @@ interface ProgressInfo {
   total?: number;
   percent?: number;
   progress_percent?: number;
+  file_name?: string;
+  file_statuses?: FileStatusInfo[];
+  error?: string;
 }
 
 interface KnowledgeBase {
@@ -70,41 +67,6 @@ interface KnowledgeBase {
   };
 }
 
-interface NotebookInfo {
-  id: string;
-  name: string;
-  description?: string;
-  record_count?: number;
-  color?: string;
-  icon?: string;
-  updated_at?: number;
-}
-
-interface NotebookRecord {
-  id: string;
-  type: string;
-  title: string;
-  summary?: string;
-  user_query?: string;
-  output: string;
-  metadata?: Record<string, unknown>;
-  created_at?: number;
-}
-
-interface NotebookDetail extends NotebookInfo {
-  records: NotebookRecord[];
-}
-
-interface RAGProvider {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface KnowledgeTaskResponse {
-  task_id?: string;
-}
-
 interface ProcessState {
   taskId: string | null;
   label: string;
@@ -112,8 +74,6 @@ interface ProcessState {
   executing: boolean;
   error: string | null;
 }
-
-type ProcessKind = "create" | "upload";
 
 const EMPTY_PROCESS_STATE: ProcessState = {
   taskId: null,
@@ -123,13 +83,94 @@ const EMPTY_PROCESS_STATE: ProcessState = {
   error: null,
 };
 
+const WIZARD_STEPS: Array<{ key: WizardStep; label: string }> = [
+  { key: "info", label: "Thông tin" },
+  { key: "files", label: "Tài liệu" },
+  { key: "done", label: "Hoàn tất" },
+];
+
+const DIFFICULTY_OPTIONS: Array<{ value: DifficultyValue; label: string; hint: string }> = [
+  { value: "beginner", label: "Cơ bản", hint: "Nội dung nền tảng, dễ bắt đầu." },
+  { value: "intermediate", label: "Trung bình", hint: "Cân bằng giữa luyện tập và suy luận." },
+  { value: "advanced", label: "Nâng cao", hint: "Phù hợp bài học nhiều thử thách hơn." },
+];
+
 const resolveKbStatus = (kb: KnowledgeBase): string => kb.status ?? kb.statistics?.status ?? "unknown";
 
-const kbNeedsReindex = (kb: KnowledgeBase): boolean =>
-  Boolean(kb.statistics?.needs_reindex) || resolveKbStatus(kb) === "needs_reindex";
+const resolveProgress = (kb: KnowledgeBase, progressMap: Record<string, ProgressInfo>): ProgressInfo | null =>
+  progressMap[kb.name] ?? kb.progress ?? kb.statistics?.progress ?? null;
 
-const kbIsUploadable = (kb: KnowledgeBase): boolean =>
-  resolveKbStatus(kb) === "ready" && !kbNeedsReindex(kb);
+const difficultyLabel = (value?: string | null): string => {
+  switch (value) {
+    case "beginner":
+      return "Cơ bản";
+    case "intermediate":
+      return "Trung bình";
+    case "advanced":
+      return "Nâng cao";
+    default:
+      return value?.trim() || "Chưa chọn";
+  }
+};
+
+const statusLabel = (status?: string | null): string => {
+  switch (status) {
+    case "initializing":
+      return "Đang khởi tạo";
+    case "processing":
+    case "processing_documents":
+    case "processing_file":
+      return "Đang xử lý";
+    case "extracting_items":
+      return "Đang hoàn thiện";
+    case "completed":
+    case "ready":
+      return "Hoàn tất";
+    case "error":
+      return "Có lỗi";
+    case "uploaded":
+      return "Đã tải lên";
+    case "indexed":
+      return "Đã lập chỉ mục";
+    case "skipped":
+      return "Đã bỏ qua";
+    case "needs_reindex":
+      return "Cần lập chỉ mục lại";
+    default:
+      return "Chưa rõ";
+  }
+};
+
+const progressPercent = (progress?: ProgressInfo | null): number => {
+  if (!progress) return 0;
+  if (typeof progress.progress_percent === "number") return progress.progress_percent;
+  if (typeof progress.percent === "number") return progress.percent;
+  if (progress.total && progress.current) {
+    return Math.round((progress.current / progress.total) * 100);
+  }
+  return 0;
+};
+
+const progressSummaryLabel = (progress?: ProgressInfo | null): string => {
+  if (!progress) return "Sẵn sàng tiếp nhận tài liệu";
+  if (progress.error) return "Tiến trình gặp lỗi";
+  switch (progress.stage) {
+    case "initializing":
+      return "Đang khởi tạo gói kiến thức";
+    case "processing_documents":
+      return "Đang xử lý tài liệu";
+    case "processing_file":
+      return progress.file_name ? `Đang xử lý ${progress.file_name}` : "Đang xử lý từng tài liệu";
+    case "extracting_items":
+      return "Đang hoàn thiện dữ liệu lập chỉ mục";
+    case "completed":
+      return "Gói kiến thức đã sẵn sàng";
+    case "error":
+      return "Không thể hoàn tất lập chỉ mục";
+    default:
+      return progress.message || "Đang cập nhật trạng thái";
+  }
+};
 
 const parseLearningObjectives = (value: string): string[] =>
   value
@@ -137,114 +178,73 @@ const parseLearningObjectives = (value: string): string[] =>
     .map((item) => item.trim())
     .filter(Boolean);
 
-const parseMultilineList = (value: string): string[] =>
-  value
-    .split("\n")
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-const formatLearningObjectives = (value?: string[] | null): string =>
-  Array.isArray(value) ? value.join("\n") : "";
-
-const formatMultilineList = (value?: string[] | null): string =>
-  Array.isArray(value) ? value.join("\n") : "";
-
-const normalizeSharingStatus = (value: string): "private" | "team" | "public" | null => {
-  const normalized = value.trim().toLowerCase();
-  if (normalized === "private" || normalized === "team" || normalized === "public") {
-    return normalized;
-  }
-  return null;
-};
-
 const buildTeacherPackMetadata = (input: {
   subject: string;
-  grade: string;
+  difficulty: DifficultyValue;
   curriculum: string;
   learningObjectives: string;
-  owner: string;
-  sharingStatus: string;
-  teamMembers: string;
-  pendingInvites: string;
-}): TeacherPackMetadata | null => {
-  const metadata: TeacherPackMetadata = {};
-  const learningObjectives = parseLearningObjectives(input.learningObjectives);
-  const teamMembers = parseMultilineList(input.teamMembers);
-  const pendingInvites = parseMultilineList(input.pendingInvites);
+}): TeacherPackMetadata => ({
+  subject: input.subject.trim(),
+  curriculum: input.curriculum.trim(),
+  difficulty: input.difficulty,
+  learning_objectives: parseLearningObjectives(input.learningObjectives),
+  grade: null,
+});
 
-  if (input.subject.trim()) metadata.subject = input.subject.trim();
-  if (input.grade.trim()) metadata.grade = input.grade.trim();
-  if (input.curriculum.trim()) metadata.curriculum = input.curriculum.trim();
-  if (learningObjectives.length) metadata.learning_objectives = learningObjectives;
-  if (input.owner.trim()) metadata.owner = input.owner.trim();
-  const sharingStatus = normalizeSharingStatus(input.sharingStatus);
-  if (sharingStatus) metadata.sharing_status = sharingStatus;
-  if (sharingStatus === "team") {
-    if (teamMembers.length) metadata.team_members = teamMembers;
-    if (pendingInvites.length) metadata.pending_invites = pendingInvites;
+const formatBytes = (bytes: number): string => {
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
-
-  return Object.keys(metadata).length ? metadata : null;
+  if (bytes >= 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${bytes} B`;
 };
 
+const makeInitialFileStatuses = (files: File[]): FileStatusInfo[] =>
+  files.map((file) => ({
+    name: file.name,
+    status: "uploaded",
+  }));
+
 export default function KnowledgePage() {
-  const router = useRouter();
-  const { t } = useTranslation();
-  const [tab, setTab] = useState<"knowledge" | "notebooks">("knowledge");
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBase[]>([]);
-  const [notebooks, setNotebooks] = useState<NotebookInfo[]>([]);
-  const [providers, setProviders] = useState<RAGProvider[]>([]);
+  const [progressMap, setProgressMap] = useState<Record<string, ProgressInfo>>({});
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
+  const [wizardStep, setWizardStep] = useState<WizardStep>("info");
   const [creating, setCreating] = useState(false);
-  const [uploadingKb, setUploadingKb] = useState<string | null>(null);
-  const [progressMap, setProgressMap] = useState<Record<string, ProgressInfo>>({});
-  const [newKbName, setNewKbName] = useState("");
-  const [newKbFiles, setNewKbFiles] = useState<File[]>([]);
-  const [selectedProvider, setSelectedProvider] = useState("llamaindex");
-  const [newKbSubject, setNewKbSubject] = useState("");
-  const [newKbGrade, setNewKbGrade] = useState("");
-  const [newKbCurriculum, setNewKbCurriculum] = useState("");
-  const [newKbLearningObjectives, setNewKbLearningObjectives] = useState("");
-  const [newKbOwner, setNewKbOwner] = useState("");
-  const [newKbSharingStatus, setNewKbSharingStatus] = useState<"private" | "team" | "public">("private");
-  const [newKbTeamMembers, setNewKbTeamMembers] = useState("");
-  const [newKbPendingInvites, setNewKbPendingInvites] = useState("");
-  const [editingKbName, setEditingKbName] = useState<string | null>(null);
-  const [editKbSubject, setEditKbSubject] = useState("");
-  const [editKbGrade, setEditKbGrade] = useState("");
-  const [editKbCurriculum, setEditKbCurriculum] = useState("");
-  const [editKbLearningObjectives, setEditKbLearningObjectives] = useState("");
-  const [editKbOwner, setEditKbOwner] = useState("");
-  const [editKbSharingStatus, setEditKbSharingStatus] = useState<"private" | "team" | "public">("private");
-  const [editKbTeamMembers, setEditKbTeamMembers] = useState("");
-  const [editKbPendingInvites, setEditKbPendingInvites] = useState("");
-  const [savingKbMetadata, setSavingKbMetadata] = useState(false);
-  const [editKbError, setEditKbError] = useState<string | null>(null);
-  const [uploadTarget, setUploadTarget] = useState("");
-  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
-  const [newNotebookName, setNewNotebookName] = useState("");
-  const [newNotebookDescription, setNewNotebookDescription] = useState("");
-  const [selectedNotebookId, setSelectedNotebookId] = useState<string | null>(null);
-  const [selectedNotebook, setSelectedNotebook] = useState<NotebookDetail | null>(null);
-  const [loadingNotebookDetail, setLoadingNotebookDetail] = useState(false);
-  const [expandedRecordId, setExpandedRecordId] = useState<string | null>(null);
   const [createProcess, setCreateProcess] = useState<ProcessState>(EMPTY_PROCESS_STATE);
-  const [uploadProcess, setUploadProcess] = useState<ProcessState>(EMPTY_PROCESS_STATE);
+  const [packName, setPackName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [difficulty, setDifficulty] = useState<DifficultyValue>("beginner");
+  const [curriculum, setCurriculum] = useState("");
+  const [learningObjectives, setLearningObjectives] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [activePackName, setActivePackName] = useState<string | null>(null);
+  const [detailPackName, setDetailPackName] = useState<string | null>(null);
+  const [draftSummary, setDraftSummary] = useState<{
+    name: string;
+    subject: string;
+    difficulty: DifficultyValue;
+    curriculum: string;
+    learningObjectives: string[];
+    fileNames: string[];
+  } | null>(null);
+  const [editingKbName, setEditingKbName] = useState<string | null>(null);
+  const [editSubject, setEditSubject] = useState("");
+  const [editDifficulty, setEditDifficulty] = useState<DifficultyValue>("beginner");
+  const [editCurriculum, setEditCurriculum] = useState("");
+  const [editLearningObjectives, setEditLearningObjectives] = useState("");
+  const [savingMetadata, setSavingMetadata] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const socketsRef = useRef<Record<string, WebSocket>>({});
-  const logSourcesRef = useRef<Record<ProcessKind, EventSource | null>>({
-    create: null,
-    upload: null,
-  });
-  const createFileRef = useRef<HTMLInputElement>(null);
-  const uploadFileRef = useRef<HTMLInputElement>(null);
+  const logSourceRef = useRef<EventSource | null>(null);
 
-  const getProcessSetter = (kind: ProcessKind) =>
-    kind === "create" ? setCreateProcess : setUploadProcess;
-
-  const closeTaskLogStream = (kind: ProcessKind) => {
-    logSourcesRef.current[kind]?.close();
-    logSourcesRef.current[kind] = null;
+  const closeLogStream = () => {
+    logSourceRef.current?.close();
+    logSourceRef.current = null;
   };
 
   const closeProgressSocket = (kbName: string) => {
@@ -257,137 +257,26 @@ export default function KnowledgePage() {
     socketsRef.current = {};
   };
 
-  const openTaskLogStream = (kind: ProcessKind, taskId: string, label: string) => {
-    closeTaskLogStream(kind);
-    const setProcess = getProcessSetter(kind);
-    setProcess({
-      taskId,
-      label,
-      logs: [],
-      executing: true,
-      error: null,
-    });
-
-    const source = new EventSource(apiUrl(`/api/v1/knowledge/tasks/${taskId}/stream`));
-    logSourcesRef.current[kind] = source;
-
-    let settled = false;
-
-    source.addEventListener("log", (event) => {
-      try {
-        const payload = JSON.parse((event as MessageEvent).data) as { line?: string };
-        if (!payload.line) return;
-        setProcess((prev) => ({
-          ...prev,
-          taskId,
-          label,
-          logs: [...prev.logs, payload.line!],
-        }));
-      } catch {
-        // Ignore malformed log events.
-      }
-    });
-
-    source.addEventListener("complete", () => {
-      settled = true;
-      setProcess((prev) => ({ ...prev, taskId, label, executing: false }));
-      closeTaskLogStream(kind);
-    });
-
-    source.addEventListener("failed", (event) => {
-      settled = true;
-      let detail = "Task failed";
-      try {
-        const payload = JSON.parse((event as MessageEvent).data) as { detail?: string };
-        detail = payload.detail || detail;
-      } catch {
-        // Ignore malformed failure events.
-      }
-      setProcess((prev) => ({
-        ...prev,
-        taskId,
-        label,
-        executing: false,
-        error: detail,
-      }));
-      closeTaskLogStream(kind);
-    });
-
-    source.onerror = () => {
-      if (settled) return;
-      setProcess((prev) => {
-        if (!prev.executing) return prev;
-        return {
-          ...prev,
-          taskId,
-          label,
-          executing: false,
-          error: prev.error || "Process log stream disconnected.",
-        };
-      });
-      closeTaskLogStream(kind);
-    };
-  };
-
   const loadAll = async () => {
     setLoading(true);
     setPageError(null);
     try {
-      const [kbs, providerData, nextNotebooks] = await Promise.all([
-        listKnowledgeBases(),
-        listRagProviders(),
-        listNotebooks(),
-      ]);
-      setKnowledgeBases(kbs);
-      setProviders(
-        providerData.length
-          ? providerData
-          : [
-              {
-                id: "llamaindex",
-                name: "LlamaIndex",
-                description: "Pure vector retrieval, fastest processing speed.",
-              },
-            ],
-      );
-      setNotebooks(nextNotebooks);
-      if (!selectedNotebookId && nextNotebooks.length > 0) {
-        void loadNotebookDetail(nextNotebooks[0].id);
-      } else if (selectedNotebookId) {
-        const stillExists = nextNotebooks.some((item: NotebookInfo) => item.id === selectedNotebookId);
-        if (stillExists) {
-          void loadNotebookDetail(selectedNotebookId);
-        } else {
-          setSelectedNotebookId(null);
-          setSelectedNotebook(null);
-        }
-      }
+      const nextKbs = await listKnowledgeBases({ force: true });
+      setKnowledgeBases(nextKbs);
 
-      const preferredUploadTarget =
-        kbs.find((kb: KnowledgeBase) => kb.is_default && kbIsUploadable(kb))?.name ??
-        kbs.find((kb: KnowledgeBase) => kbIsUploadable(kb))?.name ??
-        "";
-      setUploadTarget((prev) => {
-        if (prev && kbs.some((kb: KnowledgeBase) => kb.name === prev && kbIsUploadable(kb))) {
-          return prev;
-        }
-        return preferredUploadTarget;
-      });
-
-      for (const kb of kbs) {
-        const status = kb.status ?? kb.statistics?.status;
+      for (const kb of nextKbs) {
+        const status = resolveKbStatus(kb);
         const progress = kb.progress ?? kb.statistics?.progress;
-        const progressStage = (progress as ProgressInfo | undefined)?.stage;
+        const stage = progress?.stage;
         if (
           status &&
           status !== "ready" &&
           status !== "error" &&
-          progressStage !== "completed" &&
-          progressStage !== "error"
+          stage !== "completed" &&
+          stage !== "error"
         ) {
           setProgressMap((prev) => ({ ...prev, [kb.name]: progress || prev[kb.name] || {} }));
-          const taskId = (progress as ProgressInfo | undefined)?.task_id;
-          subscribeProgress(kb.name, taskId || undefined);
+          subscribeProgress(kb.name, progress?.task_id);
         }
       }
     } catch (error) {
@@ -398,13 +287,11 @@ export default function KnowledgePage() {
   };
 
   useEffect(() => {
-    loadAll();
+    void loadAll();
     return () => {
       closeAllProgressSockets();
-      closeTaskLogStream("create");
-      closeTaskLogStream("upload");
+      closeLogStream();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const subscribeProgress = (kbName: string, expectedTaskId?: string) => {
@@ -419,7 +306,6 @@ export default function KnowledgePage() {
         const rawData = JSON.parse(event.data) as {
           type?: string;
           data?: ProgressInfo;
-          message?: string;
         };
         const progress =
           rawData?.type === "progress" && rawData.data ? rawData.data : (rawData as ProgressInfo);
@@ -427,15 +313,12 @@ export default function KnowledgePage() {
         if (expectedTaskId && progress.task_id && progress.task_id !== expectedTaskId) return;
 
         setProgressMap((prev) => ({ ...prev, [kbName]: progress }));
-        const stage = progress.stage;
-        if (stage === "completed" || stage === "error") {
+        if (progress.stage === "completed" || progress.stage === "error") {
           closeProgressSocket(kbName);
-          if (expectedTaskId) {
-            void loadAll();
-          }
+          void loadAll();
         }
       } catch {
-        // Ignore malformed progress events.
+        // Ignore malformed progress payloads.
       }
     };
 
@@ -448,282 +331,178 @@ export default function KnowledgePage() {
     };
   };
 
-  const createKnowledgeBase = async () => {
-    if (!newKbName.trim() || !newKbFiles.length) return;
-    const kbName = newKbName.trim();
-    const fileCount = newKbFiles.length;
-    const teacherPackMetadata = buildTeacherPackMetadata({
-      subject: newKbSubject,
-      grade: newKbGrade,
-      curriculum: newKbCurriculum,
-      learningObjectives: newKbLearningObjectives,
-      owner: newKbOwner,
-      sharingStatus: newKbSharingStatus,
-      teamMembers: newKbTeamMembers,
-      pendingInvites: newKbPendingInvites,
+  const openTaskLogStream = (taskId: string, label: string) => {
+    closeLogStream();
+    setCreateProcess({
+      taskId,
+      label,
+      logs: [],
+      executing: true,
+      error: null,
     });
+
+    const source = new EventSource(apiUrl(`/api/v1/knowledge/tasks/${taskId}/stream`));
+    logSourceRef.current = source;
+
+    let settled = false;
+
+    source.addEventListener("log", (event) => {
+      try {
+        const payload = JSON.parse((event as MessageEvent).data) as { line?: string };
+        if (!payload.line) return;
+        setCreateProcess((prev) => ({ ...prev, logs: [...prev.logs, payload.line!] }));
+      } catch {
+        // Ignore malformed log events.
+      }
+    });
+
+    source.addEventListener("complete", () => {
+      settled = true;
+      setCreateProcess((prev) => ({ ...prev, executing: false }));
+      closeLogStream();
+    });
+
+    source.addEventListener("failed", (event) => {
+      settled = true;
+      let detail = "Tiến trình xử lý thất bại.";
+      try {
+        const payload = JSON.parse((event as MessageEvent).data) as { detail?: string };
+        detail = payload.detail || detail;
+      } catch {
+        // Ignore malformed failure events.
+      }
+      setCreateProcess((prev) => ({
+        ...prev,
+        executing: false,
+        error: detail,
+      }));
+      closeLogStream();
+    });
+
+    source.onerror = () => {
+      if (settled) return;
+      setCreateProcess((prev) =>
+        prev.executing
+          ? { ...prev, executing: false, error: prev.error || "Mất kết nối nhật ký xử lý." }
+          : prev,
+      );
+      closeLogStream();
+    };
+  };
+
+  const clearWizardInputs = () => {
+    setPackName("");
+    setSubject("");
+    setDifficulty("beginner");
+    setCurriculum("");
+    setLearningObjectives("");
+    setSelectedFiles([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const resetWizard = () => {
+    setWizardStep("info");
+    setDraftSummary(null);
+    setCreateProcess(EMPTY_PROCESS_STATE);
+    setActivePackName(null);
+    clearWizardInputs();
+  };
+
+  const createKnowledgeBase = async () => {
+    if (!packName.trim() || !subject.trim() || !curriculum.trim() || !learningObjectives.trim() || !selectedFiles.length) {
+      return;
+    }
+
+    const kbName = packName.trim();
+    const metadata = buildTeacherPackMetadata({
+      subject,
+      difficulty,
+      curriculum,
+      learningObjectives,
+    });
+
     setCreating(true);
+    setWizardStep("done");
+    setActivePackName(kbName);
+    setDetailPackName(kbName);
+    setDraftSummary({
+      name: kbName,
+      subject: metadata.subject || "",
+      difficulty,
+      curriculum: metadata.curriculum || "",
+      learningObjectives: metadata.learning_objectives || [],
+      fileNames: selectedFiles.map((file) => file.name),
+    });
+
     try {
       const form = new FormData();
       form.append("name", kbName);
-      form.append("rag_provider", selectedProvider);
-      newKbFiles.forEach((file) => form.append("files", file));
+      selectedFiles.forEach((file) => form.append("files", file));
 
       const res = await fetch(apiUrl("/api/v1/knowledge/create"), {
         method: "POST",
         body: form,
       });
+
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.detail || t("Failed to create knowledge base"));
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error?.detail || "Không thể tạo gói kiến thức.");
       }
 
-      const data = (await res.json()) as KnowledgeTaskResponse;
-      let metadataSyncError: string | null = null;
-
-      if (teacherPackMetadata) {
-        try {
-          await updateKnowledgeBaseConfig(kbName, teacherPackMetadata);
-        } catch (error) {
-          metadataSyncError =
-            error instanceof Error
-              ? error.message
-              : t('Knowledge base "{{name}}" was created but teacher pack metadata could not be saved.', {
-                  name: kbName,
-                });
-        }
-      }
-
+      const data = (await res.json()) as { task_id?: string };
+      await updateKnowledgeBaseConfig(kbName, metadata);
       invalidateKnowledgeCaches();
+
       if (data.task_id) {
-        openTaskLogStream("create", data.task_id, t('Create "{{name}}"', { name: kbName }));
-        subscribeProgress(kbName, data.task_id);
         setProgressMap((prev) => ({
           ...prev,
           [kbName]: {
             task_id: data.task_id,
-            stage: "initializing",
-            message: t("Initializing knowledge base..."),
+            stage: "processing_documents",
+            message: "Đang chuẩn bị tài liệu để lập chỉ mục...",
             current: 0,
-            total: fileCount,
+            total: selectedFiles.length,
             progress_percent: 0,
+            file_statuses: makeInitialFileStatuses(selectedFiles),
           },
         }));
-      } else {
-        subscribeProgress(kbName);
+        openTaskLogStream(data.task_id, `Đang xử lý ${kbName}`);
+        subscribeProgress(kbName, data.task_id);
       }
 
-      setNewKbName("");
-      setNewKbFiles([]);
-      setNewKbSubject("");
-      setNewKbGrade("");
-      setNewKbCurriculum("");
-      setNewKbLearningObjectives("");
-      setNewKbOwner("");
-      setNewKbSharingStatus("private");
-      setNewKbTeamMembers("");
-      setNewKbPendingInvites("");
-      if (createFileRef.current) createFileRef.current.value = "";
+      clearWizardInputs();
       await loadAll();
-
-      if (metadataSyncError) {
-        setCreateProcess((prev) => ({
-          ...prev,
-          error: metadataSyncError,
-          label: prev.label || t('Create "{{name}}"', { name: kbName }),
-        }));
-      }
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
       setCreateProcess((prev) => ({
         ...prev,
         executing: false,
-        error: error instanceof Error ? error.message : String(error),
-        label: prev.label || `Create ${kbName}`,
+        error: message,
+        label: prev.label || `Tạo ${kbName}`,
+      }));
+      setProgressMap((prev) => ({
+        ...prev,
+        [kbName]: {
+          stage: "error",
+          message,
+          total: selectedFiles.length,
+          current: 0,
+          file_statuses: selectedFiles.map((file) => ({
+            name: file.name,
+            status: "error",
+            error: message,
+          })),
+        },
       }));
     } finally {
       setCreating(false);
     }
   };
 
-  const uploadToKnowledgeBase = async () => {
-    if (!uploadTarget || !uploadFiles.length) return;
-    const targetKb = uploadTarget;
-    const fileCount = uploadFiles.length;
-    setUploadingKb(uploadTarget);
-    try {
-      const form = new FormData();
-      uploadFiles.forEach((file) => form.append("files", file));
-      if (selectedProvider) form.append("rag_provider", selectedProvider);
-
-      const res = await fetch(apiUrl(`/api/v1/knowledge/${targetKb}/upload`), {
-        method: "POST",
-        body: form,
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.detail || t("Failed to upload files"));
-      }
-
-      const data = (await res.json()) as KnowledgeTaskResponse;
-      invalidateKnowledgeCaches();
-      if (data.task_id) {
-        openTaskLogStream("upload", data.task_id, t('Upload to "{{name}}"', { name: targetKb }));
-        subscribeProgress(targetKb, data.task_id);
-        setProgressMap((prev) => ({
-          ...prev,
-          [targetKb]: {
-            task_id: data.task_id,
-            stage: "processing_documents",
-            message: t("Processing {{count}} files...", { count: fileCount }),
-            current: 0,
-            total: fileCount,
-            progress_percent: 0,
-          },
-        }));
-      } else {
-        subscribeProgress(targetKb);
-      }
-
-      setUploadFiles([]);
-      if (uploadFileRef.current) uploadFileRef.current.value = "";
-      await loadAll();
-    } catch (error) {
-      setUploadProcess((prev) => ({
-        ...prev,
-        executing: false,
-        error: error instanceof Error ? error.message : String(error),
-          label: prev.label || t('Upload to "{{name}}"', { name: targetKb }),
-      }));
-    } finally {
-      setUploadingKb(null);
-    }
-  };
-
-  const setDefaultKnowledgeBase = async (kbName: string) => {
-    await fetch(apiUrl(`/api/v1/knowledge/default/${kbName}`), { method: "PUT" });
-    invalidateKnowledgeCaches();
-    await loadAll();
-  };
-
-  const deleteKnowledgeBase = async (kbName: string) => {
-    if (!window.confirm(t('Delete knowledge base "{{name}}"?', { name: kbName }))) return;
-    await fetch(apiUrl(`/api/v1/knowledge/${kbName}`), { method: "DELETE" });
-    invalidateKnowledgeCaches();
-    await loadAll();
-  };
-
-  const startEditKnowledgePack = (kb: KnowledgeBase) => {
-    setEditingKbName(kb.name);
-    setEditKbError(null);
-    setEditKbSubject(kb.metadata?.subject ?? "");
-    setEditKbGrade(kb.metadata?.grade ?? "");
-    setEditKbCurriculum(kb.metadata?.curriculum ?? "");
-    setEditKbLearningObjectives(formatLearningObjectives(kb.metadata?.learning_objectives));
-    setEditKbOwner(kb.metadata?.owner ?? "");
-    setEditKbTeamMembers(formatMultilineList(kb.metadata?.team_members));
-    setEditKbPendingInvites(formatMultilineList(kb.metadata?.pending_invites));
-    const sharingStatus = kb.metadata?.sharing_status;
-    if (sharingStatus === "private" || sharingStatus === "team" || sharingStatus === "public") {
-      setEditKbSharingStatus(sharingStatus);
-    } else {
-      setEditKbSharingStatus("private");
-    }
-  };
-
-  const cancelEditKnowledgePack = () => {
-    setEditingKbName(null);
-    setEditKbError(null);
-    setSavingKbMetadata(false);
-  };
-
-  const saveKnowledgePackMetadata = async () => {
-    if (!editingKbName) return;
-
-    const learningObjectives = parseLearningObjectives(editKbLearningObjectives);
-    const teamMembers = parseMultilineList(editKbTeamMembers);
-    const pendingInvites = parseMultilineList(editKbPendingInvites);
-    const payload: TeacherPackMetadata = {
-      subject: editKbSubject.trim() || null,
-      grade: editKbGrade.trim() || null,
-      curriculum: editKbCurriculum.trim() || null,
-      learning_objectives: learningObjectives.length ? learningObjectives : null,
-      owner: editKbOwner.trim() || null,
-      sharing_status: editKbSharingStatus,
-      team_members: editKbSharingStatus === "team" && teamMembers.length ? teamMembers : null,
-      pending_invites:
-        editKbSharingStatus === "team" && pendingInvites.length ? pendingInvites : null,
-    };
-
-    setSavingKbMetadata(true);
-    setEditKbError(null);
-    try {
-      await updateKnowledgeBaseConfig(editingKbName, payload);
-      invalidateKnowledgeCaches();
-      await loadAll();
-      setEditingKbName(null);
-    } catch (error) {
-      setEditKbError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setSavingKbMetadata(false);
-    }
-  };
-
-  const createNotebook = async () => {
-    if (!newNotebookName.trim()) return;
-    await fetch(apiUrl("/api/v1/notebook/create"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: newNotebookName.trim(),
-        description: newNotebookDescription.trim(),
-      }),
-    });
-    invalidateNotebookCaches();
-    setNewNotebookName("");
-    setNewNotebookDescription("");
-    await loadAll();
-  };
-
-  const loadNotebookDetail = async (notebookId: string) => {
-    setSelectedNotebookId(notebookId);
-    setExpandedRecordId(null);
-    setLoadingNotebookDetail(true);
-    try {
-      const notebook = (await getNotebookDetail(notebookId)) as NotebookDetail;
-      setSelectedNotebook(notebook);
-    } catch {
-      setSelectedNotebook(null);
-    } finally {
-      setLoadingNotebookDetail(false);
-    }
-  };
-
-  const openNotebookRecord = (record: NotebookRecord) => {
-    const sessionId = String(record.metadata?.session_id || "");
-    if (!sessionId) return;
-    if (record.type === "chat") {
-      router.push(`/?session=${encodeURIComponent(sessionId)}`);
-    }
-  };
-
-  const formatTimestamp = (value?: number) => {
-    if (!value) return t("Unknown time");
-    return new Date(value * 1000).toLocaleString();
-  };
-
-  const getRecordBadge = (type: string) => {
-    switch (type) {
-      case "chat":
-        return { label: t("Chat"), color: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300", icon: MessageSquare };
-      case "guided_learning":
-        return { label: t("Guided Learning"), color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", icon: GraduationCap };
-      case "co_writer":
-        return { label: t("Co-Writer"), color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300", icon: PenLine };
-      case "research":
-        return { label: t("Research"), color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300", icon: Search };
-      default:
-        return { label: type, color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", icon: NotebookPen };
-    }
+  const removeSelectedFile = (fileName: string) => {
+    setSelectedFiles((prev) => prev.filter((file) => file.name !== fileName));
   };
 
   const combinedKbs = useMemo(
@@ -731,86 +510,128 @@ export default function KnowledgePage() {
       knowledgeBases.map((kb) => ({
         ...kb,
         status: kb.status ?? kb.statistics?.status,
-        progress: progressMap[kb.name] || kb.progress || kb.statistics?.progress,
+        progress: resolveProgress(kb, progressMap) || undefined,
       })),
     [knowledgeBases, progressMap],
   );
 
-  const hasUploadableKb = useMemo(
-    () => combinedKbs.some((kb) => kbIsUploadable(kb)),
-    [combinedKbs],
-  );
+  const selectedPack =
+    combinedKbs.find((kb) => kb.name === (activePackName || detailPackName)) ??
+    combinedKbs.find((kb) => kb.name === detailPackName) ??
+    null;
 
-  const uploadTargetKb = useMemo(
-    () => combinedKbs.find((kb) => kb.name === uploadTarget) ?? null,
-    [combinedKbs, uploadTarget],
-  );
+  const summaryFileStatuses =
+    selectedPack?.progress?.file_statuses?.length
+      ? selectedPack.progress.file_statuses
+      : draftSummary?.fileNames.map((name) => ({ name, status: "uploaded" })) ?? [];
 
-  const uploadBlockedReason = useMemo(() => {
-    if (!uploadTargetKb) return null;
-    if (kbNeedsReindex(uploadTargetKb)) {
-      return t("This knowledge base is in legacy index format and needs reindex before upload.");
+  const indexedCount = summaryFileStatuses.filter((item) => item.status === "indexed").length;
+  const processingCount = summaryFileStatuses.filter((item) =>
+    ["uploaded", "processing"].includes(item.status),
+  ).length;
+  const errorCount = summaryFileStatuses.filter((item) => item.status === "error").length;
+
+  const activeSummary = selectedPack
+    ? {
+        name: selectedPack.name,
+        subject: selectedPack.metadata?.subject ?? draftSummary?.subject ?? "Chưa chọn",
+        difficulty:
+          selectedPack.metadata?.difficulty ??
+          selectedPack.metadata?.grade ??
+          draftSummary?.difficulty ??
+          null,
+        curriculum: selectedPack.metadata?.curriculum ?? draftSummary?.curriculum ?? "Chưa chọn",
+        documentCount:
+          selectedPack.statistics?.raw_documents ??
+          summaryFileStatuses.length ??
+          draftSummary?.fileNames.length ??
+          0,
+        status: selectedPack.progress?.stage ?? selectedPack.status ?? "unknown",
+        progress: selectedPack.progress ?? null,
+      }
+    : draftSummary
+      ? {
+          name: draftSummary.name,
+          subject: draftSummary.subject,
+          difficulty: draftSummary.difficulty,
+          curriculum: draftSummary.curriculum,
+          documentCount: draftSummary.fileNames.length,
+          status: "draft",
+          progress: null,
+        }
+      : null;
+
+  const startEditKnowledgePack = (kb: KnowledgeBase) => {
+    setEditingKbName(kb.name);
+    setDetailPackName(kb.name);
+    setEditError(null);
+    setEditSubject(kb.metadata?.subject ?? "");
+    setEditDifficulty((kb.metadata?.difficulty as DifficultyValue) ?? "beginner");
+    setEditCurriculum(kb.metadata?.curriculum ?? "");
+    setEditLearningObjectives((kb.metadata?.learning_objectives ?? []).join("\n"));
+  };
+
+  const saveKnowledgePackMetadata = async () => {
+    if (!editingKbName) return;
+
+    setSavingMetadata(true);
+    setEditError(null);
+    try {
+      await updateKnowledgeBaseConfig(editingKbName, {
+        subject: editSubject.trim(),
+        curriculum: editCurriculum.trim(),
+        difficulty: editDifficulty,
+        grade: null,
+        learning_objectives: parseLearningObjectives(editLearningObjectives),
+      });
+      invalidateKnowledgeCaches();
+      await loadAll();
+      setEditingKbName(null);
+    } catch (error) {
+      setEditError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setSavingMetadata(false);
     }
-    const status = resolveKbStatus(uploadTargetKb);
-    if (status !== "ready") {
-      return t("This knowledge base is currently {{status}} and cannot accept uploads yet.", { status: status.replaceAll("_", " ") });
-    }
-    return null;
-  }, [t, uploadTargetKb]);
+  };
 
-  const uploadDisabled =
-    !uploadTarget || !uploadFiles.length || !!uploadingKb || Boolean(uploadBlockedReason);
-  const metadataProgressCount = [
-    editKbSubject,
-    editKbGrade,
-    editKbCurriculum,
-    editKbOwner,
-  ].filter((value) => value.trim().length > 0).length;
+  const deleteKnowledgeBase = async (kbName: string) => {
+    if (!window.confirm(`Bạn muốn xóa gói kiến thức "${kbName}"?`)) return;
+    await fetch(apiUrl(`/api/v1/knowledge/${kbName}`), { method: "DELETE" });
+    invalidateKnowledgeCaches();
+    if (detailPackName === kbName) setDetailPackName(null);
+    if (activePackName === kbName) setActivePackName(null);
+    await loadAll();
+  };
+
+  const canContinueInfoStep =
+    packName.trim() && subject.trim() && curriculum.trim() && learningObjectives.trim();
+
+  const canSubmitWizard = canContinueInfoStep && selectedFiles.length > 0 && !creating;
 
   return (
     <div className="h-full overflow-y-auto bg-[var(--background)] [scrollbar-gutter:stable]">
-      <div className="mx-auto max-w-5xl px-4 py-8 pb-10 sm:px-6">
-        {/* Header */}
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">
-              {t("Knowledge Packs")}
+      <div className="mx-auto max-w-6xl px-4 py-8 pb-12 sm:px-6">
+        <div className="mb-6 flex flex-col gap-3">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight text-[var(--foreground)]">
+              Gói kiến thức
             </h1>
-            <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-              {t("Manage classroom knowledge packs and notebooks in one place.")}
+            <p className="mt-2 max-w-2xl text-sm text-[var(--muted-foreground)]">
+              Tạo kho tài liệu lớp học theo một luồng rõ ràng: khai báo thông tin, tải tài liệu,
+              theo dõi tiến trình lập chỉ mục, rồi đưa vào sử dụng.
             </p>
-          </div>
-
-          <div className="inline-flex shrink-0 self-start rounded-lg border border-[var(--border)] bg-[var(--muted)] p-0.5">
-            {[
-              { key: "knowledge", label: t("Knowledge Packs"), icon: Database },
-              { key: "notebooks", label: t("Notebooks"), icon: NotebookPen },
-            ].map((item) => (
-              <button
-                key={item.key}
-                onClick={() => setTab(item.key as "knowledge" | "notebooks")}
-                className={`inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium transition-all ${
-                  tab === item.key
-                    ? "bg-[var(--card)] text-[var(--foreground)] shadow-sm"
-                    : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                }`}
-              >
-                <item.icon size={14} />
-                {item.label}
-              </button>
-            ))}
           </div>
         </div>
 
         <CoreLoopVisibilityStrip
           currentStep="Knowledge Pack"
           nextStep="Assessment"
-          helperText={t("Start with teacher-owned source material so class tutoring, assessment, and teacher review all stay grounded in the same classroom knowledge pack.")}
+          helperText="Gói kiến thức là lớp nền để phần luyện tập, gia sư và đánh giá dùng chung một nguồn tư liệu đáng tin cậy."
         />
 
         {pageError && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-            {t("Knowledge Pack page failed to load")}: {pageError}
+          <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+            Không thể tải màn hình gói kiến thức: {pageError}
           </div>
         )}
 
@@ -818,772 +639,601 @@ export default function KnowledgePage() {
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
           </div>
-        ) : tab === "knowledge" ? (
-          <div className="space-y-5">
-            <div className="grid gap-5 lg:grid-cols-2">
-              {/* Create KB */}
-              <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-                <div className="mb-4 flex items-center gap-2">
-                  <Plus size={15} className="text-[var(--muted-foreground)]" />
-                  <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
-                    {t("Create Knowledge Pack")}
-                  </h2>
-                </div>
-
-                <div className="space-y-3">
-                  <input
-                    value={newKbName}
-                    onChange={(event) => setNewKbName(event.target.value)}
-                    placeholder={t("Knowledge Pack name")}
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                  />
-
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <input
-                      value={newKbSubject}
-                      onChange={(event) => setNewKbSubject(event.target.value)}
-                      placeholder={t("Subject")}
-                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                    />
-                    <input
-                      value={newKbGrade}
-                      onChange={(event) => setNewKbGrade(event.target.value)}
-                      placeholder={t("Grade")}
-                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                    />
+        ) : (
+          <div className="space-y-6">
+            <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+              <section className="overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--card)] shadow-sm">
+                <div className="border-b border-[var(--border)] bg-[linear-gradient(135deg,rgba(248,244,238,0.95),rgba(255,255,255,0.92))] px-6 py-5">
+                  <div className="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
+                    <Sparkles className="h-4 w-4 text-amber-500" />
+                    Luồng tạo gói kiến thức
                   </div>
-
-                  <input
-                    value={newKbCurriculum}
-                    onChange={(event) => setNewKbCurriculum(event.target.value)}
-                    placeholder={t("Curriculum")}
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                  />
-
-                  <textarea
-                    value={newKbLearningObjectives}
-                    onChange={(event) => setNewKbLearningObjectives(event.target.value)}
-                    placeholder={t("Learning objectives (one per line)")}
-                    rows={4}
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                  />
-
-                  <div className="grid gap-3 md:grid-cols-[1fr_180px]">
-                    <input
-                      value={newKbOwner}
-                      onChange={(event) => setNewKbOwner(event.target.value)}
-                      placeholder={t("Owner")}
-                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                    />
-                    <select
-                      value={newKbSharingStatus}
-                      onChange={(event) =>
-                        setNewKbSharingStatus(event.target.value as "private" | "team" | "public")
-                      }
-                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none"
-                    >
-                      <option value="private">{t("Private")}</option>
-                      <option value="team">{t("Team")}</option>
-                      <option value="public">{t("Public")}</option>
-                    </select>
-                  </div>
-
-                  {newKbSharingStatus === "team" && (
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <textarea
-                        value={newKbTeamMembers}
-                        onChange={(event) => setNewKbTeamMembers(event.target.value)}
-                        placeholder={t("Team members (one per line)")}
-                        rows={4}
-                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                      />
-                      <textarea
-                        value={newKbPendingInvites}
-                        onChange={(event) => setNewKbPendingInvites(event.target.value)}
-                        placeholder={t("Invite emails (one per line)")}
-                        rows={4}
-                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                      />
-                    </div>
-                  )}
-
-                  <select
-                    value={selectedProvider}
-                    onChange={(event) => setSelectedProvider(event.target.value)}
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none"
-                  >
-                    {providers.map((provider) => (
-                      <option key={provider.id} value={provider.id}>
-                        {provider.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* Styled file upload area */}
-                  <button
-                    type="button"
-                    onClick={() => createFileRef.current?.click()}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[13px] text-[var(--muted-foreground)] transition-colors hover:border-[var(--foreground)]/25 hover:text-[var(--foreground)]"
-                  >
-                    <FileUp size={15} />
-                    {newKbFiles.length
-                      ? newKbFiles.length > 1
-                        ? t("{n} files selected", { n: newKbFiles.length })
-                        : t("{n} file selected", { n: newKbFiles.length })
-                      : t("Choose files...")}
-                  </button>
-                  <input
-                    ref={createFileRef}
-                    type="file"
-                    multiple
-                    className="hidden"
-                    onChange={(event) =>
-                      setNewKbFiles(Array.from(event.target.files || []))
-                    }
-                  />
-
-                  {!!newKbFiles.length && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {newKbFiles.map((file) => (
-                        <span
-                          key={file.name}
-                          className="rounded-md bg-[var(--muted)] px-2 py-0.5 text-[11px] text-[var(--muted-foreground)]"
-                        >
-                          {file.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <button
-                    onClick={createKnowledgeBase}
-                    disabled={creating || !newKbName.trim() || !newKbFiles.length}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--primary-foreground)] transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    {creating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus size={14} />}
-                    {t("Create")}
-                  </button>
-
-                  {(createProcess.taskId || createProcess.logs.length > 0 || createProcess.executing) && (
-                    <div className="space-y-2">
-                      {createProcess.label && (
-                        <div className="text-[11px] text-[var(--muted-foreground)]">
-                          {createProcess.label}
-                          {createProcess.taskId ? ` · ${createProcess.taskId}` : ""}
-                        </div>
-                      )}
-                      <ProcessLogs
-                        logs={createProcess.logs}
-                        executing={createProcess.executing}
-                        title={t("Create Process")}
-                      />
-                    </div>
-                  )}
-
-                  {createProcess.error && (
-                    <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                      {createProcess.error}
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              {/* Upload to existing KB */}
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex items-center gap-2">
-                    <Upload size={15} className="text-[var(--muted-foreground)]" />
-                    <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
-                      {t("Upload documents")}
-                    </h2>
-                  </div>
-                  <div className="rounded-full bg-[var(--background)] px-3 py-1 text-[11px] text-[var(--muted-foreground)]">
-                    {uploadFiles.length}
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <select
-                    value={uploadTarget}
-                    onChange={(event) => setUploadTarget(event.target.value)}
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none"
-                  >
-                    <option value="">{t("Select a knowledge base")}</option>
-                    {combinedKbs.map((kb) => {
-                      const status = resolveKbStatus(kb);
-                      const needsReindex = kbNeedsReindex(kb);
-                      const uploadable = kbIsUploadable(kb);
-                      let suffix = "";
-                      if (needsReindex) {
-                        suffix = ` (${t("needs reindex")})`;
-                      } else if (status !== "ready") {
-                        suffix = ` (${status.replaceAll("_", " ")})`;
-                      }
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {WIZARD_STEPS.map((step, index) => {
+                      const isActive = wizardStep === step.key;
+                      const isDone =
+                        WIZARD_STEPS.findIndex((item) => item.key === wizardStep) > index;
                       return (
-                        <option key={kb.name} value={kb.name} disabled={!uploadable}>
-                          {kb.name}
-                          {suffix}
-                        </option>
+                        <button
+                          key={step.key}
+                          type="button"
+                          disabled={step.key === "done" && wizardStep !== "done"}
+                          onClick={() => {
+                            if (step.key === "info") setWizardStep("info");
+                            if (step.key === "files" && canContinueInfoStep) setWizardStep("files");
+                          }}
+                          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition ${
+                            isActive
+                              ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]"
+                              : isDone
+                                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                : "border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]"
+                          }`}
+                        >
+                          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-black/5 text-[11px]">
+                            {index + 1}
+                          </span>
+                          {step.label}
+                        </button>
                       );
                     })}
-                  </select>
+                  </div>
+                </div>
 
-                  {!hasUploadableKb && (
-                    <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
-                      {t("No ready knowledge base is available for upload. Create a new KB or reindex legacy KBs first.")}
-                    </div>
-                  )}
+                <div className="px-6 py-6">
+                  {wizardStep === "info" && (
+                    <div className="space-y-5">
+                      <div>
+                        <h2 className="text-xl font-semibold text-[var(--foreground)]">
+                          Thông tin gói kiến thức
+                        </h2>
+                        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                          Điền nhanh 5 trường cốt lõi để hệ thống hiểu đúng phạm vi bộ tài liệu.
+                        </p>
+                      </div>
 
-                  {uploadBlockedReason && (
-                    <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
-                      {uploadBlockedReason}
-                    </div>
-                  )}
+                      <div className="space-y-3">
+                        <input
+                          value={packName}
+                          onChange={(event) => setPackName(event.target.value)}
+                          placeholder="Tên gói kiến thức"
+                          className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--foreground)]/20"
+                        />
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <input
+                            value={subject}
+                            onChange={(event) => setSubject(event.target.value)}
+                            placeholder="Chủ đề"
+                            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--foreground)]/20"
+                          />
+                          <input
+                            value={curriculum}
+                            onChange={(event) => setCurriculum(event.target.value)}
+                            placeholder="Chương trình học"
+                            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--foreground)]/20"
+                          />
+                        </div>
+                      </div>
 
-                  <button
-                    type="button"
-                    onClick={() => uploadFileRef.current?.click()}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[13px] text-[var(--muted-foreground)] transition-colors hover:border-[var(--foreground)]/25 hover:text-[var(--foreground)]"
-                  >
-                    <FileUp size={15} />
-                    {uploadFiles.length
-                      ? uploadFiles.length > 1
-                        ? t("{n} files selected", { n: uploadFiles.length })
-                        : t("{n} file selected", { n: uploadFiles.length })
-                      : t("Choose files...")}
-                  </button>
-                  <input
-                    ref={uploadFileRef}
-                    type="file"
-                    multiple
-                    className="hidden"
-                    onChange={(event) =>
-                      setUploadFiles(Array.from(event.target.files || []))
-                    }
-                  />
+                      <div className="rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4">
+                        <div className="mb-3 text-sm font-medium text-[var(--foreground)]">
+                          Mức độ khó
+                        </div>
+                        <div className="grid gap-2 md:grid-cols-3">
+                          {DIFFICULTY_OPTIONS.map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => setDifficulty(option.value)}
+                              className={`rounded-2xl border px-4 py-3 text-left transition ${
+                                difficulty === option.value
+                                  ? "border-amber-300 bg-amber-50 text-amber-900"
+                                  : "border-[var(--border)] bg-[var(--card)] text-[var(--foreground)]"
+                              }`}
+                            >
+                              <div className="text-sm font-medium">{option.label}</div>
+                              <div className="mt-1 text-xs text-[var(--muted-foreground)]">
+                                {option.hint}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                  {!!uploadFiles.length && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {uploadFiles.map((file) => (
-                        <span
-                          key={file.name}
-                          className="rounded-md bg-[var(--muted)] px-2 py-0.5 text-[11px] text-[var(--muted-foreground)]"
+                      <textarea
+                        value={learningObjectives}
+                        onChange={(event) => setLearningObjectives(event.target.value)}
+                        placeholder="Mục tiêu học tập, mỗi dòng một ý"
+                        rows={5}
+                        className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--foreground)]/20"
+                      />
+
+                      <div className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--muted)]/60 px-4 py-3">
+                        <div className="text-sm text-[var(--muted-foreground)]">
+                          Bước tiếp theo là tải tài liệu nguồn. Người dùng không cần chọn model hay provider.
+                        </div>
+                        <button
+                          type="button"
+                          disabled={!canContinueInfoStep}
+                          onClick={() => setWizardStep("files")}
+                          className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
                         >
-                          {file.name}
-                        </span>
-                      ))}
+                          Tiếp tục
+                          <ArrowRight className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   )}
 
-                  <button
-                    onClick={uploadToKnowledgeBase}
-                    disabled={uploadDisabled}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    {uploadingKb ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <Upload size={14} />
-                    )}
-                    {t("Upload")}
-                  </button>
+                  {wizardStep === "files" && (
+                    <div className="space-y-5">
+                      <div>
+                        <h2 className="text-xl font-semibold text-[var(--foreground)]">Tài liệu</h2>
+                        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                          Tải lên các tệp nguồn như `pdf`, `docx`, `pptx`, `txt`. Hệ thống sẽ dùng cấu hình lập chỉ mục mặc định ở backend.
+                        </p>
+                      </div>
 
-                  {(uploadProcess.taskId || uploadProcess.logs.length > 0 || uploadProcess.executing) && (
-                    <div className="space-y-2">
-                      {uploadProcess.label && (
-                        <div className="text-[11px] text-[var(--muted-foreground)]">
-                          {uploadProcess.label}
-                          {uploadProcess.taskId ? ` · ${uploadProcess.taskId}` : ""}
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="group flex min-h-56 w-full flex-col items-center justify-center rounded-[28px] border border-dashed border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(248,244,238,0.96))] px-6 py-8 text-center transition hover:border-amber-300 hover:bg-amber-50/40"
+                      >
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                          <Upload className="h-6 w-6" />
+                        </div>
+                        <div className="mt-4 text-base font-medium text-[var(--foreground)]">
+                          Kéo thả tài liệu vào đây hoặc bấm để chọn tệp
+                        </div>
+                        <div className="mt-2 text-sm text-[var(--muted-foreground)]">
+                          Giao diện upload được giữ theo kiểu các sản phẩm RAG hiện đại: gọn, rõ và ưu tiên trạng thái ingest.
+                        </div>
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        className="hidden"
+                        onChange={(event) => setSelectedFiles(Array.from(event.target.files || []))}
+                      />
+
+                      <div className="space-y-2">
+                        {selectedFiles.length ? (
+                          selectedFiles.map((file) => (
+                            <div
+                              key={file.name}
+                              className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3"
+                            >
+                              <div className="min-w-0">
+                                <div className="truncate text-sm font-medium text-[var(--foreground)]">
+                                  {file.name}
+                                </div>
+                                <div className="mt-1 text-xs text-[var(--muted-foreground)]">
+                                  {formatBytes(file.size)} • Sẵn sàng tải lên
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => removeSelectedFile(file.name)}
+                                className="rounded-full border border-[var(--border)] p-2 text-[var(--muted-foreground)] transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="rounded-2xl border border-dashed border-[var(--border)] px-4 py-6 text-sm text-[var(--muted-foreground)]">
+                            Chưa có tài liệu nào được chọn.
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setWizardStep("info")}
+                          className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-4 py-2 text-sm text-[var(--foreground)]"
+                        >
+                          <ArrowLeft className="h-4 w-4" />
+                          Quay lại
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!canSubmitWizard}
+                          onClick={() => void createKnowledgeBase()}
+                          className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                          Tạo và lập chỉ mục
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {wizardStep === "done" && (
+                    <div className="space-y-5">
+                      <div>
+                        <h2 className="text-xl font-semibold text-[var(--foreground)]">Hoàn tất</h2>
+                        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                          Theo dõi tiến trình tổng quan ở trên và trạng thái từng tài liệu ở ngay bên dưới.
+                        </p>
+                      </div>
+
+                      <div className="grid gap-3 md:grid-cols-3">
+                        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-4">
+                          <div className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                            Tổng tài liệu
+                          </div>
+                          <div className="mt-2 text-2xl font-semibold text-[var(--foreground)]">
+                            {summaryFileStatuses.length}
+                          </div>
+                        </div>
+                        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-4">
+                          <div className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                            Đã lập chỉ mục
+                          </div>
+                          <div className="mt-2 text-2xl font-semibold text-[var(--foreground)]">
+                            {indexedCount}
+                          </div>
+                        </div>
+                        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-4">
+                          <div className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                            Trạng thái
+                          </div>
+                          <div className="mt-2 text-2xl font-semibold text-[var(--foreground)]">
+                            {errorCount > 0
+                              ? "Có lỗi"
+                              : processingCount > 0
+                                ? "Đang xử lý"
+                                : "Hoàn tất"}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4">
+                        {summaryFileStatuses.length ? (
+                          summaryFileStatuses.map((file) => (
+                            <div
+                              key={`${file.name}-${file.status}`}
+                              className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3"
+                            >
+                              <div className="min-w-0">
+                                <div className="truncate text-sm font-medium text-[var(--foreground)]">
+                                  {file.name}
+                                </div>
+                                {file.error ? (
+                                  <div className="mt-1 text-xs text-red-600">{file.error}</div>
+                                ) : (
+                                  <div className="mt-1 text-xs text-[var(--muted-foreground)]">
+                                    {file.updated_at || "Đang cập nhật trạng thái"}
+                                  </div>
+                                )}
+                              </div>
+                              <div
+                                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                  file.status === "indexed"
+                                    ? "bg-emerald-50 text-emerald-700"
+                                    : file.status === "error"
+                                      ? "bg-red-50 text-red-700"
+                                      : "bg-amber-50 text-amber-700"
+                                }`}
+                              >
+                                {statusLabel(file.status)}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="rounded-2xl border border-dashed border-[var(--border)] px-4 py-6 text-sm text-[var(--muted-foreground)]">
+                            Chưa có tài liệu nào để hiển thị.
+                          </div>
+                        )}
+                      </div>
+
+                      {(createProcess.taskId || createProcess.logs.length > 0 || createProcess.executing) && (
+                        <div className="space-y-2">
+                          <div className="text-xs text-[var(--muted-foreground)]">
+                            {createProcess.label}
+                            {createProcess.taskId ? ` · ${createProcess.taskId}` : ""}
+                          </div>
+                          <ProcessLogs
+                            logs={createProcess.logs}
+                            executing={createProcess.executing}
+                            title="Nhật ký xử lý"
+                          />
                         </div>
                       )}
-                      <ProcessLogs
-                        logs={uploadProcess.logs}
-                        executing={uploadProcess.executing}
-                        title={t("Upload Process")}
-                      />
-                    </div>
-                  )}
 
-                  {uploadProcess.error && (
-                    <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                      {t("Document upload failed")}: {uploadProcess.error}
+                      {createProcess.error && (
+                        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                          {createProcess.error}
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setDetailPackName(activePackName)}
+                          className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-[var(--background)]"
+                        >
+                          Xem gói kiến thức
+                        </button>
+                        <button
+                          type="button"
+                          onClick={resetWizard}
+                          className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-4 py-2 text-sm text-[var(--foreground)]"
+                        >
+                          Tạo gói mới
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
               </section>
-            </div>
 
-            {/* KB list */}
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-                <div className="mb-4 flex items-center gap-2">
-                  <BookOpen size={15} className="text-[var(--muted-foreground)]" />
-                  <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
-                  {t("Knowledge bases")}
-                </h2>
-              </div>
+              <aside className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(248,244,238,0.94),rgba(255,255,255,0.98))] p-6 shadow-sm">
+                <div className="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
+                  <FileText className="h-4 w-4 text-amber-600" />
+                  Bảng trạng thái ingest
+                </div>
+                <div className="mt-3 text-sm text-[var(--muted-foreground)]">
+                  Bảng này luôn phản ánh gói đang tạo hoặc gói bạn vừa chọn từ danh sách phía dưới.
+                </div>
 
-              <div className="space-y-3">
-                {combinedKbs.map((kb) => {
-                  const progress = kb.progress;
-                  const status = resolveKbStatus(kb);
-                  const needsReindex = kbNeedsReindex(kb);
-                  const displayStatus =
-                    needsReindex
-                      ? t("needs reindex")
-                      : status !== "ready"
-                        ? status.replaceAll("_", " ")
-                        : null;
-                  const percent =
-                    progress?.progress_percent ??
-                    progress?.percent ??
-                    ((progress?.current ?? 0) && (progress?.total ?? 0)
-                      ? Math.round(((progress?.current ?? 0) / (progress?.total ?? 1)) * 100)
-                      : 0);
-
-                  return (
-                    <div
-                      key={kb.name}
-                      className="group rounded-2xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm transition-colors hover:border-[var(--foreground)]/10"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-[14px] font-medium text-[var(--foreground)]">
-                              {kb.name}
-                            </h3>
-                            {kb.is_default && (
-                              <span className="inline-flex items-center gap-1 rounded-md bg-[var(--muted)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted-foreground)]">
-                                <Star size={10} /> {t("Default")}
-                              </span>
-                            )}
+                {activeSummary ? (
+                  <div className="mt-6 space-y-4">
+                    <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-4">
+                      <div className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                        Gói đang theo dõi
+                      </div>
+                      <div className="mt-2 text-xl font-semibold text-[var(--foreground)]">
+                        {activeSummary.name}
+                      </div>
+                      <div className="mt-4 grid gap-3">
+                        <div className="rounded-2xl bg-[var(--background)] px-4 py-3">
+                          <div className="text-xs text-[var(--muted-foreground)]">Chủ đề</div>
+                          <div className="mt-1 text-sm font-medium text-[var(--foreground)]">
+                            {activeSummary.subject || "Chưa chọn"}
                           </div>
-                          <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-[var(--muted-foreground)]">
-                            <span>{t("Provider")}: {kb.statistics?.rag_provider || "llamaindex"}</span>
-                            <span>{t("Documents")}: {kb.statistics?.raw_documents ?? 0}</span>
-                            {displayStatus && (
-                              <span
-                                className={
-                                  needsReindex
-                                    ? "font-medium text-amber-600 dark:text-amber-400"
-                                    : "capitalize"
-                                }
-                              >
-                                {t("Status")}: {displayStatus}
-                              </span>
-                            )}
-                          </div>
-                          {kb.metadata && (
-                            <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-[var(--muted-foreground)]">
-                              {kb.metadata.subject && (
-                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
-                                  {t("Subject")}: {kb.metadata.subject}
-                                </span>
-                              )}
-                              {kb.metadata.grade && (
-                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
-                                  {t("Grade")}: {kb.metadata.grade}
-                                </span>
-                              )}
-                              {kb.metadata.curriculum && (
-                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
-                                  {t("Curriculum")}: {kb.metadata.curriculum}
-                                </span>
-                              )}
-                              {kb.metadata.owner && (
-                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
-                                  {t("Owner")}: {kb.metadata.owner}
-                                </span>
-                              )}
-                              {kb.metadata.sharing_status && (
-                                <span className="rounded-md bg-[var(--muted)] px-2 py-0.5">
-                                  {t("Sharing")}: {kb.metadata.sharing_status}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                          {kb.metadata?.learning_objectives?.length ? (
-                            <div className="mt-2 text-[11px] text-[var(--muted-foreground)]">
-                              {t("Learning objectives")}: {kb.metadata.learning_objectives.join(", ")}
-                            </div>
-                          ) : null}
-                          {kb.metadata?.team_members?.length ? (
-                            <div className="mt-2 text-[11px] text-[var(--muted-foreground)]">
-                              {t("Team members")}: {kb.metadata.team_members.join(", ")}
-                            </div>
-                          ) : null}
-                          {kb.metadata?.pending_invites?.length ? (
-                            <div className="mt-1 text-[11px] text-[var(--muted-foreground)]">
-                              {t("Pending invites")}: {kb.metadata.pending_invites.join(", ")}
-                            </div>
-                          ) : null}
                         </div>
-
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => startEditKnowledgePack(kb)}
-                            className="rounded-md border border-[var(--border)] px-2.5 py-1 text-[12px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
-                          >
-                            {t("Edit pack")}
-                          </button>
-                          {!kb.is_default && (
-                            <button
-                              onClick={() => setDefaultKnowledgeBase(kb.name)}
-                              className="rounded-md border border-[var(--border)] px-2.5 py-1 text-[12px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
-                            >
-                              {t("Set default")}
-                            </button>
-                          )}
-                          <button
-                            onClick={() => deleteKnowledgeBase(kb.name)}
-                            className="rounded-md border border-[var(--border)] p-1.5 text-[var(--muted-foreground)] transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-900 dark:hover:bg-red-950/30 dark:hover:text-red-400"
-                          >
-                            <Trash2 size={13} />
-                          </button>
+                        <div className="rounded-2xl bg-[var(--background)] px-4 py-3">
+                          <div className="text-xs text-[var(--muted-foreground)]">Mức độ khó</div>
+                          <div className="mt-1 text-sm font-medium text-[var(--foreground)]">
+                            {difficultyLabel(activeSummary.difficulty)}
+                          </div>
+                        </div>
+                        <div className="rounded-2xl bg-[var(--background)] px-4 py-3">
+                          <div className="text-xs text-[var(--muted-foreground)]">Chương trình học</div>
+                          <div className="mt-1 text-sm font-medium text-[var(--foreground)]">
+                            {activeSummary.curriculum}
+                          </div>
                         </div>
                       </div>
-
-                      {progress?.message && (
-                        <div className="mt-3 rounded-lg bg-[var(--muted)] p-3">
-                          <div className="text-[12px] text-[var(--foreground)]">
-                            {progress.message}
-                          </div>
-                          {percent > 0 && (
-                            <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--border)]">
-                              <div
-                                className="h-full rounded-full bg-[var(--primary)] transition-all duration-300"
-                                style={{ width: `${percent}%` }}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {editingKbName === kb.name && (
-                        <div className="mt-3 space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
-                          <div className="flex flex-wrap items-center justify-between gap-2">
-                            <div className="text-[12px] font-medium text-[var(--foreground)]">
-                              {t("Edit Knowledge Pack Metadata")}
-                            </div>
-                            <div className="rounded-full bg-[var(--background)] px-3 py-1 text-[11px] text-[var(--muted-foreground)]">
-                              {metadataProgressCount}
-                            </div>
-                          </div>
-
-                          <div className="grid gap-2 rounded-xl bg-[var(--background)] p-3 md:grid-cols-2">
-                            <input
-                              value={editKbSubject}
-                              onChange={(event) => setEditKbSubject(event.target.value)}
-                              placeholder={t("Subject")}
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                            />
-                            <input
-                              value={editKbGrade}
-                              onChange={(event) => setEditKbGrade(event.target.value)}
-                              placeholder={t("Grade")}
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                            />
-                          </div>
-
-                          <div className="rounded-xl bg-[var(--background)] p-3">
-                            <input
-                              value={editKbCurriculum}
-                              onChange={(event) => setEditKbCurriculum(event.target.value)}
-                              placeholder={t("Curriculum")}
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                            />
-                          </div>
-
-                          <div className="rounded-xl bg-[var(--background)] p-3">
-                            <textarea
-                              value={editKbLearningObjectives}
-                              onChange={(event) => setEditKbLearningObjectives(event.target.value)}
-                              placeholder={t("Learning objectives (one per line)")}
-                              rows={4}
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                            />
-                          </div>
-
-                          <div className="grid gap-2 rounded-xl bg-[var(--background)] p-3 md:grid-cols-[1fr_180px]">
-                            <input
-                              value={editKbOwner}
-                              onChange={(event) => setEditKbOwner(event.target.value)}
-                              placeholder={t("Owner")}
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                            />
-                            <select
-                              value={editKbSharingStatus}
-                              onChange={(event) =>
-                                setEditKbSharingStatus(event.target.value as "private" | "team" | "public")
-                              }
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none"
-                            >
-                              <option value="private">{t("Private")}</option>
-                              <option value="team">{t("Team")}</option>
-                              <option value="public">{t("Public")}</option>
-                            </select>
-                          </div>
-
-                          {editKbSharingStatus === "team" && (
-                            <div className="grid gap-2 rounded-xl bg-[var(--background)] p-3 md:grid-cols-2">
-                              <textarea
-                                value={editKbTeamMembers}
-                                onChange={(event) => setEditKbTeamMembers(event.target.value)}
-                                placeholder={t("Team members (one per line)")}
-                                rows={4}
-                                className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                              />
-                              <textarea
-                                value={editKbPendingInvites}
-                                onChange={(event) => setEditKbPendingInvites(event.target.value)}
-                                placeholder={t("Invite emails (one per line)")}
-                                rows={4}
-                                className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                              />
-                            </div>
-                          )}
-
-                          {editKbError && (
-                            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                              {t("Knowledge Pack metadata could not be saved")}: {editKbError}
-                            </div>
-                          )}
-
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={saveKnowledgePackMetadata}
-                              disabled={savingKbMetadata}
-                              className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--primary-foreground)] transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
-                            >
-                              {savingKbMetadata ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              ) : (
-                                <PenLine size={14} />
-                              )}
-                              {t("Save metadata")}
-                            </button>
-
-                            <button
-                              onClick={cancelEditKnowledgePack}
-                              disabled={savingKbMetadata}
-                              className="rounded-lg border border-[var(--border)] px-3.5 py-1.5 text-[13px] text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] disabled:cursor-not-allowed disabled:opacity-40"
-                            >
-                              {t("Cancel")}
-                            </button>
-                          </div>
-                        </div>
-                      )}
                     </div>
-                  );
-                })}
 
-                {!combinedKbs.length && (
-                  <div className="rounded-lg border border-dashed border-[var(--border)] px-6 py-10 text-center text-[13px] text-[var(--muted-foreground)]">
-                    {t("No knowledge bases yet. Create one to get started.")}
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-4">
+                        <div className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                          Số tài liệu
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-[var(--foreground)]">
+                          {activeSummary.documentCount}
+                        </div>
+                      </div>
+                      <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-4">
+                        <div className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                          Trạng thái index
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-[var(--foreground)]">
+                          {statusLabel(activeSummary.status)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="text-sm font-medium text-[var(--foreground)]">
+                            Tiến trình tổng quan
+                          </div>
+                          <div className="mt-1 text-xs text-[var(--muted-foreground)]">
+                            {progressSummaryLabel(activeSummary.progress)}
+                          </div>
+                        </div>
+                        <div className="text-sm font-semibold text-[var(--foreground)]">
+                          {progressPercent(activeSummary.progress)}%
+                        </div>
+                      </div>
+                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--border)]">
+                        <div
+                          className="h-full rounded-full bg-[linear-gradient(90deg,#e7a658,#d97706)] transition-all"
+                          style={{ width: `${progressPercent(activeSummary.progress)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-6 rounded-3xl border border-dashed border-[var(--border)] px-5 py-10 text-center text-sm text-[var(--muted-foreground)]">
+                    Điền thông tin ở wizard hoặc bấm `Xem chi tiết` trên một gói hiện có để xem trạng thái ở đây.
                   </div>
                 )}
-              </div>
-            </section>
-          </div>
-        ) : (
-          <div className="space-y-5">
-            {/* Create notebook */}
-            <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <Plus size={15} className="text-[var(--muted-foreground)]" />
-                <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
-                  {t("Create notebook")}
-                </h2>
-              </div>
+              </aside>
+            </div>
 
-              <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-                <input
-                  value={newNotebookName}
-                  onChange={(event) => setNewNotebookName(event.target.value)}
-                  placeholder={t("Notebook name")}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                />
-                <input
-                  value={newNotebookDescription}
-                  onChange={(event) => setNewNotebookDescription(event.target.value)}
-                  placeholder={t("Description")}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25"
-                />
-                <button
-                  onClick={createNotebook}
-                  disabled={!newNotebookName.trim()}
-                  className="rounded-lg bg-[var(--primary)] px-3.5 py-2 text-[13px] font-medium text-[var(--primary-foreground)] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {t("Create")}
-                </button>
+            <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+              <div className="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
+                <BookOpen className="h-4 w-4 text-amber-600" />
+                Danh sách gói kiến thức
               </div>
-            </section>
-
-            {/* Notebook list */}
-            <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <NotebookPen size={15} className="text-[var(--muted-foreground)]" />
-                <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
-                  {t("Notebooks")}
-                </h2>
-              </div>
-
-              <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)]">
-                <div className="xl:sticky xl:top-8 xl:max-h-[calc(100vh-12rem)] space-y-3 overflow-y-auto pr-1">
-                  {notebooks.map((notebook) => {
-                    const active = selectedNotebookId === notebook.id;
+              <div className="mt-5 space-y-4">
+                {combinedKbs.length ? (
+                  combinedKbs.map((kb) => {
+                    const progress = kb.progress;
+                    const currentDifficulty = kb.metadata?.difficulty ?? kb.metadata?.grade ?? null;
                     return (
-                      <button
-                        key={notebook.id}
-                        onClick={() => void loadNotebookDetail(notebook.id)}
-                        className={`w-full rounded-xl border p-4 text-left transition-all ${
-                          active
-                            ? "border-indigo-200 bg-indigo-50/70 shadow-[0_8px_24px_rgba(99,102,241,0.08)] dark:border-indigo-800 dark:bg-indigo-950/25"
-                            : "border-[var(--border)] bg-[var(--background)] hover:border-[var(--foreground)]/12 hover:bg-[var(--muted)]/18"
-                        }`}
+                      <div
+                        key={kb.name}
+                        className="rounded-[24px] border border-[var(--border)] bg-[var(--background)] p-4"
                       >
-                        <div className="flex items-start gap-3">
-                          <div
-                            className="mt-1 h-3 w-3 rounded-full"
-                            style={{ backgroundColor: notebook.color || "#6366f1" }}
-                          />
-                          <div className="min-w-0 flex-1">
-                            <div className="text-[14px] font-semibold text-[var(--foreground)]">
-                              {notebook.name}
-                            </div>
-                            {notebook.description && (
-                              <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-[var(--muted-foreground)]">
-                                {notebook.description}
-                              </p>
-                            )}
-                            <div className="mt-3 flex items-center justify-between text-[11px] text-[var(--muted-foreground)]">
-                              <span>{notebook.record_count ?? 0} {t("records")}</span>
-                              <span>{notebook.updated_at ? formatTimestamp(notebook.updated_at) : ""}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-
-                  {!notebooks.length && (
-                    <div className="rounded-xl border border-dashed border-[var(--border)] px-6 py-10 text-center text-[13px] text-[var(--muted-foreground)]">
-                      {t("No notebooks yet. Create one to organize outputs.")}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex min-h-[560px] flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 xl:h-[calc(100vh-12rem)]">
-                  {loadingNotebookDetail ? (
-                    <div className="flex min-h-[320px] items-center justify-center">
-                      <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
-                    </div>
-                  ) : selectedNotebook ? (
-                    <div className="flex min-h-0 flex-1 flex-col">
-                      <div className="mb-3 flex shrink-0 items-center justify-between gap-4 pb-3">
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="h-2.5 w-2.5 rounded-full"
-                            style={{ backgroundColor: selectedNotebook.color || "#6366f1" }}
-                          />
-                          <h3 className="text-[15px] font-semibold text-[var(--foreground)]">
-                            {selectedNotebook.name}
-                          </h3>
-                          {selectedNotebook.description && (
-                            <span className="text-[12px] text-[var(--muted-foreground)]">
-                              — {selectedNotebook.description}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-[11px] tabular-nums text-[var(--muted-foreground)]">
-                          {selectedNotebook.records?.length || 0} {t("records")}
-                        </span>
-                      </div>
-
-                      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-                        <div className="divide-y divide-[var(--border)]">
-                        {selectedNotebook.records?.map((record) => {
-                          const badge = getRecordBadge(record.type);
-                          const BadgeIcon = badge.icon;
-                          const expanded = expandedRecordId === record.id;
-                          const canOpenSession =
-                            record.type === "chat" && Boolean(record.metadata?.session_id);
-                          const sessionLabel = t("Open chat session");
-
-                          return (
-                            <div key={record.id} className="group">
-                              {/* Collapsed row — always visible */}
-                              <button
-                                onClick={() => setExpandedRecordId(expanded ? null : record.id)}
-                                className="flex w-full items-center gap-3 px-1 py-3.5 text-left transition-colors hover:bg-[var(--muted)]/30"
-                              >
-                                <span className="shrink-0 text-[var(--muted-foreground)]">
-                                  {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                          <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-lg font-semibold text-[var(--foreground)]">
+                                {kb.name}
+                              </h3>
+                              {kb.is_default && (
+                                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+                                  Mặc định
                                 </span>
-                                <span className={`inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium ${badge.color}`}>
-                                  <BadgeIcon size={11} />
-                                  {badge.label}
-                                </span>
-                                <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-[var(--foreground)]">
-                                  {record.title}
-                                </span>
-                                <span className="shrink-0 text-[11px] tabular-nums text-[var(--muted-foreground)]">
-                                  {formatTimestamp(record.created_at)}
-                                </span>
-                              </button>
-
-                              {/* Expanded detail */}
-                              {expanded && (
-                                <div className="pb-4 pl-8 pr-1">
-                                  {record.summary && (
-                                    <p className="mb-3 text-[13px] leading-6 text-[var(--foreground)]/85">
-                                      {record.summary}
-                                    </p>
-                                  )}
-                                  {record.type !== "chat" && record.user_query && (
-                                    <div className="mb-3 flex items-baseline gap-2 text-[12px]">
-                                      <span className="shrink-0 font-medium text-[var(--muted-foreground)]">{t("Query:")}</span>
-                                      <span className="text-[var(--foreground)]/70">{record.user_query}</span>
-                                    </div>
-                                  )}
-
-                                  {canOpenSession && (
-                                    <button
-                                      onClick={() => openNotebookRecord(record)}
-                                      className="mb-3 inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3.5 py-2 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 dark:hover:border-indigo-700 dark:hover:bg-indigo-950/30 dark:hover:text-indigo-300"
-                                    >
-                                      <ExternalLink size={13} />
-                                      {sessionLabel}
-                                      <ArrowRight size={13} />
-                                    </button>
-                                  )}
-
-                                  <div className="max-h-[320px] overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--muted)]/30 p-3">
-                                    <MarkdownRenderer
-                                      content={record.output || ""}
-                                      variant="prose"
-                                      className="text-[12px] leading-5 text-[var(--foreground)]"
-                                    />
-                                  </div>
-                                </div>
                               )}
                             </div>
-                          );
-                        })}
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <span className="rounded-full bg-[var(--card)] px-3 py-1 text-xs text-[var(--muted-foreground)]">
+                                Chủ đề: {kb.metadata?.subject || "Chưa có"}
+                              </span>
+                              <span className="rounded-full bg-[var(--card)] px-3 py-1 text-xs text-[var(--muted-foreground)]">
+                                Mức độ khó: {difficultyLabel(currentDifficulty)}
+                              </span>
+                              <span className="rounded-full bg-[var(--card)] px-3 py-1 text-xs text-[var(--muted-foreground)]">
+                                Chương trình học: {kb.metadata?.curriculum || "Chưa có"}
+                              </span>
+                              <span className="rounded-full bg-[var(--card)] px-3 py-1 text-xs text-[var(--muted-foreground)]">
+                                Số tài liệu: {kb.statistics?.raw_documents ?? 0}
+                              </span>
+                              <span className="rounded-full bg-[var(--card)] px-3 py-1 text-xs text-[var(--muted-foreground)]">
+                                Trạng thái index: {statusLabel(progress?.stage ?? kb.status)}
+                              </span>
+                            </div>
+                          </div>
 
-                        {!selectedNotebook.records?.length && (
-                          <div className="px-6 py-12 text-center text-[13px] text-[var(--muted-foreground)]">
-                            {t("This notebook is empty for now.")}
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setDetailPackName(kb.name)}
+                              className="rounded-full border border-[var(--border)] px-4 py-2 text-sm text-[var(--foreground)]"
+                            >
+                              Xem chi tiết
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => startEditKnowledgePack(kb)}
+                              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-4 py-2 text-sm text-[var(--foreground)]"
+                            >
+                              <PencilLine className="h-4 w-4" />
+                              Chỉnh sửa
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void deleteKnowledgeBase(kb.name)}
+                              className="inline-flex items-center gap-2 rounded-full border border-red-200 px-4 py-2 text-sm text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Xóa
+                            </button>
+                          </div>
+                        </div>
+
+                        {progress && (
+                          <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="text-sm text-[var(--foreground)]">
+                                {progressSummaryLabel(progress)}
+                              </div>
+                              <div className="text-sm font-medium text-[var(--foreground)]">
+                                {progressPercent(progress)}%
+                              </div>
+                            </div>
+                            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--border)]">
+                              <div
+                                className="h-full rounded-full bg-[linear-gradient(90deg,#e7a658,#d97706)] transition-all"
+                                style={{ width: `${progressPercent(progress)}%` }}
+                              />
+                            </div>
                           </div>
                         )}
-                        </div>
+
+                        {editingKbName === kb.name && (
+                          <div className="mt-4 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4">
+                            <div className="mb-4 text-sm font-medium text-[var(--foreground)]">
+                              Chỉnh sửa gói kiến thức
+                            </div>
+                            <div className="grid gap-3 md:grid-cols-2">
+                              <input
+                                value={editSubject}
+                                onChange={(event) => setEditSubject(event.target.value)}
+                                placeholder="Chủ đề"
+                                className="rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] outline-none"
+                              />
+                              <input
+                                value={editCurriculum}
+                                onChange={(event) => setEditCurriculum(event.target.value)}
+                                placeholder="Chương trình học"
+                                className="rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] outline-none"
+                              />
+                            </div>
+                            <div className="mt-3 grid gap-2 md:grid-cols-3">
+                              {DIFFICULTY_OPTIONS.map((option) => (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  onClick={() => setEditDifficulty(option.value)}
+                                  className={`rounded-2xl border px-4 py-3 text-left text-sm ${
+                                    editDifficulty === option.value
+                                      ? "border-amber-300 bg-amber-50 text-amber-900"
+                                      : "border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+                                  }`}
+                                >
+                                  {option.label}
+                                </button>
+                              ))}
+                            </div>
+                            <textarea
+                              value={editLearningObjectives}
+                              onChange={(event) => setEditLearningObjectives(event.target.value)}
+                              placeholder="Mục tiêu học tập, mỗi dòng một ý"
+                              rows={4}
+                              className="mt-3 w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm text-[var(--foreground)] outline-none"
+                            />
+                            {editError && (
+                              <div className="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                {editError}
+                              </div>
+                            )}
+                            <div className="mt-4 flex flex-wrap gap-3">
+                              <button
+                                type="button"
+                                disabled={savingMetadata}
+                                onClick={() => void saveKnowledgePackMetadata()}
+                                className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+                              >
+                                {savingMetadata ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                                Lưu thay đổi
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingKbName(null)}
+                                className="rounded-full border border-[var(--border)] px-4 py-2 text-sm text-[var(--foreground)]"
+                              >
+                                Hủy
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
+                    );
+                  })
+                ) : (
+                  <div className="rounded-[24px] border border-dashed border-[var(--border)] px-6 py-12 text-center">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--muted)]">
+                      <AlertCircle className="h-5 w-5 text-[var(--muted-foreground)]" />
                     </div>
-                  ) : (
-                    <div className="flex min-h-[320px] items-center justify-center rounded-2xl border border-dashed border-[var(--border)] text-[13px] text-[var(--muted-foreground)]">
-                      {t("Select a notebook to inspect its saved records.")}
+                    <div className="mt-4 text-base font-medium text-[var(--foreground)]">
+                      Chưa có gói kiến thức nào
                     </div>
-                  )}
-                </div>
+                    <div className="mt-2 text-sm text-[var(--muted-foreground)]">
+                      Bắt đầu bằng wizard phía trên để tải bộ tài liệu đầu tiên cho lớp học.
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
           </div>

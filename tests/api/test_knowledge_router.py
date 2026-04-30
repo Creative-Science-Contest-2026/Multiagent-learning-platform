@@ -141,6 +141,33 @@ def test_create_kb_does_not_require_llm_precheck(monkeypatch, tmp_path: Path) ->
     assert manager.config["knowledge_bases"]["kb-new"]["needs_reindex"] is False
 
 
+def test_create_kb_defaults_to_system_provider_when_request_omits_provider(
+    monkeypatch, tmp_path: Path
+) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+    monkeypatch.setattr(knowledge_module, "KnowledgeBaseInitializer", _FakeInitializer)
+
+    async def _noop_init_task(*_args, **_kwargs):
+        return None
+
+    monkeypatch.setattr(knowledge_module, "run_initialization_task", _noop_init_task)
+    monkeypatch.setattr(knowledge_module, "_kb_base_dir", tmp_path / "knowledge_bases")
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.post(
+            "/api/v1/knowledge/create",
+            data={"name": "kb-default-provider"},
+            files=_upload_payload(),
+        )
+
+    assert response.status_code == 200
+    assert (
+        manager.config["knowledge_bases"]["kb-default-provider"]["rag_provider"] == "llamaindex"
+    )
+
+
 def test_create_rejects_unregistered_provider(monkeypatch, tmp_path: Path) -> None:
     knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
     manager = _FakeKBManager(tmp_path / "knowledge_bases")

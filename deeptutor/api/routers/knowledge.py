@@ -189,6 +189,26 @@ def _task_log(task_id: str, message: str, level: str = "info") -> None:
         logger.info(f"[{task_id}] {message}")
 
 
+def _build_file_statuses(
+    file_names: list[str],
+    status: str,
+    *,
+    error_by_name: dict[str, str] | None = None,
+) -> list[dict[str, str]]:
+    timestamp = datetime.now().isoformat()
+    statuses: list[dict[str, str]] = []
+    for name in file_names:
+        item = {
+            "name": name,
+            "status": status,
+            "updated_at": timestamp,
+        }
+        if error_by_name and error_by_name.get(name):
+            item["error"] = error_by_name[name]
+        statuses.append(item)
+    return statuses
+
+
 def _validate_registered_provider(raw_provider: str | None) -> str:
     candidate = (raw_provider or DEFAULT_PROVIDER).strip().lower()
     if not candidate:
@@ -367,7 +387,14 @@ async def run_initialization_task(initializer: KnowledgeBaseInitializer, task_id
             _task_log(task_id, "Finalizing initialization")
 
             initializer.progress_tracker.update(
-                ProgressStage.COMPLETED, "Knowledge base initialization complete!", current=1, total=1
+                ProgressStage.COMPLETED,
+                "Knowledge base initialization complete!",
+                current=1,
+                total=1,
+                file_statuses=_build_file_statuses(
+                    [path.name for path in initializer.raw_dir.glob("*") if path.is_file()],
+                    "indexed",
+                ),
             )
 
             manager = get_kb_manager()
@@ -380,6 +407,10 @@ async def run_initialization_task(initializer: KnowledgeBaseInitializer, task_id
                     "percent": 100,
                     "current": 1,
                     "total": 1,
+                    "file_statuses": _build_file_statuses(
+                        [path.name for path in initializer.raw_dir.glob("*") if path.is_file()],
+                        "indexed",
+                    ),
                     "task_id": task_id,
                     "timestamp": datetime.now().isoformat(),
                 },
@@ -406,6 +437,15 @@ async def run_initialization_task(initializer: KnowledgeBaseInitializer, task_id
                     "message": f"Initialization failed: {error_msg}",
                     "percent": 0,
                     "error": error_msg,
+                    "file_statuses": _build_file_statuses(
+                        [path.name for path in initializer.raw_dir.glob("*") if path.is_file()],
+                        "error",
+                        error_by_name={
+                            path.name: error_msg
+                            for path in initializer.raw_dir.glob("*")
+                            if path.is_file()
+                        },
+                    ),
                     "task_id": task_id,
                     "timestamp": datetime.now().isoformat(),
                 },
@@ -450,6 +490,10 @@ async def run_upload_processing_task(
                 f"Processing {len(uploaded_file_paths)} files...",
                 current=0,
                 total=len(uploaded_file_paths),
+                file_statuses=_build_file_statuses(
+                    [Path(path).name for path in uploaded_file_paths],
+                    "uploaded",
+                ),
             )
 
             adder = DocumentAdder(
@@ -469,6 +513,10 @@ async def run_upload_processing_task(
                     "No new files to process (all duplicates or invalid)",
                     current=0,
                     total=0,
+                    file_statuses=_build_file_statuses(
+                        [Path(path).name for path in uploaded_file_paths],
+                        "skipped",
+                    ),
                 )
                 task_manager.update_task_status(task_id, "completed")
                 task_stream_manager.emit_complete(
@@ -506,6 +554,10 @@ async def run_upload_processing_task(
                 f"Successfully processed {num_processed} files!",
                 current=num_processed,
                 total=num_processed,
+                file_statuses=_build_file_statuses(
+                    [path.name for path in processed_files] if processed_files else [],
+                    "indexed",
+                ),
             )
 
             _task_log(task_id, f"Processed {num_processed} file(s) for '{kb_name}'", level="success")
@@ -520,7 +572,16 @@ async def run_upload_processing_task(
             task_manager.update_task_status(task_id, "error", error=error_msg)
 
             progress_tracker.update(
-                ProgressStage.ERROR, f"Processing failed: {error_msg}", error=error_msg
+                ProgressStage.ERROR,
+                f"Processing failed: {error_msg}",
+                file_statuses=_build_file_statuses(
+                    [Path(path).name for path in uploaded_file_paths],
+                    "error",
+                    error_by_name={
+                        Path(path).name: error_msg for path in uploaded_file_paths
+                    },
+                ),
+                error=error_msg,
             )
             task_stream_manager.emit_failed(task_id, error_msg)
 
@@ -899,6 +960,7 @@ async def create_knowledge_base(
             f"Saved {len(uploaded_files)} files, preparing to process...",
             current=0,
             total=len(uploaded_files),
+            file_statuses=_build_file_statuses(uploaded_files, "uploaded"),
         )
 
         background_tasks.add_task(run_initialization_task, initializer, task_id)
