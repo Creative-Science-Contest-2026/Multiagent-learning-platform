@@ -39,6 +39,7 @@ import ResearchConfigPanel from "@/components/research/ResearchConfigPanel";
 import { extractBase64FromDataUrl, readFileAsDataUrl } from "@/lib/file-attachments";
 import { listKnowledgeBases, type KnowledgeBaseSummary } from "@/lib/knowledge-api";
 import type { StreamEvent } from "@/lib/unified-ws";
+import { buildPlaygroundTraceRows } from "@/lib/playground-trace";
 import {
   filterFrontendTools,
   FRONTEND_HIDDEN_TOOLS,
@@ -271,7 +272,8 @@ function TracePanel({ events }: { events: StreamEvent[] }) {
         const renderable = stageEvents.filter((e) =>
           ["thinking", "progress", "tool_call", "tool_result", "error"].includes(e.type),
         );
-        if (!renderable.length) return null;
+        const rows = buildPlaygroundTraceRows(renderable);
+        if (!rows.length) return null;
         return (
           <details key={stage} className="group rounded-2xl">
             <summary className="flex cursor-pointer list-none items-center gap-2 py-1 text-[12px] font-medium text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)] [&::-webkit-details-marker]:hidden">
@@ -285,24 +287,24 @@ function TracePanel({ events }: { events: StreamEvent[] }) {
               </span>
             </summary>
             <div className="ml-3 space-y-1.5 border-l border-[var(--border)]/35 pl-4">
-              {renderable.map((ev, i) => {
-                if (ev.type === "thinking") return <p key={`${stage}-t-${i}`} className="text-[12px] italic leading-relaxed text-[var(--muted-foreground)]/88">{ev.content}</p>;
-                if (ev.type === "progress") {
-                  const cur = Number(ev.metadata?.current ?? 0), tot = Number(ev.metadata?.total ?? 0);
+              {rows.map((row, i) => {
+                if (row.type === "thinking") return <p key={`${stage}-t-${i}`} className="text-[12px] italic leading-relaxed text-[var(--muted-foreground)]/88">{row.content}</p>;
+                if (row.type === "progress") {
+                  const cur = Number(row.event.metadata?.current ?? 0), tot = Number(row.event.metadata?.total ?? 0);
                   return (
                     <div key={`${stage}-p-${i}`} className="rounded-2xl bg-[var(--muted)]/38 px-3 py-2 text-[12px] text-[var(--muted-foreground)]">
-                      <div>{ev.content}</div>
+                      <div>{row.content}</div>
                       {tot > 0 && <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-[var(--border)]"><div className="h-full rounded-full bg-[var(--primary)] transition-all duration-300" style={{ width: `${Math.min(100, (cur / tot) * 100)}%` }} /></div>}
                     </div>
                   );
                 }
-                if (ev.type === "tool_call" || ev.type === "tool_result") return (
+                if (row.type === "tool_call" || row.type === "tool_result") return (
                   <div key={`${stage}-tc-${i}`} className="rounded-2xl border border-[var(--border)]/40 bg-[var(--background)]/66 px-3 py-2">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]/82">{ev.type === "tool_call" ? t("Tool call") : t("Tool result")}</div>
-                    <div className="mt-1 text-[12px] leading-5 text-[var(--foreground)]/88">{ev.content || String(ev.metadata?.tool ?? "")}</div>
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]/82">{row.type === "tool_call" ? t("Tool call") : t("Tool result")}</div>
+                    <div className="mt-1 text-[12px] leading-5 text-[var(--foreground)]/88">{row.content || String(row.event.metadata?.tool ?? "")}</div>
                   </div>
                 );
-                if (ev.type === "error") return <div key={`${stage}-e-${i}`} className="rounded-2xl border border-red-200/60 bg-red-50/72 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">{ev.content}</div>;
+                if (row.type === "error") return <div key={`${stage}-e-${i}`} className="rounded-2xl border border-red-200/60 bg-red-50/72 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">{row.content}</div>;
                 return null;
               })}
             </div>
