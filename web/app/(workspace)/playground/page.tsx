@@ -270,30 +270,33 @@ function TracePanel({ events }: { events: StreamEvent[] }) {
         );
         if (!renderable.length) return null;
         return (
-          <details key={stage} className="group overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card)]">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-[13px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]/50">
-              <span>{stage === "session" ? t("Details") : titleCase(stage)}</span>
+          <details key={stage} className="group overflow-hidden rounded-2xl border border-[var(--border)]/60 bg-[var(--background)]/70">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3.5 py-2.5 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]/35">
+              <span className="inline-flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--muted-foreground)]/45" />
+                {stage === "session" ? t("Details") : titleCase(stage)}
+              </span>
               <ChevronDown size={13} className="text-[var(--muted-foreground)] transition-transform group-open:rotate-180" />
             </summary>
-            <div className="border-t border-[var(--border)] px-3 py-2.5 space-y-1.5">
+            <div className="space-y-2 border-t border-[var(--border)]/55 px-3.5 py-3">
               {renderable.map((ev, i) => {
-                if (ev.type === "thinking") return <p key={`${stage}-t-${i}`} className="text-[12px] italic leading-relaxed text-[var(--muted-foreground)]">{ev.content}</p>;
+                if (ev.type === "thinking") return <p key={`${stage}-t-${i}`} className="text-[12px] italic leading-relaxed text-[var(--muted-foreground)]/90">{ev.content}</p>;
                 if (ev.type === "progress") {
                   const cur = Number(ev.metadata?.current ?? 0), tot = Number(ev.metadata?.total ?? 0);
                   return (
-                    <div key={`${stage}-p-${i}`} className="rounded-md bg-[var(--muted)] px-2.5 py-1.5 text-[12px] text-[var(--muted-foreground)]">
+                    <div key={`${stage}-p-${i}`} className="rounded-xl bg-[var(--muted)]/45 px-3 py-2 text-[12px] text-[var(--muted-foreground)]">
                       <div>{ev.content}</div>
                       {tot > 0 && <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-[var(--border)]"><div className="h-full rounded-full bg-[var(--primary)] transition-all duration-300" style={{ width: `${Math.min(100, (cur / tot) * 100)}%` }} /></div>}
                     </div>
                   );
                 }
                 if (ev.type === "tool_call" || ev.type === "tool_result") return (
-                  <div key={`${stage}-tc-${i}`} className="rounded-md border border-[var(--border)] bg-[var(--background)] px-2.5 py-1.5">
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)]">{ev.type === "tool_call" ? t("Tool call") : t("Tool result")}</div>
-                    <div className="mt-0.5 text-[12px] text-[var(--foreground)]">{ev.content || String(ev.metadata?.tool ?? "")}</div>
+                  <div key={`${stage}-tc-${i}`} className="rounded-xl border border-[var(--border)]/55 bg-[var(--background)]/82 px-3 py-2">
+                    <div className="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)]/90">{ev.type === "tool_call" ? t("Tool call") : t("Tool result")}</div>
+                    <div className="mt-1 text-[12px] leading-5 text-[var(--foreground)]">{ev.content || String(ev.metadata?.tool ?? "")}</div>
                   </div>
                 );
-                if (ev.type === "error") return <div key={`${stage}-e-${i}`} className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">{ev.content}</div>;
+                if (ev.type === "error") return <div key={`${stage}-e-${i}`} className="rounded-xl border border-red-200/70 bg-red-50/85 px-3 py-2 text-[12px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">{ev.content}</div>;
                 return null;
               })}
             </div>
@@ -596,27 +599,27 @@ function CapabilityResultPanel({ result }: { result: CapabilityExecResult | null
       </div>
 
       {response && (
-        <div className="max-h-[400px] overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--background)] p-4">
+        <div className="max-h-[400px] overflow-y-auto rounded-[24px] border border-[var(--border)]/60 bg-[var(--background)]/78 p-4">
           <MarkdownRenderer content={response} variant="prose" />
         </div>
       )}
 
       {!response && extraKeys.length > 0 && (
-        <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
-          <pre className="overflow-x-auto whitespace-pre-wrap break-all text-[12px] text-[var(--muted-foreground)]">
+        <div className="rounded-[20px] border border-[var(--border)]/55 bg-[var(--background)]/72 p-3">
+          <pre className="overflow-x-auto whitespace-pre-wrap break-all text-[12px] leading-6 text-[var(--muted-foreground)]/90">
             {JSON.stringify(extraData, null, 2)}
           </pre>
         </div>
       )}
 
       {extraKeys.length > 0 && response && (
-        <details className="group rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--foreground)]">
+        <details className="group rounded-2xl border border-[var(--border)]/60 bg-[var(--background)]/68">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-3.5 py-2.5 text-[12px] font-medium text-[var(--foreground)]">
             {t("Metadata")}
             <ChevronDown size={13} className="text-[var(--muted-foreground)] transition-transform group-open:rotate-180" />
           </summary>
-          <div className="border-t border-[var(--border)] px-3 py-2.5">
-            <pre className="overflow-x-auto whitespace-pre-wrap break-all text-[12px] text-[var(--muted-foreground)]">
+          <div className="border-t border-[var(--border)]/55 px-3.5 py-3">
+            <pre className="overflow-x-auto whitespace-pre-wrap break-all text-[12px] leading-6 text-[var(--muted-foreground)]/88">
               {JSON.stringify(extraData, null, 2)}
             </pre>
           </div>
@@ -995,12 +998,12 @@ function DeepQuestionTester({
               <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
             </div>
             {msg.role === "user" ? (
-              <div className="rounded-[28px] bg-[var(--foreground)] px-5 py-4 text-[15px] leading-7 text-[var(--background)] shadow-sm">
+              <div className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--muted)]/72 px-5 py-4 text-[15px] leading-7 text-[var(--foreground)] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
                 {msg.content}
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                <div className="rounded-[24px] border border-[var(--border)]/55 bg-[var(--background)]/58 p-3">
                   <TracePanel events={msg.events || []} />
                 </div>
                 <ProcessLogs
@@ -1009,13 +1012,13 @@ function DeepQuestionTester({
                   title={t("Process")}
                 />
                 {msg.error && (
-                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                  <div className="rounded-[18px] border border-red-200/70 bg-red-50/80 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
                     {msg.error}
                   </div>
                 )}
                 <AssistantResponse
                   content={msg.content}
-                  className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4 shadow-sm"
+                  className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--background)]/88 px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)]"
                 />
                 <CapabilityResultPanel result={msg.result} />
               </div>
@@ -1025,14 +1028,14 @@ function DeepQuestionTester({
       ))}
 
       <div className="sticky bottom-0 z-10 -mx-2 border-t border-[var(--border)] bg-[var(--background)]/94 px-2 pb-2 pt-2 backdrop-blur">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 rounded-[22px] border border-[var(--border)] bg-[var(--background)]/92 px-3 py-2 shadow-sm">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 rounded-[22px] border border-[var(--border)]/60 bg-[var(--background)]/86 px-3 py-2 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
           <div className="text-[11px] text-[var(--muted-foreground)]">
             {t("Review the setup above, then run generation.")}
           </div>
           <button
             onClick={run}
             disabled={!canRun || streaming}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-1.5 text-[12px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--muted)] px-4 py-1.5 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]/80 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
             {streaming ? t("Running...") : t("Generate")}
@@ -1254,12 +1257,12 @@ function DeepResearchTester({
                   <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
                 </div>
                 {msg.role === "user" ? (
-                  <div className="rounded-[28px] bg-[var(--foreground)] px-5 py-4 text-[15px] leading-7 text-[var(--background)] shadow-sm">
+                  <div className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--muted)]/72 px-5 py-4 text-[15px] leading-7 text-[var(--foreground)] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
                     {msg.content}
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                    <div className="rounded-[24px] border border-[var(--border)]/55 bg-[var(--background)]/58 p-3">
                       <TracePanel events={msg.events || []} />
                     </div>
                     <ProcessLogs
@@ -1268,13 +1271,13 @@ function DeepResearchTester({
                       title={t("Process")}
                     />
                     {msg.error && (
-                      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                      <div className="rounded-[18px] border border-red-200/70 bg-red-50/80 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
                         {msg.error}
                       </div>
                     )}
                     <AssistantResponse
                       content={msg.content}
-                      className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4 shadow-sm"
+                      className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--background)]/88 px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)]"
                     />
                     <CapabilityResultPanel result={msg.result} />
                   </div>
@@ -1286,7 +1289,7 @@ function DeepResearchTester({
       </div>
 
       <div className="sticky bottom-0 z-10 shrink-0 border-t border-[var(--border)] bg-[var(--background)]/96 pt-2 backdrop-blur">
-        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 shadow-sm">
+        <div className="rounded-[22px] border border-[var(--border)]/60 bg-[var(--background)]/84 px-3 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -1302,7 +1305,7 @@ function DeepResearchTester({
             <button
               onClick={run}
               disabled={!input.trim() || streaming || !validation.valid}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-1.5 text-[12px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--muted)] px-4 py-1.5 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]/80 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
               {streaming ? t("Running...") : t("Run Research")}
@@ -1476,12 +1479,12 @@ function CapabilityTester({
                   <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
                 </div>
                 {msg.role === "user" ? (
-                  <div className="rounded-[28px] bg-[var(--foreground)] px-5 py-4 text-[15px] leading-7 text-[var(--background)] shadow-sm">
+                  <div className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--muted)]/72 px-5 py-4 text-[15px] leading-7 text-[var(--foreground)] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
                     {msg.content}
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                    <div className="rounded-[24px] border border-[var(--border)]/55 bg-[var(--background)]/58 p-3">
                       <TracePanel events={msg.events || []} />
                     </div>
                     <ProcessLogs
@@ -1490,13 +1493,13 @@ function CapabilityTester({
                       title={t("Process")}
                     />
                     {msg.error && (
-                      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                      <div className="rounded-[18px] border border-red-200/70 bg-red-50/80 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
                         {msg.error}
                       </div>
                     )}
                     <AssistantResponse
                       content={msg.content}
-                      className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4 shadow-sm"
+                      className="rounded-[28px] border border-[var(--border)]/55 bg-[var(--background)]/88 px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)]"
                     />
                     <CapabilityResultPanel result={msg.result} />
                   </div>
@@ -1507,7 +1510,7 @@ function CapabilityTester({
         </div>
       </div>
       <div className="sticky bottom-0 z-10 shrink-0 border-t border-[var(--border)] bg-[var(--background)]/96 pt-2 backdrop-blur">
-        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 shadow-sm">
+        <div className="rounded-[22px] border border-[var(--border)]/60 bg-[var(--background)]/84 px-3 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -1523,7 +1526,7 @@ function CapabilityTester({
             <button
               onClick={send}
               disabled={!input.trim() || streaming}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-1.5 text-[12px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--muted)] px-4 py-1.5 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]/80 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
               {streaming ? t("Running...") : t("Send")}

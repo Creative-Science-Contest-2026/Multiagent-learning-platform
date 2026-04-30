@@ -35,12 +35,12 @@ Rules:
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: Hide Guided Learning and Co-Writer from the frontend shell and block direct route access without deleting the underlying code
-- Status: implementing
-- Branch: `fix/hide-guide-co-writer`
-- Task packet: `docs/superpowers/tasks/2026-04-30-hide-guide-co-writer.md`
-- Owned files: `web/components/sidebar/nav-groups.ts`, `web/app/(workspace)/guide/layout.tsx`, `web/app/(workspace)/co-writer/layout.tsx`, `web/app/(utility)/knowledge/page.tsx`, `web/tests/sidebar-nav-groups.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-hide-guide-co-writer.md`, `docs/superpowers/specs/2026-04-30-hide-guide-co-writer-design.md`, `docs/superpowers/plans/2026-04-30-hide-guide-co-writer.md`, `docs/superpowers/pr-notes/2026-04-30-hide-guide-co-writer.md`
+- Task: Refine the `/playground` chat presentation so traces stay visible but feel lighter, calmer, and more product-like
+- Status: writing spec
+- Branch: `fix/playground-chat-visual-refinement`
+- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-visual-refinement.md`
+- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/common/AssistantResponse.tsx`, `web/components/common/ProcessLogs.tsx`, `web/components/chat/home/PlaygroundRightPanel.tsx`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-chat-visual-refinement.md`, `docs/superpowers/specs/2026-04-30-playground-chat-visual-refinement-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-visual-refinement.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: finish FE hiding plus route redirects, record PR note, and prepare the lane for review
+- Next action: write the bounded visual refinement spec for calmer chat bubbles, softer trace cards, and lighter debug surfaces before implementation
 - Blocker: none
