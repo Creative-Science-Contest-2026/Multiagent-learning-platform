@@ -703,10 +703,6 @@ export default function KnowledgePage() {
     if (!sessionId) return;
     if (record.type === "chat") {
       router.push(`/?session=${encodeURIComponent(sessionId)}`);
-      return;
-    }
-    if (record.type === "guided_learning") {
-      router.push(`/guide?session=${encodeURIComponent(sessionId)}`);
     }
   };
 
@@ -1510,10 +1506,8 @@ export default function KnowledgePage() {
                           const BadgeIcon = badge.icon;
                           const expanded = expandedRecordId === record.id;
                           const canOpenSession =
-                            (record.type === "chat" || record.type === "guided_learning") &&
-                            Boolean(record.metadata?.session_id);
-                          const sessionLabel =
-                            record.type === "chat" ? t("Open chat session") : t("Open guided learning session");
+                            record.type === "chat" && Boolean(record.metadata?.session_id);
+                          const sessionLabel = t("Open chat session");
 
                           return (
                             <div key={record.id} className="group">

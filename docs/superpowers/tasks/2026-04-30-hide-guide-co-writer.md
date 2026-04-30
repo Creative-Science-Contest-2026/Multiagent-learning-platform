@@ -20,15 +20,15 @@ Remove `Học có hướng dẫn` and `Trợ lý soạn thảo` from the visible
 ## Owned files/modules
 
 - `web/components/sidebar/nav-groups.ts`
-- `web/app/(workspace)/guide/page.tsx`
-- `web/app/(workspace)/co-writer/page.tsx`
+- `web/app/(workspace)/guide/layout.tsx`
+- `web/app/(workspace)/co-writer/layout.tsx`
 - `web/app/(utility)/knowledge/page.tsx`
-- `web/locales/en/app.json`
-- `web/locales/vi/app.json`
+- `web/tests/sidebar-nav-groups.test.ts`
 - `ai_first/ACTIVE_ASSIGNMENTS.md`
 - `ai_first/daily/2026-04-30.md`
 - `docs/superpowers/tasks/2026-04-30-hide-guide-co-writer.md`
 - `docs/superpowers/specs/2026-04-30-hide-guide-co-writer-design.md`
+- `docs/superpowers/plans/2026-04-30-hide-guide-co-writer.md`
 - `docs/superpowers/pr-notes/2026-04-30-hide-guide-co-writer.md`
 
 ## Do-not-touch files/modules
@@ -38,8 +38,10 @@ Remove `Học có hướng dẫn` and `Trợ lý soạn thảo` from the visible
 - `web/app/(workspace)/dashboard/**`
 - `web/app/(utility)/marketplace/**`
 - `web/app/(utility)/settings/**`
+- `web/app/(workspace)/guide/page.tsx`
 - `web/app/(workspace)/guide/hooks/**`
 - `web/app/(workspace)/guide/components/**`
+- `web/app/(workspace)/co-writer/page.tsx`
 - `web/app/(workspace)/co-writer/sampleTemplate.ts`
 - `.github/workflows/**`
 - `requirements/**`
@@ -115,7 +117,7 @@ Use approach 2. Treat the work as a frontend gating pass: remove navigation entr
 ## Required tests
 
 - `cd web && node --test tests/sidebar-nav-groups.test.ts`
-- `cd web && npx eslint "components/sidebar/nav-groups.ts" "app/(workspace)/guide/page.tsx" "app/(workspace)/co-writer/page.tsx" "app/(utility)/knowledge/page.tsx"`
+- `cd web && npx eslint "components/sidebar/nav-groups.ts" "app/(workspace)/guide/layout.tsx" "app/(workspace)/co-writer/layout.tsx" "app/(utility)/knowledge/page.tsx"`
 - `cd web && npm run build`
 
 ## Manual verification

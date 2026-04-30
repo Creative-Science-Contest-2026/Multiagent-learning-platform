@@ -36,11 +36,11 @@ Rules:
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
 - Task: Hide Guided Learning and Co-Writer from the frontend shell and block direct route access without deleting the underlying code
-- Status: writing spec
+- Status: implementing
 - Branch: `fix/hide-guide-co-writer`
 - Task packet: `docs/superpowers/tasks/2026-04-30-hide-guide-co-writer.md`
-- Owned files: `web/components/sidebar/nav-groups.ts`, `web/app/(workspace)/guide/page.tsx`, `web/app/(workspace)/co-writer/page.tsx`, `web/app/(utility)/knowledge/page.tsx`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-hide-guide-co-writer.md`, `docs/superpowers/specs/2026-04-30-hide-guide-co-writer-design.md`, `docs/superpowers/pr-notes/2026-04-30-hide-guide-co-writer.md`
+- Owned files: `web/components/sidebar/nav-groups.ts`, `web/app/(workspace)/guide/layout.tsx`, `web/app/(workspace)/co-writer/layout.tsx`, `web/app/(utility)/knowledge/page.tsx`, `web/tests/sidebar-nav-groups.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-hide-guide-co-writer.md`, `docs/superpowers/specs/2026-04-30-hide-guide-co-writer-design.md`, `docs/superpowers/plans/2026-04-30-hide-guide-co-writer.md`, `docs/superpowers/pr-notes/2026-04-30-hide-guide-co-writer.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: write the bounded runtime spec for FE hiding plus route redirects, then wait for spec review before implementation
+- Next action: finish FE hiding plus route redirects, record PR note, and prepare the lane for review
 - Blocker: none
