@@ -30,17 +30,4 @@ Rules:
 
 ## Active
 
-### Assignment
-
-- Owner: Codex
-- Machine: local
-- Worktree: `.worktrees/contest-shell-scope-trim`
-- Task: `C216_CONTEST_SHELL_SCOPE_TRIM`
-- Status: `in_progress`
-- Branch: `fix/contest-shell-scope-trim`
-- Task packet: `docs/superpowers/tasks/2026-04-30-c216-contest-shell-scope-trim.md`
-- Owned files: `web/components/sidebar/SidebarShell.tsx`, `web/components/sidebar/WorkspaceSidebar.tsx`, `web/components/sidebar/UtilitySidebar.tsx`, `web/app/(workspace)/layout.tsx`, `web/app/(utility)/layout.tsx`
-- PR:
-- Last update: `2026-04-30 10:25:01 +0700`
-- Next action: write PR note and prepare the lane commit after successful test, lint, and build validation
-- Blocker:
+No active AI-owned non-terminal lanes.

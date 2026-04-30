@@ -2217,10 +2217,10 @@
       "dependencies": [
         "C213_DIFFERENTIATION_WORDING_SWEEP"
       ],
-      "status": "in_progress",
+      "status": "completed",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
-      "notes": "Triggered by the 2026-04-27 contest differentiation audit: the primary shell still exposes generic `Chat`, `Co-Writer`, `Guided Learning`, `Memory`, and other inherited surfaces that dilute the contest story."
+      "notes": "Merged to main through PR #235 on 2026-04-30. The shared sidebar shell now promotes contest-core routes ahead of inherited secondary tools without changing route targets or backend contracts."
     },
     {
       "id": "C217_TEACHER_COCKPIT_DEFAULT_ENTRY",
