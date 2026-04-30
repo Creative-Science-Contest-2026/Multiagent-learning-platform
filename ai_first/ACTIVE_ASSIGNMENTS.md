@@ -36,11 +36,11 @@ Rules:
 - Machine: local
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/contest-vietnamese-coverage-completion`
 - Task: `C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION`
-- Status: `in_progress`
+- Status: `ready_for_review`
 - Branch: `fix/contest-vietnamese-coverage-completion`
 - Task packet: `docs/superpowers/tasks/2026-04-30-c221-contest-vietnamese-coverage-completion.md`
 - Owned files: `web/components/contest/teacher-cockpit-content.ts`, `web/components/contest/TeacherCockpit.tsx` if needed, `web/components/agents/SpecPackAuthoringTab.tsx`, `web/app/(workspace)/agents/page.tsx`, `web/app/(workspace)/dashboard/page.tsx`, `web/app/(utility)/knowledge/page.tsx`, `web/app/(utility)/marketplace/page.tsx` if needed, `web/locales/en/app.json`, `web/locales/vi/app.json`
-- PR: `not opened`
+- PR: `#248`
 - Last update: `2026-04-30`
-- Next action: `finish localization audit and implement the bounded contest-path Vietnamese sweep`
+- Next action: `watch CI on #248 and merge if all required checks pass`
 - Blocker: `none`
