@@ -54,7 +54,7 @@ Rules:
 - Status: writing spec
 - Branch: `fix/code-review-graph-integration`
 - Task packet: `docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md`
-- Owned files: `.gitignore`, `.claude/skills/`, `.code-review-graph/`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md`, `docs/superpowers/specs/2026-04-30-code-review-graph-integration-design.md`, `docs/superpowers/plans/2026-04-30-code-review-graph-integration.md`, `docs/superpowers/pr-notes/2026-04-30-code-review-graph-integration.md`
+- Owned files: `.gitignore`, `.claude/skills/`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md`, `docs/superpowers/specs/2026-04-30-code-review-graph-integration-design.md`, `docs/superpowers/plans/2026-04-30-code-review-graph-integration.md`, `docs/superpowers/pr-notes/2026-04-30-code-review-graph-integration.md`
 - PR: uncreated
 - Last update: 2026-04-30
 - Next action: stage the bounded integration files, commit the lane, and prepare review handoff

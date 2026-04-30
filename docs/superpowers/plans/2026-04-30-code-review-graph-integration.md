@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Install `code-review-graph`, configure this repository for Codex, and commit the initial repo-local graph artifacts if the tool creates them.
+**Goal:** Install `code-review-graph`, configure this repository for Codex, and keep the initial graph database local-only while committing the repo-local integration files.
 
-**Architecture:** Keep the Python package installation machine-level so the repo does not gain a tracked dependency, then run the upstream Codex integration inside the dedicated worktree so only repo-local instructions and generated graph assets change. Validate with the upstream CLI plus diff checks before staging the bounded artifact set.
+**Architecture:** Keep the Python package installation machine-level so the repo does not gain a tracked dependency, then run the upstream Codex integration inside the dedicated worktree so only repo-local instructions change. Build the graph locally for verification, but keep the generated database out of git and rely on `.gitignore` for future local rebuilds.
 
 **Tech Stack:** Python 3.12, `code-review-graph` CLI, Codex repo instructions, MCP config, git worktree
 
@@ -47,7 +47,7 @@ Expected: only the bounded tooling files are added or modified, primarily `.giti
 ### Task 3: Build And Inspect The Initial Graph Artifact
 
 **Files:**
-- Create or modify: `.code-review-graph/`
+- Create or modify locally only: `.code-review-graph/`
 
 - [ ] **Step 1: Build the graph for this repository**
 
@@ -63,19 +63,19 @@ Expected: the command reports graph metadata for the current repository and conf
 - [ ] **Step 3: Inspect the generated artifact set**
 
 Run: `find .code-review-graph -maxdepth 2 -type f | sort`
-Expected: repo-local graph files are listed if the tool stores them under `.code-review-graph/`.
+Expected: repo-local graph files are listed if the tool stores them under `.code-review-graph/`, but they remain untracked.
 
 ### Task 4: Review, Record, And Commit The Bounded Integration
 
 **Files:**
 - Modify: `ai_first/daily/2026-04-30.md`
 - Create: `docs/superpowers/pr-notes/2026-04-30-code-review-graph-integration.md`
-- Review: `.gitignore`, `.claude/skills/`, `.code-review-graph/`
+- Review: `.gitignore`, `.claude/skills/`
 
 - [ ] **Step 1: Record the integration result in the daily log and PR note**
 
 ```text
-Capture the exact files created by install/build, whether `.code-review-graph/` was generated, and the verification commands that passed.
+Capture the exact files created by install/build, confirm that `.code-review-graph/` remains local-only, and record the verification commands that passed.
 ```
 
 - [ ] **Step 2: Check for malformed whitespace before staging**
@@ -86,7 +86,7 @@ Expected: no whitespace or patch-format errors.
 - [ ] **Step 3: Stage only the bounded integration files**
 
 ```bash
-git add .gitignore .claude/skills .code-review-graph ai_first/ACTIVE_ASSIGNMENTS.md ai_first/daily/2026-04-30.md docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md docs/superpowers/specs/2026-04-30-code-review-graph-integration-design.md docs/superpowers/plans/2026-04-30-code-review-graph-integration.md docs/superpowers/pr-notes/2026-04-30-code-review-graph-integration.md
+git add .gitignore .claude/skills ai_first/ACTIVE_ASSIGNMENTS.md ai_first/daily/2026-04-30.md docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md docs/superpowers/specs/2026-04-30-code-review-graph-integration-design.md docs/superpowers/plans/2026-04-30-code-review-graph-integration.md docs/superpowers/pr-notes/2026-04-30-code-review-graph-integration.md
 ```
 
 - [ ] **Step 4: Commit with the lane task identifier**

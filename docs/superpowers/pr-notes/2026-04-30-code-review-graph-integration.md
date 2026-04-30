@@ -6,7 +6,7 @@
 - captured the repo-local install outputs that the upstream tool actually generates:
   - `.gitignore` entry for `.code-review-graph/`
   - `.claude/skills/*.md`
-  - `.code-review-graph/graph.db` plus its local `.gitignore`
+- built `.code-review-graph/graph.db` locally for verification without keeping it in git
 - left application runtime code unchanged
 
 ## Architecture Note
@@ -16,7 +16,7 @@ flowchart LR
     Codex["Codex session"] --> GlobalConfig["~/.codex/config.toml MCP entry"]
     Codex --> RepoSkills["repo .claude/skills/*.md"]
     RepoSkills --> MCP["code-review-graph serve"]
-    MCP --> GraphDB[".code-review-graph/graph.db"]
+    MCP --> GraphDB["local .code-review-graph/graph.db"]
     GraphDB --> Repo["Multiagent-learning-platform source tree"]
 ```
 

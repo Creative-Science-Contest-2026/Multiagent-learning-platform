@@ -6,7 +6,7 @@
 
 ## Goal
 
-Add `code-review-graph` to this repository in a way that Codex can use immediately, the repo carries its own integration files, and the first graph snapshot is committed if the tool stores it inside the project.
+Add `code-review-graph` to this repository in a way that Codex can use immediately, the repo carries its own integration files, and the first graph snapshot can be built locally without committing the generated database.
 
 ## Current Behavior
 
@@ -20,7 +20,8 @@ Add `code-review-graph` to this repository in a way that Codex can use immediate
 - `code-review-graph` should be installed and available on this machine.
 - This repository should be configured for Codex via the tool's Codex installation path.
 - The initial graph build should run in this repository.
-- Any repo-local configuration or graph artifact produced by the tool, including `.gitignore`, `.claude/skills/`, and `.code-review-graph/` if created, should be committed on this lane.
+- Repo-local configuration produced by the tool, including `.gitignore` and `.claude/skills/`, should be committed on this lane.
+- The generated `.code-review-graph/` database should stay local-only and ignored.
 
 ## Codebase Survey
 
@@ -66,11 +67,11 @@ Add `code-review-graph` to this repository in a way that Codex can use immediate
 
 ### Approach B: Global tool install plus repo-local Codex integration and initial build
 
-- Install the CLI on the machine, then run `code-review-graph install --platform codex` and `code-review-graph build` inside this worktree, committing the generated repo-local files.
+- Install the CLI on the machine, then run `code-review-graph install --platform codex` and `code-review-graph build` inside this worktree, committing the generated repo-local integration files but not the local graph database.
 - Pros:
   - matches the upstream quick start
   - keeps the Python package out of tracked repo dependencies
-  - gives the repo a committed initial graph snapshot if the tool creates one locally
+  - gives the repo a verified initial local graph snapshot without expanding the repository with a large generated database
 - Cons:
   - may patch `AGENTS.md` and add generated files that need review
 
@@ -86,7 +87,7 @@ Add `code-review-graph` to this repository in a way that Codex can use immediate
 
 ## Chosen Approach
 
-Approach B.
+Approach B, with one refinement after the initial run: keep `.code-review-graph/` out of git even though the first build creates it locally.
 
 It satisfies the user's request while keeping the repository dependency surface bounded. The machine-level install provides the executable, and the repo-local `install` plus `build` steps create the actual project integration that future Codex sessions can use.
 
@@ -97,7 +98,7 @@ It satisfies the user's request while keeping the repository dependency surface 
 - Review and keep the generated modifications in:
   - `.gitignore`
   - `.claude/skills/`
-  - `.code-review-graph/` if present
+- Keep `.code-review-graph/` local-only even if present after the initial build.
 - Add a PR architecture note describing the tooling integration lane and generated graph artifact.
 
 ## Expected Impact Surface
@@ -106,7 +107,6 @@ It satisfies the user's request while keeping the repository dependency surface 
 
 - `.gitignore`
 - `.claude/skills/`
-- `.code-review-graph/`
 
 ### Reviewed but expected to remain unchanged
 
@@ -125,3 +125,4 @@ It satisfies the user's request while keeping the repository dependency surface 
 - no product feature changes
 - no backend/runtime code changes
 - no migration of existing RTK global integration
+- no committed graph database artifact
