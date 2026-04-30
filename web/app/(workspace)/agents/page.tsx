@@ -97,7 +97,7 @@ export default function AgentsPage() {
             <p className="mt-1 text-[13px] text-[var(--primary)] animate-fade-in">{toast}</p>
           ) : (
             <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-              {t("Set how the teacher-controlled class tutor explains, encourages, and gives hints before students start guided practice.")}
+              {t("Step 2 after Knowledge Packs: define how the class tutor teaches one selected pack, supports students, and stays inside classroom boundaries.")}
             </p>
           )}
         </div>

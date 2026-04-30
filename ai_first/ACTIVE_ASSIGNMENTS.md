@@ -90,3 +90,18 @@ Rules:
 - Last update: 2026-04-30
 - Next action: stage the bounded runtime/docs diff and open the draft PR after optional FE dependency install for lint/build verification
 - Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-class-tutor-pack-flow`
+- Task: Make class tutor setup feel like step 2 of the Knowledge Pack flow and bind each class tutor to one active Knowledge Pack
+- Status: writing spec
+- Branch: `fix/class-tutor-pack-flow`
+- Task packet: `docs/superpowers/tasks/2026-04-30-class-tutor-pack-flow.md`
+- Owned files: `web/app/(workspace)/agents/page.tsx`, `web/components/agents/SpecPackAuthoringTab.tsx`, `web/components/agents/class-tutor-pack-presenters.ts`, `web/lib/agent-spec-api.ts`, `web/lib/knowledge-api.ts`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `web/tests/contest-terminology.test.ts`, `web/tests/class-tutor-pack-presenters.test.ts`, `deeptutor/api/routers/agent_specs.py`, `deeptutor/services/agent_spec/service.py`, `tests/api/test_agent_specs_router.py`, `tests/services/agent_spec/test_service.py`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-class-tutor-pack-flow.md`, `docs/superpowers/specs/2026-04-30-class-tutor-pack-flow-design.md`, `docs/superpowers/plans/2026-04-30-class-tutor-pack-flow.md`, `docs/superpowers/pr-notes/2026-04-30-class-tutor-pack-flow.md`
+- PR: uncreated
+- Last update: 2026-04-30
+- Next action: finish the bounded runtime spec for linking each class tutor to one knowledge pack before implementation planning
+- Blocker: none

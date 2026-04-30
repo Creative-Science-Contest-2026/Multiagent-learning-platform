@@ -30,6 +30,7 @@ def _payload(agent_id: str = "fraction-coach") -> dict:
         "agent_id": agent_id,
         "display_name": "Fraction Coach",
         "description": "Teacher-authored fraction tutor",
+        "linked_knowledge_pack": "fractions-pack",
         "structured": {
             "identity": {
                 "agent_name": "Fraction Coach",
@@ -66,21 +67,26 @@ def test_agent_specs_router_supports_create_list_update_and_export(tmp_path, mon
         created = client.post("/api/v1/agent-specs", json=_payload())
         assert created.status_code == 200
         assert created.json()["agent_id"] == "fraction-coach"
+        assert created.json()["linked_knowledge_pack"] == "fractions-pack"
 
         listing = client.get("/api/v1/agent-specs")
         assert listing.status_code == 200
         assert listing.json()["items"][0]["agent_id"] == "fraction-coach"
+        assert listing.json()["items"][0]["linked_knowledge_pack"] == "fractions-pack"
 
         detail = client.get("/api/v1/agent-specs/fraction-coach")
         assert detail.status_code == 200
         assert detail.json()["structured"]["identity"]["subject"] == "Mathematics"
+        assert detail.json()["linked_knowledge_pack"] == "fractions-pack"
 
         payload = _payload()
         payload["display_name"] = "Fraction Coach Revised"
+        payload["linked_knowledge_pack"] = "ratios-pack"
         payload["files"]["WORKFLOW.md"] = "# Workflow\n\n1. Teach\n2. Practice\n"
         updated = client.put("/api/v1/agent-specs/fraction-coach", json=payload)
         assert updated.status_code == 200
         assert updated.json()["version"] == 2
+        assert updated.json()["linked_knowledge_pack"] == "ratios-pack"
 
         exported = client.get("/api/v1/agent-specs/fraction-coach/export")
         assert exported.status_code == 200
