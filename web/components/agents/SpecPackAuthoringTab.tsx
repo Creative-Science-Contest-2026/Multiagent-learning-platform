@@ -213,10 +213,10 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)_320px]">
-      <aside className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] 2xl:grid-cols-[minmax(240px,280px)_minmax(0,1fr)_minmax(280px,320px)]">
+      <aside className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
               {t("Teacher setup")}
             </p>
@@ -226,7 +226,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
           </div>
           <button
             onClick={beginNewPack}
-            className="inline-flex items-center gap-1 rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            className="inline-flex shrink-0 items-center gap-1 self-start rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
           >
             <Plus className="h-3.5 w-3.5" />
             {t("New")}
@@ -271,10 +271,10 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
         )}
       </aside>
 
-      <section className="space-y-5">
+      <section className="min-w-0 space-y-5">
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-5">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <div>
+          <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0">
               <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
                 {t("Teacher controls")}
               </p>
@@ -285,11 +285,11 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
                 {t("IDENTITY defines who this class tutor supports, SOUL shapes how it coaches when students are wrong or stuck, and RULES keep every response inside your classroom boundaries.")}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
               <button
                 onClick={() => void exportDraft()}
                 disabled={exporting || !draft.agent_id}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-[12px] text-[var(--muted-foreground)] disabled:opacity-40"
+                className="inline-flex min-w-[104px] items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-[12px] text-[var(--muted-foreground)] disabled:opacity-40"
               >
                 {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
                 {t("Export")}
@@ -297,7 +297,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
               <button
                 onClick={() => void saveDraft()}
                 disabled={saving}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-2 text-[12px] font-medium text-[var(--primary-foreground)] disabled:opacity-40"
+                className="inline-flex min-w-[104px] items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-2 text-[12px] font-medium text-[var(--primary-foreground)] disabled:opacity-40"
               >
                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                 {draft.version > 0 ? t("Save") : t("Create")}
@@ -403,8 +403,8 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
         </div>
       </section>
 
-      <aside className="space-y-4">
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
+      <aside className="min-w-0 space-y-4">
+        <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
           <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
             {t("Teacher-facing summary")}
           </p>
@@ -420,9 +420,9 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
+        <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
               <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
                 {t("Runtime policy audit")}
               </p>
@@ -433,7 +433,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
             <select
               value={auditCapability}
               onChange={(event) => setAuditCapability(event.target.value as "chat" | "deep_question" | "deep_solve")}
-              className="rounded-lg border border-[var(--border)] bg-transparent px-2 py-1 text-[12px] text-[var(--foreground)]"
+              className="w-full rounded-lg border border-[var(--border)] bg-transparent px-2 py-1 text-[12px] text-[var(--foreground)] sm:w-auto"
             >
               <option value="chat">{t("chat")}</option>
               <option value="deep_question">{t("deep_question")}</option>
@@ -475,9 +475,9 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
                 </p>
                 <div className="mt-2 space-y-2">
                   {Object.entries(runtimeAudit.runtime_policy.debug.slice_sources).map(([slice, source]) => (
-                    <div key={slice} className="flex items-start justify-between gap-3">
-                      <span className="font-medium text-[var(--foreground)]">{slice}</span>
-                      <span className="text-right text-[var(--muted-foreground)]">{source}</span>
+                    <div key={slice} className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                      <span className="font-medium text-[var(--foreground)] break-words">{slice}</span>
+                      <span className="text-left break-words text-[var(--muted-foreground)] sm:text-right">{source}</span>
                     </div>
                   ))}
                 </div>
@@ -490,7 +490,7 @@ export default function SpecPackAuthoringTab({ onToast }: { onToast: (message: s
           )}
         </div>
 
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
+        <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-4">
           <p className="text-[12px] uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
             {t("Markdown preview")}
           </p>
@@ -514,8 +514,8 @@ function StructuredSection({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-5">
-      <div className="mb-4">
+    <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--card)]/40 p-5">
+      <div className="mb-4 min-w-0">
         <h3 className="text-[16px] font-semibold text-[var(--foreground)]">{title}</h3>
         <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">{description}</p>
       </div>
@@ -574,9 +574,9 @@ function LabeledTextarea({
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--muted-foreground)]">{label}</p>
-      <p className="mt-1 text-[13px] text-[var(--foreground)]">{value || "—"}</p>
+      <p className="mt-1 break-words text-[13px] text-[var(--foreground)]">{value || "—"}</p>
     </div>
   );
 }

@@ -87,7 +87,7 @@ export default function AgentsPage() {
 
   return (
     <div className="h-full overflow-y-auto [scrollbar-gutter:stable]">
-      <div className="mx-auto max-w-[960px] px-6 py-8">
+      <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-[24px] font-semibold tracking-tight text-[var(--foreground)]">
@@ -103,7 +103,7 @@ export default function AgentsPage() {
         </div>
 
         {/* Tabs */}
-        <div className="mb-6 flex items-center gap-1 border-b border-[var(--border)]/50 pb-3">
+        <div className="mb-6 flex flex-wrap items-center gap-1 border-b border-[var(--border)]/50 pb-3">
           {([
             { key: "specs" as Tab, label: t("Tutor setup"), icon: FileText },
             { key: "bots" as Tab, label: t("Class tutors"), icon: Bot },

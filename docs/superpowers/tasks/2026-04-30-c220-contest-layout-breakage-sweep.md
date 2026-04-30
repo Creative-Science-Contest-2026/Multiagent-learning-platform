@@ -4,7 +4,7 @@
 - Commit tag: `C220`
 - Branch: `fix/contest-layout-breakage-sweep`
 - Worktree: `.worktrees/contest-layout-breakage-sweep`
-- Status: `not_started`
+- Status: `in_progress`
 
 ## Goal
 

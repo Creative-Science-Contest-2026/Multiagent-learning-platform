@@ -106,8 +106,10 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "C220_CONTEST_LAYOUT_BREAKAGE_SWEEP"
+      ]
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -116,9 +118,8 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 2,
+      "count": 1,
       "tasks": [
-        "C220_CONTEST_LAYOUT_BREAKAGE_SWEEP",
         "C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION"
       ]
     }
@@ -2317,10 +2318,10 @@
         "C217_TEACHER_COCKPIT_DEFAULT_ENTRY",
         "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY"
       ],
-      "status": "not-started",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime",
       "layer": "post-contest-recovery",
-      "notes": "Opened from `main` on 2026-04-30 after a visual audit found severe column collapse, button overlap, and poor wrapping on `/agents`, plus follow-on layout risk across the teacher cockpit, Knowledge, and Dashboard screens."
+      "notes": "In progress on branch fix/contest-layout-breakage-sweep as of 2026-04-30. Local runtime hardening has landed for /agents plus bounded responsive guards on the teacher cockpit, Knowledge, and Dashboard; final merge status pending review."
     },
     {
       "id": "C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION",

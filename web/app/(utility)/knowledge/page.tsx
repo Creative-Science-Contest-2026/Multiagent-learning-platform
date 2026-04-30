@@ -773,10 +773,10 @@ export default function KnowledgePage() {
 
   return (
     <div className="h-full overflow-y-auto bg-[var(--background)] [scrollbar-gutter:stable]">
-      <div className="mx-auto max-w-5xl px-6 py-8 pb-10">
+      <div className="mx-auto max-w-5xl px-4 py-8 pb-10 sm:px-6">
         {/* Header */}
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
             <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">
               {t("Knowledge Packs")}
             </h1>
@@ -785,7 +785,7 @@ export default function KnowledgePage() {
             </p>
           </div>
 
-          <div className="inline-flex shrink-0 rounded-lg border border-[var(--border)] bg-[var(--muted)] p-0.5">
+          <div className="inline-flex shrink-0 self-start rounded-lg border border-[var(--border)] bg-[var(--muted)] p-0.5">
             {[
               { key: "knowledge", label: t("Knowledge Packs"), icon: Database },
               { key: "notebooks", label: t("Notebooks"), icon: NotebookPen },

@@ -122,7 +122,7 @@ export default function DashboardPage() {
 
   return (
     <main className="h-full overflow-y-auto bg-[var(--background)]">
-      <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-6 px-6 py-8">
+      <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-6 px-4 py-8 sm:px-6">
         <header className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
@@ -269,7 +269,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <section className="grid gap-3 md:grid-cols-4">
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {cards.map((card) => (
             <div
               key={card.label}
