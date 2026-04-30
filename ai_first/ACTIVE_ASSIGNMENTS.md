@@ -59,3 +59,18 @@ Rules:
 - Last update: 2026-04-30
 - Next action: stage the bounded integration files, commit the lane, and prepare review handoff
 - Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-knowledge-pack-wizard-redesign`
+- Task: Redesign the `Gói kiến thức` screen into a wizard-first Vietnamese flow with FE notebook removal, hidden provider/model selection, and OpenAI-default indexing status
+- Status: implemented, pending PR
+- Branch: `fix/knowledge-pack-wizard-redesign`
+- Task packet: `docs/superpowers/tasks/2026-04-30-knowledge-pack-wizard-redesign.md`
+- Owned files: `web/app/(utility)/knowledge/page.tsx`, `web/locales/vi/app.json`, `web/locales/en/app.json`, `web/lib/notebook-api.ts`, `web/tests/contest-vietnamese-coverage.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-knowledge-pack-wizard-redesign.md`, `docs/superpowers/specs/2026-04-30-knowledge-pack-wizard-redesign-design.md`, `docs/superpowers/plans/2026-04-30-knowledge-pack-wizard-redesign.md`, `docs/superpowers/pr-notes/2026-04-30-knowledge-pack-wizard-redesign.md`
+- PR: uncreated
+- Last update: 2026-04-30
+- Next action: stage the bounded runtime/docs diff and open the draft PR after optional FE dependency install for lint/build verification
+- Blocker: none

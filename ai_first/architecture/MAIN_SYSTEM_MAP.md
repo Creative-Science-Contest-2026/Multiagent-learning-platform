@@ -56,6 +56,8 @@ flowchart TD
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
   KnowledgePack --> KPVersions["Versioned teacher-pack metadata: current_version + version_history"]
+  KnowledgePack --> KPWizard["Wizard-first teacher flow: Thông tin -> Tài liệu -> Hoàn tất"]
+  KnowledgePack --> KPIngestStatus["Pack-level + per-file indexing status surface"]
   
   Product --> Marketplace["Knowledge Pack Marketplace"]
   Marketplace --> MarketplaceAPI["/api/v1/marketplace"]

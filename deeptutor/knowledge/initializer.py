@@ -22,6 +22,21 @@ from deeptutor.knowledge.progress_tracker import ProgressStage, ProgressTracker
 logger = get_logger("KnowledgeInit")
 
 
+def _file_statuses_for_paths(paths: list[Path], status: str, error: str | None = None) -> list[dict]:
+    timestamp = datetime.now().isoformat()
+    statuses: list[dict] = []
+    for path in paths:
+        item = {
+            "name": path.name,
+            "status": status,
+            "updated_at": timestamp,
+        }
+        if error:
+            item["error"] = error
+        statuses.append(item)
+    return statuses
+
+
 class KnowledgeBaseInitializer:
     """Knowledge base initializer."""
 
@@ -168,6 +183,7 @@ class KnowledgeBaseInitializer:
             f"Found {len(doc_files)} documents, starting to process...",
             current=0,
             total=len(doc_files),
+            file_statuses=_file_statuses_for_paths(doc_files, "processing"),
         )
 
         rag_service = RAGService(
@@ -204,6 +220,7 @@ class KnowledgeBaseInitializer:
                 "Documents processed successfully",
                 current=len(doc_files),
                 total=len(doc_files),
+                file_statuses=_file_statuses_for_paths(doc_files, "indexed"),
             )
         except Exception as e:
             error_msg = str(e)
@@ -211,6 +228,7 @@ class KnowledgeBaseInitializer:
             self.progress_tracker.update(
                 ProgressStage.ERROR,
                 "Failed to process documents",
+                file_statuses=_file_statuses_for_paths(doc_files, "error", error_msg),
                 error=error_msg,
             )
             raise
