@@ -22,6 +22,11 @@ import {
 import { useTranslation } from "react-i18next";
 import SessionList from "@/components/SessionList";
 import { TutorBotRecent } from "@/components/sidebar/TutorBotRecent";
+import {
+  getCollapsedSidebarNav,
+  getExpandedSidebarGroups,
+  type SidebarNavItem,
+} from "@/components/sidebar/nav-groups";
 import type { SessionSummary } from "@/lib/session-api";
 
 interface NavEntry {
@@ -30,19 +35,29 @@ interface NavEntry {
   icon: LucideIcon;
 }
 
-const PRIMARY_NAV: NavEntry[] = [
-  { href: "/", label: "Chat", icon: MessageSquare },
-  { href: "/agents", label: "TutorBot", icon: Bot },
-  { href: "/co-writer", label: "Co-Writer", icon: PenLine },
-  { href: "/guide", label: "Guided Learning", icon: GraduationCap },
-  { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
-  { href: "/knowledge", label: "Knowledge", icon: BookOpen },
-  { href: "/marketplace", label: "Marketplace", icon: Store },
-  { href: "/memory", label: "Memory", icon: Brain },
-];
-
 const SECONDARY_NAV: NavEntry[] = [{ href: "/settings", label: "Settings", icon: Settings }];
 const DEFAULT_SESSION_VIEWPORT_CLASS_NAME = "max-h-[112px]";
+
+function resolveNavIcon(icon: SidebarNavItem["icon"]): LucideIcon {
+  switch (icon) {
+    case "message-square":
+      return MessageSquare;
+    case "bot":
+      return Bot;
+    case "pen-line":
+      return PenLine;
+    case "graduation-cap":
+      return GraduationCap;
+    case "bar-chart-3":
+      return BarChart3;
+    case "book-open":
+      return BookOpen;
+    case "store":
+      return Store;
+    case "brain":
+      return Brain;
+  }
+}
 
 interface SidebarShellProps {
   sessions?: SessionSummary[];
@@ -73,6 +88,8 @@ export function SidebarShell({
   const router = useRouter();
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
+  const collapsedNav = getCollapsedSidebarNav();
+  const expandedNavGroups = getExpandedSidebarGroups();
 
   const handleNewChat = () => {
     if (onNewChat) {
@@ -103,7 +120,8 @@ export function SidebarShell({
         </button>
 
         <nav className="flex flex-col items-center gap-px pt-1">
-          {PRIMARY_NAV.map((item) => {
+          {collapsedNav.map((item) => {
+            const Icon = resolveNavIcon(item.icon);
             const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             return (
               <div key={item.href} className="flex flex-col items-center">
@@ -115,7 +133,7 @@ export function SidebarShell({
                       : "text-[var(--muted-foreground)] hover:bg-[var(--background)]/50 hover:text-[var(--foreground)]"
                   }`}
                 >
-                  <item.icon size={16} strokeWidth={active ? 1.9 : 1.5} />
+                  <Icon size={16} strokeWidth={active ? 1.9 : 1.5} />
                 </Link>
                 {item.href === "/agents" && <TutorBotRecent collapsed />}
               </div>
@@ -180,40 +198,49 @@ export function SidebarShell({
             <span>{t("New Chat")}</span>
           </button>
 
-          {PRIMARY_NAV.map((item) => {
-            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-            const hasSessionsBelow = item.href === "/" && showSessions && onSelectSession && onRenameSession && onDeleteSession;
-            const hasBots = item.href === "/agents";
-            return (
-              <div key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] transition-colors ${
-                    active
-                      ? "bg-[var(--background)]/70 font-medium text-[var(--foreground)]"
-                      : "text-[var(--muted-foreground)] hover:bg-[var(--background)]/50 hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  <item.icon size={16} strokeWidth={active ? 1.9 : 1.5} />
-                  <span>{t(item.label)}</span>
-                </Link>
-                {hasSessionsBelow && (
-                  <div className={`${sessionViewportClassName} overflow-y-auto`}>
-                    <SessionList
-                      sessions={sessions}
-                      activeSessionId={activeSessionId}
-                      loading={loadingSessions}
-                      onSelect={onSelectSession}
-                      onRename={onRenameSession}
-                      onDelete={onDeleteSession}
-                      compact
-                    />
-                  </div>
-                )}
-                {hasBots && <TutorBotRecent />}
+          {expandedNavGroups.map((group, index) => (
+            <div key={group.id} className={index > 0 ? "pt-3" : ""}>
+              <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]/80">
+                {t(group.label)}
               </div>
-            );
-          })}
+              {group.items.map((item) => {
+                const Icon = resolveNavIcon(item.icon);
+                const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                const hasSessionsBelow =
+                  item.href === "/" && showSessions && onSelectSession && onRenameSession && onDeleteSession;
+                const hasBots = item.href === "/agents";
+                return (
+                  <div key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] transition-colors ${
+                        active
+                          ? "bg-[var(--background)]/70 font-medium text-[var(--foreground)]"
+                          : "text-[var(--muted-foreground)] hover:bg-[var(--background)]/50 hover:text-[var(--foreground)]"
+                      }`}
+                    >
+                      <Icon size={16} strokeWidth={active ? 1.9 : 1.5} />
+                      <span>{t(item.label)}</span>
+                    </Link>
+                    {hasSessionsBelow && (
+                      <div className={`${sessionViewportClassName} overflow-y-auto`}>
+                        <SessionList
+                          sessions={sessions}
+                          activeSessionId={activeSessionId}
+                          loading={loadingSessions}
+                          onSelect={onSelectSession}
+                          onRename={onRenameSession}
+                          onDelete={onDeleteSession}
+                          compact
+                        />
+                      </div>
+                    )}
+                    {hasBots && <TutorBotRecent />}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </nav>
 

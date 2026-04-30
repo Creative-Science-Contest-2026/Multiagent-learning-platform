@@ -2217,7 +2217,7 @@
       "dependencies": [
         "C213_DIFFERENTIATION_WORDING_SWEEP"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
       "notes": "Triggered by the 2026-04-27 contest differentiation audit: the primary shell still exposes generic `Chat`, `Co-Writer`, `Guided Learning`, `Memory`, and other inherited surfaces that dilute the contest story."
