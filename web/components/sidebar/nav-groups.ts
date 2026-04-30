@@ -32,5 +32,5 @@ export function getExpandedSidebarGroups(): SidebarNavGroup[] {
 }
 
 export function getCollapsedSidebarNav(): SidebarNavItem[] {
-  return CONTEST_CORE_ITEMS;
+  return [...CONTEST_CORE_ITEMS, SECONDARY_TOOL_ITEMS[0]!];
 }

@@ -3,15 +3,15 @@
 import type { ReactNode } from "react";
 
 interface PlaygroundWorkspaceShellProps {
-  leftCollapsed: boolean;
+  leftCollapsed?: boolean;
   rightCollapsed: boolean;
-  left: ReactNode;
+  left?: ReactNode;
   center: ReactNode;
   right: ReactNode;
 }
 
 export function PlaygroundWorkspaceShell({
-  leftCollapsed,
+  leftCollapsed = false,
   rightCollapsed,
   left,
   center,
@@ -19,13 +19,15 @@ export function PlaygroundWorkspaceShell({
 }: PlaygroundWorkspaceShellProps) {
   return (
     <div className="flex h-[calc(100vh-3rem)] min-h-0 w-full bg-[var(--background)] text-[var(--foreground)]">
-      <aside
-        className={`min-h-0 shrink-0 border-r border-[var(--border)] bg-[var(--secondary)]/35 transition-[width] duration-200 ${
-          leftCollapsed ? "w-[92px]" : "w-[320px]"
-        }`}
-      >
-        {left}
-      </aside>
+      {left ? (
+        <aside
+          className={`min-h-0 shrink-0 border-r border-[var(--border)] bg-[var(--secondary)]/35 transition-[width] duration-200 ${
+            leftCollapsed ? "w-[92px]" : "w-[320px]"
+          }`}
+        >
+          {left}
+        </aside>
+      ) : null}
       <main className="min-h-0 min-w-0 flex-1">{center}</main>
       <aside
         className={`min-h-0 shrink-0 border-l border-[var(--border)] bg-[var(--secondary)]/25 transition-[width,opacity] duration-200 ${

@@ -64,13 +64,13 @@ export default function WorkspaceSidebar() {
 
   const handleNewChat = () => {
     newSession();
-    if (pathname !== "/") router.push("/");
+    if (pathname !== "/playground") router.push("/playground");
   };
 
   const handleSelectSession = useCallback(
     async (sessionId: string) => {
       await loadSession(sessionId);
-      if (pathname !== "/") router.push("/");
+      if (pathname !== "/playground") router.push("/playground");
     },
     [loadSession, pathname, router],
   );
@@ -93,10 +93,10 @@ export default function WorkspaceSidebar() {
       setSessions((prev) => prev.filter((session) => session.session_id !== sessionId));
       if (selectedSessionId === sessionId) {
         newSession();
-        if (pathname !== "/") router.push("/");
+        if (pathname !== "/playground") router.push("/playground");
       }
     },
-    [newSession, pathname, router, selectedSessionId],
+    [newSession, pathname, router, selectedSessionId, t],
   );
 
   return (

@@ -91,9 +91,9 @@ function groupLabel(timestamp: number, t: (key: string) => string): string {
   return t("Earlier");
 }
 
-function relativeTime(timestamp: number): string {
+function relativeTime(timestamp: number, locale: string): string {
   const diffSeconds = Math.round(timestamp - Date.now() / 1000);
-  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const abs = Math.abs(diffSeconds);
   if (abs < 60) return formatter.format(diffSeconds, "second");
   if (abs < 3600) return formatter.format(Math.round(diffSeconds / 60), "minute");
@@ -110,7 +110,7 @@ export default function SessionList({
   onRename,
   onDelete,
 }: SessionListProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftTitle, setDraftTitle] = useState("");
 
@@ -146,9 +146,9 @@ export default function SessionList({
   if (loading) {
     if (compact) {
       return (
-        <div className="ml-5 space-y-1.5 border-l border-[var(--border)]/30 py-1 pl-3">
+        <div className="ml-4 space-y-2 border-l border-[var(--border)]/30 py-2 pl-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-4 w-3/4 animate-pulse rounded bg-[var(--muted)]/40" />
+            <div key={i} className="h-5 w-4/5 animate-pulse rounded-xl bg-[var(--muted)]/40" />
           ))}
         </div>
       );
@@ -174,13 +174,13 @@ export default function SessionList({
   /* ---- Compact tree-line style (under Chat nav item) ---- */
   if (compact) {
     return (
-      <div className="ml-5 border-l border-[var(--border)]/30 py-1">
+      <div className="ml-4 border-l border-[var(--border)]/30 py-2">
         {grouped.map(([label, items], groupIdx) => (
           <div key={label}>
             {groupIdx > 0 && (
               <div className="my-1 ml-3 mr-2 border-t border-[var(--border)]/20" />
             )}
-            <div className="px-3 py-0.5 text-[10px] font-medium uppercase tracking-wider text-[var(--muted-foreground)]/40">
+            <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]/45">
               {label}
             </div>
             {items.map((session) => {
@@ -198,10 +198,10 @@ export default function SessionList({
                   }}
                   role="button"
                   tabIndex={0}
-                  className={`group flex items-center gap-2 rounded-r-lg py-1 pl-3 pr-2 transition-colors ${
+                  className={`group flex items-center gap-2 rounded-2xl py-2 pl-3 pr-2 transition-colors ${
                     active
-                      ? "bg-[var(--background)]/50 text-[var(--foreground)]"
-                      : "text-[var(--muted-foreground)] hover:bg-[var(--background)]/40 hover:text-[var(--foreground)]"
+                      ? "bg-[var(--background)] text-[var(--foreground)] shadow-sm"
+                      : "text-[var(--muted-foreground)] hover:bg-[var(--background)]/60 hover:text-[var(--foreground)]"
                   }`}
                 >
                   <span className={`block h-1.5 w-1.5 shrink-0 rounded-full ${
@@ -328,7 +328,7 @@ export default function SessionList({
                       )}
                       {!isEditing && (
                         <div className="mt-0.5 line-clamp-1 text-[11px] leading-tight text-[var(--muted-foreground)]">
-                          {session.last_message || relativeTime(session.updated_at)}
+                          {session.last_message || relativeTime(session.updated_at, i18n.language)}
                         </div>
                       )}
                     </div>

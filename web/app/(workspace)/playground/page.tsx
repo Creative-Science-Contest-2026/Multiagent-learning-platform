@@ -14,8 +14,6 @@ import {
   Loader2,
   MessageSquare,
   Microscope,
-  PanelLeftClose,
-  PanelLeftOpen,
   PanelRightClose,
   PanelRightOpen,
   PenLine,
@@ -1485,7 +1483,6 @@ export default function PlaygroundPage() {
   const [capabilityConfigs, setCapabilityConfigs] = useState<CapabilityPlaygroundConfigMap>({});
   const [activeKind, setActiveKind] = useState<"tool" | "capability">("tool");
   const [activeName, setActiveName] = useState<string>("");
-  const [leftRailCollapsed, setLeftRailCollapsed] = useState(false);
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -1625,46 +1622,31 @@ export default function PlaygroundPage() {
     });
   };
 
-  const leftRail = (
-    <div aria-label={t("Conversation history")} className="flex h-full min-h-0 flex-col">
-      <div className="border-b border-[var(--border)] px-4 py-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
-              {t("Playground workspace")}
-            </p>
-            {!leftRailCollapsed ? (
-              <h1 className="mt-2 text-xl font-semibold tracking-tight text-[var(--foreground)]">
-                {t("Conversation workspace")}
-              </h1>
-            ) : null}
-          </div>
-          <button
-            type="button"
-            onClick={() => setLeftRailCollapsed((prev) => !prev)}
-            title={leftRailCollapsed ? t("Expand conversation rail") : t("Collapse conversation rail")}
-            aria-label={leftRailCollapsed ? t("Expand conversation rail") : t("Collapse conversation rail")}
-            className="rounded-lg p-2 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--background)]/80 hover:text-[var(--foreground)]"
-          >
-            {leftRailCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-          </button>
+  const selectionPanel = (
+    <section>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+            {t("Playground workspace")}
+          </p>
+          <h3 className="mt-2 text-base font-semibold tracking-tight text-[var(--foreground)]">
+            {t("Conversation history")}
+          </h3>
         </div>
-        <div className={`mt-4 grid gap-2 ${leftRailCollapsed ? "grid-cols-1" : "grid-cols-2"}`}>
+        <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--background)]/70 p-1">
           <button
             type="button"
             onClick={() => {
               setActiveKind("capability");
               if (capabilityCatalog.length) setActiveName(capabilityCatalog[0]?.name ?? "");
             }}
-            className={`rounded-xl px-3 py-2 text-[12px] font-medium transition ${
+            className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition ${
               activeKind === "capability"
                 ? "bg-[var(--foreground)] text-[var(--background)]"
-                : "bg-[var(--background)]/70 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
-            title={t("Capabilities")}
-            aria-label={t("Capabilities")}
           >
-            {leftRailCollapsed ? <Sparkles className="mx-auto h-4 w-4" /> : t("Capabilities")}
+            {t("Capabilities")}
           </button>
           <button
             type="button"
@@ -1672,56 +1654,50 @@ export default function PlaygroundPage() {
               setActiveKind("tool");
               if (tools.length) setActiveName(tools[0]?.name ?? "");
             }}
-            className={`rounded-xl px-3 py-2 text-[12px] font-medium transition ${
+            className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition ${
               activeKind === "tool"
                 ? "bg-[var(--foreground)] text-[var(--background)]"
-                : "bg-[var(--background)]/70 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
-            title={t("Tools")}
-            aria-label={t("Tools")}
           >
-            {leftRailCollapsed ? <Terminal className="mx-auto h-4 w-4" /> : t("Tools")}
+            {t("Tools")}
           </button>
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-        <div className="space-y-2">
-          {listItems.map((item) => {
-            const Icon = activeKind === "tool" ? getToolIcon(item.name) : getCapIcon(item.name);
-            const selected = activeName === item.name;
-            return (
-              <button
-                key={item.name}
-                type="button"
-                onClick={() => setActiveName(item.name)}
-                title={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
-                aria-label={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
-                className={`w-full rounded-2xl border px-3 py-3 text-left transition ${
-                  selected
-                    ? "border-[var(--foreground)]/10 bg-[var(--background)] text-[var(--foreground)] shadow-sm"
-                    : "border-transparent bg-transparent text-[var(--muted-foreground)] hover:border-[var(--border)] hover:bg-[var(--background)]/75 hover:text-[var(--foreground)]"
-                }`}
-              >
-                <div className={`flex items-start ${leftRailCollapsed ? "justify-center" : "gap-2.5"}`}>
-                  <Icon size={16} strokeWidth={1.8} className="shrink-0" />
-                  {!leftRailCollapsed ? (
-                    <div className="min-w-0">
-                      <div className="text-[13px] font-medium">
-                        {activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
-                      </div>
-                      <div className="mt-1 line-clamp-2 text-[11px] leading-5 text-[var(--muted-foreground)]">
-                        {item.description}
-                      </div>
-                    </div>
-                  ) : null}
+      <div className="mt-4 space-y-2">
+        {listItems.map((item) => {
+          const Icon = activeKind === "tool" ? getToolIcon(item.name) : getCapIcon(item.name);
+          const selected = activeName === item.name;
+          return (
+            <button
+              key={item.name}
+              type="button"
+              onClick={() => setActiveName(item.name)}
+              title={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
+              aria-label={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
+              className={`w-full rounded-2xl border px-3 py-3 text-left transition ${
+                selected
+                  ? "border-[var(--foreground)]/10 bg-[var(--background)] text-[var(--foreground)] shadow-sm"
+                  : "border-transparent bg-transparent text-[var(--muted-foreground)] hover:border-[var(--border)] hover:bg-[var(--background)]/75 hover:text-[var(--foreground)]"
+              }`}
+            >
+              <div className="flex items-start gap-2.5">
+                <Icon size={16} strokeWidth={1.8} className="mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-[13px] font-medium">
+                    {activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
+                  </div>
+                  <div className="mt-1 line-clamp-2 text-[11px] leading-5 text-[var(--muted-foreground)]">
+                    {item.description}
+                  </div>
                 </div>
-              </button>
-            );
-          })}
-        </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 
   const centerPanel = (
@@ -1730,7 +1706,7 @@ export default function PlaygroundPage() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
-              {activeKind === "tool" ? t("Tool") : t("Capability")}
+              {t("Conversation workspace")}
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]">
               {activeLabel}
@@ -1824,6 +1800,7 @@ export default function PlaygroundPage() {
       description={t("Run a focused conversation here without leaving the playground.")}
     >
       <div className="space-y-6">
+        {selectionPanel}
         <section>
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
             {t("Enabled tools")}
@@ -1892,9 +1869,7 @@ export default function PlaygroundPage() {
 
   return (
     <PlaygroundWorkspaceShell
-      leftCollapsed={leftRailCollapsed}
       rightCollapsed={rightPanelCollapsed}
-      left={leftRail}
       center={centerPanel}
       right={rightPanel}
     />
