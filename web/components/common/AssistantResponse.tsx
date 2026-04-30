@@ -10,7 +10,7 @@ interface AssistantResponseProps {
 
 export default function AssistantResponse({
   content,
-  className = "text-[14px] leading-[1.75]",
+  className = "text-[14px] leading-[1.8]",
 }: AssistantResponseProps) {
   if (!hasVisibleMarkdownContent(content)) return null;
 
@@ -19,7 +19,7 @@ export default function AssistantResponse({
       <MarkdownRenderer
         content={content}
         variant="prose"
-        className="text-[var(--foreground)]"
+        className="text-[var(--foreground)] [&_p]:my-0 [&_p+*]:mt-3"
       />
     </div>
   );
