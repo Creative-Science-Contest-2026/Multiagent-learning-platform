@@ -16,7 +16,7 @@ import {
 } from "@/context/AppShellContext";
 import type { StreamEvent, ChatMessage } from "@/lib/unified-ws";
 import { UnifiedWSClient } from "@/lib/unified-ws";
-import { getSession, type SessionMessage } from "@/lib/session-api";
+import { getSession, type SessionMessage, type SessionTutorPackPreference } from "@/lib/session-api";
 import { normalizeMarkdownForDisplay } from "@/lib/markdown-display";
 import { shouldAppendEventContent } from "@/lib/stream";
 
@@ -54,6 +54,7 @@ export interface ChatState {
   enabledTools: string[];
   activeCapability: string | null;
   knowledgeBases: string[];
+  tutorPack: TutorPackBinding | null;
   messages: MessageItem[];
   isStreaming: boolean;
   currentStage: string;
@@ -80,6 +81,7 @@ export interface MessageRequestSnapshot {
   capability?: string | null;
   enabledTools: string[];
   knowledgeBases: string[];
+  tutorPack?: TutorPackBinding | null;
   language: string;
   attachments?: MessageAttachment[];
   config?: Record<string, unknown>;
@@ -104,6 +106,12 @@ interface SessionEntry extends ChatState {
   updatedAt: number;
 }
 
+export interface TutorPackBinding {
+  name: string;
+  knowledgeBase: string;
+  status: "available" | "missing";
+}
+
 interface ProviderState {
   selectedKey: string | null;
   sessions: Record<string, SessionEntry>;
@@ -114,6 +122,7 @@ type Action =
   | { type: "SET_TOOLS"; tools: string[] }
   | { type: "SET_CAPABILITY"; cap: string | null }
   | { type: "SET_KB"; kbs: string[] }
+  | { type: "SET_TUTOR_PACK"; tutorPack: TutorPackBinding | null }
   | { type: "SET_LANGUAGE"; lang: string }
   | {
       type: "ADD_USER_MSG";
@@ -137,6 +146,7 @@ type Action =
       tools?: string[];
       capability?: string | null;
       knowledgeBases?: string[];
+      tutorPack?: TutorPackBinding | null;
       language?: string;
     }
   | { type: "NEW_SESSION"; key: string };
@@ -148,6 +158,7 @@ function createSessionEntry(key: string, sessionId: string | null = null): Sessi
     enabledTools: [],
     activeCapability: null,
     knowledgeBases: [],
+    tutorPack: null,
     messages: [],
     isStreaming: false,
     currentStage: "",
@@ -199,6 +210,12 @@ function reducer(state: ProviderState, action: Action): ProviderState {
       return updateSelectedSession(state, (session) => ({
         ...session,
         knowledgeBases: action.kbs,
+      }));
+    case "SET_TUTOR_PACK":
+      return updateSelectedSession(state, (session) => ({
+        ...session,
+        tutorPack: action.tutorPack,
+        knowledgeBases: action.tutorPack ? [action.tutorPack.knowledgeBase] : session.knowledgeBases,
       }));
     case "SET_LANGUAGE":
       return updateSelectedSession(state, (session) => ({
@@ -340,6 +357,7 @@ function reducer(state: ProviderState, action: Action): ProviderState {
             activeCapability:
               action.capability !== undefined ? action.capability : existing.activeCapability,
             knowledgeBases: action.knowledgeBases ?? existing.knowledgeBases,
+            tutorPack: action.tutorPack !== undefined ? action.tutorPack : existing.tutorPack,
             messages: action.messages,
             isStreaming: (action.status || "idle") === "running",
             currentStage: "",
@@ -380,6 +398,7 @@ interface ChatContextValue {
   setTools: (tools: string[]) => void;
   setCapability: (cap: string | null) => void;
   setKBs: (kbs: string[]) => void;
+  setTutorPack: (tutorPack: TutorPackBinding | null) => void;
   setLanguage: (lang: string) => void;
   sendMessage: (
     content: string,
@@ -398,6 +417,20 @@ interface ChatContextValue {
 }
 
 const ChatCtx = createContext<ChatContextValue | null>(null);
+
+function normalizeTutorPackPreference(
+  tutorPack: SessionTutorPackPreference | null | undefined,
+): TutorPackBinding | null {
+  if (!tutorPack) return null;
+  const name = String(tutorPack.name || "").trim();
+  const knowledgeBase = String(tutorPack.knowledge_base || "").trim();
+  if (!name || !knowledgeBase) return null;
+  return {
+    name,
+    knowledgeBase,
+    status: tutorPack.status === "missing" ? "missing" : "available",
+  };
+}
 
 export function UnifiedChatProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -567,6 +600,7 @@ export function UnifiedChatProvider({ children }: { children: React.ReactNode })
     async (sessionId: string) => {
       const session = await getSession(sessionId);
       const activeTurn = Array.isArray(session.active_turns) ? session.active_turns[0] : undefined;
+      const tutorPack = normalizeTutorPackPreference(session.preferences?.tutor_pack);
       dispatch({
         type: "LOAD_SESSION",
         key: session.session_id || session.id,
@@ -578,7 +612,10 @@ export function UnifiedChatProvider({ children }: { children: React.ReactNode })
         capability: session.preferences?.capability || null,
         knowledgeBases: Array.isArray(session.preferences?.knowledge_bases)
           ? session.preferences.knowledge_bases
+          : tutorPack
+            ? [tutorPack.knowledgeBase]
           : [],
+        tutorPack,
         language: session.preferences?.language || "en",
       });
       if (activeTurn?.turn_id || activeTurn?.id) {
@@ -640,6 +677,7 @@ export function UnifiedChatProvider({ children }: { children: React.ReactNode })
       const effectiveCapability = replaySnapshot?.capability ?? session.activeCapability;
       const effectiveTools = replaySnapshot?.enabledTools ?? session.enabledTools;
       const effectiveKnowledgeBases = replaySnapshot?.knowledgeBases ?? session.knowledgeBases;
+      const effectiveTutorPack = replaySnapshot?.tutorPack ?? session.tutorPack;
       const effectiveLanguage = replaySnapshot?.language ?? session.language;
       const researchSources = Array.isArray(config?.sources)
         ? config.sources.filter((value): value is string => typeof value === "string")
@@ -652,6 +690,7 @@ export function UnifiedChatProvider({ children }: { children: React.ReactNode })
         capability: effectiveCapability,
         enabledTools: [...effectiveTools],
         knowledgeBases: shouldSendKnowledgeBases ? [...effectiveKnowledgeBases] : [],
+        tutorPack: effectiveTutorPack,
         language: effectiveLanguage,
         ...(msgAttachments?.length ? { attachments: msgAttachments } : {}),
         ...(config && Object.keys(config).length > 0 ? { config } : {}),
@@ -682,6 +721,15 @@ export function UnifiedChatProvider({ children }: { children: React.ReactNode })
         session_id: session.sessionId,
         attachments,
         language: effectiveLanguage,
+        ...(effectiveTutorPack
+          ? {
+              tutor_pack: {
+                name: effectiveTutorPack.name,
+                knowledge_base: effectiveTutorPack.knowledgeBase,
+                status: effectiveTutorPack.status,
+              },
+            }
+          : {}),
         ...(notebookReferences?.length
           ? { notebook_references: notebookReferences }
           : {}),
@@ -719,6 +767,7 @@ export function UnifiedChatProvider({ children }: { children: React.ReactNode })
       enabledTools: current.enabledTools,
       activeCapability: current.activeCapability,
       knowledgeBases: current.knowledgeBases,
+      tutorPack: current.tutorPack,
       messages: current.messages,
       isStreaming: current.isStreaming,
       currentStage: current.currentStage,
@@ -756,6 +805,10 @@ export function UnifiedChatProvider({ children }: { children: React.ReactNode })
     dispatch({ type: "SET_LANGUAGE", lang });
   }, []);
 
+  const setTutorPack = useCallback((tutorPack: TutorPackBinding | null) => {
+    dispatch({ type: "SET_TUTOR_PACK", tutorPack });
+  }, []);
+
   const newSession = useCallback(() => {
     dispatch({ type: "NEW_SESSION", key: makeDraftKey() });
   }, [makeDraftKey]);
@@ -765,6 +818,7 @@ export function UnifiedChatProvider({ children }: { children: React.ReactNode })
     setTools,
     setCapability,
     setKBs,
+    setTutorPack,
     setLanguage,
     sendMessage,
     cancelStreamingTurn,
