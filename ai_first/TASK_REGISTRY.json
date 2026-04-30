@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_updated": "2026-04-30T15:55:00Z",
+    "last_updated": "2026-04-30T16:30:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
     "total_tasks": 94
@@ -8,7 +8,7 @@
   "task_categories": {
     "completed": {
       "description": "Features fully implemented and merged to main",
-      "count": 93,
+      "count": 94,
       "tasks": [
         "T009_MARKETPLACE_IMPORT_IMPLEMENTATION",
         "T010_ASSESSMENT_FEEDBACK_DETAILS",
@@ -106,10 +106,8 @@
     },
     "in_progress": {
       "description": "Features partially implemented, need completion",
-      "count": 1,
-      "tasks": [
-        "C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION"
-      ]
+      "count": 0,
+      "tasks": []
     },
     "blocked": {
       "description": "Tasks blocked by dependencies",
@@ -2341,10 +2339,10 @@
         "T044_CONTEST_MVP_VIETNAMESE_COVERAGE",
         "C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY"
       ],
-      "status": "in_progress",
+      "status": "completed",
       "recommended_session_bucket": "session-c-polish",
       "layer": "post-contest-recovery",
-      "notes": "Opened from `main` on 2026-04-30 after a screen audit found mixed EN/VI copy on the teacher cockpit and hard-coded English seed content plus fallback labels inside `/agents` spec-pack authoring. The active implementation lane now replaces those hard-coded contest-path fallbacks with locale-backed strings and adds regression coverage for the Vietnamese cockpit plus spec-template seeds."
+      "notes": "Merged to main through PR #248 on 2026-04-30. This lane completed the remaining contest-path Vietnamese coverage by localizing teacher cockpit action copy, locale-backed spec-pack seed templates, and `/agents` authoring fallbacks while preserving route contracts and attribution surfaces."
     }
   ],
   "github_issues_template": {
