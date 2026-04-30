@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import {
+  formatConfidenceLabel,
+  formatDiagnosisLabel,
+  formatTeacherFacingLabel,
+  formatTeacherMoveLabel,
+} from "@/components/dashboard/dashboard-presenters";
 import { InterventionAssignmentComposer } from "@/components/dashboard/InterventionAssignmentComposer";
 import { InsightSectionLabel } from "@/components/dashboard/InsightSectionLabel";
 import { RecommendationAckComposer } from "@/components/dashboard/RecommendationAckComposer";
@@ -43,35 +49,35 @@ export function SmallGroupInsightCard({
   return (
     <article className="rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
-        <InsightSectionLabel eyebrow={t("Shared signal")} title={group.topic}>
-          {group.diagnosis_type}
+        <InsightSectionLabel eyebrow={t("Điểm vướng chung")} title={group.topic}>
+          {formatDiagnosisLabel(group.diagnosis_type)}
         </InsightSectionLabel>
         <span className="rounded-full bg-[var(--muted)] px-2.5 py-1 text-[11px] text-[var(--muted-foreground)]">
-          {t("{{count}} students", { count: group.student_ids.length })}
+          {t("{{count}} học sinh", { count: group.student_ids.length })}
         </span>
       </div>
 
       <div className="mt-4 rounded-2xl bg-emerald-50 p-3">
         <InsightSectionLabel
-          eyebrow={t("Teacher move")}
-          title={group.recommended_action}
+          eyebrow={t("Hướng can thiệp chung")}
+          title={formatTeacherMoveLabel(group.recommended_action)}
           toneClassName="text-emerald-700"
         />
         <div className="mt-3 text-[12px] text-emerald-900/80">
           {reasonTrace
-            ? t("Why these students are grouped: same topic, diagnosis, and suggested move.")
-            : t("Why these students are grouped: they show the same dominant learning signal.")}
+            ? t("Nhóm này được gom vì các học sinh đang vướng cùng một chủ đề và cần hướng hỗ trợ tương tự.")
+            : t("Nhóm này được gom vì các học sinh đang có cùng một tín hiệu học tập nổi bật.")}
         </div>
         <div className="mt-3 text-[12px] text-[var(--muted-foreground)]">
-          {t("Students: {{students}}", { students: group.student_ids.join(", ") })}
+          {t("Các học sinh trong nhóm: {{students}}", { students: group.student_ids.join(", ") })}
         </div>
         {reasonTrace ? (
           <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
             <div className="font-medium">
-              {t("Trust trace: {{confidence}} confidence", { confidence: reasonTrace.confidence_tag })}
+              {t("Mức chắc chắn: {{confidence}}", { confidence: formatConfidenceLabel(reasonTrace.confidence_tag) })}
             </div>
             <div className="mt-1">
-              {t("Rule: {{rule}}", { rule: reasonTrace.grouping_rule })}
+              {t("Cách nhóm này được tạo: {{rule}}", { rule: formatTeacherFacingLabel(reasonTrace.grouping_rule) })}
             </div>
             {reasonTrace.shared_evidence?.length ? (
               <ul className="mt-2 space-y-1">
@@ -86,7 +92,7 @@ export function SmallGroupInsightCard({
         <div className="mt-3">
           <RecommendationFeedbackComposer
             triggerLabel={
-              recommendationFeedback ? t("Update recommendation feedback") : t("Review recommendation quality")
+              recommendationFeedback ? t("Cập nhật đánh giá về gợi ý") : t("Đánh giá chất lượng gợi ý")
             }
             defaultPayload={{
               target_type: "small_group",
@@ -101,14 +107,14 @@ export function SmallGroupInsightCard({
         {recommendationFeedback ? (
           <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
             <div className="font-medium">
-              {t("Recommendation feedback: {{label}}", { label: recommendationFeedback.feedback_label })}
+              {t("Giáo viên đánh giá gợi ý: {{label}}", { label: formatTeacherFacingLabel(recommendationFeedback.feedback_label) })}
             </div>
             {recommendationFeedback.teacher_note ? <div className="mt-1">{recommendationFeedback.teacher_note}</div> : null}
           </div>
         ) : null}
         <div className="mt-3">
           <TeacherOverrideComposer
-            triggerLabel={teacherOverride ? t("Update teacher override") : t("Log teacher override")}
+            triggerLabel={teacherOverride ? t("Cập nhật quyết định của giáo viên") : t("Ghi lại quyết định riêng của giáo viên")}
             defaultPayload={{
               target_type: "small_group",
               target_id: group.target_id ?? `${group.topic}:${group.diagnosis_type}`,
@@ -122,17 +128,17 @@ export function SmallGroupInsightCard({
         {teacherOverride ? (
           <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
             <div className="font-medium">
-              {t("Teacher override: {{move}}", { move: teacherOverride.teacher_selected_move })}
+              {t("Giáo viên chọn hướng khác: {{move}}", { move: formatTeacherMoveLabel(teacherOverride.teacher_selected_move) })}
             </div>
             <div className="mt-1">
-              {t("Reason: {{reason}}", { reason: teacherOverride.override_reason })}
+              {t("Lý do: {{reason}}", { reason: formatTeacherFacingLabel(teacherOverride.override_reason) })}
             </div>
             {teacherOverride.teacher_note ? <div className="mt-1">{teacherOverride.teacher_note}</div> : null}
           </div>
         ) : null}
         <div className="mt-3">
           <RecommendationAckComposer
-            triggerLabel={recommendationAck ? t("Update acknowledgement") : t("Acknowledge recommendation")}
+            triggerLabel={recommendationAck ? t("Cập nhật trạng thái tiếp nhận") : t("Đánh dấu đã xem gợi ý")}
             defaultPayload={{
               target_type: "small_group",
               target_id: group.target_id ?? `${group.topic}:${group.diagnosis_type}`,
@@ -145,13 +151,13 @@ export function SmallGroupInsightCard({
         </div>
         {recommendationAck ? (
           <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
-            <div className="font-medium">{t("Recommendation status: {{status}}", { status: recommendationAck.status })}</div>
+            <div className="font-medium">{t("Trạng thái tiếp nhận: {{status}}", { status: formatTeacherFacingLabel(recommendationAck.status) })}</div>
             {recommendationAck.teacher_note ? <div className="mt-1">{recommendationAck.teacher_note}</div> : null}
           </div>
         ) : null}
         <div className="mt-3">
           <TeacherActionComposer
-            triggerLabel={t("Create group action")}
+            triggerLabel={t("Tạo việc cần làm cho nhóm")}
             defaultPayload={{
               target_type: "small_group",
               target_id: group.target_id ?? `${group.topic}:${group.diagnosis_type}`,
@@ -166,7 +172,7 @@ export function SmallGroupInsightCard({
         {teacherAction ? (
           <div className="mt-3">
             <InterventionAssignmentComposer
-              triggerLabel={t("Convert to assignment")}
+              triggerLabel={t("Chuyển thành đầu việc giao thực hiện")}
               teacherAction={teacherAction}
               onCreated={(record) => setInterventionAssignment(record)}
               t={t}
@@ -175,11 +181,11 @@ export function SmallGroupInsightCard({
         ) : null}
         {teacherAction ? (
           <div className="mt-3 rounded-2xl bg-white/70 p-3 text-[12px] text-emerald-900/80">
-            <div className="font-medium">{teacherAction.action_type}</div>
+            <div className="font-medium">{formatTeacherMoveLabel(teacherAction.action_type)}</div>
             <div className="mt-1">{teacherAction.teacher_instruction}</div>
             <div className="mt-2 text-[11px] text-emerald-900/70">
-              {t("Status: {{status}} • Priority: {{priority}}", {
-                status: teacherAction.status,
+              {t("Trạng thái: {{status}} • Mức ưu tiên: {{priority}}", {
+                status: formatTeacherFacingLabel(teacherAction.status),
                 priority: teacherAction.priority,
               })}
             </div>
@@ -187,10 +193,10 @@ export function SmallGroupInsightCard({
         ) : null}
         {interventionAssignment ? (
           <div className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-[12px] text-emerald-900/80">
-            <div className="font-medium">{interventionAssignment.assignment_type}</div>
+            <div className="font-medium">{formatTeacherFacingLabel(interventionAssignment.assignment_type)}</div>
             <div className="mt-1">{interventionAssignment.title}</div>
             <div className="mt-2 text-[11px] text-emerald-900/70">
-              {t("Assignment status: {{status}}", { status: interventionAssignment.status })}
+              {t("Tiến độ giao việc: {{status}}", { status: formatTeacherFacingLabel(interventionAssignment.status) })}
             </div>
           </div>
         ) : null}

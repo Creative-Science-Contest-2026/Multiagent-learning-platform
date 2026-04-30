@@ -13,9 +13,9 @@ export function TeacherInsightPanel({
   if (!insights || (insights.students.length === 0 && insights.small_groups.length === 0)) {
     return (
       <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-        <h2 className="text-[16px] font-semibold text-[var(--foreground)]">{t("Teacher insights")}</h2>
+        <h2 className="text-[16px] font-semibold text-[var(--foreground)]">{t("Học sinh cần giáo viên xem trước")}</h2>
         <p className="mt-2 text-[13px] leading-6 text-[var(--muted-foreground)]">
-          {t("No structured evidence yet. Complete at least one assessment to unlock concrete teacher moves and next-step actions.")}
+          {t("Chưa có dữ liệu đủ rõ để giáo viên rà soát. Hãy hoàn thành ít nhất một bài đánh giá hoặc một phiên học để nhận gợi ý cụ thể hơn.")}
         </p>
       </section>
     );
@@ -25,17 +25,17 @@ export function TeacherInsightPanel({
     <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-[16px] font-semibold text-[var(--foreground)]">{t("Teacher insights")}</h2>
+          <h2 className="text-[16px] font-semibold text-[var(--foreground)]">{t("Học sinh cần giáo viên xem trước")}</h2>
           <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-            {t("Review the strongest signals first, then act on the clearest next move for each student or small group.")}
+            {t("Mỗi thẻ đi từ điều hệ thống quan sát được đến hướng can thiệp gợi ý, để giáo viên quyết định nhanh hơn trong lớp học.")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-[var(--muted)] px-3 py-1 text-[12px] text-[var(--muted-foreground)]">
-            {t("{{count}} students", { count: insights.students.length })}
+            {t("{{count}} học sinh cần xem", { count: insights.students.length })}
           </span>
           <span className="rounded-full bg-[var(--muted)] px-3 py-1 text-[12px] text-[var(--muted-foreground)]">
-            {t("{{count}} small-group recommendations", { count: insights.small_groups.length })}
+            {t("{{count}} gợi ý cho nhóm nhỏ", { count: insights.small_groups.length })}
           </span>
         </div>
       </div>
@@ -50,10 +50,10 @@ export function TeacherInsightPanel({
         <div className="space-y-4">
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--muted)]/40 p-4">
             <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--muted-foreground)]">
-              {t("Small-group recommendations")}
+              {t("Gợi ý cho nhóm học sinh")}
             </div>
             <p className="mt-2 text-[13px] text-[var(--muted-foreground)]">
-              {t("Use one shared classroom move when multiple students need help with the same misconception.")}
+              {t("Khi nhiều học sinh cùng vướng một điểm, giáo viên có thể xử lý theo một hướng chung để tiết kiệm thời gian trên lớp.")}
             </p>
           </div>
 
@@ -63,7 +63,7 @@ export function TeacherInsightPanel({
             ))
           ) : (
             <div className="rounded-2xl bg-[var(--muted)]/50 p-4 text-[13px] text-[var(--muted-foreground)]">
-              {t("No shared misconception cluster yet.")}
+              {t("Chưa có nhóm học sinh nào cần gộp để can thiệp chung.")}
             </div>
           )}
         </div>

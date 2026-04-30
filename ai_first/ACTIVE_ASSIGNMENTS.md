@@ -45,6 +45,7 @@ Rules:
 - Next action: write the bounded spec for binding each chat session to one imported `Gói gia sư`
 - Blocker: none
 
+
 ### Assignment
 
 - Owner: Codex session
