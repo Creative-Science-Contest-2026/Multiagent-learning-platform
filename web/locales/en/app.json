@@ -997,5 +997,44 @@
   "Video Output": "Video Output",
   "Image Output": "Image Output",
   "Fullscreen math animation output": "Fullscreen math animation output",
-  "Delete this chat history?": "Delete this chat history?"
+  "Delete this chat history?": "Delete this chat history?",
+  "Switch mode": "Switch mode",
+  "Choose what you want to do": "Choose what you want to do",
+  "Selected": "Selected",
+  "Current mode": "Current mode",
+  "Capabilities": "Capabilities",
+  "This capability runs without optional tools.": "This capability runs without optional tools.",
+  "Select knowledge base...": "Select knowledge base...",
+  "New Chat": "New Chat",
+  "Settings": "Settings",
+  "Guided Learning": "Guided Learning",
+  "Co-Writer": "Co-Writer",
+  "Memory": "Memory",
+  "Agentic chat with autonomous tool selection across enabled tools.": "Agentic chat with autonomous tool selection across enabled tools.",
+  "Multi-agent problem solving (Plan -> ReAct -> Write).": "Multi-agent problem solving (Plan -> ReAct -> Write).",
+  "Fast question generation (Template batches -> Generate).": "Fast question generation (Template batches -> Generate).",
+  "Multi-agent deep research with report generation.": "Multi-agent deep research with report generation.",
+  "Generate math animations or storyboard images with Manim.": "Generate math animations or storyboard images with Manim.",
+  "Generate SVG or Chart.js visualizations.": "Generate SVG or Chart.js visualizations."
+  ,"Choose the tool that best matches your task.": "Choose the tool that best matches your task."
+  ,"Choose the capability flow that best matches your goal.": "Choose the capability flow that best matches your goal."
+  ,"Mimic questions from uploaded paper: {{name}}": "Mimic questions from uploaded paper: {{name}}"
+  ,"Mimic questions from parsed paper: {{name}}": "Mimic questions from parsed paper: {{name}}"
+  ,"You": "You"
+  ,"Assistant": "Assistant"
+  ,"Process": "Process"
+  ,"Generate": "Generate"
+  ,"Run Research": "Run Research"
+  ,"Running...": "Running..."
+  ,"default": "default"
+  ,"Web Search": "Web Search"
+  ,"Code Execution": "Code Execution"
+  ,"Knowledge Base": "Knowledge Base"
+  ,"Web": "Web"
+  ,"Compact panel": "Compact panel"
+  ,"Comfortable panel": "Comfortable panel"
+  ,"Expanded panel": "Expanded panel"
+  ,"Review the setup above, then run generation.": "Review the setup above, then run generation."
+  ,"Enter to run, Shift+Enter for a new line.": "Enter to run, Shift+Enter for a new line."
+  ,"Enter to send, Shift+Enter for a new line.": "Enter to send, Shift+Enter for a new line."
 }

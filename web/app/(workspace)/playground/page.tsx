@@ -3,10 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BrainCircuit,
+  Columns3,
   ChevronDown,
   Check,
+  ChevronsLeftRight,
   Code2,
   Database,
+  Expand,
   FileText,
   FileSearch,
   Globe,
@@ -109,6 +112,23 @@ function getToolLabel(name: string): string {
 
 function getCapabilityLabel(name: string): string {
   return CAPABILITY_LABELS[name] ?? titleCase(name);
+}
+
+function getToolDescription(description: string, t: (key: string) => string): string {
+  return t(description);
+}
+
+function getCapabilityDescription(description: string, t: (key: string) => string): string {
+  return t(description);
+}
+
+function getListSectionDescription(
+  activeKind: "tool" | "capability",
+  t: (key: string) => string,
+): string {
+  return activeKind === "tool"
+    ? t("Choose the tool that best matches your task.")
+    : t("Choose the capability flow that best matches your goal.");
 }
 
 /* ------------------------------------------------------------------ */
@@ -674,8 +694,10 @@ function DeepQuestionTester({
       config.mode === "custom"
         ? config.topic.trim()
         : uploadedPdf
-          ? `Mimic questions from uploaded paper: ${uploadedPdf.name}`
-          : `Mimic questions from parsed paper: ${config.paper_path.trim()}`;
+          ? t("Mimic questions from uploaded paper: {{name}}", { name: uploadedPdf.name })
+          : t("Mimic questions from parsed paper: {{name}}", {
+              name: config.paper_path.trim(),
+            });
 
     setMessages((prev) => [
       ...prev,
@@ -963,45 +985,54 @@ function DeepQuestionTester({
       </div>
 
       {messages.map((msg, i) => (
-        <div key={`${msg.role}-${i}`} className="mx-auto max-w-4xl">
-          <div className="mb-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-            {msg.role === "user" ? t("You") : t("Assistant")}
-          </div>
-          {msg.role === "user" ? (
-            <div className="rounded-[28px] bg-[var(--muted)] px-5 py-4 text-[15px] leading-7 text-[var(--foreground)]">
-              {msg.content}
+        <div
+          key={`${msg.role}-${i}`}
+          className={`mx-auto max-w-4xl ${msg.role === "user" ? "flex justify-end" : ""}`}
+        >
+          <div className={msg.role === "user" ? "w-full max-w-[78%]" : "w-full max-w-[88%]"}>
+            <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+              {msg.role === "user" ? <MessageSquare size={12} /> : <Sparkles size={12} />}
+              <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
             </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
-                <TracePanel events={msg.events || []} />
+            {msg.role === "user" ? (
+              <div className="rounded-[28px] bg-[var(--foreground)] px-5 py-4 text-[15px] leading-7 text-[var(--background)] shadow-sm">
+                {msg.content}
               </div>
-              <ProcessLogs
-                logs={msg.processLogs || []}
-                executing={streaming && i === messages.length - 1}
-                title={t("Process")}
-              />
-              {msg.error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                  {msg.error}
+            ) : (
+              <div className="space-y-3">
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                  <TracePanel events={msg.events || []} />
                 </div>
-              )}
-              <AssistantResponse
-                content={msg.content}
-                className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4"
-              />
-              <CapabilityResultPanel result={msg.result} />
-            </div>
-          )}
+                <ProcessLogs
+                  logs={msg.processLogs || []}
+                  executing={streaming && i === messages.length - 1}
+                  title={t("Process")}
+                />
+                {msg.error && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                    {msg.error}
+                  </div>
+                )}
+                <AssistantResponse
+                  content={msg.content}
+                  className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4 shadow-sm"
+                />
+                <CapabilityResultPanel result={msg.result} />
+              </div>
+            )}
+          </div>
         </div>
       ))}
 
-      <div className="sticky bottom-0 z-10 -mx-2 border-t border-[var(--border)] bg-[var(--background)]/92 px-2 pb-2 pt-4 backdrop-blur">
-        <div className="mx-auto flex max-w-4xl justify-end">
+      <div className="sticky bottom-0 z-10 -mx-2 border-t border-[var(--border)] bg-[var(--background)]/94 px-2 pb-2 pt-2 backdrop-blur">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 rounded-[22px] border border-[var(--border)] bg-[var(--background)]/92 px-3 py-2 shadow-sm">
+          <div className="text-[11px] text-[var(--muted-foreground)]">
+            {t("Review the setup above, then run generation.")}
+          </div>
           <button
             onClick={run}
             disabled={!canRun || streaming}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-[13px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-1.5 text-[12px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
             {streaming ? t("Running...") : t("Generate")}
@@ -1170,97 +1201,115 @@ function DeepResearchTester({
   };
 
   return (
-    <div className="space-y-5">
-      <ResearchConfigPanel
-        value={config}
-        errors={validation.errors}
-        collapsed={false}
-        onChange={onConfigChange}
-        onToggleCollapsed={() => {}}
-      />
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
-        <div className="mb-2 text-[12px] font-medium text-[var(--foreground)]">{t("Sources")}</div>
-        <div className="flex flex-wrap gap-2">
-          {RESEARCH_SOURCE_OPTIONS.map((source) => {
-            const active = config.sources.includes(source.name);
-            const Icon = source.icon;
-            return (
-              <button
-                key={source.name}
-                type="button"
-                onClick={() => toggleSource(source.name)}
-                className={`inline-flex h-[32px] items-center gap-1.5 rounded-full px-3 text-[12px] font-medium transition-[background-color,color,box-shadow] ${
-                  active
-                    ? "bg-[var(--muted)] text-[var(--foreground)] shadow-[0_1px_2px_rgba(15,23,42,0.05)] ring-1 ring-[var(--border)]/55"
-                    : "text-[var(--muted-foreground)]/75 hover:bg-[var(--muted)]/55 hover:text-[var(--foreground)]"
-                }`}
-              >
-                <Icon size={13} strokeWidth={1.7} />
-                {t(source.label)}
-              </button>
-            );
-          })}
-        </div>
-        <div className="mt-2 text-[11px] text-[var(--muted-foreground)]">
-          {config.sources.length
-            ? t("Selected sources will be queried during research.")
-            : t("No source selected: the run will use llm-only research.")}
-        </div>
-      </div>
-      <div className="sticky bottom-0 z-10 rounded-[28px] border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); run(); } }}
-          rows={4}
-          placeholder={t("Describe the research topic...")}
-          className="w-full resize-none bg-transparent text-[15px] leading-7 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <div className="shrink-0 space-y-4">
+        <ResearchConfigPanel
+          value={config}
+          errors={validation.errors}
+          collapsed={false}
+          onChange={onConfigChange}
+          onToggleCollapsed={() => {}}
         />
-        <div className="mt-2 flex justify-end">
-          <button
-            onClick={run}
-            disabled={!input.trim() || streaming || !validation.valid}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-[13px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
-            {streaming ? t("Running...") : t("Run Research")}
-          </button>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
+          <div className="mb-2 text-[12px] font-medium text-[var(--foreground)]">{t("Sources")}</div>
+          <div className="flex flex-wrap gap-2">
+            {RESEARCH_SOURCE_OPTIONS.map((source) => {
+              const active = config.sources.includes(source.name);
+              const Icon = source.icon;
+              return (
+                <button
+                  key={source.name}
+                  type="button"
+                  onClick={() => toggleSource(source.name)}
+                  className={`inline-flex h-[32px] items-center gap-1.5 rounded-full px-3 text-[12px] font-medium transition-[background-color,color,box-shadow] ${
+                    active
+                      ? "bg-[var(--muted)] text-[var(--foreground)] shadow-[0_1px_2px_rgba(15,23,42,0.05)] ring-1 ring-[var(--border)]/55"
+                      : "text-[var(--muted-foreground)]/75 hover:bg-[var(--muted)]/55 hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  <Icon size={13} strokeWidth={1.7} />
+                  {t(source.label)}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-2 text-[11px] text-[var(--muted-foreground)]">
+            {config.sources.length
+              ? t("Selected sources will be queried during research.")
+              : t("No source selected: the run will use llm-only research.")}
+          </div>
         </div>
       </div>
 
-      {messages.map((msg, i) => (
-        <div key={`${msg.role}-${i}`} className="mx-auto max-w-4xl">
-          <div className="mb-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-            {msg.role === "user" ? t("You") : t("Assistant")}
-          </div>
-          {msg.role === "user" ? (
-            <div className="rounded-[28px] bg-[var(--muted)] px-5 py-4 text-[15px] leading-7 text-[var(--foreground)]">
-              {msg.content}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
-                <TracePanel events={msg.events || []} />
-              </div>
-              <ProcessLogs
-                logs={msg.processLogs || []}
-                executing={streaming && i === messages.length - 1}
-                title={t("Process")}
-              />
-              {msg.error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                  {msg.error}
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="space-y-5 pb-4">
+          {messages.map((msg, i) => (
+            <div
+              key={`${msg.role}-${i}`}
+              className={`mx-auto max-w-4xl ${msg.role === "user" ? "flex justify-end" : ""}`}
+            >
+              <div className={msg.role === "user" ? "w-full max-w-[78%]" : "w-full max-w-[88%]"}>
+                <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+                  {msg.role === "user" ? <MessageSquare size={12} /> : <Sparkles size={12} />}
+                  <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
                 </div>
-              )}
-              <AssistantResponse
-                content={msg.content}
-                className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4"
-              />
-              <CapabilityResultPanel result={msg.result} />
+                {msg.role === "user" ? (
+                  <div className="rounded-[28px] bg-[var(--foreground)] px-5 py-4 text-[15px] leading-7 text-[var(--background)] shadow-sm">
+                    {msg.content}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                      <TracePanel events={msg.events || []} />
+                    </div>
+                    <ProcessLogs
+                      logs={msg.processLogs || []}
+                      executing={streaming && i === messages.length - 1}
+                      title={t("Process")}
+                    />
+                    {msg.error && (
+                      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                        {msg.error}
+                      </div>
+                    )}
+                    <AssistantResponse
+                      content={msg.content}
+                      className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4 shadow-sm"
+                    />
+                    <CapabilityResultPanel result={msg.result} />
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          ))}
         </div>
-      ))}
+      </div>
+
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-[var(--border)] bg-[var(--background)]/96 pt-2 backdrop-blur">
+        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 shadow-sm">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); run(); } }}
+            rows={2}
+            placeholder={t("Describe the research topic...")}
+            className="w-full resize-none bg-transparent text-[13px] leading-5 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+          />
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <div className="text-[11px] text-[var(--muted-foreground)]">
+              {t("Enter to run, Shift+Enter for a new line.")}
+            </div>
+            <button
+              onClick={run}
+              disabled={!input.trim() || streaming || !validation.valid}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-1.5 text-[12px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
+              {streaming ? t("Running...") : t("Run Research")}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1413,58 +1462,73 @@ function CapabilityTester({
   };
 
   return (
-    <div className="space-y-5">
-      {messages.map((msg, i) => (
-        <div key={`${msg.role}-${i}`} className="mx-auto max-w-4xl">
-          <div className="mb-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-            {msg.role === "user" ? t("You") : t("Assistant")}
-          </div>
-          {msg.role === "user" ? (
-            <div className="rounded-[28px] bg-[var(--muted)] px-5 py-4 text-[15px] leading-7 text-[var(--foreground)]">
-              {msg.content}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
-                <TracePanel events={msg.events || []} />
-              </div>
-              <ProcessLogs
-                logs={msg.processLogs || []}
-                executing={streaming && i === messages.length - 1}
-                title={t("Process")}
-              />
-              {msg.error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                  {msg.error}
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="space-y-5 pb-4">
+          {messages.map((msg, i) => (
+            <div
+              key={`${msg.role}-${i}`}
+              className={`mx-auto max-w-4xl ${msg.role === "user" ? "flex justify-end" : ""}`}
+            >
+              <div className={msg.role === "user" ? "w-full max-w-[78%]" : "w-full max-w-[88%]"}>
+                <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+                  {msg.role === "user" ? <MessageSquare size={12} /> : <Sparkles size={12} />}
+                  <span>{msg.role === "user" ? t("You") : t("Assistant")}</span>
                 </div>
-              )}
-              <AssistantResponse
-                content={msg.content}
-                className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4"
-              />
-              <CapabilityResultPanel result={msg.result} />
+                {msg.role === "user" ? (
+                  <div className="rounded-[28px] bg-[var(--foreground)] px-5 py-4 text-[15px] leading-7 text-[var(--background)] shadow-sm">
+                    {msg.content}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                      <TracePanel events={msg.events || []} />
+                    </div>
+                    <ProcessLogs
+                      logs={msg.processLogs || []}
+                      executing={streaming && i === messages.length - 1}
+                      title={t("Process")}
+                    />
+                    {msg.error && (
+                      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                        {msg.error}
+                      </div>
+                    )}
+                    <AssistantResponse
+                      content={msg.content}
+                      className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4 shadow-sm"
+                    />
+                    <CapabilityResultPanel result={msg.result} />
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          ))}
         </div>
-      ))}
-      <div className="sticky bottom-0 z-10 rounded-[28px] border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-          rows={4}
-          placeholder={`${t("Try")} ${t(getCapabilityLabel(capability.name))}...`}
-          className="w-full resize-none bg-transparent text-[15px] leading-7 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
-        />
-        <div className="mt-2 flex justify-end">
-          <button
-            onClick={send}
-            disabled={!input.trim() || streaming}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-[13px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
-            {streaming ? t("Running...") : t("Send")}
-          </button>
+      </div>
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-[var(--border)] bg-[var(--background)]/96 pt-2 backdrop-blur">
+        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 shadow-sm">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+            rows={2}
+            placeholder={`${t("Try")} ${t(getCapabilityLabel(capability.name))}...`}
+            className="w-full resize-none bg-transparent text-[13px] leading-5 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+          />
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <div className="text-[11px] text-[var(--muted-foreground)]">
+              {t("Enter to send, Shift+Enter for a new line.")}
+            </div>
+            <button
+              onClick={send}
+              disabled={!input.trim() || streaming}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-1.5 text-[12px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
+              {streaming ? t("Running...") : t("Send")}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1484,6 +1548,9 @@ export default function PlaygroundPage() {
   const [activeKind, setActiveKind] = useState<"tool" | "capability">("tool");
   const [activeName, setActiveName] = useState<string>("");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
+  const [rightPanelWidth, setRightPanelWidth] = useState<"compact" | "comfortable" | "expanded">(
+    "comfortable",
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -1567,6 +1634,59 @@ export default function PlaygroundPage() {
         ? t(getCapabilityLabel(activeCapability.name))
         : t("Capabilities");
 
+  const activeDescription =
+    activeKind === "tool"
+      ? activeTool
+        ? getToolDescription(activeTool.description, t)
+        : ""
+      : activeCapability
+        ? getCapabilityDescription(activeCapability.description, t)
+        : "";
+
+  const rightPanelHeaderActions = (
+    <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--background)]/80 p-1">
+      <button
+        type="button"
+        onClick={() => setRightPanelWidth("compact")}
+        title={t("Compact panel")}
+        aria-label={t("Compact panel")}
+        className={`rounded-lg p-1.5 transition ${
+          rightPanelWidth === "compact"
+            ? "bg-[var(--foreground)] text-[var(--background)]"
+            : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+        }`}
+      >
+        <Columns3 size={14} />
+      </button>
+      <button
+        type="button"
+        onClick={() => setRightPanelWidth("comfortable")}
+        title={t("Comfortable panel")}
+        aria-label={t("Comfortable panel")}
+        className={`rounded-lg p-1.5 transition ${
+          rightPanelWidth === "comfortable"
+            ? "bg-[var(--foreground)] text-[var(--background)]"
+            : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+        }`}
+      >
+        <ChevronsLeftRight size={14} />
+      </button>
+      <button
+        type="button"
+        onClick={() => setRightPanelWidth("expanded")}
+        title={t("Expanded panel")}
+        aria-label={t("Expanded panel")}
+        className={`rounded-lg p-1.5 transition ${
+          rightPanelWidth === "expanded"
+            ? "bg-[var(--foreground)] text-[var(--background)]"
+            : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+        }`}
+      >
+        <Expand size={14} />
+      </button>
+    </div>
+  );
+
   const persistCapabilityConfig = (capabilityName: string, next: CapabilityPlaygroundConfig) => {
     setCapabilityConfigs((prev) =>
       saveCapabilityPlaygroundConfig(prev, capabilityName, next),
@@ -1623,15 +1743,18 @@ export default function PlaygroundPage() {
   };
 
   const selectionPanel = (
-    <section>
+    <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
-            {t("Playground workspace")}
+            {t("Switch mode")}
           </p>
-          <h3 className="mt-2 text-base font-semibold tracking-tight text-[var(--foreground)]">
-            {t("Conversation history")}
+          <h3 className="mt-1 text-sm font-semibold tracking-tight text-[var(--foreground)]">
+            {t("Choose what you want to do")}
           </h3>
+          <p className="mt-1 text-[12px] leading-5 text-[var(--muted-foreground)]">
+            {getListSectionDescription(activeKind, t)}
+          </p>
         </div>
         <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--background)]/70 p-1">
           <button
@@ -1678,18 +1801,36 @@ export default function PlaygroundPage() {
               aria-label={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
               className={`w-full rounded-2xl border px-3 py-3 text-left transition ${
                 selected
-                  ? "border-[var(--foreground)]/10 bg-[var(--background)] text-[var(--foreground)] shadow-sm"
+                  ? "border-[var(--foreground)]/10 bg-[var(--background)] text-[var(--foreground)] shadow-sm ring-1 ring-[var(--foreground)]/6"
                   : "border-transparent bg-transparent text-[var(--muted-foreground)] hover:border-[var(--border)] hover:bg-[var(--background)]/75 hover:text-[var(--foreground)]"
               }`}
             >
               <div className="flex items-start gap-2.5">
-                <Icon size={16} strokeWidth={1.8} className="mt-0.5 shrink-0" />
+                <div
+                  className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
+                    selected
+                      ? "bg-[var(--foreground)] text-[var(--background)]"
+                      : "bg-[var(--muted)]/70 text-[var(--muted-foreground)]"
+                  }`}
+                >
+                  <Icon size={15} strokeWidth={1.9} />
+                </div>
                 <div className="min-w-0">
-                  <div className="text-[13px] font-medium">
-                    {activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
+                  <div className="flex items-center gap-2">
+                    <div className="text-[13px] font-medium">
+                      {activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
+                    </div>
+                    {selected ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--foreground)] px-2 py-0.5 text-[10px] font-semibold text-[var(--background)]">
+                        <Check size={10} strokeWidth={2.2} />
+                        {t("Selected")}
+                      </span>
+                    ) : null}
                   </div>
                   <div className="mt-1 line-clamp-2 text-[11px] leading-5 text-[var(--muted-foreground)]">
-                    {item.description}
+                    {activeKind === "tool"
+                      ? getToolDescription(item.description, t)
+                      : getCapabilityDescription(item.description, t)}
                   </div>
                 </div>
               </div>
@@ -1702,32 +1843,29 @@ export default function PlaygroundPage() {
 
   const centerPanel = (
     <main aria-label={t("Conversation workspace")} className="flex h-full min-h-0 flex-col">
-      <div className="border-b border-[var(--border)] px-6 py-5">
+      <div className="border-b border-[var(--border)] px-6 py-1.5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
               {t("Conversation workspace")}
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]">
+            <h2 className="mt-0.5 text-base font-semibold tracking-tight text-[var(--foreground)]">
               {activeLabel}
             </h2>
-            <p className="mt-2 max-w-3xl text-[14px] leading-6 text-[var(--muted-foreground)]">
-              {activeKind === "tool" ? activeTool?.description : activeCapability?.description}
-            </p>
           </div>
           <button
             type="button"
             onClick={() => setRightPanelCollapsed((prev) => !prev)}
             title={rightPanelCollapsed ? t("Open tools and context") : t("Hide tools and context")}
             aria-label={rightPanelCollapsed ? t("Open tools and context") : t("Hide tools and context")}
-            className="rounded-xl border border-[var(--border)] bg-[var(--background)]/70 p-2 text-[var(--muted-foreground)] transition hover:text-[var(--foreground)]"
+            className="rounded-xl border border-[var(--border)] bg-[var(--background)]/70 p-1.5 text-[var(--muted-foreground)] transition hover:text-[var(--foreground)]"
           >
-            {rightPanelCollapsed ? <PanelRightOpen size={17} /> : <PanelRightClose size={17} />}
+            {rightPanelCollapsed ? <PanelRightOpen size={15} /> : <PanelRightClose size={15} />}
           </button>
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-3">
         {loading ? (
           <div className="flex h-full items-center justify-center">
             <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
@@ -1770,10 +1908,23 @@ export default function PlaygroundPage() {
     <PlaygroundRightPanel
       badge={t("Context panel")}
       title={t(getToolLabel(activeTool.name))}
-      description={activeTool.description}
+      description={getToolDescription(activeTool.description, t)}
+      headerActions={rightPanelHeaderActions}
     >
       <div className="space-y-6">
-        <section>
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/75 px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+            {t("Current mode")}
+          </p>
+          <div className="mt-2 text-[14px] font-semibold text-[var(--foreground)]">
+            {t(getToolLabel(activeTool.name))}
+          </div>
+          <p className="mt-1 text-[12px] leading-5 text-[var(--muted-foreground)]">
+            {getToolDescription(activeTool.description, t)}
+          </p>
+        </section>
+        {selectionPanel}
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
             {t("Knowledge source")}
           </h3>
@@ -1798,10 +1949,22 @@ export default function PlaygroundPage() {
       badge={t("Context panel")}
       title={t(getCapabilityLabel(activeCapability.name))}
       description={t("Run a focused conversation here without leaving the playground.")}
+      headerActions={rightPanelHeaderActions}
     >
       <div className="space-y-6">
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/75 px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+            {t("Current mode")}
+          </p>
+          <div className="mt-2 text-[14px] font-semibold text-[var(--foreground)]">
+            {t(getCapabilityLabel(activeCapability.name))}
+          </div>
+          <p className="mt-1 text-[12px] leading-5 text-[var(--muted-foreground)]">
+            {getCapabilityDescription(activeCapability.description, t)}
+          </p>
+        </section>
         {selectionPanel}
-        <section>
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
             {t("Enabled tools")}
           </h3>
@@ -1835,7 +1998,7 @@ export default function PlaygroundPage() {
         </section>
 
         {activeCapabilityConfig?.enabledTools.includes("rag") ? (
-          <section>
+          <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
               {t("Knowledge source")}
             </h3>
@@ -1854,15 +2017,6 @@ export default function PlaygroundPage() {
             </select>
           </section>
         ) : null}
-
-        <section>
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
-            {t("Activity trace")}
-          </h3>
-          <div className="mt-3 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background)]/60 px-3 py-4 text-[13px] leading-6 text-[var(--muted-foreground)]">
-            {t("Tool toggles, knowledge context, and execution trace stay here while the conversation remains central.")}
-          </div>
-        </section>
       </div>
     </PlaygroundRightPanel>
   ) : null;
@@ -1870,6 +2024,7 @@ export default function PlaygroundPage() {
   return (
     <PlaygroundWorkspaceShell
       rightCollapsed={rightPanelCollapsed}
+      rightWidth={rightPanelWidth}
       center={centerPanel}
       right={rightPanel}
     />

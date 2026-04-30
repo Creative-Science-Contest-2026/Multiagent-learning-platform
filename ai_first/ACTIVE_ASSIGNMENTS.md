@@ -35,12 +35,12 @@ Rules:
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: Replace `Playground` with a chat-first three-column workspace shell and Vietnamese-first UI copy
-- Status: designing
-- Branch: `fix/playground-chat-workspace`
-- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-workspace.md`
-- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/chat/home/*`, `web/components/SessionList.tsx`, `web/components/sidebar/*`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/specs/2026-04-30-playground-chat-workspace-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-workspace.md`
+- Task: Polish the `/playground` chat workspace so the right panel is clearer, visible English copy is removed, the chat header is smaller, and the composer is tighter at the bottom
+- Status: implementing
+- Branch: `fix/playground-chat-workspace-polish`
+- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-workspace-polish.md`
+- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/chat/home/PlaygroundRightPanel.tsx`, `web/components/chat/home/PlaygroundWorkspaceShell.tsx`, `web/components/sidebar/SidebarShell.tsx`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `web/tests/contest-vietnamese-coverage.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-chat-workspace-polish.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-workspace-polish.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: write approved design spec and task packet, then ask for spec review before implementation
+- Next action: implement the bounded `/playground` polish pass and rerun focused frontend validation
 - Blocker: none

@@ -43,4 +43,18 @@ test("playground workspace Vietnamese labels exist", () => {
   assert.equal(vi["Today"], "Hôm nay");
   assert.equal(vi["Yesterday"], "Hôm qua");
   assert.equal(vi["Untitled chat"], "Cuộc trò chuyện chưa có tiêu đề");
+  assert.equal(vi["New Chat"], "Trò chuyện mới");
+  assert.equal(
+    vi["Agentic chat with autonomous tool selection across enabled tools."],
+    "Trò chuyện tác tử với khả năng tự chọn công cụ trong các công cụ đang bật.",
+  );
+  assert.equal(vi["Capabilities"], "Năng lực");
+  assert.equal(
+    vi["Choose the capability flow that best matches your goal."],
+    "Chọn luồng năng lực phù hợp nhất với mục tiêu của bạn.",
+  );
+  assert.equal(vi["You"], "Bạn");
+  assert.equal(vi["Assistant"], "Trợ lý");
+  assert.equal(vi["Run Research"], "Chạy nghiên cứu");
+  assert.equal(vi["Compact panel"], "Bảng gọn");
 });
