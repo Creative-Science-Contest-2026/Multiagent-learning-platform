@@ -30,17 +30,4 @@ Rules:
 
 ## Active
 
-### Assignment
-
-- Owner: Codex
-- Machine: local
-- Worktree: `.worktrees/teacher-cockpit-default-entry`
-- Task: `C217_TEACHER_COCKPIT_DEFAULT_ENTRY`
-- Status: `in_progress`
-- Branch: `fix/teacher-cockpit-default-entry`
-- Task packet: `docs/superpowers/tasks/2026-04-30-c217-teacher-cockpit-default-entry.md`
-- Owned files: `web/app/(workspace)/page.tsx`, `web/app/(workspace)/dashboard/page.tsx`, `web/components/sidebar/SidebarShell.tsx`, `web/components/contest/`
-- PR:
-- Last update: `2026-04-30 10:39:32 +0700`
-- Next action: write design artifact, plan, and focused cockpit tests before implementation
-- Blocker:
+- None.
