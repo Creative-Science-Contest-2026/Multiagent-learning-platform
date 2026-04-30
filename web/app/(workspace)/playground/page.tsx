@@ -103,10 +103,6 @@ function getToolIcon(name: string): LucideIcon {
   return TOOL_ICONS[name] ?? Terminal;
 }
 
-function getCapIcon(name: string): LucideIcon {
-  return CAPABILITY_ICONS[name] ?? Sparkles;
-}
-
 function getToolLabel(name: string): string {
   return TOOL_LABELS[name] ?? titleCase(name);
 }
@@ -121,15 +117,6 @@ function getToolDescription(description: string, t: (key: string) => string): st
 
 function getCapabilityDescription(description: string, t: (key: string) => string): string {
   return t(description);
-}
-
-function getListSectionDescription(
-  activeKind: "tool" | "capability",
-  t: (key: string) => string,
-): string {
-  return activeKind === "tool"
-    ? t("Choose the tool that best matches your task.")
-    : t("Choose the capability flow that best matches your goal.");
 }
 
 /* ------------------------------------------------------------------ */
@@ -1709,14 +1696,6 @@ export default function PlaygroundPage() {
       ),
     [activeCapabilityConfig?.config],
   );
-  const listItems = useMemo(
-    () =>
-      activeKind === "tool"
-        ? tools.map((t) => ({ name: t.name, description: t.description }))
-        : capabilityCatalog.map((c) => ({ name: c.name, description: c.description })),
-    [activeKind, capabilityCatalog, tools],
-  );
-
   const activeLabel =
     activeKind === "tool"
       ? activeTool
@@ -1851,105 +1830,6 @@ export default function PlaygroundPage() {
     setActiveName("chat");
   }, [selectedSessionId]);
 
-  const selectionPanel = (
-    <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
-            {t("Switch mode")}
-          </p>
-          <h3 className="mt-1 text-sm font-semibold tracking-tight text-[var(--foreground)]">
-            {t("Choose what you want to do")}
-          </h3>
-          <p className="mt-1 text-[12px] leading-5 text-[var(--muted-foreground)]">
-            {getListSectionDescription(activeKind, t)}
-          </p>
-        </div>
-        <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--background)]/70 p-1">
-          <button
-            type="button"
-            onClick={() => {
-              setActiveKind("capability");
-              if (capabilityCatalog.length) setActiveName(capabilityCatalog[0]?.name ?? "");
-            }}
-            className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition ${
-              activeKind === "capability"
-                ? "bg-[var(--foreground)] text-[var(--background)]"
-                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-            }`}
-          >
-            {t("Capabilities")}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setActiveKind("tool");
-              if (tools.length) setActiveName(tools[0]?.name ?? "");
-            }}
-            className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition ${
-              activeKind === "tool"
-                ? "bg-[var(--foreground)] text-[var(--background)]"
-                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-            }`}
-          >
-            {t("Tools")}
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-4 space-y-2">
-        {listItems.map((item) => {
-          const Icon = activeKind === "tool" ? getToolIcon(item.name) : getCapIcon(item.name);
-          const selected = activeName === item.name;
-          return (
-            <button
-              key={item.name}
-              type="button"
-              onClick={() => setActiveName(item.name)}
-              title={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
-              aria-label={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
-              className={`w-full rounded-2xl border px-3 py-3 text-left transition ${
-                selected
-                  ? "border-[var(--foreground)]/10 bg-[var(--background)] text-[var(--foreground)] shadow-sm ring-1 ring-[var(--foreground)]/6"
-                  : "border-transparent bg-transparent text-[var(--muted-foreground)] hover:border-[var(--border)] hover:bg-[var(--background)]/75 hover:text-[var(--foreground)]"
-              }`}
-            >
-              <div className="flex items-start gap-2.5">
-                <div
-                  className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
-                    selected
-                      ? "bg-[var(--foreground)] text-[var(--background)]"
-                      : "bg-[var(--muted)]/70 text-[var(--muted-foreground)]"
-                  }`}
-                >
-                  <Icon size={15} strokeWidth={1.9} />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <div className="text-[13px] font-medium">
-                      {activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
-                    </div>
-                    {selected ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--foreground)] px-2 py-0.5 text-[10px] font-semibold text-[var(--background)]">
-                        <Check size={10} strokeWidth={2.2} />
-                        {t("Selected")}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="mt-1 line-clamp-2 text-[11px] leading-5 text-[var(--muted-foreground)]">
-                    {activeKind === "tool"
-                      ? getToolDescription(item.description, t)
-                      : getCapabilityDescription(item.description, t)}
-                  </div>
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
-
   const centerPanel = (
     <main aria-label={t("Conversation workspace")} className="flex h-full min-h-0 flex-col">
       <div className="border-b border-[var(--border)] px-6 py-1.5">
@@ -2040,7 +1920,6 @@ export default function PlaygroundPage() {
             {getToolDescription(activeTool.description, t)}
           </p>
         </section>
-        {selectionPanel}
         <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
             {t("Knowledge source")}
@@ -2080,7 +1959,6 @@ export default function PlaygroundPage() {
             {getCapabilityDescription(activeCapability.description, t)}
           </p>
         </section>
-        {selectionPanel}
         <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
             {t("Enabled tools")}
