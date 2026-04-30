@@ -21,6 +21,13 @@ The helper currently shells out to `python3` for the reset check, so the repo `.
 
 Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTION_QUEUE.md` and `ai_first/daily/YYYY-MM-DD.md`.
 
+The reset utility now primes a fuller teacher-first dataset before smoke or video capture:
+
+- multiple shareable marketplace packs;
+- imported private workspace packs;
+- multiple assessment and tutor sessions;
+- dashboard evidence and intervention traces.
+
 ## Stage 1: Backend
 
 - Command: use the existing backend startup path for local validation.
@@ -36,7 +43,7 @@ Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTIO
 ## Stage 3: Knowledge Pack
 
 - Action: confirm Knowledge Pack metadata is visible and matches the expected demo data shape.
-- Success: metadata is present after load or reload.
+- Success: metadata is present after load or reload, and the demo workspace can show at least one imported pack.
 - Stop condition: Knowledge Pack metadata is missing or broken.
 
 ## Stage 4: Assessment
@@ -54,7 +61,7 @@ Stop the lane on the first hard failure. Record the result in `ai_first/EXECUTIO
 ## Stage 6: Dashboard
 
 - Action: open the Dashboard after the assessment and tutor steps.
-- Success: recent activity reflects assessment and tutor usage with Knowledge Pack context where available.
+- Success: recent activity reflects assessment and tutor usage with Knowledge Pack context where available, and teacher insight cards are not empty.
 - Stop condition: dashboard activity is empty, broken, or missing the expected context.
 
 ## Result handling
