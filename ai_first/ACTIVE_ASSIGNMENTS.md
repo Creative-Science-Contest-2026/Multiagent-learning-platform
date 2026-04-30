@@ -44,3 +44,18 @@ Rules:
 - Last update: 2026-04-30
 - Next action: write the bounded spec for binding each chat session to one imported `Gói gia sư`
 - Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/code-review-graph-integration`
+- Task: Install and integrate `code-review-graph` into this repository for Codex, including committing generated repo-local artifacts if the tool creates them
+- Status: writing spec
+- Branch: `fix/code-review-graph-integration`
+- Task packet: `docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md`
+- Owned files: `.gitignore`, `.claude/skills/`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-code-review-graph-integration.md`, `docs/superpowers/specs/2026-04-30-code-review-graph-integration-design.md`, `docs/superpowers/plans/2026-04-30-code-review-graph-integration.md`, `docs/superpowers/pr-notes/2026-04-30-code-review-graph-integration.md`
+- PR: uncreated
+- Last update: 2026-04-30
+- Next action: stage the bounded integration files, commit the lane, and prepare review handoff
+- Blocker: none
