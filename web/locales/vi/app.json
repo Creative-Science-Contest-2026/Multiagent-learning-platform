@@ -27,6 +27,7 @@
   "Relevance Analysis": "Phân tích độ liên quan",
   "round": "vòng",
   "s": "s",
+  "ms": "ms",
   "Submit Answer": "Nộp câu trả lời",
   "Submitted": "Đã nộp",
   "Generating questions...": "Đang tạo câu hỏi...",
@@ -468,4 +469,6 @@
   ,"Define this teaching style in markdown...": "Mô tả phong cách giảng dạy này bằng markdown..."
   ,"No teaching styles yet": "Chưa có phong cách giảng dạy nào"
   ,"Create your first teaching style. Default presets will be seeded automatically on next server restart.": "Tạo phong cách giảng dạy đầu tiên của bạn. Các mẫu mặc định sẽ được nạp tự động ở lần khởi động máy chủ tiếp theo."
+  ,"Run a focused conversation here without leaving the playground.": "Chạy một cuộc hội thoại tập trung ngay tại đây mà không cần rời khỏi không gian trò chuyện."
+  ,"Tool toggles, knowledge context, and execution trace stay here while the conversation remains central.": "Các công cụ bật tắt, ngữ cảnh tri thức và luồng thực thi nằm ở đây để vùng hội thoại luôn là trung tâm."
 }
