@@ -40,6 +40,17 @@ Architecture direction: agent-native today, with future multi-agent role separat
 4. Teacher reviews diagnosis signals and recommendation context.
 5. Teacher decides the next intervention using dashboard evidence.
 
+Anchor case for the pitch:
+
+- Grade 9 math teacher
+- `contest-demo-quadratics`
+- one common factoring and root-checking weakness pattern
+- one teacher-reviewed remediation move
+
+Preferred short version:
+
+> One Grade 9 teacher prepares a quadratics Knowledge Pack, drafts one assessment, lets the student ask one grounded follow-up, then reviews one dashboard recommendation before choosing one bounded remediation step.
+
 Official scope freeze:
 
 - Core loop: `Knowledge Pack -> Assessment -> Tutor -> Diagnosis -> Intervention`
@@ -53,3 +64,12 @@ Behavior-diff story for judges:
 - `SOUL` changes how the tutor reacts when a student is wrong, stuck, or discouraged.
 - `RULES` changes the classroom boundaries: for example, whether the tutor should withhold direct answers, how much hinting is allowed, and when to stop or escalate.
 - The same student question can therefore receive a more encouraging scaffolded response in one class setup and a more Socratic push-back in another, without changing the underlying source material.
+
+Bounded metric card for spoken Q&A:
+
+- `1` anchor Knowledge Pack
+- `2` verified demo sessions tied to that pack
+- `2/2` verified sessions grounded in the same pack
+- teacher-reviewed recommendation/intervention framing present
+
+Do not translate that card into accuracy, learning-gain, or classroom-outcome claims.

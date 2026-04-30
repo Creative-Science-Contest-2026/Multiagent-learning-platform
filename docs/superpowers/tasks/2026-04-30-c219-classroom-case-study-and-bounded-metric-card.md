@@ -4,7 +4,7 @@
 - Commit tag: `C219`
 - Branch: `docs/classroom-case-study-metric-card`
 - Worktree: `.worktrees/classroom-case-study-metric-card`
-- Status: `pending`
+- Status: `in_progress`
 
 ## Goal
 
@@ -90,3 +90,4 @@ Package one explicit classroom case study plus one compact, non-overclaim metric
 ## Handoff
 
 - After this packet, the differentiation follow-up set is fully packetized: `C216`, `C217`, `C218`, and `C219` can now be executed independently with bounded scope.
+- This execution keeps the story anchored to `contest-demo-quadratics` and only adds evidence-backed flow metrics, not benchmark or classroom-outcome claims.

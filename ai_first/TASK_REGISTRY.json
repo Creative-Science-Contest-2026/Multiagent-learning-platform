@@ -2291,10 +2291,10 @@
         "C205_DEMO_DATA_AND_SMOKE_CONTRACT_REFRESH",
         "C207_SUBMISSION_NARRATIVE_PACK"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "recommended_session_bucket": "session-a-docs",
       "layer": "submission-docs",
-      "notes": "The repository already has demo-safe reset data and a validation casepack, but it still lacks one explicit judge-facing case-study card and a compact metric set such as grounded-tutor coverage, recommendation count, or intervention follow-through for that same scenario."
+      "notes": "In progress on 2026-04-30. This lane consolidates the existing contest-demo-quadratics evidence into one explicit classroom case study plus a compact metric card that stays inside smoke-backed and casepack-backed proof."
     }
   ],
   "github_issues_template": {

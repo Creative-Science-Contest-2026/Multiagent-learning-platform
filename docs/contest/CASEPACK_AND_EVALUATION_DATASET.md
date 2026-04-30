@@ -14,6 +14,17 @@ Its job is to:
 
 This is not a benchmark leaderboard, outcome study, or production evaluation harness.
 
+## Anchor Story Connection
+
+For contest review, do not present the casepack as an abstract testing asset only. Tie it back to the same bounded classroom story used elsewhere in the docs:
+
+- one Grade 9 math Knowledge Pack: `contest-demo-quadratics`
+- one weakness pattern around quadratic-equation mistakes
+- one teacher review moment on the dashboard
+- one bounded classroom move such as a remediation mini-group or scaffolded reteach step
+
+The casepack is the structured support layer for that story, not a separate benchmark track.
+
 ## Categories
 
 The current casepack covers five bounded categories:
@@ -49,3 +60,20 @@ Use the casepack to understand how the current product should be described and v
 - it does not prove classroom outcomes
 - it does not replace teacher review
 - it does not justify autonomous diagnosis accuracy claims
+
+## Bounded Metric Companion
+
+When presenters need a compact metric card, keep it operational:
+
+| Safe metric type | Why it is allowed here |
+| --- | --- |
+| count of demo-safe sessions tied to one pack | directly backed by the smoke-validated demo inventory |
+| whether the same Knowledge Pack appears across assessment and tutor proof | directly backed by session payloads and dashboard validation |
+| whether the recommendation/intervention framing exists | directly backed by the casepack and diagnosis docs |
+
+Do not convert the casepack into:
+
+- accuracy percentages
+- learning-gain claims
+- autonomous diagnosis rankings
+- classroom-effectiveness claims

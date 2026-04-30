@@ -34,6 +34,17 @@ Within that loop, diagnosis and recommendation outputs are positioned as evidenc
 2. An exam-prep teacher can set a more demanding style that asks students to justify each step before the tutor gives another hint.
 3. After class, a teacher can review the dashboard to see which students need individual follow-up and which small group should revisit the same misconception together.
 
+## Anchor Classroom Case
+
+The clearest current story is one Grade 9 quadratics class:
+
+1. The teacher prepares `contest-demo-quadratics` as a Knowledge Pack for `Vietnam secondary algebra`.
+2. The platform drafts an assessment from that same pack.
+3. A student then asks for help on a common factoring mistake and how to check both roots against the original equation.
+4. The dashboard surfaces the resulting evidence trail so the teacher can decide one bounded follow-up move, such as reteaching one prerequisite or pulling a small remediation group.
+
+This is the preferred contest case because it is already backed by demo-safe reset data, smoke validation, and the narrative casepack. It should be presented as one validated prototype flow, not as outcome proof.
+
 ## Main Capabilities in the Current MVP
 
 1. Knowledge Pack management for teacher-owned learning materials and metadata.
@@ -89,6 +100,17 @@ This repository does not currently claim classroom outcome evidence or a scaled 
 - Reduces manual work needed to turn teaching materials into assessments.
 - Gives students immediate tutoring support based on the same approved knowledge source.
 - Gives teachers a faster feedback loop through dashboard activity, assessment review, and next-step intervention suggestions.
+
+## Bounded Evidence Snapshot
+
+For the current submission, the safest metric framing is operational:
+
+- `1` demo-safe Knowledge Pack anchors the contest story: `contest-demo-quadratics`
+- `2` verified demo sessions reuse that same pack: one assessment session and one tutor session
+- Knowledge Pack grounding is present in `2/2` validated sessions
+- teacher recommendation/intervention framing is present in the documented dashboard and casepack flow
+
+These are evidence-of-flow metrics, not learning-outcome metrics.
 
 ## Development Potential
 
