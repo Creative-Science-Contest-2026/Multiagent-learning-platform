@@ -36,7 +36,6 @@ interface NavEntry {
 }
 
 const SECONDARY_NAV: NavEntry[] = [{ href: "/settings", label: "Settings", icon: Settings }];
-const DEFAULT_SESSION_VIEWPORT_CLASS_NAME = "max-h-[112px]";
 
 function getContestLabel(label: string): string {
   switch (label) {
@@ -81,7 +80,6 @@ interface SidebarShellProps {
   activeSessionId?: string | null;
   loadingSessions?: boolean;
   showSessions?: boolean;
-  sessionViewportClassName?: string;
   onNewChat?: () => void;
   onSelectSession?: (sessionId: string) => void | Promise<void>;
   onRenameSession?: (sessionId: string, title: string) => void | Promise<void>;
@@ -94,7 +92,6 @@ export function SidebarShell({
   activeSessionId = null,
   loadingSessions = false,
   showSessions = false,
-  sessionViewportClassName = DEFAULT_SESSION_VIEWPORT_CLASS_NAME,
   onNewChat,
   onSelectSession,
   onRenameSession,
@@ -107,6 +104,14 @@ export function SidebarShell({
   const [collapsed, setCollapsed] = useState(false);
   const collapsedNav = getCollapsedSidebarNav();
   const expandedNavGroups = getExpandedSidebarGroups();
+  const sessionControls =
+    showSessions && onSelectSession && onRenameSession && onDeleteSession
+      ? {
+          onSelectSession,
+          onRenameSession,
+          onDeleteSession,
+        }
+      : null;
 
   const handleNewChat = () => {
     if (onNewChat) {
@@ -189,7 +194,7 @@ export function SidebarShell({
 
   /* ---- Expanded state ---- */
   return (
-    <aside className="flex w-[220px] h-screen shrink-0 flex-col bg-[var(--secondary)] transition-all duration-200">
+    <aside className="flex h-screen w-[264px] shrink-0 flex-col bg-[var(--secondary)] transition-all duration-200">
       {/* Header: logo + collapse toggle */}
       <div className="flex h-12 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
@@ -210,15 +215,6 @@ export function SidebarShell({
       {/* Primary nav */}
       <nav className="px-2 pt-1">
         <div className="space-y-px">
-          {/* New chat */}
-          <button
-            onClick={handleNewChat}
-            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] text-[var(--muted-foreground)] transition-colors hover:bg-[var(--background)]/60 hover:text-[var(--foreground)]"
-          >
-            <Plus size={16} strokeWidth={2} />
-            <span>{t("New Chat")}</span>
-          </button>
-
           {expandedNavGroups.map((group, index) => (
             <div key={group.id} className={index > 0 ? "pt-3" : ""}>
               <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]/80">
@@ -227,39 +223,20 @@ export function SidebarShell({
               {group.items.map((item) => {
                 const Icon = resolveNavIcon(item.icon);
                 const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-                const hasSessionsBelow =
-                  item.href === "/playground" &&
-                  showSessions &&
-                  onSelectSession &&
-                  onRenameSession &&
-                  onDeleteSession;
                 const hasBots = item.href === "/agents";
                 return (
                   <div key={item.href}>
                     <Link
                       href={item.href}
-                      className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] transition-colors ${
+                      className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[13.5px] transition-colors ${
                         active
                           ? "bg-[var(--background)]/70 font-medium text-[var(--foreground)]"
                           : "text-[var(--muted-foreground)] hover:bg-[var(--background)]/50 hover:text-[var(--foreground)]"
                       }`}
-                      >
+                    >
                       <Icon size={16} strokeWidth={active ? 1.9 : 1.5} />
                       <span>{t(getContestLabel(item.label))}</span>
                     </Link>
-                    {hasSessionsBelow && (
-                      <div className={`${sessionViewportClassName} overflow-y-auto`}>
-                        <SessionList
-                          sessions={sessions}
-                          activeSessionId={activeSessionId}
-                          loading={loadingSessions}
-                          onSelect={onSelectSession}
-                          onRename={onRenameSession}
-                          onDelete={onDeleteSession}
-                          compact
-                        />
-                      </div>
-                    )}
                     {hasBots && <TutorBotRecent />}
                   </div>
                 );
@@ -269,8 +246,34 @@ export function SidebarShell({
         </div>
       </nav>
 
-      {/* Spacer */}
-      <div className="flex-1" />
+      {sessionControls ? (
+        <div className="min-h-0 flex-1 px-2 pb-2 pt-3">
+          <div className="flex items-center justify-between px-3 pb-2">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]/80">
+              {t("Chat")}
+            </div>
+            <button
+              onClick={handleNewChat}
+              className="rounded-md p-1 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--background)]/60 hover:text-[var(--foreground)]"
+              aria-label={t("New Chat")}
+            >
+              <Plus size={15} strokeWidth={2} />
+            </button>
+          </div>
+          <div className="min-h-0 overflow-y-auto rounded-2xl bg-[var(--background)]/35 p-1">
+            <SessionList
+              sessions={sessions}
+              activeSessionId={activeSessionId}
+              loading={loadingSessions}
+              onSelect={sessionControls.onSelectSession}
+              onRename={sessionControls.onRenameSession}
+              onDelete={sessionControls.onDeleteSession}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1" />
+      )}
 
       {/* Secondary nav + footer */}
       <div className="border-t border-[var(--border)]/40 px-2 py-2">
@@ -280,7 +283,7 @@ export function SidebarShell({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] transition-colors ${
+              className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[13.5px] transition-colors ${
                 active
                   ? "bg-[var(--background)]/70 font-medium text-[var(--foreground)]"
                   : "text-[var(--muted-foreground)] hover:bg-[var(--background)]/50 hover:text-[var(--foreground)]"
