@@ -24,7 +24,7 @@ export function TeacherCockpit() {
 
   return (
     <main className="h-full overflow-y-auto bg-[var(--background)]">
-      <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-6 px-6 py-8">
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-4 py-8 sm:px-6">
         <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
           <div className="flex flex-col gap-4">
             <div>
@@ -72,9 +72,9 @@ export function TeacherCockpit() {
                     </div>
                     <ArrowRight className="mt-1 h-4 w-4 text-[var(--muted-foreground)] transition group-hover:text-[var(--foreground)]" />
                   </div>
-                  <div className="mt-4">
+                  <div className="mt-4 min-w-0">
                     <div className="text-[15px] font-medium text-[var(--foreground)]">{t(action.title)}</div>
-                    <p className="mt-1 text-[13px] leading-6 text-[var(--muted-foreground)]">
+                    <p className="mt-1 break-words text-[13px] leading-6 text-[var(--muted-foreground)]">
                       {t(action.description)}
                     </p>
                   </div>
@@ -101,9 +101,9 @@ export function TeacherCockpit() {
                     <div className="rounded-xl bg-[var(--secondary)] p-3 text-[var(--foreground)]">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="text-[15px] font-medium text-[var(--foreground)]">{t(action.title)}</div>
-                      <p className="mt-1 text-[13px] leading-6 text-[var(--muted-foreground)]">
+                      <p className="mt-1 break-words text-[13px] leading-6 text-[var(--muted-foreground)]">
                         {t(action.description)}
                       </p>
                     </div>
