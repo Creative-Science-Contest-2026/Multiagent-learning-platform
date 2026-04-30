@@ -4,7 +4,7 @@
 - Commit tag: `C217`
 - Branch: `fix/teacher-cockpit-default-entry`
 - Worktree: `.worktrees/teacher-cockpit-default-entry`
-- Status: `pending`
+- Status: `in_progress`
 
 ## Goal
 
@@ -140,3 +140,4 @@ Replace the generic chat-first workspace landing with a teacher-first cockpit th
 ## Handoff
 
 - The next expected follow-up after this packet is `C218_CONTEST_BRAND_AND_CLASSROOM_TERMINOLOGY`, unless the worker discovers the cockpit still needs only docs-side narrative support from `C219`.
+- Implementation on this lane keeps the broad multi-tool workspace reachable at `/playground` so `/` can stay teacher-first without deleting the existing exploratory surface.

@@ -2242,7 +2242,7 @@
         "C211_TEACHER_FIRST_ENTRY_POLISH",
         "C216_CONTEST_SHELL_SCOPE_TRIM"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
       "notes": "The current `/` workspace entry is still the broad multi-capability DeepTutor chat surface, which conflicts with the requested teacher-cockpit first impression."
