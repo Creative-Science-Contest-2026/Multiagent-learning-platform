@@ -21,12 +21,40 @@ export interface TeacherPackMetadata {
   content_types?: string[] | null;
 }
 
+export interface KnowledgeProgressSummary {
+  task_id?: string;
+  stage?: string;
+  message?: string;
+  current?: number;
+  total?: number;
+  percent?: number;
+  progress_percent?: number;
+  file_name?: string;
+  file_statuses?: Array<{
+    name: string;
+    status: string;
+    updated_at?: string;
+    error?: string;
+  }>;
+  error?: string;
+  timestamp?: string;
+}
+
+export interface KnowledgeBaseStatisticsSummary {
+  raw_documents?: number;
+  rag_provider?: string;
+  needs_reindex?: boolean;
+  status?: string;
+  progress?: KnowledgeProgressSummary;
+  [key: string]: unknown;
+}
+
 export interface KnowledgeBaseSummary {
   name: string;
   is_default?: boolean;
   status?: string;
-  progress?: Record<string, unknown>;
-  statistics?: Record<string, unknown>;
+  progress?: KnowledgeProgressSummary;
+  statistics?: KnowledgeBaseStatisticsSummary;
   metadata?: TeacherPackMetadata | null;
 }
 
