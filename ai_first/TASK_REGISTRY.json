@@ -2266,10 +2266,10 @@
       "dependencies": [
         "C213_DIFFERENTIATION_WORDING_SWEEP"
       ],
-      "status": "in_progress",
+      "status": "completed",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
-      "notes": "In progress on 2026-04-30. This lane keeps DeepTutor attribution intact but normalizes the contest-path wording so sidebar, Knowledge, Dashboard, and /agents read like classroom software rather than a generic agent workspace."
+      "notes": "Merged to main through PR #239 on 2026-04-30. This lane preserved DeepTutor on attribution-facing shell surfaces while normalizing the contest-path wording so sidebar, Knowledge, and /agents read like bounded classroom software."
     },
     {
       "id": "C219_CLASSROOM_CASE_STUDY_AND_BOUNDED_METRIC_CARD",
