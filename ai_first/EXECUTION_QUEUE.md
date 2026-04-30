@@ -54,12 +54,15 @@ The authoritative control plane is still `ai_first/AI_OPERATING_PROMPT.md`.
 - Optional Phase 2 contest polish (`C211-C215`) is fully merged on `main`.
 - Contest-differentiation follow-up `C216`, `C217`, `C218`, and `C219` are merged on `main`.
 - Command-backed contest evidence is current on `main`, and the browser-backed Knowledge, Tutor, Dashboard, and `/agents` screenshot rows were recaptured on 2026-04-30 in the authoritative contest docs.
+- A fresh UI audit reopened two AI-owned follow-up lanes from `main`:
+  - `C220_CONTEST_LAYOUT_BREAKAGE_SWEEP`
+  - `C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION`
 
 ## Next recommended task
 
-- No further contest-differentiation lane is queued.
-- No browser-freshness blocker remains in the authoritative contest docs.
-- The repository is back to human review plus optional final-submission decisions unless a new packet is explicitly opened.
+- Start `C220_CONTEST_LAYOUT_BREAKAGE_SWEEP` first because `/agents` currently shows the most severe breakage and the later Vietnamese pass will increase text length further.
+- Run `C221_CONTEST_VIETNAMESE_COVERAGE_COMPLETION` immediately after `C220` so the teacher cockpit, `/agents`, Knowledge, Marketplace, and Dashboard read fully Vietnamese on the main demo path.
+- Re-open browser recapture only if either of those runtime lanes changes judge-facing screenshots enough to make the authoritative docs stale again.
 
 If a requested task appears to span multiple packets, stop and ask the human to resolve the lane boundary before editing.
 
@@ -74,7 +77,7 @@ If a requested task appears to span multiple packets, stop and ask the human to 
 
 ## AI-owned blockers
 
-- None at the moment. Open a new packet only if a new AI-owned lane is explicitly approved from `main`.
+- `C220` and `C221` are now the active AI-owned blockers on the contest path.
 
 ## Human-review blockers
 
