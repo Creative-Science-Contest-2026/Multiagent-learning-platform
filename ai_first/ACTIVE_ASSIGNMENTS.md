@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-knowledge-progress-persistence`
+- Task: Fix knowledge-pack progress persistence so status/index results survive config updates and recover from stale KB config entries
+- Status: implemented, pending PR
+- Branch: `fix/knowledge-progress-persistence`
+- Task packet: `docs/superpowers/tasks/2026-04-30-knowledge-progress-persistence.md`
+- Owned files: `deeptutor/services/config/knowledge_base_config.py`, `deeptutor/knowledge/manager.py`, `deeptutor/knowledge/progress_tracker.py`, `deeptutor/api/routers/knowledge.py`, `tests/api/test_knowledge_router.py`, `tests/knowledge/test_progress_tracker.py`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-knowledge-progress-persistence.md`, `docs/superpowers/specs/2026-04-30-knowledge-progress-persistence-design.md`, `docs/superpowers/plans/2026-04-30-knowledge-progress-persistence.md`, `docs/superpowers/pr-notes/2026-04-30-knowledge-progress-persistence.md`
+- PR: uncreated
+- Last update: 2026-04-30
+- Next action: stage the bounded backend/docs diff and open a draft PR when requested
+- Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-agents-tutor-setup-cleanup`
 - Task: Clean up only the `Gia sư lớp học / Tutor setup` tab on `/agents` for production-ready teacher UX
 - Status: implemented, pending PR

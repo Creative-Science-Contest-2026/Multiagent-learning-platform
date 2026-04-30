@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 from pathlib import Path
 import sys
 
@@ -438,6 +439,53 @@ def test_list_knowledge_bases_includes_teacher_pack_metadata(monkeypatch, tmp_pa
     assert payload[0]["metadata"]["owner"] == "teacher-a"
     assert payload[0]["metadata"]["team_members"] == ["teacher-a", "teacher-b"]
     assert payload[0]["metadata"]["pending_invites"] == ["invite@example.com"]
+
+
+def test_list_knowledge_bases_falls_back_to_progress_file_when_config_progress_missing(
+    monkeypatch, tmp_path: Path
+) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+
+    manager_module = importlib.import_module("deeptutor.knowledge.manager")
+    kb_base_dir = tmp_path / "knowledge_bases"
+    kb_dir = kb_base_dir / "demo-kb"
+    kb_dir.mkdir(parents=True, exist_ok=True)
+    (kb_dir / ".progress.json").write_text(
+        json.dumps(
+            {
+                "kb_name": "demo-kb",
+                "stage": "completed",
+                "message": "Knowledge base initialization complete!",
+                "progress_percent": 100,
+                "task_id": "task-abc",
+                "timestamp": "2026-04-30T13:00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    manager = manager_module.KnowledgeBaseManager(base_dir=str(kb_base_dir))
+    manager.config = {
+        "knowledge_bases": {
+            "demo-kb": {
+                "path": "demo-kb",
+                "description": "Knowledge base: demo-kb",
+                "rag_provider": "llamaindex",
+            }
+        }
+    }
+    manager._save_config()
+
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.get("/api/v1/knowledge/list")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload[0]["status"] == "ready"
+    assert payload[0]["progress"]["stage"] == "completed"
+    assert payload[0]["progress"]["progress_percent"] == 100
 
 
 def test_update_config_rejects_invalid_sharing_status(monkeypatch, tmp_path: Path) -> None:

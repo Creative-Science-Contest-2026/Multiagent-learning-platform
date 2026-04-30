@@ -246,6 +246,32 @@ class KnowledgeBaseManager:
                 return {"knowledge_bases": {}}
         return {"knowledge_bases": {}}
 
+    def _read_progress_file(self, kb_dir: Path) -> dict | None:
+        progress_file = kb_dir / ".progress.json"
+        if not progress_file.exists():
+            return None
+
+        try:
+            with open(progress_file, encoding="utf-8") as handle:
+                data = json.load(handle)
+            return data if isinstance(data, dict) else None
+        except Exception:
+            return None
+
+    @staticmethod
+    def _status_from_progress(progress: dict | None) -> str | None:
+        if not progress:
+            return None
+
+        stage = progress.get("stage")
+        if stage == "completed":
+            return "ready"
+        if stage == "error":
+            return "error"
+        if stage in {"initializing", "processing_documents", "processing_file", "extracting_items"}:
+            return "processing"
+        return None
+
     def _save_config(self):
         """Save knowledge base configuration (thread-safe with file locking)"""
         # Use exclusive lock for writing
@@ -581,6 +607,15 @@ class KnowledgeBaseManager:
 
         # KB might not have a directory yet if still initializing
         dir_exists = kb_dir.exists()
+        fallback_progress = self._read_progress_file(kb_dir) if dir_exists else None
+
+        if not progress and fallback_progress:
+            progress = fallback_progress
+
+        if (not status or status == "unknown") and fallback_progress:
+            derived_status = self._status_from_progress(fallback_progress)
+            if derived_status:
+                status = derived_status
 
         # For old KBs without status field, determine status from rag_storage
         if needs_reindex:
