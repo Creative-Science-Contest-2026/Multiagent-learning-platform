@@ -1,11 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const TEST_DIR = dirname(fileURLToPath(import.meta.url));
 
 function readLocale(locale: "en" | "vi"): Record<string, string> {
   return JSON.parse(
-    readFileSync(resolve(import.meta.dirname, `../locales/${locale}/app.json`), "utf8"),
+    readFileSync(resolve(TEST_DIR, `../locales/${locale}/app.json`), "utf8"),
   ) as Record<string, string>;
 }
 
@@ -30,4 +33,14 @@ test("spec-pack authoring Vietnamese fallbacks and templates exist", () => {
   assert.equal(vi["No direct-answer rule yet"], "Chưa có quy tắc cấm trả lời trực tiếp");
   assert.match(vi["Spec template CURRICULUM.md"], /Chương trình học/);
   assert.match(vi["Spec template WORKFLOW.md"], /Luồng buổi học/);
+});
+
+test("playground workspace Vietnamese labels exist", () => {
+  const vi = readLocale("vi");
+
+  assert.equal(vi["Conversation workspace"], "Không gian hội thoại");
+  assert.equal(vi["Conversation history"], "Lịch sử cuộc trò chuyện");
+  assert.equal(vi["Today"], "Hôm nay");
+  assert.equal(vi["Yesterday"], "Hôm qua");
+  assert.equal(vi["Untitled chat"], "Cuộc trò chuyện chưa có tiêu đề");
 });

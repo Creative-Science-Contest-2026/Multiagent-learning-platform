@@ -144,6 +144,8 @@ export function SidebarShell({
               <div key={item.href} className="flex flex-col items-center">
                 <Link
                   href={item.href}
+                  title={t(getContestLabel(item.label))}
+                  aria-label={t(getContestLabel(item.label))}
                   className={`rounded-lg p-2 transition-colors ${
                     active
                       ? "bg-[var(--background)]/70 text-[var(--foreground)]"
@@ -167,6 +169,8 @@ export function SidebarShell({
               <Link
                 key={item.href}
                 href={item.href}
+                title={t(item.label)}
+                aria-label={t(item.label)}
                 className={`rounded-lg p-2 transition-colors ${
                   active
                     ? "bg-[var(--background)]/70 text-[var(--foreground)]"
@@ -189,9 +193,9 @@ export function SidebarShell({
       {/* Header: logo + collapse toggle */}
       <div className="flex h-12 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo-ver2.png" alt="DeepTutor" width={20} height={20} />
+          <Image src="/logo-ver2.png" alt={t("DeepTutor")} width={20} height={20} />
           <span className="text-[15px] font-semibold tracking-tight text-[var(--foreground)]">
-            DeepTutor
+            {t("DeepTutor")}
           </span>
         </Link>
         <button
@@ -224,7 +228,11 @@ export function SidebarShell({
                 const Icon = resolveNavIcon(item.icon);
                 const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
                 const hasSessionsBelow =
-                  item.href === "/" && showSessions && onSelectSession && onRenameSession && onDeleteSession;
+                  item.href === "/playground" &&
+                  showSessions &&
+                  onSelectSession &&
+                  onRenameSession &&
+                  onDeleteSession;
                 const hasBots = item.href === "/agents";
                 return (
                   <div key={item.href}>

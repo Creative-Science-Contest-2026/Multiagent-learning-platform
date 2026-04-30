@@ -27,6 +27,7 @@
   "Relevance Analysis": "Phân tích độ liên quan",
   "round": "vòng",
   "s": "s",
+  "ms": "ms",
   "Submit Answer": "Nộp câu trả lời",
   "Submitted": "Đã nộp",
   "Generating questions...": "Đang tạo câu hỏi...",
@@ -430,6 +431,25 @@
   "Tutor": "Trợ lý học tập",
   "System": "Hệ thống",
   "This tutoring session does not have replayable message content yet.": "Phiên học với trợ lý này chưa có nội dung tin nhắn để phát lại."
+  ,"Playground workspace": "Không gian trò chuyện"
+  ,"Conversation workspace": "Không gian hội thoại"
+  ,"Conversation history": "Lịch sử cuộc trò chuyện"
+  ,"Context panel": "Bảng ngữ cảnh"
+  ,"Collapse context panel": "Thu gọn bảng ngữ cảnh"
+  ,"Expand context panel": "Mở rộng bảng ngữ cảnh"
+  ,"Collapse conversation rail": "Thu gọn cột cuộc trò chuyện"
+  ,"Expand conversation rail": "Mở rộng cột cuộc trò chuyện"
+  ,"New conversation": "Cuộc trò chuyện mới"
+  ,"Open tools and context": "Mở công cụ và ngữ cảnh"
+  ,"Hide tools and context": "Ẩn công cụ và ngữ cảnh"
+  ,"Knowledge source": "Nguồn tri thức"
+  ,"Enabled tools": "Công cụ đang bật"
+  ,"Activity trace": "Luồng xử lý"
+  ,"Today": "Hôm nay"
+  ,"Yesterday": "Hôm qua"
+  ,"Last 7 days": "7 ngày qua"
+  ,"Earlier": "Cũ hơn"
+  ,"Untitled chat": "Cuộc trò chuyện chưa có tiêu đề"
   ,"Tutor setup": "Thiết lập gia sư"
   ,"Class tutors": "Gia sư lớp học"
   ,"Tutor files": "Tệp gia sư"
@@ -449,4 +469,6 @@
   ,"Define this teaching style in markdown...": "Mô tả phong cách giảng dạy này bằng markdown..."
   ,"No teaching styles yet": "Chưa có phong cách giảng dạy nào"
   ,"Create your first teaching style. Default presets will be seeded automatically on next server restart.": "Tạo phong cách giảng dạy đầu tiên của bạn. Các mẫu mặc định sẽ được nạp tự động ở lần khởi động máy chủ tiếp theo."
+  ,"Run a focused conversation here without leaving the playground.": "Chạy một cuộc hội thoại tập trung ngay tại đây mà không cần rời khỏi không gian trò chuyện."
+  ,"Tool toggles, knowledge context, and execution trace stay here while the conversation remains central.": "Các công cụ bật tắt, ngữ cảnh tri thức và luồng thực thi nằm ở đây để vùng hội thoại luôn là trung tâm."
 }

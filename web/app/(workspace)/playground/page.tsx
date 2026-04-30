@@ -14,6 +14,8 @@ import {
   Loader2,
   MessageSquare,
   Microscope,
+  PanelRightClose,
+  PanelRightOpen,
   PenLine,
   Play,
   Sparkles,
@@ -24,6 +26,8 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { apiUrl } from "@/lib/api";
+import { PlaygroundRightPanel } from "@/components/chat/home/PlaygroundRightPanel";
+import { PlaygroundWorkspaceShell } from "@/components/chat/home/PlaygroundWorkspaceShell";
 import AssistantResponse from "@/components/common/AssistantResponse";
 import MarkdownRenderer from "@/components/common/MarkdownRenderer";
 import ProcessLogs from "@/components/common/ProcessLogs";
@@ -566,7 +570,7 @@ function CapabilityResultPanel({ result }: { result: CapabilityExecResult | null
         )}
         {typeof result.elapsedMs === "number" && (
           <span className="text-[11px] text-[var(--muted-foreground)]">
-            {result.elapsedMs} ms
+            {result.elapsedMs} {t("ms")}
           </span>
         )}
       </div>
@@ -959,15 +963,19 @@ function DeepQuestionTester({
       </div>
 
       {messages.map((msg, i) => (
-        <div key={`${msg.role}-${i}`}>
-          <div className="mb-1 text-[10px] uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+        <div key={`${msg.role}-${i}`} className="mx-auto max-w-4xl">
+          <div className="mb-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
             {msg.role === "user" ? t("You") : t("Assistant")}
           </div>
           {msg.role === "user" ? (
-            <div className="rounded-lg bg-[var(--muted)] px-3 py-2 text-[13px] text-[var(--foreground)]">{msg.content}</div>
+            <div className="rounded-[28px] bg-[var(--muted)] px-5 py-4 text-[15px] leading-7 text-[var(--foreground)]">
+              {msg.content}
+            </div>
           ) : (
-            <div className="space-y-2">
-              <TracePanel events={msg.events || []} />
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                <TracePanel events={msg.events || []} />
+              </div>
               <ProcessLogs
                 logs={msg.processLogs || []}
                 executing={streaming && i === messages.length - 1}
@@ -980,7 +988,7 @@ function DeepQuestionTester({
               )}
               <AssistantResponse
                 content={msg.content}
-                className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2.5"
+                className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4"
               />
               <CapabilityResultPanel result={msg.result} />
             </div>
@@ -988,15 +996,17 @@ function DeepQuestionTester({
         </div>
       ))}
 
-      <div className="flex justify-end">
-        <button
-          onClick={run}
-          disabled={!canRun || streaming}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-1.5 text-[12px] font-medium text-[var(--primary-foreground)] disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {streaming ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
-          {streaming ? t("Running...") : t("Generate")}
-        </button>
+      <div className="sticky bottom-0 z-10 -mx-2 border-t border-[var(--border)] bg-[var(--background)]/92 px-2 pb-2 pt-4 backdrop-blur">
+        <div className="mx-auto flex max-w-4xl justify-end">
+          <button
+            onClick={run}
+            disabled={!canRun || streaming}
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-[13px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
+            {streaming ? t("Running...") : t("Generate")}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1160,7 +1170,7 @@ function DeepResearchTester({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <ResearchConfigPanel
         value={config}
         errors={validation.errors}
@@ -1197,37 +1207,41 @@ function DeepResearchTester({
             : t("No source selected: the run will use llm-only research.")}
         </div>
       </div>
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
+      <div className="sticky bottom-0 z-10 rounded-[28px] border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); run(); } }}
-          rows={3}
+          rows={4}
           placeholder={t("Describe the research topic...")}
-          className="w-full resize-none bg-transparent text-[13px] leading-relaxed text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+          className="w-full resize-none bg-transparent text-[15px] leading-7 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
         />
         <div className="mt-2 flex justify-end">
           <button
             onClick={run}
             disabled={!input.trim() || streaming || !validation.valid}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-1.5 text-[12px] font-medium text-[var(--primary-foreground)] disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-[13px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {streaming ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+            {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
             {streaming ? t("Running...") : t("Run Research")}
           </button>
         </div>
       </div>
 
       {messages.map((msg, i) => (
-        <div key={`${msg.role}-${i}`}>
-          <div className="mb-1 text-[10px] uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+        <div key={`${msg.role}-${i}`} className="mx-auto max-w-4xl">
+          <div className="mb-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
             {msg.role === "user" ? t("You") : t("Assistant")}
           </div>
           {msg.role === "user" ? (
-            <div className="rounded-lg bg-[var(--muted)] px-3 py-2 text-[13px] text-[var(--foreground)]">{msg.content}</div>
+            <div className="rounded-[28px] bg-[var(--muted)] px-5 py-4 text-[15px] leading-7 text-[var(--foreground)]">
+              {msg.content}
+            </div>
           ) : (
-            <div className="space-y-2">
-              <TracePanel events={msg.events || []} />
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                <TracePanel events={msg.events || []} />
+              </div>
               <ProcessLogs
                 logs={msg.processLogs || []}
                 executing={streaming && i === messages.length - 1}
@@ -1240,7 +1254,7 @@ function DeepResearchTester({
               )}
               <AssistantResponse
                 content={msg.content}
-                className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2.5"
+                className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4"
               />
               <CapabilityResultPanel result={msg.result} />
             </div>
@@ -1399,17 +1413,21 @@ function CapabilityTester({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-5">
       {messages.map((msg, i) => (
-        <div key={`${msg.role}-${i}`}>
-          <div className="mb-1 text-[10px] uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
+        <div key={`${msg.role}-${i}`} className="mx-auto max-w-4xl">
+          <div className="mb-2 text-[10px] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
             {msg.role === "user" ? t("You") : t("Assistant")}
           </div>
           {msg.role === "user" ? (
-            <div className="rounded-lg bg-[var(--muted)] px-3 py-2 text-[13px] text-[var(--foreground)]">{msg.content}</div>
+            <div className="rounded-[28px] bg-[var(--muted)] px-5 py-4 text-[15px] leading-7 text-[var(--foreground)]">
+              {msg.content}
+            </div>
           ) : (
-            <div className="space-y-2">
-              <TracePanel events={msg.events || []} />
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/65 p-3">
+                <TracePanel events={msg.events || []} />
+              </div>
               <ProcessLogs
                 logs={msg.processLogs || []}
                 executing={streaming && i === messages.length - 1}
@@ -1422,29 +1440,29 @@ function CapabilityTester({
               )}
               <AssistantResponse
                 content={msg.content}
-                className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2.5"
+                className="rounded-[28px] border border-[var(--border)] bg-[var(--background)] px-5 py-4"
               />
               <CapabilityResultPanel result={msg.result} />
             </div>
           )}
         </div>
       ))}
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
+      <div className="sticky bottom-0 z-10 rounded-[28px] border border-[var(--border)] bg-[var(--background)] p-4 shadow-sm">
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-          rows={2}
+          rows={4}
           placeholder={`${t("Try")} ${t(getCapabilityLabel(capability.name))}...`}
-          className="w-full resize-none bg-transparent text-[13px] leading-relaxed text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+          className="w-full resize-none bg-transparent text-[15px] leading-7 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
         />
         <div className="mt-2 flex justify-end">
           <button
             onClick={send}
             disabled={!input.trim() || streaming}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-1.5 text-[12px] font-medium text-[var(--primary-foreground)] disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-4 py-2 text-[13px] font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {streaming ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+            {streaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
             {streaming ? t("Running...") : t("Send")}
           </button>
         </div>
@@ -1465,6 +1483,7 @@ export default function PlaygroundPage() {
   const [capabilityConfigs, setCapabilityConfigs] = useState<CapabilityPlaygroundConfigMap>({});
   const [activeKind, setActiveKind] = useState<"tool" | "capability">("tool");
   const [activeName, setActiveName] = useState<string>("");
+  const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -1489,12 +1508,15 @@ export default function PlaygroundPage() {
         setCapabilityConfigs(loadCapabilityPlaygroundConfigs());
         setKnowledgeBases(knowledgeBaseList);
 
-        if (visibleTools.length) {
+        const defaultCapability =
+          visibleCapabilities.find((cap: CapabilityInfo) => cap.name === "chat") ??
+          visibleCapabilities[0];
+        if (defaultCapability) {
+          setActiveKind("capability");
+          setActiveName(defaultCapability.name);
+        } else if (visibleTools.length) {
           setActiveKind("tool");
           setActiveName(visibleTools[0].name);
-        } else if (visibleCapabilities.length) {
-          setActiveKind("capability");
-          setActiveName(visibleCapabilities[0].name);
         }
       } finally {
         setLoading(false);
@@ -1535,6 +1557,15 @@ export default function PlaygroundPage() {
         : capabilityCatalog.map((c) => ({ name: c.name, description: c.description })),
     [activeKind, capabilityCatalog, tools],
   );
+
+  const activeLabel =
+    activeKind === "tool"
+      ? activeTool
+        ? t(getToolLabel(activeTool.name))
+        : t("Tools")
+      : activeCapability
+        ? t(getCapabilityLabel(activeCapability.name))
+        : t("Capabilities");
 
   const persistCapabilityConfig = (capabilityName: string, next: CapabilityPlaygroundConfig) => {
     setCapabilityConfigs((prev) =>
@@ -1591,204 +1622,256 @@ export default function PlaygroundPage() {
     });
   };
 
-  return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <div className="mx-auto max-w-5xl px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">{t("Playground")}</h1>
-          <p className="mt-1 text-[13px] text-[var(--muted-foreground)]">
-            {t("Explore the building blocks of DeepTutor: reusable tools and higher-level capabilities.")}
+  const selectionPanel = (
+    <section>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+            {t("Playground workspace")}
           </p>
+          <h3 className="mt-2 text-base font-semibold tracking-tight text-[var(--foreground)]">
+            {t("Conversation history")}
+          </h3>
         </div>
+        <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--background)]/70 p-1">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveKind("capability");
+              if (capabilityCatalog.length) setActiveName(capabilityCatalog[0]?.name ?? "");
+            }}
+            className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition ${
+              activeKind === "capability"
+                ? "bg-[var(--foreground)] text-[var(--background)]"
+                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            {t("Capabilities")}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveKind("tool");
+              if (tools.length) setActiveName(tools[0]?.name ?? "");
+            }}
+            className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition ${
+              activeKind === "tool"
+                ? "bg-[var(--foreground)] text-[var(--background)]"
+                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            {t("Tools")}
+          </button>
+        </div>
+      </div>
 
+      <div className="mt-4 space-y-2">
+        {listItems.map((item) => {
+          const Icon = activeKind === "tool" ? getToolIcon(item.name) : getCapIcon(item.name);
+          const selected = activeName === item.name;
+          return (
+            <button
+              key={item.name}
+              type="button"
+              onClick={() => setActiveName(item.name)}
+              title={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
+              aria-label={activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
+              className={`w-full rounded-2xl border px-3 py-3 text-left transition ${
+                selected
+                  ? "border-[var(--foreground)]/10 bg-[var(--background)] text-[var(--foreground)] shadow-sm"
+                  : "border-transparent bg-transparent text-[var(--muted-foreground)] hover:border-[var(--border)] hover:bg-[var(--background)]/75 hover:text-[var(--foreground)]"
+              }`}
+            >
+              <div className="flex items-start gap-2.5">
+                <Icon size={16} strokeWidth={1.8} className="mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-[13px] font-medium">
+                    {activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
+                  </div>
+                  <div className="mt-1 line-clamp-2 text-[11px] leading-5 text-[var(--muted-foreground)]">
+                    {item.description}
+                  </div>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+
+  const centerPanel = (
+    <main aria-label={t("Conversation workspace")} className="flex h-full min-h-0 flex-col">
+      <div className="border-b border-[var(--border)] px-6 py-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+              {t("Conversation workspace")}
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]">
+              {activeLabel}
+            </h2>
+            <p className="mt-2 max-w-3xl text-[14px] leading-6 text-[var(--muted-foreground)]">
+              {activeKind === "tool" ? activeTool?.description : activeCapability?.description}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setRightPanelCollapsed((prev) => !prev)}
+            title={rightPanelCollapsed ? t("Open tools and context") : t("Hide tools and context")}
+            aria-label={rightPanelCollapsed ? t("Open tools and context") : t("Hide tools and context")}
+            className="rounded-xl border border-[var(--border)] bg-[var(--background)]/70 p-2 text-[var(--muted-foreground)] transition hover:text-[var(--foreground)]"
+          >
+            {rightPanelCollapsed ? <PanelRightOpen size={17} /> : <PanelRightClose size={17} />}
+          </button>
+        </div>
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex h-full items-center justify-center">
             <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
           </div>
-        ) : (
-          <div className="space-y-5">
-            {/* Tab bar */}
-            <div className="inline-flex rounded-lg border border-[var(--border)] bg-[var(--muted)] p-0.5">
-              <button
-                onClick={() => { setActiveKind("tool"); if (tools.length) setActiveName(tools[0].name); }}
-                className={`rounded-md px-3.5 py-1.5 text-[13px] font-medium transition-all ${activeKind === "tool" ? "bg-[var(--card)] text-[var(--foreground)] shadow-sm" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"}`}
-              >
-                {t("Tools")}
-              </button>
-              <button
-                onClick={() => { setActiveKind("capability"); if (capabilityCatalog.length) setActiveName(capabilityCatalog[0].name); }}
-                className={`rounded-md px-3.5 py-1.5 text-[13px] font-medium transition-all ${activeKind === "capability" ? "bg-[var(--card)] text-[var(--foreground)] shadow-sm" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"}`}
-              >
-                {t("Capabilities")}
-              </button>
-            </div>
-
-            {/* Two-column layout */}
-            <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
-              {/* Left: Item list */}
-              <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
-                <div className="mb-3 flex items-center gap-1.5">
-                  {activeKind === "tool" ? <Terminal className="h-3.5 w-3.5 text-[var(--muted-foreground)]" /> : <Sparkles className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />}
-                  <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-                    {activeKind === "tool" ? t("Tools") : t("Capabilities")}
-                  </h2>
-                </div>
-                <div className="space-y-1">
-                  {listItems.map((item) => {
-                    const Icon = activeKind === "tool" ? getToolIcon(item.name) : getCapIcon(item.name);
-                    return (
-                      <button
-                        key={item.name}
-                        onClick={() => setActiveName(item.name)}
-                        className={`w-full rounded-lg border px-3 py-2.5 text-left transition-all ${
-                          activeName === item.name
-                            ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--primary-foreground)]"
-                            : "border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:border-[var(--foreground)]/10 hover:bg-[var(--muted)]"
-                        }`}
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <Icon size={13} strokeWidth={1.7} />
-                          <span className="text-[13px] font-medium">
-                            {activeKind === "tool" ? t(getToolLabel(item.name)) : t(getCapabilityLabel(item.name))}
-                          </span>
-                        </div>
-                        <div className={`mt-0.5 line-clamp-2 text-[11px] leading-relaxed ${activeName === item.name ? "text-[var(--primary-foreground)]/70" : "text-[var(--muted-foreground)]"}`}>
-                          {item.description}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-
-              {/* Right: Detail panel */}
-              <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-                {activeKind === "tool" && activeTool ? (() => {
-                  const ToolIcon = getToolIcon(activeTool.name);
-                  return (
-                    <div className="space-y-6">
-                      <div>
-                        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-                          <ToolIcon size={13} strokeWidth={1.7} />
-                          {t("Tool")}
-                        </div>
-                        <h2 className="mt-1 text-xl font-bold tracking-tight text-[var(--foreground)]">{t(getToolLabel(activeTool.name))}</h2>
-                        <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-[var(--muted-foreground)]">
-                          {activeTool.description}
-                        </p>
-                      </div>
-
-                      <div className="border-t border-[var(--border)] pt-6">
-                        <ToolExecutor tool={activeTool} knowledgeBases={knowledgeBases} />
-                      </div>
-                    </div>
-                  );
-                })() : activeCapability ? (() => {
-                  const CapIcon = getCapIcon(activeCapability.name);
-                  return (
-                    <div className="space-y-6">
-                      <div>
-                        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-                          <CapIcon size={13} strokeWidth={1.7} />
-                          {t("Capability")}
-                        </div>
-                        <h2 className="mt-1 text-xl font-bold tracking-tight text-[var(--foreground)]">{t(getCapabilityLabel(activeCapability.name))}</h2>
-                        <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-[var(--muted-foreground)]">
-                          {activeCapability.description}
-                        </p>
-                      </div>
-
-                      <div>
-                        <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">{t("Enable Tools")}</h3>
-                        {!!activeCapability.tools_used?.length ? (
-                          <div className="mt-2.5 flex flex-wrap gap-1.5">
-                            {activeCapability.tools_used.map((tool) => {
-                              const TIcon = getToolIcon(tool);
-                              const enabled = activeCapabilityConfig?.enabledTools.includes(tool) ?? true;
-                              return (
-                                <button
-                                  key={`${activeCapability.name}-${tool}`}
-                                  onClick={() => toggleCapabilityTool(tool)}
-                                  className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                                    enabled
-                                      ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                                      : "border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                                  }`}
-                                >
-                                  <TIcon size={11} strokeWidth={1.7} />
-                                  {t(getToolLabel(tool))}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <p className="mt-2 text-[12px] text-[var(--muted-foreground)]">
-                            {t("This capability runs without optional tools.")}
-                          </p>
-                        )}
-                      </div>
-
-                      {activeCapabilityConfig?.enabledTools.includes("rag") && (
-                        <div>
-                          <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted-foreground)]">{t("Knowledge Base")}</h3>
-                          <div className="mt-2.5 max-w-sm">
-                            <select
-                              value={activeCapabilityConfig.knowledgeBase}
-                              onChange={(e) => setCapabilityKnowledgeBase(e.target.value)}
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--primary)]/40"
-                            >
-                              <option value="">{t("Select knowledge base...")}</option>
-                              {knowledgeBases.map((kb) => (
-                                <option key={kb.name} value={kb.name}>
-                                  {kb.name}
-                                  {kb.is_default ? ` (${t("default")})` : ""}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="border-t border-[var(--border)] pt-6">
-                        <div className="mb-3">
-                          <h3 className="text-[14px] font-semibold text-[var(--foreground)]">{t("Try this capability")}</h3>
-                          <p className="mt-0.5 text-[12px] text-[var(--muted-foreground)]">{t("Run a focused conversation here without leaving the playground.")}</p>
-                        </div>
-                        {activeCapability.name === "deep_question" ? (
-                          <DeepQuestionTester
-                            key={activeCapability.name}
-                            capability={activeCapability}
-                            enabledTools={activeCapabilityConfig?.enabledTools ?? activeCapability.tools_used ?? []}
-                            knowledgeBase={activeCapabilityConfig?.knowledgeBase ?? ""}
-                            config={activeDeepQuestionConfig}
-                            onConfigChange={setDeepQuestionConfig}
-                          />
-                        ) : activeCapability.name === "deep_research" ? (
-                          <DeepResearchTester
-                            key={activeCapability.name}
-                            capability={activeCapability}
-                            enabledTools={activeCapabilityConfig?.enabledTools ?? activeCapability.tools_used ?? []}
-                            knowledgeBase={activeCapabilityConfig?.knowledgeBase ?? ""}
-                            config={activeDeepResearchConfig}
-                            onConfigChange={setDeepResearchConfig}
-                          />
-                        ) : (
-                          <CapabilityTester
-                            key={activeCapability.name}
-                            capability={activeCapability}
-                            enabledTools={activeCapabilityConfig?.enabledTools ?? activeCapability.tools_used ?? []}
-                            knowledgeBase={activeCapabilityConfig?.knowledgeBase ?? ""}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })() : null}
-              </section>
-            </div>
-          </div>
-        )}
+        ) : activeKind === "tool" && activeTool ? (
+          <ToolExecutor tool={activeTool} knowledgeBases={knowledgeBases} />
+        ) : activeCapability ? (
+          activeCapability.name === "deep_question" ? (
+            <DeepQuestionTester
+              key={activeCapability.name}
+              capability={activeCapability}
+              enabledTools={activeCapabilityConfig?.enabledTools ?? activeCapability.tools_used ?? []}
+              knowledgeBase={activeCapabilityConfig?.knowledgeBase ?? ""}
+              config={activeDeepQuestionConfig}
+              onConfigChange={setDeepQuestionConfig}
+            />
+          ) : activeCapability.name === "deep_research" ? (
+            <DeepResearchTester
+              key={activeCapability.name}
+              capability={activeCapability}
+              enabledTools={activeCapabilityConfig?.enabledTools ?? activeCapability.tools_used ?? []}
+              knowledgeBase={activeCapabilityConfig?.knowledgeBase ?? ""}
+              config={activeDeepResearchConfig}
+              onConfigChange={setDeepResearchConfig}
+            />
+          ) : (
+            <CapabilityTester
+              key={activeCapability.name}
+              capability={activeCapability}
+              enabledTools={activeCapabilityConfig?.enabledTools ?? activeCapability.tools_used ?? []}
+              knowledgeBase={activeCapabilityConfig?.knowledgeBase ?? ""}
+            />
+          )
+        ) : null}
       </div>
-    </div>
+    </main>
+  );
+
+  const rightPanel = activeKind === "tool" && activeTool ? (
+    <PlaygroundRightPanel
+      badge={t("Context panel")}
+      title={t(getToolLabel(activeTool.name))}
+      description={activeTool.description}
+    >
+      <div className="space-y-6">
+        <section>
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+            {t("Knowledge source")}
+          </h3>
+          <div className="mt-3 space-y-2">
+            {knowledgeBases.length ? knowledgeBases.map((kb) => (
+              <div
+                key={kb.name}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/70 px-3 py-3 text-[13px]"
+              >
+                {kb.name}
+                {kb.is_default ? ` (${t("default")})` : ""}
+              </div>
+            )) : (
+              <p className="text-[13px] text-[var(--muted-foreground)]">{t("No KB")}</p>
+            )}
+          </div>
+        </section>
+      </div>
+    </PlaygroundRightPanel>
+  ) : activeCapability ? (
+    <PlaygroundRightPanel
+      badge={t("Context panel")}
+      title={t(getCapabilityLabel(activeCapability.name))}
+      description={t("Run a focused conversation here without leaving the playground.")}
+    >
+      <div className="space-y-6">
+        {selectionPanel}
+        <section>
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+            {t("Enabled tools")}
+          </h3>
+          {!!activeCapability.tools_used?.length ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {activeCapability.tools_used.map((tool) => {
+                const TIcon = getToolIcon(tool);
+                const enabled = activeCapabilityConfig?.enabledTools.includes(tool) ?? true;
+                return (
+                  <button
+                    key={`${activeCapability.name}-${tool}`}
+                    type="button"
+                    onClick={() => toggleCapabilityTool(tool)}
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[12px] font-medium transition ${
+                      enabled
+                        ? "border-[var(--foreground)]/10 bg-[var(--background)] text-[var(--foreground)]"
+                        : "border-[var(--border)] bg-transparent text-[var(--muted-foreground)]"
+                    }`}
+                  >
+                    <TIcon size={13} strokeWidth={1.7} />
+                    {t(getToolLabel(tool))}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="mt-3 text-[13px] text-[var(--muted-foreground)]">
+              {t("This capability runs without optional tools.")}
+            </p>
+          )}
+        </section>
+
+        {activeCapabilityConfig?.enabledTools.includes("rag") ? (
+          <section>
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+              {t("Knowledge source")}
+            </h3>
+            <select
+              value={activeCapabilityConfig.knowledgeBase}
+              onChange={(e) => setCapabilityKnowledgeBase(e.target.value)}
+              className="mt-3 w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-3 py-3 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--primary)]/40"
+            >
+              <option value="">{t("Select knowledge base...")}</option>
+              {knowledgeBases.map((kb) => (
+                <option key={kb.name} value={kb.name}>
+                  {kb.name}
+                  {kb.is_default ? ` (${t("default")})` : ""}
+                </option>
+              ))}
+            </select>
+          </section>
+        ) : null}
+
+        <section>
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+            {t("Activity trace")}
+          </h3>
+          <div className="mt-3 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background)]/60 px-3 py-4 text-[13px] leading-6 text-[var(--muted-foreground)]">
+            {t("Tool toggles, knowledge context, and execution trace stay here while the conversation remains central.")}
+          </div>
+        </section>
+      </div>
+    </PlaygroundRightPanel>
+  ) : null;
+
+  return (
+    <PlaygroundWorkspaceShell
+      rightCollapsed={rightPanelCollapsed}
+      center={centerPanel}
+      right={rightPanel}
+    />
   );
 }

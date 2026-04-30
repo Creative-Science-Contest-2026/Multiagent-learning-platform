@@ -30,7 +30,9 @@ test("collapsed sidebar keeps only contest-core routes visible by default", () =
     "/dashboard",
     "/agents",
     "/marketplace",
+    "/playground",
   ]);
+  assert.equal(items.some((item) => item.href === "/guide"), false);
   assert.equal(items.some((item) => item.href === "/co-writer"), false);
   assert.equal(items.some((item) => item.href === "/memory"), false);
 });
