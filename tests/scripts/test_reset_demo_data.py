@@ -44,11 +44,14 @@ def test_reset_demo_data_creates_expected_kb_and_sessions(tmp_path: Path) -> Non
     ]
 
     assert result["knowledge_pack"] == DEMO_KB_ID
+    assert result["cleanup"]["cleared_previous_demo_data"] is True
+    assert "xoá dữ liệu demo cũ" in result["cleanup"]["message"]
     assert ASSESSMENT_SESSION_ID in result["sessions"]
     assert TUTOR_SESSION_ID in result["sessions"]
-    assert kb_entry["subject"] == "Mathematics"
-    assert kb_entry["grade"] == "Grade 9"
-    assert metadata["owner"] == "Contest Demo Teacher"
+    assert kb_entry["subject"] == "Toán học"
+    assert kb_entry["grade"] == "Lớp 9"
+    assert metadata["owner"] == "Cô Hương - Giáo viên demo"
+    assert "phương trình bậc hai" in metadata["description"]
     assert (kb_root / DEMO_KB_ID / "llamaindex_storage").is_dir()
     assert len(shareable) >= 6
     assert len(imported) >= 2
@@ -75,6 +78,8 @@ def test_reset_demo_data_is_idempotent(tmp_path: Path) -> None:
 
     assert first["sessions"] == second["sessions"]
     assert first["knowledge_pack"] == second["knowledge_pack"] == DEMO_KB_ID
+    assert first["cleanup"]["cleared_previous_demo_data"] is True
+    assert second["cleanup"]["cleared_previous_demo_data"] is True
     assert len(entries) >= 8
     assert _count_rows(db_path, "sessions") >= 10
     assert _count_rows(db_path, "messages") >= 30

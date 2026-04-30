@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-demo-seed-vietnamese-refresh`
+- Task: Localize seeded demo content to Vietnamese and make the cleanup-before-reseed step explicit so repeated mock runs never accumulate duplicate demo data
+- Status: implemented, pending PR
+- Branch: `fix/demo-seed-vietnamese-refresh`
+- Task packet: `docs/superpowers/tasks/2026-05-01-demo-seed-vietnamese-refresh.md`
+- Owned files: `scripts/contest/reset_demo_data.py`, `tests/scripts/test_reset_demo_data.py`, `docs/contest/DEMO_DATA_RESET.md`, `docs/superpowers/tasks/2026-05-01-demo-seed-vietnamese-refresh.md`, `docs/superpowers/specs/2026-05-01-demo-seed-vietnamese-refresh-design.md`, `docs/superpowers/pr-notes/2026-05-01-demo-seed-vietnamese-refresh.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-01.md`
+- PR: uncreated
+- Last update: 2026-05-01
+- Next action: stage the bounded seed/docs diff, commit, and open a draft PR if requested
+- Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-demo-realistic-seed-data`
 - Task: Expand the local contest demo seed so every core teacher-first screen has realistic, diverse, demo-safe data for video capture
 - Status: implemented, pending PR
