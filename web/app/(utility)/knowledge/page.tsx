@@ -207,6 +207,12 @@ const makeInitialFileStatuses = (files: File[]): FileStatusInfo[] =>
     status: "uploaded",
   }));
 
+const makeDraftFileStatuses = (fileNames: string[]): FileStatusInfo[] =>
+  fileNames.map((name) => ({
+    name,
+    status: "uploaded",
+  }));
+
 export default function KnowledgePage() {
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBase[]>([]);
   const [progressMap, setProgressMap] = useState<Record<string, ProgressInfo>>({});
@@ -520,10 +526,12 @@ export default function KnowledgePage() {
     combinedKbs.find((kb) => kb.name === detailPackName) ??
     null;
 
-  const summaryFileStatuses =
+  const summaryFileStatuses: FileStatusInfo[] =
     selectedPack?.progress?.file_statuses?.length
       ? selectedPack.progress.file_statuses
-      : draftSummary?.fileNames.map((name) => ({ name, status: "uploaded" })) ?? [];
+      : draftSummary
+        ? makeDraftFileStatuses(draftSummary.fileNames)
+        : [];
 
   const indexedCount = summaryFileStatuses.filter((item) => item.status === "indexed").length;
   const processingCount = summaryFileStatuses.filter((item) =>
