@@ -35,12 +35,12 @@ Rules:
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: Polish the `/playground` chat workspace so the right panel is clearer, visible English copy is removed, the chat header is smaller, and the composer is tighter at the bottom
+- Task: Hide Guided Learning and Co-Writer from the frontend shell and block direct route access without deleting the underlying code
 - Status: implementing
-- Branch: `fix/playground-chat-workspace-polish`
-- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-workspace-polish.md`
-- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/chat/home/PlaygroundRightPanel.tsx`, `web/components/chat/home/PlaygroundWorkspaceShell.tsx`, `web/components/sidebar/SidebarShell.tsx`, `web/locales/en/app.json`, `web/locales/vi/app.json`, `web/tests/contest-vietnamese-coverage.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-chat-workspace-polish.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-workspace-polish.md`
+- Branch: `fix/hide-guide-co-writer`
+- Task packet: `docs/superpowers/tasks/2026-04-30-hide-guide-co-writer.md`
+- Owned files: `web/components/sidebar/nav-groups.ts`, `web/app/(workspace)/guide/layout.tsx`, `web/app/(workspace)/co-writer/layout.tsx`, `web/app/(utility)/knowledge/page.tsx`, `web/tests/sidebar-nav-groups.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-hide-guide-co-writer.md`, `docs/superpowers/specs/2026-04-30-hide-guide-co-writer-design.md`, `docs/superpowers/plans/2026-04-30-hide-guide-co-writer.md`, `docs/superpowers/pr-notes/2026-04-30-hide-guide-co-writer.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: implement the bounded `/playground` polish pass and rerun focused frontend validation
+- Next action: finish FE hiding plus route redirects, record PR note, and prepare the lane for review
 - Blocker: none

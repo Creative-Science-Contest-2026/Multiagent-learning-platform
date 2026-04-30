@@ -19,8 +19,6 @@ const CONTEST_CORE_ITEMS: SidebarNavItem[] = [
 
 const SECONDARY_TOOL_ITEMS: SidebarNavItem[] = [
   { href: "/playground", label: "Chat", icon: "message-square" },
-  { href: "/guide", label: "Guided Learning", icon: "graduation-cap" },
-  { href: "/co-writer", label: "Co-Writer", icon: "pen-line" },
   { href: "/memory", label: "Memory", icon: "brain" },
 ];
 

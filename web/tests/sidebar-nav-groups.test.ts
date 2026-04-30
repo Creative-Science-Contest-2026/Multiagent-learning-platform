@@ -18,7 +18,7 @@ test("expanded sidebar groups promote contest-core routes before secondary tools
   assert.equal(groups[1]?.id, "secondary-tools");
   assert.deepEqual(
     groups[1]?.items.map((item) => item.href),
-    ["/playground", "/guide", "/co-writer", "/memory"],
+    ["/playground", "/memory"],
   );
 });
 
