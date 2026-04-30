@@ -5,7 +5,11 @@ import {
   formatActivityStatusLabel,
   formatActivityTypeLabel,
   formatConfidenceLabel,
+  formatDiagnosisLabel,
+  formatStudentDisplayName,
   formatSupportLevelLabel,
+  formatTeacherFacingLabel,
+  formatTeacherMoveLabel,
 } from "../components/dashboard/dashboard-presenters.ts";
 
 test("dashboard priority summary prefers the first recommendation rationale", () => {
@@ -45,4 +49,23 @@ test("activity and support labels avoid raw system terms", () => {
   assert.equal(formatActivityStatusLabel("running"), "Đang diễn ra");
   assert.equal(formatSupportLevelLabel("guided"), "Có hướng dẫn");
   assert.equal(formatSupportLevelLabel("independent"), "Tự làm");
+});
+
+test("diagnosis and teacher move labels hide raw classifier tokens", () => {
+  assert.equal(formatDiagnosisLabel("careless_error"), "Dễ sai do bất cẩn");
+  assert.equal(formatDiagnosisLabel("knowledge_gap"), "Hổng kiến thức nền");
+  assert.equal(formatTeacherMoveLabel("retry_easier"), "Luyện lại với mức dễ hơn");
+  assert.equal(formatTeacherMoveLabel("small_group_reteach"), "Dạy lại theo nhóm nhỏ");
+});
+
+test("generic teacher-facing labels stay bounded and readable", () => {
+  assert.equal(formatTeacherFacingLabel("acknowledged"), "Đã ghi nhận");
+  assert.equal(formatTeacherFacingLabel("teacher_review_required"), "Cần giáo viên xác nhận");
+  assert.equal(formatTeacherFacingLabel(undefined), "Chưa rõ");
+});
+
+test("student display names hide raw unified identifiers", () => {
+  assert.equal(formatStudentDisplayName("UNIFIED_1776618085500_8C117467"), "Học sinh 8C117467");
+  assert.equal(formatStudentDisplayName("student-demo"), "student-demo");
+  assert.equal(formatStudentDisplayName(undefined), "Học sinh");
 });

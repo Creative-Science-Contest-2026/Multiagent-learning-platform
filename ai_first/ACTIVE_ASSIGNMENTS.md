@@ -34,15 +34,15 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-business-shell-focus`
-- Task: Create a business-facing shell mode that removes dominant chat history from non-chat routes while keeping the chat-first shell on `/playground`
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-teacher-dashboard-decision-flow`
+- Task: Refactor the teacher dashboard into a decision-first intervention workflow with non-technical teacher-facing copy
 - Status: implemented, pending PR
-- Branch: `fix/business-shell-focus`
-- Task packet: `docs/superpowers/tasks/2026-04-30-business-shell-focus.md`
-- Owned files: `web/components/sidebar/SidebarShell.tsx`, `web/components/sidebar/WorkspaceSidebar.tsx`, `web/components/sidebar/UtilitySidebar.tsx`, `web/app/(workspace)/layout.tsx`, `web/app/(utility)/layout.tsx`, `web/tests/sidebar-shell-layout.test.ts`, `web/tests/sidebar-nav-groups.test.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-business-shell-focus.md`, `docs/superpowers/specs/2026-04-30-business-shell-focus-design.md`, `docs/superpowers/plans/2026-04-30-business-shell-focus.md`, `docs/superpowers/pr-notes/2026-04-30-business-shell-focus.md`
+- Branch: `fix/teacher-dashboard-decision-flow`
+- Task packet: `docs/superpowers/tasks/2026-04-30-teacher-dashboard-decision-flow.md`
+- Owned files: `web/app/(workspace)/dashboard/page.tsx`, `web/components/dashboard/TeacherInsightPanel.tsx`, `web/components/dashboard/StudentInsightCard.tsx`, `web/components/dashboard/dashboard-presenters.ts`, `web/locales/vi/app.json`, `web/locales/en/app.json`, `web/tests/teacher-dashboard-copy.test.ts`, any focused dashboard shell/decision-flow tests added during implementation, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-teacher-dashboard-decision-flow.md`, `docs/superpowers/specs/2026-04-30-teacher-dashboard-decision-flow-design.md`, `docs/superpowers/plans/2026-04-30-teacher-dashboard-decision-flow.md`, `docs/superpowers/pr-notes/2026-04-30-teacher-dashboard-decision-flow.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: stage the bounded shell/docs diff and open a draft PR if requested
+- Next action: stage the bounded dashboard/docs diff and open a draft PR if requested
 - Blocker: none
 
 ### Assignment
