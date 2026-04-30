@@ -15,8 +15,46 @@ function humanizeToken(value: string): string {
     .join(" ");
 }
 
+export function formatStudentDisplayName(studentId?: string | null): string {
+  const value = (studentId || "").trim();
+  if (!value) return "Học sinh";
+  const unifiedMatch = value.match(/^UNIFIED_(\d+)_([A-Z0-9]+)$/i);
+  if (unifiedMatch?.[2]) {
+    return `Học sinh ${unifiedMatch[2]}`;
+  }
+  if (value.length <= 24) return value;
+  return `Học sinh ${value.slice(-6)}`;
+}
+
 export function formatTeacherFacingLabel(value?: string | null): string {
-  return value ? humanizeToken(value) : "Chưa rõ";
+  switch ((value || "").toLowerCase()) {
+    case "acknowledged":
+      return "Đã ghi nhận";
+    case "accepted":
+      return "Đã tiếp nhận";
+    case "deferred":
+      return "Để xử lý sau";
+    case "dismissed":
+      return "Không áp dụng";
+    case "completed":
+      return "Đã hoàn thành";
+    case "teacher_review_required":
+      return "Cần giáo viên xác nhận";
+    case "helpful":
+      return "Hữu ích";
+    case "wrong":
+      return "Chưa đúng";
+    case "incomplete":
+      return "Chưa đủ ý";
+    case "practical":
+      return "Dễ áp dụng";
+    case "relevant":
+      return "Phù hợp";
+    case "too_generic":
+      return "Còn chung chung";
+    default:
+      return value ? humanizeToken(value) : "Chưa rõ";
+  }
 }
 
 export function buildDashboardPrioritySummary({
