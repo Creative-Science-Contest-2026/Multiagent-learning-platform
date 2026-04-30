@@ -105,10 +105,10 @@ export default function AgentsPage() {
         {/* Tabs */}
         <div className="mb-6 flex items-center gap-1 border-b border-[var(--border)]/50 pb-3">
           {([
-            { key: "specs" as Tab, label: t("Spec Packs"), icon: FileText },
-            { key: "bots" as Tab, label: t("Bots"), icon: Bot },
-            { key: "profiles" as Tab, label: t("Profiles"), icon: FileText },
-            { key: "souls" as Tab, label: t("Souls"), icon: Heart },
+            { key: "specs" as Tab, label: t("Tutor setup"), icon: FileText },
+            { key: "bots" as Tab, label: t("Class tutors"), icon: Bot },
+            { key: "profiles" as Tab, label: t("Tutor files"), icon: FileText },
+            { key: "souls" as Tab, label: t("Teaching styles"), icon: Heart },
           ]).map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.key;
@@ -269,7 +269,7 @@ function BotsTab({
               <input
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                placeholder={t("e.g. Math Tutor")}
+                placeholder={t("e.g. Algebra support tutor")}
                 className="w-full rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--ring)] placeholder:text-[var(--muted-foreground)]/40"
               />
               {botId && (
@@ -283,12 +283,12 @@ function BotsTab({
               <input
                 value={formDesc}
                 onChange={(e) => setFormDesc(e.target.value)}
-                placeholder={t("A brief description of what this bot does")}
+                placeholder={t("A brief description of what this class tutor does")}
                 className="w-full rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--ring)] placeholder:text-[var(--muted-foreground)]/40"
               />
             </div>
             <div>
-              <label className="mb-1 block text-[12px] font-medium text-[var(--muted-foreground)]">{t("Soul")}</label>
+              <label className="mb-1 block text-[12px] font-medium text-[var(--muted-foreground)]">{t("Teaching style")}</label>
               <div className="flex flex-wrap gap-1.5 mb-2">
                 <button
                   onClick={() => selectSoul("_custom")}
@@ -317,12 +317,12 @@ function BotsTab({
               <textarea
                 value={formSoul}
                 onChange={(e) => { setFormSoul(e.target.value); setFormSoulId("_custom"); }}
-                placeholder={t("Define the bot's personality, values, and communication style in markdown...")}
+                placeholder={t("Define how this class tutor explains, encourages, and gives hints in markdown...")}
                 rows={8}
                 className="w-full rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 font-mono text-[13px] leading-6 text-[var(--foreground)] outline-none focus:border-[var(--ring)] placeholder:text-[var(--muted-foreground)]/40"
               />
               <p className="mt-1 text-[11px] text-[var(--muted-foreground)]/60">
-                {t("Pick a soul from the library above, or write your own. Manage the library in the Souls tab.")}
+                {t("Pick a teaching style from the library above, or write your own. Manage the library in the Teaching styles tab.")}
               </p>
             </div>
             <div>
@@ -521,9 +521,9 @@ function ProfilesTab({
         <div className="mb-3 rounded-xl bg-[var(--muted)] p-2.5 text-[var(--muted-foreground)]">
           <FileText size={18} />
         </div>
-        <p className="text-[14px] font-medium text-[var(--foreground)]">{t("No bots to configure")}</p>
+        <p className="text-[14px] font-medium text-[var(--foreground)]">{t("No class tutors to configure")}</p>
         <p className="mt-1.5 max-w-xs text-[13px] text-[var(--muted-foreground)]">
-          {t("Create a bot first in the Bots tab.")}
+          {t("Create a class tutor first in the Class tutors tab.")}
         </p>
       </div>
     );
@@ -533,7 +533,7 @@ function ProfilesTab({
     <div className="space-y-4">
       {/* Bot selector */}
       <div className="flex items-center gap-3">
-        <label className="text-[12px] font-medium text-[var(--muted-foreground)] shrink-0">{t("Bot")}</label>
+        <label className="text-[12px] font-medium text-[var(--muted-foreground)] shrink-0">{t("Class tutor")}</label>
         <select
           value={selectedBot}
           onChange={(e) => setSelectedBot(e.target.value)}
@@ -745,7 +745,7 @@ function SoulsTab({
           className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)]/50 px-3 py-1.5 text-[12px] font-medium text-[var(--muted-foreground)] transition-colors hover:border-[var(--border)] hover:text-[var(--foreground)]"
         >
           <Plus className="h-3 w-3" />
-          {t("New Soul")}
+          {t("New teaching style")}
         </button>
       </div>
 
@@ -753,7 +753,7 @@ function SoulsTab({
       {creating && (
         <div className="rounded-xl border border-[var(--border)] p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-[15px] font-medium text-[var(--foreground)]">{t("New Soul")}</h2>
+            <h2 className="text-[15px] font-medium text-[var(--foreground)]">{t("New teaching style")}</h2>
             <button onClick={() => setCreating(false)} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
               <X className="h-4 w-4" />
             </button>
@@ -764,7 +764,7 @@ function SoulsTab({
               <input
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder={t("e.g. Creative Writer")}
+                placeholder={t("e.g. Socratic coach")}
                 className="w-full rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--ring)] placeholder:text-[var(--muted-foreground)]/40"
               />
               {newName.trim() && (
@@ -779,7 +779,7 @@ function SoulsTab({
                 value={newContent}
                 onChange={(e) => setNewContent(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, createSoul)}
-                placeholder={t("Define the soul in markdown...")}
+                placeholder={t("Define this teaching style in markdown...")}
                 rows={10}
                 spellCheck={false}
                 className="w-full rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 font-mono text-[13px] leading-6 text-[var(--foreground)] outline-none focus:border-[var(--ring)] placeholder:text-[var(--muted-foreground)]/40"
@@ -811,9 +811,9 @@ function SoulsTab({
           <div className="mb-3 rounded-xl bg-[var(--muted)] p-2.5 text-[var(--muted-foreground)]">
             <Heart size={18} />
           </div>
-          <p className="text-[14px] font-medium text-[var(--foreground)]">{t("No souls yet")}</p>
+          <p className="text-[14px] font-medium text-[var(--foreground)]">{t("No teaching styles yet")}</p>
           <p className="mt-1.5 max-w-xs text-[13px] text-[var(--muted-foreground)]">
-            {t("Create your first soul template. Default presets will be seeded automatically on next server restart.")}
+            {t("Create your first teaching style. Default presets will be seeded automatically on next server restart.")}
           </p>
         </div>
       ) : (

@@ -2266,10 +2266,10 @@
       "dependencies": [
         "C213_DIFFERENTIATION_WORDING_SWEEP"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "recommended_session_bucket": "session-c-polish",
       "layer": "optional-polish",
-      "notes": "DeepTutor branding and generic labels remain visible in the current sidebar, shell header, and locale strings even after the earlier wording polish."
+      "notes": "In progress on 2026-04-30. This lane keeps DeepTutor attribution intact but normalizes the contest-path wording so sidebar, Knowledge, Dashboard, and /agents read like classroom software rather than a generic agent workspace."
     },
     {
       "id": "C219_CLASSROOM_CASE_STUDY_AND_BOUNDED_METRIC_CARD",
