@@ -35,12 +35,12 @@ Rules:
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: Restore chat history loading on `/playground` for the `chat` capability by reconnecting the page to `UnifiedChatContext`
+- Task: Hide the right-panel mode and tool switcher on `/playground` while keeping the underlying capability logic intact
 - Status: writing spec
-- Branch: `fix/playground-chat-history-restore`
-- Task packet: `docs/superpowers/tasks/2026-04-30-playground-chat-history-restore.md`
-- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/context/UnifiedChatContext.tsx`, `web/components/chat/home/ChatMessages.tsx`, `web/components/chat/home/ChatComposer.tsx`, `web/components/sidebar/WorkspaceSidebar.tsx`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-chat-history-restore.md`, `docs/superpowers/specs/2026-04-30-playground-chat-history-restore-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-chat-history-restore.md`
+- Branch: `fix/playground-hide-mode-switcher`
+- Task packet: `docs/superpowers/tasks/2026-04-30-playground-hide-mode-switcher.md`
+- Owned files: `web/app/(workspace)/playground/page.tsx`, `web/components/chat/home/PlaygroundRightPanel.tsx`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-04-30.md`, `docs/superpowers/tasks/2026-04-30-playground-hide-mode-switcher.md`, `docs/superpowers/specs/2026-04-30-playground-hide-mode-switcher-design.md`, `docs/superpowers/pr-notes/2026-04-30-playground-hide-mode-switcher.md`
 - PR: uncreated
 - Last update: 2026-04-30
-- Next action: write the bounded bugfix spec for reconnecting `/playground` chat mode to session history hydration before implementation
+- Next action: write the bounded spec for removing the visible mode/tool chooser from the right panel before implementation
 - Blocker: none
