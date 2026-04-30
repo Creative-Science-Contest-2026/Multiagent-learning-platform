@@ -24,6 +24,10 @@ logger = get_logger("KnowledgeInit")
 DEFAULT_BASE_DIR = "./data/knowledge_bases"
 
 
+def _status_payload(statuses: dict[str, dict[str, str]]) -> list[dict[str, str]]:
+    return list(statuses.values())
+
+
 class DocumentAdder:
     """Add documents to an existing llamaindex knowledge base."""
 
@@ -127,9 +131,22 @@ class DocumentAdder:
         pipeline = LlamaIndexPipeline(kb_base_dir=str(self.base_dir))
         processed_files: list[Path] = []
         total_files = len(new_files)
+        file_statuses = {
+            doc_file.name: {
+                "name": doc_file.name,
+                "status": "uploaded",
+                "updated_at": datetime.now().isoformat(),
+            }
+            for doc_file in new_files
+        }
 
         for idx, doc_file in enumerate(new_files, 1):
             try:
+                file_statuses[doc_file.name] = {
+                    "name": doc_file.name,
+                    "status": "processing",
+                    "updated_at": datetime.now().isoformat(),
+                }
                 if self.progress_tracker is not None:
                     from deeptutor.knowledge.progress_tracker import ProgressStage
 
@@ -138,16 +155,70 @@ class DocumentAdder:
                         f"Indexing (LlamaIndex) {doc_file.name}",
                         current=idx,
                         total=total_files,
+                        file_name=doc_file.name,
+                        file_statuses=_status_payload(file_statuses),
                     )
 
                 success = await pipeline.add_documents(self.kb_name, [str(doc_file)])
                 if success:
                     processed_files.append(doc_file)
                     self._record_successful_hash(doc_file)
+                    file_statuses[doc_file.name] = {
+                        "name": doc_file.name,
+                        "status": "indexed",
+                        "updated_at": datetime.now().isoformat(),
+                    }
+                    if self.progress_tracker is not None:
+                        from deeptutor.knowledge.progress_tracker import ProgressStage
+
+                        self.progress_tracker.update(
+                            ProgressStage.PROCESSING_FILE,
+                            f"Indexed {doc_file.name}",
+                            current=idx,
+                            total=total_files,
+                            file_name=doc_file.name,
+                            file_statuses=_status_payload(file_statuses),
+                        )
                     logger.info(f"Processed (LlamaIndex): {doc_file.name}")
                 else:
+                    file_statuses[doc_file.name] = {
+                        "name": doc_file.name,
+                        "status": "error",
+                        "updated_at": datetime.now().isoformat(),
+                        "error": "RAG pipeline returned failure",
+                    }
+                    if self.progress_tracker is not None:
+                        from deeptutor.knowledge.progress_tracker import ProgressStage
+
+                        self.progress_tracker.update(
+                            ProgressStage.PROCESSING_FILE,
+                            f"Failed to index {doc_file.name}",
+                            current=idx,
+                            total=total_files,
+                            file_name=doc_file.name,
+                            file_statuses=_status_payload(file_statuses),
+                            error="RAG pipeline returned failure",
+                        )
                     logger.error(f"Failed to index: {doc_file.name}")
             except Exception as e:
+                file_statuses[doc_file.name] = {
+                    "name": doc_file.name,
+                    "status": "error",
+                    "updated_at": datetime.now().isoformat(),
+                    "error": str(e),
+                }
+                if self.progress_tracker is not None:
+                    from deeptutor.knowledge.progress_tracker import ProgressStage
+
+                    self.progress_tracker.update(
+                        ProgressStage.PROCESSING_FILE,
+                        f"Failed to index {doc_file.name}",
+                        current=idx,
+                        total=total_files,
+                        file_name=doc_file.name,
+                        file_statuses=_status_payload(file_statuses),
+                        error=str(e),
+                    )
                 logger.exception(f"Failed {doc_file.name}: {e}")
 
         return processed_files
