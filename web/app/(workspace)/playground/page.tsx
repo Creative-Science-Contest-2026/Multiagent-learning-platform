@@ -34,10 +34,10 @@ import { PlaygroundWorkspaceShell } from "@/components/chat/home/PlaygroundWorks
 import AssistantResponse from "@/components/common/AssistantResponse";
 import MarkdownRenderer from "@/components/common/MarkdownRenderer";
 import ProcessLogs from "@/components/common/ProcessLogs";
-import { useUnifiedChat, type MessageItem } from "@/context/UnifiedChatContext";
+import { useUnifiedChat, type MessageItem, type TutorPackBinding } from "@/context/UnifiedChatContext";
 import ResearchConfigPanel from "@/components/research/ResearchConfigPanel";
 import { extractBase64FromDataUrl, readFileAsDataUrl } from "@/lib/file-attachments";
-import { listKnowledgeBases } from "@/lib/knowledge-api";
+import { listKnowledgeBases, type KnowledgeBaseSummary } from "@/lib/knowledge-api";
 import type { StreamEvent } from "@/lib/unified-ws";
 import {
   filterFrontendTools,
@@ -161,6 +161,17 @@ interface CapabilityExecResult {
 interface KnowledgeBase {
   name: string;
   is_default?: boolean;
+  status?: string;
+  metadata?: KnowledgeBaseSummary["metadata"];
+}
+
+interface TutorPackOption {
+  name: string;
+  knowledgeBase: string;
+  subject?: string | null;
+  grade?: string | null;
+  owner?: string | null;
+  language?: string | null;
 }
 
 interface TesterMessage {
@@ -392,12 +403,16 @@ function PlaygroundSharedChat({
   title,
   onSend,
   onCancel,
+  disabled,
+  disabledReason,
 }: {
   messages: MessageItem[];
   isStreaming: boolean;
   title: string;
   onSend: (content: string) => void;
   onCancel: () => void;
+  disabled?: boolean;
+  disabledReason?: string | null;
 }) {
   const { t } = useTranslation();
   const [input, setInput] = useState("");
@@ -405,7 +420,7 @@ function PlaygroundSharedChat({
 
   const send = () => {
     const content = input.trim();
-    if (!content || isStreaming) return;
+    if (!content || isStreaming || disabled) return;
     onSend(content);
     setInput("");
   };
@@ -433,22 +448,25 @@ function PlaygroundSharedChat({
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 if (isStreaming) onCancel();
-                else send();
+                else if (!disabled) send();
               }
             }}
             rows={2}
             placeholder={`${t("Try")} ${title}...`}
-            className="w-full resize-none bg-transparent text-[13px] leading-5 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+            disabled={disabled}
+            className="w-full resize-none bg-transparent text-[13px] leading-5 text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] disabled:cursor-not-allowed disabled:opacity-50"
           />
           <div className="mt-2 flex items-center justify-between gap-3">
             <div className="text-[11px] text-[var(--muted-foreground)]">
-              {isStreaming
+              {disabled && disabledReason
+                ? disabledReason
+                : isStreaming
                 ? t("Press Enter to stop the current answer.")
                 : t("Enter to send, Shift+Enter for a new line.")}
             </div>
             <button
               onClick={isStreaming ? onCancel : send}
-              disabled={!isStreaming && !input.trim()}
+              disabled={disabled || (!isStreaming && !input.trim())}
               className="inline-flex items-center gap-2 rounded-full bg-[var(--muted)] px-4 py-1.5 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]/80 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isStreaming ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
@@ -1617,6 +1635,7 @@ export default function PlaygroundPage() {
     setTools,
     setCapability,
     setKBs,
+    setTutorPack,
     setLanguage,
     selectedSessionId,
   } = useUnifiedChat();
@@ -1631,6 +1650,8 @@ export default function PlaygroundPage() {
     "comfortable",
   );
   const [loading, setLoading] = useState(true);
+  const [availableTutorPacks, setAvailableTutorPacks] = useState<TutorPackOption[]>([]);
+  const [pendingTutorPackKnowledgeBase, setPendingTutorPackKnowledgeBase] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -1653,6 +1674,17 @@ export default function PlaygroundPage() {
         setCapabilities(visibleCapabilities);
         setCapabilityConfigs(loadCapabilityPlaygroundConfigs());
         setKnowledgeBases(knowledgeBaseList);
+        const tutorPacks = knowledgeBaseList
+          .filter((kb) => kb.status === "ready" || kb.status === "offline-cached" || !kb.status)
+          .map((kb) => ({
+            name: kb.name,
+            knowledgeBase: kb.name,
+            subject: kb.metadata?.subject ?? null,
+            grade: kb.metadata?.grade ?? null,
+            owner: kb.metadata?.owner ?? null,
+            language: kb.metadata?.language ?? null,
+          }));
+        setAvailableTutorPacks(tutorPacks);
 
         const defaultCapability =
           visibleCapabilities.find((cap: CapabilityInfo) => cap.name === "chat") ??
@@ -1674,6 +1706,21 @@ export default function PlaygroundPage() {
 
   const activeTool = tools.find((t) => t.name === activeName);
   const activeCapability = capabilityCatalog.find((c) => c.name === activeName);
+  const selectedTutorPack = unifiedChatState.tutorPack;
+  const requiresTutorPackSelection =
+    !selectedSessionId &&
+    activeCapability?.name === "chat" &&
+    availableTutorPacks.length > 1 &&
+    !selectedTutorPack;
+  const chatDisabledReason =
+    selectedTutorPack?.status === "missing"
+      ? t("Gói gia sư này không còn khả dụng. Bạn vẫn có thể xem lịch sử nhưng chưa thể gửi thêm tin nhắn.")
+      : activeCapability?.name === "chat" && availableTutorPacks.length === 0
+        ? t("Chưa có Gói gia sư khả dụng. Hãy import một gói từ Marketplace trước.")
+        : requiresTutorPackSelection
+          ? t("Chọn Gói gia sư trước khi bắt đầu cuộc trò chuyện này.")
+          : null;
+  const isChatSendDisabled = Boolean(chatDisabledReason);
   const activeCapabilityConfig = useMemo(
     () =>
       activeCapability
@@ -1817,8 +1864,14 @@ export default function PlaygroundPage() {
     if (!activeCapability || activeCapability.name !== "chat" || !activeCapabilityConfig) return;
     setCapability("chat");
     setTools(activeCapabilityConfig.enabledTools);
-    setKBs(activeCapabilityConfig.knowledgeBase ? [activeCapabilityConfig.knowledgeBase] : []);
-  }, [activeCapability, activeCapabilityConfig, setCapability, setKBs, setTools]);
+    setKBs(
+      selectedTutorPack?.knowledgeBase
+        ? [selectedTutorPack.knowledgeBase]
+        : activeCapabilityConfig.knowledgeBase
+          ? [activeCapabilityConfig.knowledgeBase]
+          : [],
+    );
+  }, [activeCapability, activeCapabilityConfig, selectedTutorPack, setCapability, setKBs, setTools]);
 
   useEffect(() => {
     setLanguage(i18n.language);
@@ -1829,6 +1882,60 @@ export default function PlaygroundPage() {
     setActiveKind("capability");
     setActiveName("chat");
   }, [selectedSessionId]);
+
+  useEffect(() => {
+    if (activeCapability?.name !== "chat" || loading) return;
+    if (selectedSessionId) return;
+    if (selectedTutorPack) return;
+    if (availableTutorPacks.length !== 1) return;
+    const onlyPack = availableTutorPacks[0];
+    setPendingTutorPackKnowledgeBase(onlyPack.knowledgeBase);
+    setTutorPack({
+      name: onlyPack.name,
+      knowledgeBase: onlyPack.knowledgeBase,
+      status: "available",
+    });
+    setKBs([onlyPack.knowledgeBase]);
+  }, [
+    activeCapability,
+    availableTutorPacks,
+    loading,
+    selectedSessionId,
+    selectedTutorPack,
+    setKBs,
+    setTutorPack,
+  ]);
+
+  useEffect(() => {
+    if (!selectedTutorPack) return;
+    const stillAvailable = availableTutorPacks.some(
+      (pack) => pack.knowledgeBase === selectedTutorPack.knowledgeBase,
+    );
+    if (!stillAvailable && selectedTutorPack.status !== "missing") {
+      setTutorPack({ ...selectedTutorPack, status: "missing" });
+      return;
+    }
+    if (stillAvailable && selectedTutorPack.status === "missing") {
+      setTutorPack({ ...selectedTutorPack, status: "available" });
+    }
+  }, [availableTutorPacks, selectedTutorPack, setTutorPack]);
+
+  const handleTutorPackSelection = (knowledgeBase: string) => {
+    setPendingTutorPackKnowledgeBase(knowledgeBase);
+    const selectedPack = availableTutorPacks.find((pack) => pack.knowledgeBase === knowledgeBase);
+    if (!selectedPack) {
+      setTutorPack(null);
+      setKBs([]);
+      return;
+    }
+    const nextTutorPack: TutorPackBinding = {
+      name: selectedPack.name,
+      knowledgeBase: selectedPack.knowledgeBase,
+      status: "available",
+    };
+    setTutorPack(nextTutorPack);
+    setKBs([selectedPack.knowledgeBase]);
+  };
 
   const centerPanel = (
     <main aria-label={t("Conversation workspace")} className="flex h-full min-h-0 flex-col">
@@ -1869,6 +1976,8 @@ export default function PlaygroundPage() {
               isStreaming={unifiedChatState.isStreaming}
               onSend={(content) => sendMessage(content)}
               onCancel={cancelStreamingTurn}
+              disabled={isChatSendDisabled}
+              disabledReason={chatDisabledReason}
             />
           ) : activeCapability.name === "deep_question" ? (
             <DeepQuestionTester
@@ -1959,6 +2068,53 @@ export default function PlaygroundPage() {
             {getCapabilityDescription(activeCapability.description, t)}
           </p>
         </section>
+        {activeCapability.name === "chat" ? (
+          <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+              {t("Gói gia sư")}
+            </h3>
+            {!selectedSessionId && availableTutorPacks.length > 1 ? (
+              <div className="mt-3 space-y-3">
+                <select
+                  value={pendingTutorPackKnowledgeBase}
+                  onChange={(e) => handleTutorPackSelection(e.target.value)}
+                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-3 py-3 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--primary)]/40"
+                >
+                  <option value="">{t("Chọn gói gia sư")}</option>
+                  {availableTutorPacks.map((pack) => (
+                    <option key={pack.knowledgeBase} value={pack.knowledgeBase}>
+                      {pack.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[12px] leading-5 text-[var(--muted-foreground)]">
+                  {t("Mỗi cuộc trò chuyện sẽ khóa vào một Gói gia sư từ lúc bắt đầu và không đổi giữa chừng.")}
+                </p>
+              </div>
+            ) : selectedTutorPack ? (
+              <div className="mt-3 rounded-2xl border border-[var(--border)] bg-[var(--background)]/70 px-3 py-3">
+                <div className="text-[13px] font-medium text-[var(--foreground)]">
+                  {selectedTutorPack.name}
+                </div>
+                {selectedTutorPack.status === "missing" ? (
+                  <p className="mt-2 text-[12px] leading-5 text-amber-700">
+                    {t("Gói gia sư này không còn khả dụng. Bạn vẫn có thể xem lịch sử nhưng chưa thể gửi thêm tin nhắn.")}
+                  </p>
+                ) : (
+                  <p className="mt-1 text-[12px] leading-5 text-[var(--muted-foreground)]">
+                    {t("Cuộc trò chuyện này đang bám theo gói gia sư đã khóa cho session hiện tại.")}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="mt-3 text-[13px] text-[var(--muted-foreground)]">
+                {availableTutorPacks.length === 1
+                  ? t("Gói gia sư sẽ được gán tự động cho cuộc trò chuyện mới.")
+                  : t("Chưa có Gói gia sư khả dụng. Hãy import từ Marketplace trước khi bắt đầu chat.")}
+              </p>
+            )}
+          </section>
+        ) : null}
         <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
             {t("Enabled tools")}
@@ -1992,7 +2148,7 @@ export default function PlaygroundPage() {
           )}
         </section>
 
-        {activeCapabilityConfig?.enabledTools.includes("rag") ? (
+        {activeCapability.name !== "chat" && activeCapabilityConfig?.enabledTools.includes("rag") ? (
           <section className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/78 px-4 py-4">
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
               {t("Knowledge source")}
