@@ -34,15 +34,15 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-backend-test-coverage-gate`
-- Task: Implement the backend `80%` coverage gate, document the in-scope backend surface, and enforce the same command in CI
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-frontend-test-coverage-gate`
+- Task: Implement the frontend `80%` coverage gate for the teacher-first contest path, document the in-scope frontend surface, and enforce the same command in CI
 - Status: local validation passing
-- Branch: `fix/backend-test-coverage-gate`
-- Task packet: `docs/superpowers/tasks/2026-05-01-backend-test-coverage-gate.md`
-- Owned files: `pyproject.toml`, `.github/workflows/tests.yml`, `scripts/run_backend_coverage_gate.sh`, `docs/testing/BACKEND_COVERAGE_SCOPE.md`, selected backend modules under `deeptutor/**`, selected backend tests under `tests/**`, `docs/superpowers/tasks/2026-05-01-backend-test-coverage-gate.md`, `ai_first/TASK_REGISTRY.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-01.md`
+- Branch: `fix/frontend-test-coverage-gate`
+- Task packet: `docs/superpowers/tasks/2026-05-02-frontend-test-coverage-gate.md`
+- Owned files: `web/**`, `.github/workflows/tests.yml`, `docs/testing/FRONTEND_COVERAGE_SCOPE.md`, `docs/superpowers/tasks/2026-05-02-frontend-test-coverage-gate.md`, `docs/superpowers/specs/2026-05-02-frontend-test-coverage-gate-design.md`, `docs/superpowers/plans/2026-05-02-frontend-test-coverage-gate.md`, `docs/superpowers/pr-notes/2026-05-02-t053-frontend-coverage-gate.md`, `ai_first/TASK_REGISTRY.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-02.md`
 - PR: uncreated
-- Last update: 2026-05-01
-- Next action: self-review the implementation diff, then prepare commit/PR artifacts
+- Last update: 2026-05-02
+- Next action: self-review the frontend coverage diff, then stage and open a draft PR if requested
 - Blocker: none
 
 ### Assignment

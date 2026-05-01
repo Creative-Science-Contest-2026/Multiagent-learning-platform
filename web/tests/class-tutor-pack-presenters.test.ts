@@ -1,9 +1,11 @@
-import test from "node:test";
-import assert from "node:assert/strict";
+import { describe, expect, it } from "vitest";
 
-import { buildTutorPackFlowViewModel, buildTutorPackOptions } from "../components/agents/class-tutor-pack-presenters.ts";
-import type { AgentSpecDetail } from "../lib/agent-spec-api.ts";
-import type { KnowledgeBaseSummary } from "../lib/knowledge-api.ts";
+import {
+  buildTutorPackFlowViewModel,
+  buildTutorPackOptions,
+} from "../components/agents/class-tutor-pack-presenters";
+import type { AgentSpecDetail } from "../lib/agent-spec-api";
+import type { KnowledgeBaseSummary } from "../lib/knowledge-api";
 
 const labels = {
   noPackLinked: "Chưa gắn gói kiến thức",
@@ -62,64 +64,74 @@ function buildDraft(overrides?: Partial<AgentSpecDetail>): AgentSpecDetail {
   };
 }
 
-test("buildTutorPackOptions sorts pack names for the selector", () => {
-  const options = buildTutorPackOptions([
-    { name: "z-pack" },
-    { name: "algebra-pack" },
-  ] satisfies KnowledgeBaseSummary[]);
+describe("class tutor pack presenters", () => {
+  it("sorts pack names for the selector", () => {
+    const options = buildTutorPackOptions([
+      { name: "z-pack" },
+      { name: "algebra-pack" },
+    ] satisfies KnowledgeBaseSummary[]);
 
-  assert.deepEqual(options, [
-    { value: "algebra-pack", label: "algebra-pack" },
-    { value: "z-pack", label: "z-pack" },
-  ]);
-});
+    expect(options).toEqual([
+      { value: "algebra-pack", label: "algebra-pack" },
+      { value: "z-pack", label: "z-pack" },
+    ]);
+  });
 
-test("buildTutorPackFlowViewModel reflects a linked knowledge pack", () => {
-  const draft = buildDraft({ linked_knowledge_pack: "fractions-pack" });
-  const knowledgeBases: KnowledgeBaseSummary[] = [
-    {
-      name: "fractions-pack",
-      metadata: {
-        subject: "Toán",
-        difficulty: "beginner",
-        language: "Tiếng Việt",
-        learning_objectives: ["Hiểu khái niệm phân số", "So sánh phân số", "Rút gọn phân số"],
+  it("reflects a linked knowledge pack", () => {
+    const draft = buildDraft({ linked_knowledge_pack: "fractions-pack" });
+    const knowledgeBases: KnowledgeBaseSummary[] = [
+      {
+        name: "fractions-pack",
+        metadata: {
+          subject: "Toán",
+          difficulty: "beginner",
+          language: "Tiếng Việt",
+          learning_objectives: [
+            "Hiểu khái niệm phân số",
+            "So sánh phân số",
+            "Rút gọn phân số",
+          ],
+        },
       },
-    },
-  ];
+    ];
 
-  const viewModel = buildTutorPackFlowViewModel(draft, knowledgeBases, labels);
+    const viewModel = buildTutorPackFlowViewModel(draft, knowledgeBases, labels);
 
-  assert.equal(viewModel.packName, "fractions-pack");
-  assert.equal(viewModel.statusTone, "linked");
-  assert.equal(viewModel.statusLabel, "Đã gắn");
-  assert.equal(viewModel.subject, "Toán");
-  assert.equal(viewModel.difficulty, "beginner");
-  assert.equal(viewModel.language, "Tiếng Việt");
-  assert.equal(viewModel.objectiveSummary, "3 mục tiêu trọng tâm");
-  assert.equal(viewModel.teachingPromise, "Giúp học sinh hiểu bản chất trước khi làm nhanh.");
-  assert.equal(viewModel.escalationSummary, "Nếu học sinh lặp lại cùng một lỗi sau nhiều gợi ý thì chuyển giáo viên xem lại.");
-});
+    expect(viewModel.packName).toBe("fractions-pack");
+    expect(viewModel.statusTone).toBe("linked");
+    expect(viewModel.statusLabel).toBe("Đã gắn");
+    expect(viewModel.subject).toBe("Toán");
+    expect(viewModel.difficulty).toBe("beginner");
+    expect(viewModel.language).toBe("Tiếng Việt");
+    expect(viewModel.objectiveSummary).toBe("3 mục tiêu trọng tâm");
+    expect(viewModel.teachingPromise).toBe(
+      "Giúp học sinh hiểu bản chất trước khi làm nhanh.",
+    );
+    expect(viewModel.escalationSummary).toBe(
+      "Nếu học sinh lặp lại cùng một lỗi sau nhiều gợi ý thì chuyển giáo viên xem lại.",
+    );
+  });
 
-test("buildTutorPackFlowViewModel shows unlinked state without a selected pack", () => {
-  const viewModel = buildTutorPackFlowViewModel(buildDraft(), [], labels);
+  it("shows unlinked state without a selected pack", () => {
+    const viewModel = buildTutorPackFlowViewModel(buildDraft(), [], labels);
 
-  assert.equal(viewModel.packName, "Chưa gắn gói kiến thức");
-  assert.equal(viewModel.statusTone, "unlinked");
-  assert.equal(viewModel.statusLabel, "Chưa gắn");
-  assert.equal(viewModel.subject, "Toán");
-  assert.equal(viewModel.objectiveSummary, "Chưa có mục tiêu học tập");
-});
+    expect(viewModel.packName).toBe("Chưa gắn gói kiến thức");
+    expect(viewModel.statusTone).toBe("unlinked");
+    expect(viewModel.statusLabel).toBe("Chưa gắn");
+    expect(viewModel.subject).toBe("Toán");
+    expect(viewModel.objectiveSummary).toBe("Chưa có mục tiêu học tập");
+  });
 
-test("buildTutorPackFlowViewModel marks missing pack when the saved link no longer exists", () => {
-  const viewModel = buildTutorPackFlowViewModel(
-    buildDraft({ linked_knowledge_pack: "fractions-pack" }),
-    [],
-    labels,
-  );
+  it("marks missing pack when the saved link no longer exists", () => {
+    const viewModel = buildTutorPackFlowViewModel(
+      buildDraft({ linked_knowledge_pack: "fractions-pack" }),
+      [],
+      labels,
+    );
 
-  assert.equal(viewModel.packName, "fractions-pack");
-  assert.equal(viewModel.statusTone, "missing");
-  assert.equal(viewModel.statusLabel, "Gói đã bị thiếu");
-  assert.equal(viewModel.linkedPackExists, false);
+    expect(viewModel.packName).toBe("fractions-pack");
+    expect(viewModel.statusTone).toBe("missing");
+    expect(viewModel.statusLabel).toBe("Gói đã bị thiếu");
+    expect(viewModel.linkedPackExists).toBe(false);
+  });
 });

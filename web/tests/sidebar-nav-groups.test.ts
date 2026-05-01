@@ -1,38 +1,41 @@
-import test from "node:test";
-import assert from "node:assert/strict";
+import { describe, expect, it } from "vitest";
 import {
   getCollapsedSidebarNav,
   getExpandedSidebarGroups,
-} from "../components/sidebar/nav-groups.ts";
+} from "../components/sidebar/nav-groups";
 
-test("expanded sidebar groups promote contest-core routes before secondary tools", () => {
-  const groups = getExpandedSidebarGroups();
+describe("sidebar nav groups", () => {
+  it("promotes contest-core routes before secondary tools in the expanded sidebar", () => {
+    const groups = getExpandedSidebarGroups();
 
-  assert.equal(groups.length, 2);
-  assert.equal(groups[0]?.id, "contest-core");
-  assert.deepEqual(
-    groups[0]?.items.map((item) => item.href),
-    ["/knowledge", "/dashboard", "/agents", "/marketplace"],
-  );
+    expect(groups).toHaveLength(2);
+    expect(groups[0]?.id).toBe("contest-core");
+    expect(groups[0]?.items.map((item) => item.href)).toEqual([
+      "/knowledge",
+      "/dashboard",
+      "/agents",
+      "/marketplace",
+    ]);
 
-  assert.equal(groups[1]?.id, "secondary-tools");
-  assert.deepEqual(
-    groups[1]?.items.map((item) => item.href),
-    ["/playground", "/memory"],
-  );
-});
+    expect(groups[1]?.id).toBe("secondary-tools");
+    expect(groups[1]?.items.map((item) => item.href)).toEqual([
+      "/playground",
+      "/memory",
+    ]);
+  });
 
-test("collapsed sidebar keeps only contest-core routes visible by default", () => {
-  const items = getCollapsedSidebarNav();
+  it("keeps only contest-core routes visible by default in the collapsed sidebar", () => {
+    const items = getCollapsedSidebarNav();
 
-  assert.deepEqual(items.map((item) => item.href), [
-    "/knowledge",
-    "/dashboard",
-    "/agents",
-    "/marketplace",
-    "/playground",
-  ]);
-  assert.equal(items.some((item) => item.href === "/guide"), false);
-  assert.equal(items.some((item) => item.href === "/co-writer"), false);
-  assert.equal(items.some((item) => item.href === "/memory"), false);
+    expect(items.map((item) => item.href)).toEqual([
+      "/knowledge",
+      "/dashboard",
+      "/agents",
+      "/marketplace",
+      "/playground",
+    ]);
+    expect(items.some((item) => item.href === "/guide")).toBe(false);
+    expect(items.some((item) => item.href === "/co-writer")).toBe(false);
+    expect(items.some((item) => item.href === "/memory")).toBe(false);
+  });
 });

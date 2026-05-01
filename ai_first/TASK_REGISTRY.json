@@ -2363,10 +2363,32 @@
       "complexity": "High",
       "estimated_hours": 8,
       "dependencies": [],
-      "status": "in-progress",
+      "status": "completed",
       "recommended_session_bucket": "session-b-runtime",
       "layer": "post-contest-hardening",
-      "notes": "Packet published on 2026-05-01. Implementation is active on branch `fix/backend-test-coverage-gate`, with the local gate now wired through `scripts/run_backend_coverage_gate.sh`, a committed scope document, truthful backend logic fixes, and an in-scope backend result of 156 passing tests at 80% coverage before merge."
+      "notes": "Merged to main through PR #274 on 2026-05-01. The backend lane added `scripts/run_backend_coverage_gate.sh`, documented the in-scope backend denominator in `docs/testing/BACKEND_COVERAGE_SCOPE.md`, corrected truthful test-audit logic issues, and enforced an in-scope backend gate at 80%+ in CI."
+    },
+    {
+      "id": "T053_FRONTEND_TEST_COVERAGE_GATE",
+      "category": "Engineering Quality",
+      "priority": 96,
+      "title": "Frontend Test Coverage Gate",
+      "description": "Add an authoritative frontend quality gate so the in-scope teacher-first contest-path frontend surface must pass unit/component tests and maintain at least 80% coverage in CI, while documenting and excluding only the frontend modules not used on the current supported product path.",
+      "scope": {
+        "frontend": "web package/test config, selected teacher-first contest-path frontend modules and tests, .github/workflows/tests.yml, plus docs/testing/FRONTEND_COVERAGE_SCOPE.md for the committed omit-list contract"
+      },
+      "affected_features": [
+        "Frontend Test Suite",
+        "Continuous Integration",
+        "Engineering Quality"
+      ],
+      "complexity": "High",
+      "estimated_hours": 8,
+      "dependencies": [],
+      "status": "in-progress",
+      "recommended_session_bucket": "session-a-frontend",
+      "layer": "post-contest-hardening",
+      "notes": "Implementation is active on `fix/frontend-test-coverage-gate` as of 2026-05-02. The lane added a Vitest-based frontend unit/component coverage gate, documented the teacher-first omit list in `docs/testing/FRONTEND_COVERAGE_SCOPE.md`, pointed the frontend CI job at `cd web && npm run test:coverage:frontend`, and locally validated `33` passing tests with `88.35%` in-scope coverage while preserving `cd web && npm run build` as a separate required check."
     }
   ],
   "github_issues_template": {
