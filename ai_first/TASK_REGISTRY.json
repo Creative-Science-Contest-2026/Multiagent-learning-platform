@@ -2363,10 +2363,10 @@
       "complexity": "High",
       "estimated_hours": 8,
       "dependencies": [],
-      "status": "pending",
+      "status": "in-progress",
       "recommended_session_bucket": "session-b-runtime",
       "layer": "post-contest-hardening",
-      "notes": "Packet published on 2026-05-01. The implementation lane must audit the supported backend path, define the omit list explicitly, fix any backend logic defects uncovered during truthful test authoring, and then enforce the >=80% gate in CI."
+      "notes": "Packet published on 2026-05-01. Implementation is active on branch `fix/backend-test-coverage-gate`, with the local gate now wired through `scripts/run_backend_coverage_gate.sh`, a committed scope document, truthful backend logic fixes, and an in-scope backend result of 156 passing tests at 80% coverage before merge."
     }
   ],
   "github_issues_template": {

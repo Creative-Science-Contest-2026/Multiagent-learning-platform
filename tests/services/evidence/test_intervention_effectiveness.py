@@ -3,6 +3,17 @@ from __future__ import annotations
 from deeptutor.services.evidence.intervention_effectiveness import summarize_intervention_effectiveness
 
 
+def test_summarize_intervention_effectiveness_returns_no_signal_for_invalid_intervention() -> None:
+    summary = summarize_intervention_effectiveness(
+        intervention={"topic": " ", "timestamp": 0},
+        observations=[{"topic": "fractions", "created_at": 5}],
+    )
+
+    assert summary["label"] == "no_followup_signal"
+    assert summary["followup_observation_count"] == 0
+    assert "lacks enough context" in summary["reason"]
+
+
 def test_summarize_intervention_effectiveness_marks_helpful_when_later_errors_drop() -> None:
     intervention = {
         "item_type": "teacher_action",

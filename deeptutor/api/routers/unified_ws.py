@@ -18,6 +18,13 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+def _parse_sequence_value(raw: Any, field_name: str) -> int:
+    try:
+        return int(raw or 0)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid {field_name}.") from exc
+
+
 @router.websocket("/ws")
 async def unified_websocket(ws: WebSocket) -> None:
     await ws.accept()
@@ -105,7 +112,12 @@ async def unified_websocket(ws: WebSocket) -> None:
                 if not turn_id:
                     await safe_send({"type": "error", "content": "Missing turn_id."})
                     continue
-                await subscribe_turn(turn_id, after_seq=int(msg.get("after_seq") or 0))
+                try:
+                    after_seq = _parse_sequence_value(msg.get("after_seq"), "after_seq")
+                except ValueError as exc:
+                    await safe_send({"type": "error", "content": str(exc)})
+                    continue
+                await subscribe_turn(turn_id, after_seq=after_seq)
                 continue
 
             if msg_type == "subscribe_session":
@@ -113,7 +125,12 @@ async def unified_websocket(ws: WebSocket) -> None:
                 if not session_id:
                     await safe_send({"type": "error", "content": "Missing session_id."})
                     continue
-                await subscribe_session(session_id, after_seq=int(msg.get("after_seq") or 0))
+                try:
+                    after_seq = _parse_sequence_value(msg.get("after_seq"), "after_seq")
+                except ValueError as exc:
+                    await safe_send({"type": "error", "content": str(exc)})
+                    continue
+                await subscribe_session(session_id, after_seq=after_seq)
                 continue
 
             if msg_type == "resume_from":
@@ -121,7 +138,12 @@ async def unified_websocket(ws: WebSocket) -> None:
                 if not turn_id:
                     await safe_send({"type": "error", "content": "Missing turn_id."})
                     continue
-                await subscribe_turn(turn_id, after_seq=int(msg.get("seq") or 0))
+                try:
+                    after_seq = _parse_sequence_value(msg.get("seq"), "seq")
+                except ValueError as exc:
+                    await safe_send({"type": "error", "content": str(exc)})
+                    continue
+                await subscribe_turn(turn_id, after_seq=after_seq)
                 continue
 
             if msg_type == "unsubscribe":

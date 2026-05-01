@@ -210,7 +210,7 @@ async def websocket_mimic_generate(websocket: WebSocket):
                 output_dir = str(batch_dir)
 
             elif mode == "parsed":
-                paper_path = data.get("paper_path")
+                paper_path = str(data.get("paper_path") or "").strip()
                 if not paper_path:
                     await websocket.send_json(
                         {"type": "error", "content": "paper_path is required for parsed mode"}

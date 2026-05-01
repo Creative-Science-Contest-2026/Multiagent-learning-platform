@@ -34,15 +34,15 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
-- Task: Publish the bounded task packet and design spec for a backend `80%` coverage gate with CI enforcement and audit-backed omit rules
-- Status: spec written
-- Branch: `docs/test-coverage-gate-task`
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-backend-test-coverage-gate`
+- Task: Implement the backend `80%` coverage gate, document the in-scope backend surface, and enforce the same command in CI
+- Status: local validation passing
+- Branch: `fix/backend-test-coverage-gate`
 - Task packet: `docs/superpowers/tasks/2026-05-01-backend-test-coverage-gate.md`
-- Owned files: `docs/superpowers/tasks/2026-05-01-backend-test-coverage-gate.md`, `docs/superpowers/specs/2026-05-01-backend-test-coverage-gate-design.md`, `ai_first/TASK_REGISTRY.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-01.md`
+- Owned files: `pyproject.toml`, `.github/workflows/tests.yml`, `scripts/run_backend_coverage_gate.sh`, `docs/testing/BACKEND_COVERAGE_SCOPE.md`, selected backend modules under `deeptutor/**`, selected backend tests under `tests/**`, `docs/superpowers/tasks/2026-05-01-backend-test-coverage-gate.md`, `ai_first/TASK_REGISTRY.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-01.md`
 - PR: uncreated
 - Last update: 2026-05-01
-- Next action: validate the new task artifacts, then hand off the packet for a dedicated implementation lane
+- Next action: self-review the implementation diff, then prepare commit/PR artifacts
 - Blocker: none
 
 ### Assignment

@@ -4,7 +4,7 @@
 - Commit tag: `T052-COVERAGE`
 - Date: 2026-05-01
 - Branch: `fix/backend-test-coverage-gate`
-- Status: spec written
+- Status: implemented locally
 
 ## Objective
 
@@ -126,8 +126,7 @@ Raise the backend quality bar so the repository has one authoritative backend te
 
 ## Required Tests
 
-- `pytest --collect-only -q`
-- `pytest --cov=deeptutor --cov-report=term-missing --cov-fail-under=80 -q`
+- `bash scripts/run_backend_coverage_gate.sh`
 - `python -m compileall deeptutor`
 - `git diff --check`
 
@@ -152,3 +151,4 @@ Raise the backend quality bar so the repository has one authoritative backend te
 
 - This task is intentionally allowed to fix backend logic when truthful tests reveal defects.
 - The omit list must be a first-class deliverable, not an inline comment hidden inside coverage config.
+- Local implementation lane reached `161 passed` with `80.01%` in-scope backend coverage through `bash scripts/run_backend_coverage_gate.sh`.
