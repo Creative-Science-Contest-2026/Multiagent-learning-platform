@@ -2385,10 +2385,10 @@
       "complexity": "High",
       "estimated_hours": 8,
       "dependencies": [],
-      "status": "pending",
+      "status": "in-progress",
       "recommended_session_bucket": "session-a-frontend",
       "layer": "post-contest-hardening",
-      "notes": "Packet published on 2026-05-02. The implementation lane should add a truthful frontend unit/component coverage gate via Vitest, keep Playwright outside the line-coverage denominator, audit the teacher-first contest path, document the omit list explicitly, and fix any frontend logic defects uncovered during honest test authoring."
+      "notes": "Implementation is active on `fix/frontend-test-coverage-gate` as of 2026-05-02. The lane added a Vitest-based frontend unit/component coverage gate, documented the teacher-first omit list in `docs/testing/FRONTEND_COVERAGE_SCOPE.md`, pointed the frontend CI job at `cd web && npm run test:coverage:frontend`, and locally validated `33` passing tests with `88.35%` in-scope coverage while preserving `cd web && npm run build` as a separate required check."
     }
   ],
   "github_issues_template": {

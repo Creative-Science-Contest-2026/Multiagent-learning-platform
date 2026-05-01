@@ -4,7 +4,7 @@
 - Commit tag: `T053-COVERAGE`
 - Date: 2026-05-02
 - Branch: `fix/frontend-test-coverage-gate`
-- Status: spec written
+- Status: implemented locally
 
 ## Objective
 
@@ -147,3 +147,4 @@ Raise the frontend quality bar so the repository has one authoritative frontend 
 
 - This task is intentionally allowed to fix frontend logic when truthful tests reveal defects.
 - The omit list must be a first-class deliverable, not an inline comment hidden inside coverage config.
+- Local implementation lane reached `33 passed` with `88.35%` in-scope frontend coverage through `cd web && npm run test:coverage:frontend`, while preserving `cd web && npm run build` as a separate required frontend validation step.

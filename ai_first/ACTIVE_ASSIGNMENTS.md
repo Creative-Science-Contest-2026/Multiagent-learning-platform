@@ -34,15 +34,15 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-backend-test-coverage-gate`
-- Task: Publish the bounded task packet and design spec for a frontend `80%` coverage gate on the teacher-first contest path
-- Status: spec written
-- Branch: `docs/frontend-test-coverage-gate-task`
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-frontend-test-coverage-gate`
+- Task: Implement the frontend `80%` coverage gate for the teacher-first contest path, document the in-scope frontend surface, and enforce the same command in CI
+- Status: local validation passing
+- Branch: `fix/frontend-test-coverage-gate`
 - Task packet: `docs/superpowers/tasks/2026-05-02-frontend-test-coverage-gate.md`
-- Owned files: `docs/superpowers/tasks/2026-05-02-frontend-test-coverage-gate.md`, `docs/superpowers/specs/2026-05-02-frontend-test-coverage-gate-design.md`, `ai_first/TASK_REGISTRY.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-02.md`
+- Owned files: `web/**`, `.github/workflows/tests.yml`, `docs/testing/FRONTEND_COVERAGE_SCOPE.md`, `docs/superpowers/tasks/2026-05-02-frontend-test-coverage-gate.md`, `docs/superpowers/specs/2026-05-02-frontend-test-coverage-gate-design.md`, `docs/superpowers/plans/2026-05-02-frontend-test-coverage-gate.md`, `docs/superpowers/pr-notes/2026-05-02-t053-frontend-coverage-gate.md`, `ai_first/TASK_REGISTRY.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-02.md`
 - PR: uncreated
 - Last update: 2026-05-02
-- Next action: validate the new task artifacts, then hand off the packet for a dedicated frontend implementation lane
+- Next action: self-review the frontend coverage diff, then stage and open a draft PR if requested
 - Blocker: none
 
 ### Assignment

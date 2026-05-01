@@ -7,6 +7,8 @@
     "dev:turbo": "node --max-old-space-size=6144 ./node_modules/next/dist/bin/next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "test:frontend": "vitest run",
+    "test:coverage:frontend": "vitest run --coverage",
     "lint": "eslint .",
     "perf:check": "node ./scripts/route_budgets.mjs",
     "build:perf": "npm run build && npm run perf:check",
@@ -43,15 +45,20 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.53.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@vitest/coverage-v8": "^3.2.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "jsdom": "^27.0.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }
