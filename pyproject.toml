@@ -230,6 +230,14 @@ addopts = [
     "--tb=short"
 ]
 
+[tool.coverage.run]
+relative_files = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = false
+
 # ============================================
 # MyPy type checking configuration
 # ============================================

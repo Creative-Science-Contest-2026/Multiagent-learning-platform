@@ -45,13 +45,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest tests/api/test_knowledge_router.py -v
-          pytest tests/knowledge -v
-          pytest tests/api/test_question_router.py -v
-          pytest tests/api/test_unified_ws_turn_runtime.py -v
-          pytest tests/api/test_dashboard_router.py -v
-          pytest tests/services/session -v
-          python -m compileall deeptutor
+          bash scripts/run_backend_coverage_gate.sh
 
   frontend:
     name: Frontend

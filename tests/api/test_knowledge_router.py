@@ -74,6 +74,33 @@ class _FakeKBManager:
         kb_dir.mkdir(parents=True, exist_ok=True)
         return kb_dir
 
+    def get_default(self) -> str | None:
+        return self.config.get("default_kb")
+
+    def set_default(self, name: str) -> None:
+        self.config["default_kb"] = name
+
+    def delete_knowledge_base(self, name: str, confirm: bool = False) -> bool:
+        if name not in self.config.get("knowledge_bases", {}):
+            raise ValueError(name)
+        if not confirm:
+            return False
+        self.config.get("knowledge_bases", {}).pop(name, None)
+        return True
+
+    def get_info(self, name: str) -> dict:
+        if name not in self.config.get("knowledge_bases", {}):
+            raise ValueError(name)
+        entry = self.config["knowledge_bases"][name]
+        return {
+            "name": name,
+            "is_default": name == self.get_default(),
+            "statistics": {"raw_documents": 1},
+            "status": entry.get("status"),
+            "progress": entry.get("progress"),
+            "metadata": entry.get("metadata"),
+        }
+
 
 class _FakeInitializer:
     def __init__(self, kb_name: str, base_dir: str, **_kwargs) -> None:
@@ -633,3 +660,166 @@ def test_update_config_starts_teacher_pack_version_history_at_one(monkeypatch, t
     assert config["current_version"] == 1
     assert config["version_history"][0]["version"] == 1
     assert config["version_history"][0]["changed_fields"] == ["owner", "subject"]
+
+
+def test_get_all_and_single_kb_configs(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+
+    class _FakeConfigService:
+        def get_all_configs(self) -> dict:
+            return {"demo-kb": {"subject": "Math"}}
+
+        def get_kb_config(self, kb_name: str) -> dict:
+            return {"name": kb_name, "subject": "Math"}
+
+    config_module = importlib.import_module("deeptutor.services.config")
+    monkeypatch.setattr(config_module, "get_kb_config_service", lambda: _FakeConfigService())
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        all_response = client.get("/api/v1/knowledge/configs")
+        single_response = client.get("/api/v1/knowledge/demo-kb/config")
+
+    assert all_response.status_code == 200
+    assert all_response.json() == {"demo-kb": {"subject": "Math"}}
+    assert single_response.status_code == 200
+    assert single_response.json() == {
+        "kb_name": "demo-kb",
+        "config": {"name": "demo-kb", "subject": "Math"},
+    }
+
+
+def test_sync_configs_from_metadata_returns_success(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    calls: list[Path] = []
+
+    class _FakeConfigService:
+        def sync_all_from_metadata(self, base_dir: Path) -> None:
+            calls.append(base_dir)
+
+    config_module = importlib.import_module("deeptutor.services.config")
+    monkeypatch.setattr(config_module, "get_kb_config_service", lambda: _FakeConfigService())
+    monkeypatch.setattr(knowledge_module, "_kb_base_dir", tmp_path / "knowledge_bases")
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.post("/api/v1/knowledge/configs/sync")
+
+    assert response.status_code == 200
+    assert calls == [tmp_path / "knowledge_bases"]
+    assert response.json()["status"] == "success"
+
+
+def test_get_knowledge_base_details_returns_404_for_missing_kb(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.get("/api/v1/knowledge/missing-kb")
+
+    assert response.status_code == 404
+    assert "missing-kb" in response.json()["detail"]
+
+
+def test_delete_knowledge_base_returns_404_for_missing_kb(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.delete("/api/v1/knowledge/missing-kb")
+
+    assert response.status_code == 404
+    assert "missing-kb" in response.json()["detail"]
+
+
+def test_upload_rejects_provider_mismatch(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    manager.config["knowledge_bases"]["demo-kb"] = {
+        "path": "demo-kb",
+        "rag_provider": "llamaindex",
+        "needs_reindex": False,
+        "status": "ready",
+    }
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+    monkeypatch.setattr(knowledge_module, "_kb_base_dir", tmp_path / "knowledge_bases")
+    monkeypatch.setattr(
+        knowledge_module,
+        "has_pipeline",
+        lambda provider: provider in {"llamaindex", "basic-rag"},
+    )
+    monkeypatch.setattr(knowledge_module, "normalize_provider_name", lambda provider: provider)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.post(
+            "/api/v1/knowledge/demo-kb/upload",
+            data={"rag_provider": "basic-rag"},
+            files=_upload_payload(),
+        )
+
+    assert response.status_code == 400
+    assert "does not match KB provider" in response.json()["detail"]
+
+
+def test_get_and_set_default_kb(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    manager.config["knowledge_bases"]["demo-kb"] = {"path": "demo-kb"}
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        initial = client.get("/api/v1/knowledge/default")
+        updated = client.put("/api/v1/knowledge/default/demo-kb")
+        final_state = client.get("/api/v1/knowledge/default")
+
+    assert initial.status_code == 200
+    assert initial.json() == {"default_kb": None}
+    assert updated.status_code == 200
+    assert updated.json() == {"status": "success", "default_kb": "demo-kb"}
+    assert final_state.json() == {"default_kb": "demo-kb"}
+
+
+def test_set_default_kb_returns_404_for_unknown_kb(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.put("/api/v1/knowledge/default/missing-kb")
+
+    assert response.status_code == 404
+    assert "missing-kb" in response.json()["detail"]
+
+
+def test_clear_progress_resets_tracker_file(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    monkeypatch.setattr(knowledge_module, "_kb_base_dir", tmp_path / "knowledge_bases")
+
+    tracker = knowledge_module.ProgressTracker("demo-kb", knowledge_module._kb_base_dir)
+    tracker.update(
+        knowledge_module.ProgressStage.PROCESSING_DOCUMENTS,
+        "processing",
+        current=1,
+        total=1,
+    )
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.post("/api/v1/knowledge/demo-kb/progress/clear")
+        after = client.get("/api/v1/knowledge/demo-kb/progress")
+
+    assert response.status_code == 200
+    assert after.json() == {"status": "not_started", "message": "Initialization not started"}
+
+
+def test_delete_knowledge_base_removes_existing_kb(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    manager.config["knowledge_bases"]["demo-kb"] = {"path": "demo-kb"}
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app(knowledge_module)) as client:
+        response = client.delete("/api/v1/knowledge/demo-kb")
+
+    assert response.status_code == 200
+    assert "deleted successfully" in response.json()["message"]
+    assert "demo-kb" not in manager.config["knowledge_bases"]

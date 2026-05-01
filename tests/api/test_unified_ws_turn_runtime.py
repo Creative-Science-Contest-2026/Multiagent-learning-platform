@@ -10,6 +10,9 @@ from deeptutor.services.session.sqlite_store import SQLiteSessionStore
 from deeptutor.services.session.turn_runtime import TurnRuntimeManager
 from deeptutor.services.runtime_policy import compiler as runtime_policy_compiler
 
+FastAPI = pytest.importorskip("fastapi").FastAPI
+TestClient = pytest.importorskip("fastapi.testclient").TestClient
+
 
 async def _noop_refresh(**_kwargs):
     return None
@@ -105,6 +108,205 @@ async def test_turn_runtime_replays_events_and_materializes_messages(
     persisted_turn = await store.get_turn(turn["id"])
     assert persisted_turn is not None
     assert persisted_turn["status"] == "completed"
+
+
+def test_unified_ws_rejects_invalid_after_seq(monkeypatch: pytest.MonkeyPatch) -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    class FakeRuntime:
+        async def subscribe_turn(self, *_args, **_kwargs):
+            if False:  # pragma: no cover
+                yield {}
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+    monkeypatch.setattr(
+        "deeptutor.services.session.get_turn_runtime_manager",
+        lambda: FakeRuntime(),
+    )
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_text('{"type":"subscribe_turn","turn_id":"turn-1","after_seq":"oops"}')
+            payload = websocket.receive_json()
+
+    assert payload == {"type": "error", "content": "Invalid after_seq."}
+
+
+def test_parse_sequence_value_accepts_valid_numbers_and_rejects_invalid() -> None:
+    from deeptutor.api.routers.unified_ws import _parse_sequence_value
+
+    assert _parse_sequence_value("7", "after_seq") == 7
+    assert _parse_sequence_value(None, "after_seq") == 0
+    with pytest.raises(ValueError, match="Invalid after_seq."):
+        _parse_sequence_value("oops", "after_seq")
+
+
+def test_unified_ws_rejects_invalid_resume_seq(monkeypatch: pytest.MonkeyPatch) -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    class FakeRuntime:
+        async def subscribe_turn(self, *_args, **_kwargs):
+            if False:  # pragma: no cover
+                yield {}
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+    monkeypatch.setattr(
+        "deeptutor.services.session.get_turn_runtime_manager",
+        lambda: FakeRuntime(),
+    )
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_text('{"type":"resume_from","turn_id":"turn-1","seq":"oops"}')
+            payload = websocket.receive_json()
+
+    assert payload == {"type": "error", "content": "Invalid seq."}
+
+
+def test_unified_ws_reports_invalid_json() -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_text("{")
+            payload = websocket.receive_json()
+
+    assert payload == {"type": "error", "content": "Invalid JSON."}
+
+
+def test_unified_ws_reports_rejected_turn(monkeypatch: pytest.MonkeyPatch) -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    class FakeRuntime:
+        async def start_turn(self, _msg):
+            raise RuntimeError("turn rejected")
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+    monkeypatch.setattr(
+        "deeptutor.services.session.get_turn_runtime_manager",
+        lambda: FakeRuntime(),
+    )
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_json({"type": "start_turn", "session_id": "session-1", "content": "hi"})
+            payload = websocket.receive_json()
+
+    assert payload["type"] == "error"
+    assert payload["source"] == "unified_ws"
+    assert payload["metadata"]["status"] == "rejected"
+    assert payload["content"] == "turn rejected"
+
+
+def test_unified_ws_reports_missing_cancel_turn_id() -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_json({"type": "cancel_turn"})
+            payload = websocket.receive_json()
+
+    assert payload == {"type": "error", "content": "Missing turn_id."}
+
+
+def test_unified_ws_reports_unknown_message_type() -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_json({"type": "mystery"})
+            payload = websocket.receive_json()
+
+    assert payload == {"type": "error", "content": "Unknown type: mystery"}
+
+
+def test_unified_ws_start_turn_forwards_stream_events(monkeypatch: pytest.MonkeyPatch) -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    class FakeRuntime:
+        async def start_turn(self, _msg):
+            return {"id": "session-1"}, {"id": "turn-1"}
+
+        async def subscribe_turn(self, turn_id: str, after_seq: int = 0):
+            assert turn_id == "turn-1"
+            assert after_seq == 0
+            yield {"type": "session", "turn_id": "turn-1", "seq": 0}
+            yield {"type": "done", "turn_id": "turn-1", "seq": 1}
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+    monkeypatch.setattr(
+        "deeptutor.services.session.get_turn_runtime_manager",
+        lambda: FakeRuntime(),
+    )
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_json({"type": "start_turn", "content": "hello"})
+            messages = [websocket.receive_json() for _ in range(2)]
+
+    assert [message["type"] for message in messages] == ["session", "done"]
+
+
+def test_unified_ws_subscribe_session_forwards_events(monkeypatch: pytest.MonkeyPatch) -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    class FakeRuntime:
+        async def subscribe_session(self, session_id: str, after_seq: int = 0):
+            assert session_id == "session-1"
+            assert after_seq == 2
+            yield {"type": "content", "session_id": session_id, "seq": 3}
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+    monkeypatch.setattr(
+        "deeptutor.services.session.get_turn_runtime_manager",
+        lambda: FakeRuntime(),
+    )
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_json(
+                {"type": "subscribe_session", "session_id": "session-1", "after_seq": 2}
+            )
+            payload = websocket.receive_json()
+
+    assert payload == {"type": "content", "session_id": "session-1", "seq": 3}
+
+
+def test_unified_ws_cancel_turn_reports_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    class FakeRuntime:
+        async def cancel_turn(self, turn_id: str) -> bool:
+            assert turn_id == "turn-missing"
+            return False
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+    monkeypatch.setattr(
+        "deeptutor.services.session.get_turn_runtime_manager",
+        lambda: FakeRuntime(),
+    )
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/api/v1/ws") as websocket:
+            websocket.send_json({"type": "cancel_turn", "turn_id": "turn-missing"})
+            payload = websocket.receive_json()
+
+    assert payload == {"type": "error", "content": "Turn not found: turn-missing"}
 
 
 @pytest.mark.asyncio

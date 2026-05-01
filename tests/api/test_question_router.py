@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import base64
 import importlib
 from pathlib import Path
 import sys
 import types
 
 import pytest
+from starlette.websockets import WebSocketDisconnect
 
 FastAPI = pytest.importorskip("fastapi").FastAPI
 TestClient = pytest.importorskip("fastapi.testclient").TestClient
@@ -18,6 +20,9 @@ def _cleanup_question_router_module():
 
 
 class _DummyLogger:
+    def addHandler(self, *_args, **_kwargs) -> None:
+        pass
+
     def debug(self, *_args, **_kwargs) -> None:
         pass
 
@@ -34,6 +39,9 @@ class _DummyLogger:
         pass
 
     def warning(self, *_args, **_kwargs) -> None:
+        pass
+
+    def removeHandler(self, *_args, **_kwargs) -> None:
         pass
 
 
@@ -146,3 +154,284 @@ def test_mimic_websocket_accepts_config_and_returns_messages(
     assert messages[0]["stage"] == "init"
     assert messages[1]["stage"] == "processing"
     assert messages[2]["content"] == "stub mimic failure"
+
+
+def test_mimic_websocket_rejects_blank_parsed_paper_path(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+    monkeypatch.setattr(question_router_module, "MIMIC_OUTPUT_DIR", tmp_path / "mimic_papers")
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with client.websocket_connect("/api/v1/question/mimic") as websocket:
+            websocket.send_json(
+                {
+                    "mode": "parsed",
+                    "paper_path": "   ",
+                    "kb_name": "demo-kb",
+                }
+            )
+            messages = [websocket.receive_json() for _ in range(2)]
+
+    assert messages[0]["type"] == "status"
+    assert messages[1] == {"type": "error", "content": "paper_path is required for parsed mode"}
+
+
+def test_mimic_websocket_rejects_unknown_mode(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+    monkeypatch.setattr(question_router_module, "MIMIC_OUTPUT_DIR", tmp_path / "mimic_papers")
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with client.websocket_connect("/api/v1/question/mimic") as websocket:
+            websocket.send_json({"mode": "mystery", "kb_name": "demo-kb"})
+            messages = [websocket.receive_json() for _ in range(2)]
+
+    assert messages[0]["type"] == "status"
+    assert messages[1] == {"type": "error", "content": "Unknown mode: mystery"}
+
+
+def test_mimic_websocket_rejects_invalid_base64_pdf(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+    monkeypatch.setattr(question_router_module, "MIMIC_OUTPUT_DIR", tmp_path / "mimic_papers")
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with client.websocket_connect("/api/v1/question/mimic") as websocket:
+            websocket.send_json(
+                {
+                    "mode": "upload",
+                    "pdf_data": "%%%not-base64%%%",
+                    "pdf_name": "exam.pdf",
+                    "kb_name": "demo-kb",
+                }
+            )
+            messages = [websocket.receive_json() for _ in range(2)]
+
+    assert messages[0]["type"] == "status"
+    assert messages[1]["type"] == "error"
+    assert "Invalid base64 PDF data" in messages[1]["content"]
+
+
+def test_generate_websocket_requires_requirement(monkeypatch: pytest.MonkeyPatch) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with client.websocket_connect("/api/v1/question/generate") as websocket:
+            websocket.send_json({"kb_name": "demo-kb"})
+            payload = websocket.receive_json()
+
+    assert payload == {"type": "error", "content": "Requirement is required"}
+
+
+def test_generate_websocket_streams_task_and_completion(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+    sent: dict[str, object] = {}
+
+    class _FakeCoordinator:
+        def __init__(self, **kwargs) -> None:
+            sent["coordinator_kwargs"] = kwargs
+            self.logger = types.SimpleNamespace(logger=_DummyLogger())
+            self._callback = None
+
+        def set_ws_callback(self, callback) -> None:
+            self._callback = callback
+
+        async def generate_from_topic(
+            self,
+            *,
+            user_topic: str,
+            preference: str,
+            num_questions: int,
+            difficulty: str,
+            question_type: str,
+        ) -> dict:
+            sent["generate_args"] = {
+                "user_topic": user_topic,
+                "preference": preference,
+                "num_questions": num_questions,
+                "difficulty": difficulty,
+                "question_type": question_type,
+            }
+            await self._callback({"type": "log", "content": "working"})
+            return {"success": True, "completed": 2, "failed": 0}
+
+    class _FakeTaskManager:
+        def generate_task_id(self, prefix: str, task_key: str) -> str:
+            sent["task_key"] = (prefix, task_key)
+            return "task-123"
+
+        def update_task_status(self, task_id: str, status: str, error: str | None = None) -> None:
+            sent["task_status"] = (task_id, status, error)
+
+    monkeypatch.setattr(question_router_module, "AgentCoordinator", _FakeCoordinator)
+    monkeypatch.setattr(
+        question_router_module.TaskIDManager,
+        "get_instance",
+        lambda: _FakeTaskManager(),
+    )
+    monkeypatch.setattr(
+        question_router_module,
+        "get_ui_language",
+        lambda default="en": "vi",
+    )
+    monkeypatch.setattr(
+        question_router_module,
+        "get_llm_config",
+        lambda: types.SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
+    monkeypatch.setattr(
+        question_router_module,
+        "get_path_service",
+        lambda: types.SimpleNamespace(get_question_batch_dir=lambda task_id: tmp_path / task_id),
+    )
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with client.websocket_connect("/api/v1/question/generate") as websocket:
+            websocket.send_json(
+                {
+                    "requirement": {
+                        "knowledge_point": "Quadratic equations",
+                        "subject": "Physics",
+                        "preference": "Use real-world examples",
+                        "difficulty": "medium",
+                        "question_type": "choice",
+                    },
+                    "kb_name": "demo-kb",
+                    "count": 2,
+                }
+            )
+            messages = []
+            while True:
+                try:
+                    messages.append(websocket.receive_json())
+                except WebSocketDisconnect:
+                    break
+
+    message_types = [message["type"] for message in messages]
+    assert message_types[0:2] == ["task_id", "status"]
+    assert "log" in message_types
+    assert "batch_summary" in message_types
+    assert "complete" in message_types
+    assert sent["generate_args"] == {
+        "user_topic": "Quadratic equations",
+        "preference": "Subject: Physics\nUse real-world examples",
+        "num_questions": 2,
+        "difficulty": "medium",
+        "question_type": "choice",
+    }
+    assert sent["task_status"] == ("task-123", "completed", None)
+    assert sent["coordinator_kwargs"]["language"] == "vi"
+
+
+def test_mimic_websocket_upload_mode_completes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+    monkeypatch.setattr(question_router_module, "MIMIC_OUTPUT_DIR", tmp_path / "mimic_papers")
+    monkeypatch.setattr(
+        question_router_module.DocumentValidator,
+        "validate_upload_safety",
+        lambda filename, *_args, **_kwargs: filename,
+    )
+    monkeypatch.setattr(
+        question_router_module.DocumentValidator,
+        "validate_file",
+        lambda *_args, **_kwargs: None,
+    )
+
+    async def _fake_mimic_exam_questions(*_args, **kwargs):
+        await kwargs["ws_callback"]("progress", {"content": "parsed"})
+        return {
+            "success": True,
+            "total_reference_questions": 2,
+            "generated_questions": [{"id": "q1"}],
+            "failed_questions": [],
+        }
+
+    monkeypatch.setattr(question_router_module, "mimic_exam_questions", _fake_mimic_exam_questions)
+
+    pdf_bytes = base64.b64encode(b"%PDF-1.4 demo").decode("ascii")
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with client.websocket_connect("/api/v1/question/mimic") as websocket:
+            websocket.send_json(
+                {
+                    "mode": "upload",
+                    "pdf_data": pdf_bytes,
+                    "pdf_name": "exam.pdf",
+                    "kb_name": "demo-kb",
+                    "max_questions": 2,
+                }
+            )
+            messages = []
+            while True:
+                try:
+                    messages.append(websocket.receive_json())
+                except WebSocketDisconnect:
+                    break
+
+    message_types = [message["type"] for message in messages]
+    assert message_types[0:4] == ["status", "status", "status", "status"]
+    assert "progress" in message_types
+    assert message_types[-1] == "complete"
+
+
+def test_generate_websocket_reports_generation_error(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+    sent: dict[str, object] = {}
+
+    class _FailingCoordinator:
+        def __init__(self, **_kwargs) -> None:
+            self.logger = types.SimpleNamespace(logger=_DummyLogger())
+
+        def set_ws_callback(self, _callback) -> None:
+            return None
+
+        async def generate_from_topic(self, **_kwargs) -> dict:
+            raise RuntimeError("generation exploded")
+
+    class _FakeTaskManager:
+        def generate_task_id(self, *_args, **_kwargs) -> str:
+            return "task-err"
+
+        def update_task_status(self, task_id: str, status: str, error: str | None = None) -> None:
+            sent["task_status"] = (task_id, status, error)
+
+    monkeypatch.setattr(question_router_module, "AgentCoordinator", _FailingCoordinator)
+    monkeypatch.setattr(
+        question_router_module.TaskIDManager,
+        "get_instance",
+        lambda: _FakeTaskManager(),
+    )
+    monkeypatch.setattr(
+        question_router_module,
+        "get_path_service",
+        lambda: types.SimpleNamespace(get_question_batch_dir=lambda task_id: tmp_path / task_id),
+    )
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with client.websocket_connect("/api/v1/question/generate") as websocket:
+            websocket.send_json(
+                {
+                    "requirement": {"knowledge_point": "Quadratic equations"},
+                    "kb_name": "demo-kb",
+                }
+            )
+            messages = []
+            while True:
+                try:
+                    messages.append(websocket.receive_json())
+                except WebSocketDisconnect:
+                    break
+
+    assert messages[0]["type"] == "task_id"
+    assert messages[1] == {"type": "status", "content": "started"}
+    assert messages[2] == {"type": "error", "content": "generation exploded"}
+    assert sent["task_status"] == ("task-err", "error", "generation exploded")
