@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform`
+- Task: Publish the bounded task packet and design spec for a backend `80%` coverage gate with CI enforcement and audit-backed omit rules
+- Status: spec written
+- Branch: `docs/test-coverage-gate-task`
+- Task packet: `docs/superpowers/tasks/2026-05-01-backend-test-coverage-gate.md`
+- Owned files: `docs/superpowers/tasks/2026-05-01-backend-test-coverage-gate.md`, `docs/superpowers/specs/2026-05-01-backend-test-coverage-gate-design.md`, `ai_first/TASK_REGISTRY.json`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-01.md`
+- PR: uncreated
+- Last update: 2026-05-01
+- Next action: validate the new task artifacts, then hand off the packet for a dedicated implementation lane
+- Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-demo-seed-vietnamese-refresh`
 - Task: Localize seeded demo content to Vietnamese and make the cleanup-before-reseed step explicit so repeated mock runs never accumulate duplicate demo data
 - Status: implemented, pending PR

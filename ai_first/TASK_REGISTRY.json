@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "last_updated": "2026-04-30T16:30:00Z",
+    "last_updated": "2026-05-01T09:30:00Z",
     "project": "Multiagent Learning Platform - VnExpress Contest MVP",
     "status": "Active Development",
-    "total_tasks": 94
+    "total_tasks": 95
   },
   "task_categories": {
     "completed": {
@@ -116,8 +116,10 @@
     },
     "pending": {
       "description": "Tasks not started, ordered by priority",
-      "count": 0,
-      "tasks": []
+      "count": 1,
+      "tasks": [
+        "T052_BACKEND_TEST_COVERAGE_GATE"
+      ]
     }
   },
   "tasks": [
@@ -2343,6 +2345,28 @@
       "recommended_session_bucket": "session-c-polish",
       "layer": "post-contest-recovery",
       "notes": "Merged to main through PR #248 on 2026-04-30. This lane completed the remaining contest-path Vietnamese coverage by localizing teacher cockpit action copy, locale-backed spec-pack seed templates, and `/agents` authoring fallbacks while preserving route contracts and attribution surfaces."
+    },
+    {
+      "id": "T052_BACKEND_TEST_COVERAGE_GATE",
+      "category": "Engineering Quality",
+      "priority": 95,
+      "title": "Backend Test Coverage Gate",
+      "description": "Add an authoritative backend quality gate so the in-scope backend surface must pass tests and maintain at least 80% coverage in CI, while documenting and excluding only the backend modules not used on the current supported product path.",
+      "scope": {
+        "backend": "pyproject.toml, .github/workflows/tests.yml, selected deeptutor backend modules and tests, plus docs/testing/BACKEND_COVERAGE_SCOPE.md for the committed omit-list contract"
+      },
+      "affected_features": [
+        "Backend Test Suite",
+        "Continuous Integration",
+        "Engineering Quality"
+      ],
+      "complexity": "High",
+      "estimated_hours": 8,
+      "dependencies": [],
+      "status": "pending",
+      "recommended_session_bucket": "session-b-runtime",
+      "layer": "post-contest-hardening",
+      "notes": "Packet published on 2026-05-01. The implementation lane must audit the supported backend path, define the omit list explicitly, fix any backend logic defects uncovered during truthful test authoring, and then enforce the >=80% gate in CI."
     }
   ],
   "github_issues_template": {
