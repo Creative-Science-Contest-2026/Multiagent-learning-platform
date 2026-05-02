@@ -8,10 +8,17 @@ export interface AuthUser {
   email: string;
   display_name: string;
   role: AppRole;
+  email_verified_at?: string | null;
 }
 
 interface AuthResponse {
   user: AuthUser;
+}
+
+interface GenericAuthActionResponse {
+  ok: boolean;
+  debug_token?: string;
+  debug_url?: string;
 }
 
 async function expectJson<T>(response: Response): Promise<T> {
@@ -64,6 +71,44 @@ export async function logout(): Promise<void> {
     credentials: "include",
   });
   await expectJson<{ ok: boolean }>(response);
+}
+
+export async function requestPasswordReset(email: string): Promise<GenericAuthActionResponse> {
+  const response = await fetch(apiUrl("/api/v1/auth/forgot-password"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email.trim() }),
+  });
+  return expectJson<GenericAuthActionResponse>(response);
+}
+
+export async function resetPassword(payload: {
+  token: string;
+  password: string;
+}): Promise<GenericAuthActionResponse> {
+  const response = await fetch(apiUrl("/api/v1/auth/reset-password"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return expectJson<GenericAuthActionResponse>(response);
+}
+
+export async function sendVerificationEmail(): Promise<GenericAuthActionResponse> {
+  const response = await fetch(apiUrl("/api/v1/auth/send-verification"), {
+    method: "POST",
+    credentials: "include",
+  });
+  return expectJson<GenericAuthActionResponse>(response);
+}
+
+export async function verifyEmailToken(token: string): Promise<GenericAuthActionResponse> {
+  const response = await fetch(apiUrl("/api/v1/auth/verify-email"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+  return expectJson<GenericAuthActionResponse>(response);
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {

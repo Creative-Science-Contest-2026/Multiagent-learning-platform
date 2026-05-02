@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
@@ -14,8 +16,11 @@ from deeptutor.services.auth.google_oauth import build_google_authorize_url
 from deeptutor.services.auth.google_oauth import exchange_google_code_for_identity
 from deeptutor.services.auth.google_oauth import get_google_oauth_settings
 from deeptutor.services.auth.schemas import AuthenticatedUser
+from deeptutor.services.auth.schemas import ForgotPasswordRequest
 from deeptutor.services.auth.schemas import LoginRequest
+from deeptutor.services.auth.schemas import ResetPasswordRequest
 from deeptutor.services.auth.schemas import SignupRequest
+from deeptutor.services.auth.schemas import VerifyEmailRequest
 from deeptutor.services.auth.service import AuthService
 
 router = APIRouter()
@@ -31,6 +36,22 @@ def _set_auth_cookie(response: Response, session_secret: str) -> None:
         samesite="lax",
         secure=False,
     )
+
+
+def _debug_token_payload(flow: str, token: str | None) -> dict[str, str]:
+    if not token:
+        return {}
+    if os.getenv("DEEPTUTOR_AUTH_DEBUG_TOKENS", "1").strip().lower() not in {"1", "true", "yes", "on"}:
+        return {}
+    if flow == "verify-email":
+        return {
+            "debug_token": token,
+            "debug_url": f"/verify-email?token={token}",
+        }
+    return {
+        "debug_token": token,
+        "debug_url": f"/reset-password?token={token}",
+    }
 
 
 @router.post("/signup")
@@ -96,6 +117,48 @@ def logout(request: Request, response: Response, service: AuthService = Depends(
 @router.get("/me")
 def me(current_user: AuthenticatedUser = Depends(get_current_user)):
     return {"user": current_user.model_dump()}
+
+
+@router.post("/forgot-password")
+def forgot_password(
+    payload: ForgotPasswordRequest,
+    service: AuthService = Depends(get_auth_service),
+):
+    token = service.request_password_reset(email=payload.email)
+    body: dict[str, object] = {"ok": True}
+    body.update(_debug_token_payload("reset-password", token))
+    return body
+
+
+@router.post("/reset-password")
+def reset_password(
+    payload: ResetPasswordRequest,
+    service: AuthService = Depends(get_auth_service),
+):
+    if not service.reset_password(token=payload.token, new_password=payload.password):
+        raise HTTPException(status_code=400, detail="Invalid or expired password reset token")
+    return {"ok": True}
+
+
+@router.post("/send-verification")
+def send_verification(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    service: AuthService = Depends(get_auth_service),
+):
+    token = service.issue_email_verification(user_id=current_user.id)
+    body: dict[str, object] = {"ok": True}
+    body.update(_debug_token_payload("verify-email", token))
+    return body
+
+
+@router.post("/verify-email")
+def verify_email(
+    payload: VerifyEmailRequest,
+    service: AuthService = Depends(get_auth_service),
+):
+    if not service.verify_email(token=payload.token):
+        raise HTTPException(status_code=400, detail="Invalid or expired email verification token")
+    return {"ok": True}
 
 
 @router.get("/google/start")

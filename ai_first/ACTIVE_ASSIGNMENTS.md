@@ -35,15 +35,15 @@ Rules:
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-auth-multi-user-foundation`
-- Task: Introduce PostgreSQL-backed auth, admin account control, owned learning sessions, and the decomposed frontend auth shell scope
-- Status: implementing backend plus auth-only frontend scope
+- Task: Introduce PostgreSQL-backed auth, admin account control, owned learning sessions, public recovery/verification flows, and the decomposed frontend auth plus shell-gating scope
+- Status: implemented locally, pending final review/PR
 - Branch: `fix/auth-multi-user-foundation`
 - Task packet: `docs/superpowers/tasks/2026-05-02-auth-multi-user-foundation.md`
-- Owned files: `deeptutor/api/main.py`, `deeptutor/api/routers/auth.py`, `deeptutor/api/routers/admin_users.py`, `deeptutor/api/routers/sessions.py`, `deeptutor/services/auth/**`, `deeptutor/services/db/**`, `deeptutor/services/session/**`, `alembic/**`, `tests/api/test_auth_router.py`, `tests/api/test_admin_users_router.py`, `tests/api/test_session_review_router.py`, `tests/services/auth/**`, `tests/services/session/test_owned_session_store.py`, `pyproject.toml`, `requirements/server.txt`, `web/app/login/**`, `web/app/signup/**`, `web/app/forgot-password/**`, `web/app/reset-password/**`, `web/app/verify-email/**`, `web/app/teacher/**`, `web/app/student/**`, `web/app/admin/**`, `web/components/auth/**`, `web/context/AuthContext.tsx`, `web/lib/auth-api.ts`, `web/lib/session-api.ts`, `web/tests/auth-*.test.tsx`, `web/tests/role-shell-routing.test.tsx`, `web/tests/setup-vitest.ts`, `web/vitest.config.ts`, `web/app/layout.tsx`, `web/package.json`, `web/package-lock.json`, `docs/superpowers/tasks/2026-05-02-auth-multi-user-foundation.md`, `docs/superpowers/specs/2026-05-02-auth-multi-user-foundation-design.md`, `docs/superpowers/plans/2026-05-02-auth-multi-user-foundation.md`, `docs/superpowers/pr-notes/2026-05-02-auth-multi-user-foundation.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-02.md`, `ai_first/architecture/MAIN_SYSTEM_MAP.md`
+- Owned files: `deeptutor/api/main.py`, `deeptutor/api/routers/auth.py`, `deeptutor/api/routers/admin_users.py`, `deeptutor/api/routers/sessions.py`, `deeptutor/services/auth/**`, `deeptutor/services/db/**`, `deeptutor/services/session/**`, `alembic/**`, `tests/api/test_auth_router.py`, `tests/api/test_admin_users_router.py`, `tests/api/test_session_review_router.py`, `tests/services/auth/**`, `tests/services/session/test_owned_session_store.py`, `pyproject.toml`, `requirements/server.txt`, `web/app/login/**`, `web/app/signup/**`, `web/app/forgot-password/**`, `web/app/reset-password/**`, `web/app/verify-email/**`, `web/app/teacher/**`, `web/app/student/**`, `web/app/admin/**`, `web/app/(workspace)/layout.tsx`, `web/app/(utility)/layout.tsx`, `web/components/auth/**`, `web/context/AuthContext.tsx`, `web/lib/auth-api.ts`, `web/lib/session-api.ts`, `web/tests/auth-*.test.tsx`, `web/tests/role-shell-routing.test.tsx`, `web/tests/teacher-surface-gate.test.tsx`, `web/tests/auth-shell-layout-source.test.ts`, `web/tests/setup-vitest.ts`, `web/vitest.config.ts`, `web/app/layout.tsx`, `web/package.json`, `web/package-lock.json`, `docs/superpowers/tasks/2026-05-02-auth-multi-user-foundation.md`, `docs/superpowers/specs/2026-05-02-auth-multi-user-foundation-design.md`, `docs/superpowers/plans/2026-05-02-auth-multi-user-foundation.md`, `docs/superpowers/pr-notes/2026-05-02-auth-multi-user-foundation.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-02.md`, `ai_first/architecture/MAIN_SYSTEM_MAP.md`
 - PR: uncreated
 - Last update: 2026-05-02
-- Next action: implement the public auth pages, auth context, and teacher/student/admin shells inside the decomposed frontend auth scope only
-- Blocker: none for the auth-only frontend scope; do not broaden into unrelated `web/**`
+- Next action: self-review the completed auth + recovery + shell-gating diff, then open the draft PR if requested
+- Blocker: none for the approved auth + shell-gating scope; do not broaden into unrelated `web/**`
 
 ### Assignment
 

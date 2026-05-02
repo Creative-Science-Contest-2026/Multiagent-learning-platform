@@ -10,11 +10,15 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
 }));
 
-vi.mock("../lib/auth-api", () => ({
-  signup,
-  googleLoginUrl,
-  appHomeForRole,
-}));
+vi.mock("../lib/auth-api", async () => {
+  const actual = await vi.importActual("../lib/auth-api");
+  return {
+    ...actual,
+    signup,
+    googleLoginUrl,
+    appHomeForRole,
+  };
+});
 
 describe("signup page", () => {
   it("shows role selection and lets the user switch role before submit", async () => {

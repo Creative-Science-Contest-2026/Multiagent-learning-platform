@@ -6,6 +6,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from deeptutor.services.auth.models import AuthSession
+from deeptutor.services.auth.models import EmailVerificationToken
+from deeptutor.services.auth.models import PasswordResetToken
 from deeptutor.services.auth.models import User
 from deeptutor.services.auth.models import UserOAuthIdentity
 from deeptutor.services.auth.models import UserPasswordCredential
@@ -24,6 +26,16 @@ class AuthService:
 
     def _session(self) -> Session:
         return self._session_factory()
+
+    @staticmethod
+    def _serialize_user(user: User) -> dict[str, str | None]:
+        return {
+            "id": user.id,
+            "email": user.email,
+            "display_name": user.display_name,
+            "role": str(user.role.value if hasattr(user.role, "value") else user.role),
+            "email_verified_at": user.email_verified_at.isoformat() if user.email_verified_at else None,
+        }
 
     def create_user(self, *, email: str, display_name: str, role: str, password: str) -> dict[str, str]:
         normalized_email = email.strip().lower()
@@ -47,12 +59,7 @@ class AuthService:
                 )
             )
             session.commit()
-            return {
-                "id": user.id,
-                "email": user.email,
-                "display_name": user.display_name,
-                "role": str(user.role.value if hasattr(user.role, "value") else user.role),
-            }
+            return self._serialize_user(user)
 
     def authenticate_user(self, *, email: str, password: str) -> dict[str, str] | None:
         normalized_email = email.strip().lower()
@@ -63,12 +70,7 @@ class AuthService:
             credential = session.get(UserPasswordCredential, user.id)
             if credential is None or not verify_password(password, credential.password_hash):
                 return None
-            return {
-                "id": user.id,
-                "email": user.email,
-                "display_name": user.display_name,
-                "role": str(user.role.value if hasattr(user.role, "value") else user.role),
-            }
+            return self._serialize_user(user)
 
     def create_auth_session(
         self,
@@ -116,12 +118,7 @@ class AuthService:
                 return None
             auth_session.last_seen_at = datetime.utcnow()
             session.commit()
-            return {
-                "id": user.id,
-                "email": user.email,
-                "display_name": user.display_name,
-                "role": str(user.role.value if hasattr(user.role, "value") else user.role),
-            }
+            return self._serialize_user(user)
 
     def revoke_session(self, secret: str) -> None:
         secret_hash = hash_session_secret(secret)
@@ -148,6 +145,83 @@ class AuthService:
                 for user in rows
             ]
 
+    def request_password_reset(self, *, email: str) -> str | None:
+        normalized_email = email.strip().lower()
+        token = mint_session_secret()
+        with self._session() as session:
+            user = session.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
+            if user is None:
+                return None
+            session.add(
+                PasswordResetToken(
+                    user_id=user.id,
+                    token_hash=hash_session_secret(token),
+                    expires_at=datetime.utcnow() + timedelta(hours=1),
+                )
+            )
+            session.commit()
+            return token
+
+    def reset_password(self, *, token: str, new_password: str) -> bool:
+        token_hash = hash_session_secret(token.strip())
+        now = datetime.utcnow()
+        with self._session() as session:
+            reset_token = session.execute(
+                select(PasswordResetToken).where(PasswordResetToken.token_hash == token_hash)
+            ).scalar_one_or_none()
+            if reset_token is None or reset_token.consumed_at is not None or reset_token.expires_at < now:
+                return False
+            credential = session.get(UserPasswordCredential, reset_token.user_id)
+            if credential is None:
+                return False
+            credential.password_hash = hash_password(new_password)
+            credential.password_updated_at = now
+            reset_token.consumed_at = now
+            for auth_session in session.execute(
+                select(AuthSession).where(AuthSession.user_id == reset_token.user_id)
+            ).scalars():
+                if auth_session.revoked_at is None:
+                    auth_session.revoked_at = now
+            session.commit()
+            return True
+
+    def issue_email_verification(self, *, user_id: str) -> str | None:
+        token = mint_session_secret()
+        with self._session() as session:
+            user = session.get(User, user_id)
+            if user is None or user.email_verified_at is not None:
+                return None
+            session.add(
+                EmailVerificationToken(
+                    user_id=user.id,
+                    token_hash=hash_session_secret(token),
+                    expires_at=datetime.utcnow() + timedelta(hours=24),
+                )
+            )
+            session.commit()
+            return token
+
+    def verify_email(self, *, token: str) -> bool:
+        token_hash = hash_session_secret(token.strip())
+        now = datetime.utcnow()
+        with self._session() as session:
+            verification_token = session.execute(
+                select(EmailVerificationToken).where(EmailVerificationToken.token_hash == token_hash)
+            ).scalar_one_or_none()
+            if (
+                verification_token is None
+                or verification_token.consumed_at is not None
+                or verification_token.expires_at < now
+            ):
+                return False
+            user = session.get(User, verification_token.user_id)
+            if user is None:
+                return False
+            user.email_verified_at = now
+            verification_token.consumed_at = now
+            session.commit()
+            return True
+
     def upsert_google_user(
         self,
         *,
@@ -168,12 +242,7 @@ class AuthService:
                 user = session.get(User, identity.user_id)
                 if user is None:
                     raise ValueError("google_identity_without_user")
-                return {
-                    "id": user.id,
-                    "email": user.email,
-                    "display_name": user.display_name,
-                    "role": str(user.role.value if hasattr(user.role, "value") else user.role),
-                }
+                return self._serialize_user(user)
 
             user = session.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
             if user is None:
@@ -196,9 +265,4 @@ class AuthService:
                 )
             )
             session.commit()
-            return {
-                "id": user.id,
-                "email": user.email,
-                "display_name": user.display_name,
-                "role": str(user.role.value if hasattr(user.role, "value") else user.role),
-            }
+            return self._serialize_user(user)

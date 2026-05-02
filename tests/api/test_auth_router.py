@@ -102,3 +102,89 @@ def test_google_start_redirects_to_provider(tmp_path, monkeypatch: pytest.Monkey
 
     assert response.status_code in {302, 307}
     assert "accounts.google.com" in response.headers["location"]
+
+
+def test_forgot_password_is_generic_and_reset_token_changes_password(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        signup_response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Teacher One",
+                "email": "teacher@example.com",
+                "password": "StrongPass123!",
+                "role": "teacher",
+            },
+        )
+        assert signup_response.status_code == 200
+        client.cookies.clear()
+
+        forgot_response = client.post(
+            "/api/v1/auth/forgot-password",
+            json={"email": "teacher@example.com"},
+        )
+
+        assert forgot_response.status_code == 200
+        payload = forgot_response.json()
+        assert payload["ok"] is True
+        assert payload["debug_token"]
+
+        reset_response = client.post(
+            "/api/v1/auth/reset-password",
+            json={
+                "token": payload["debug_token"],
+                "password": "EvenStronger456!",
+            },
+        )
+        assert reset_response.status_code == 200
+
+        login_response = client.post(
+            "/api/v1/auth/login",
+            json={
+                "email": "teacher@example.com",
+                "password": "EvenStronger456!",
+            },
+        )
+
+    assert login_response.status_code == 200
+    assert login_response.json()["user"]["email"] == "teacher@example.com"
+
+
+def test_send_verification_requires_auth_and_verify_email_marks_user_verified(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        unauthenticated = client.post("/api/v1/auth/send-verification")
+        assert unauthenticated.status_code == 401
+
+        signup_response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Student One",
+                "email": "student@example.com",
+                "password": "StrongPass123!",
+                "role": "student",
+            },
+        )
+        assert signup_response.status_code == 200
+
+        send_response = client.post("/api/v1/auth/send-verification")
+        assert send_response.status_code == 200
+        payload = send_response.json()
+        assert payload["ok"] is True
+        assert payload["debug_token"]
+
+        verify_response = client.post(
+            "/api/v1/auth/verify-email",
+            json={"token": payload["debug_token"]},
+        )
+        assert verify_response.status_code == 200
+
+        me_response = client.get("/api/v1/auth/me")
+
+    assert me_response.status_code == 200
+    assert me_response.json()["user"]["email"] == "student@example.com"
+    assert me_response.json()["user"]["email_verified_at"] is not None

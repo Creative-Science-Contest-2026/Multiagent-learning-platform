@@ -10,11 +10,15 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
 }));
 
-vi.mock("../lib/auth-api", () => ({
-  login,
-  googleLoginUrl,
-  appHomeForRole,
-}));
+vi.mock("../lib/auth-api", async () => {
+  const actual = await vi.importActual("../lib/auth-api");
+  return {
+    ...actual,
+    login,
+    googleLoginUrl,
+    appHomeForRole,
+  };
+});
 
 describe("login page", () => {
   it("renders email/password login and a Google CTA", async () => {

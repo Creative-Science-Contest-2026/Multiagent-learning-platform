@@ -65,12 +65,16 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `web/app/teacher/**`
 - `web/app/student/**`
 - `web/app/admin/**`
+- `web/app/(workspace)/layout.tsx`
+- `web/app/(utility)/layout.tsx`
 - `web/components/auth/**`
 - `web/context/AuthContext.tsx`
 - `web/lib/auth-api.ts`
 - `web/lib/session-api.ts`
 - `web/tests/auth-*.test.tsx`
 - `web/tests/role-shell-routing.test.tsx`
+- `web/tests/teacher-surface-gate.test.tsx`
+- `web/tests/auth-shell-layout-source.test.ts`
 - `web/tests/setup-vitest.ts`
 - `web/vitest.config.ts`
 - `web/app/layout.tsx`
@@ -79,7 +83,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 
 ## Do-Not-Touch
 
-- any `web/**` file outside the decomposed frontend auth scope above
+- any `web/**` file outside the decomposed frontend auth scope above, except the two shared shell layouts explicitly opened for auth gating
 - unrelated contest documentation under `docs/contest/**`
 - unrelated runtime/product features outside auth, admin, and session ownership
 - lockfiles unless dependency changes require them
@@ -113,7 +117,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - email/password auth API exists
   - admin and owned-session backend enforcement exists
 - current stop condition for frontend:
-  - stay inside the decomposed auth-only frontend scope and do not broaden into unrelated `web/**`
+  - stay inside the decomposed auth/frontend-gating scope and do not broaden into unrelated `web/**`
 
 ## Required Tests
 

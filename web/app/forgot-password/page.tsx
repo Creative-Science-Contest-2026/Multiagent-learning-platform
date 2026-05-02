@@ -1,15 +1,14 @@
 import AuthShell from "@/components/auth/AuthShell";
+import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 
 export default function ForgotPasswordPage() {
   return (
     <AuthShell
       eyebrow="Recovery"
       title="Quên mật khẩu / Forgot password"
-      subtitle="Luồng khôi phục mật khẩu sẽ gửi liên kết đặt lại qua email ở bước backend tiếp theo."
+      subtitle="Nhập email tài khoản để chuẩn bị liên kết đặt lại mật khẩu. Với môi trường local, hệ thống có thể hiển thị liên kết debug để tự kiểm tra nhanh."
     >
-      <div className="rounded-[24px] border border-[rgba(10,21,48,0.1)] bg-[#f8f5ef] px-5 py-5 text-sm leading-7 text-[#24324a]">
-        Nhập email tài khoản ở phiên bản tiếp theo để nhận liên kết đặt lại mật khẩu.
-      </div>
+      <ForgotPasswordForm />
     </AuthShell>
   );
 }

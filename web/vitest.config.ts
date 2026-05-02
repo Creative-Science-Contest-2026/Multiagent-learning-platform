@@ -10,8 +10,12 @@ export default defineConfig({
     include: [
       "tests/api-base-url.test.ts",
       "tests/auth-login-page.test.tsx",
+      "tests/auth-recovery-pages.test.tsx",
       "tests/auth-role-picker.test.tsx",
+      "tests/auth-shell-layout-source.test.ts",
       "tests/auth-signup-page.test.tsx",
+      "tests/auth-teacher-surface-gate.test.tsx",
+      "tests/auth-verify-page.test.tsx",
       "tests/class-tutor-pack-presenters.test.ts",
       "tests/introduce-content.test.ts",
       "tests/introduce-gallery.test.tsx",
