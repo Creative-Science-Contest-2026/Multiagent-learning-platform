@@ -10,6 +10,9 @@ export default defineConfig({
     include: [
       "tests/api-base-url.test.ts",
       "tests/class-tutor-pack-presenters.test.ts",
+      "tests/introduce-content.test.ts",
+      "tests/introduce-gallery.test.tsx",
+      "tests/introduce-page-source.test.tsx",
       "tests/knowledge-page-wizard-shell.test.ts",
       "tests/markdown-display.test.ts",
       "tests/playground-trace.test.ts",
