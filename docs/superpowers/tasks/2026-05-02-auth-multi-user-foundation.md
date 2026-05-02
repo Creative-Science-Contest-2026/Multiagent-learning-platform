@@ -42,6 +42,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `alembic/**`
 - `tests/api/test_auth_router.py`
 - `tests/api/test_admin_users_router.py`
+- `tests/api/test_session_review_router.py`
 - `tests/services/auth/**`
 - `tests/services/session/test_owned_session_store.py`
 - `pyproject.toml`

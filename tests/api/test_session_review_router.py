@@ -16,10 +16,17 @@ pytestmark = pytest.mark.skipif(FastAPI is None or TestClient is None, reason="f
 
 def _build_app(store: SQLiteSessionStore, monkeypatch: pytest.MonkeyPatch) -> FastAPI:
     from deeptutor.api.routers import sessions
+    from deeptutor.services.auth.schemas import AuthenticatedUser
 
     app = FastAPI()
     app.include_router(sessions.router, prefix="/api/v1/sessions")
     monkeypatch.setattr(sessions, "get_sqlite_session_store", lambda: store)
+    app.dependency_overrides[sessions.get_current_user] = lambda: AuthenticatedUser(
+        id="test-user",
+        email="teacher@example.com",
+        display_name="Teacher",
+        role="teacher",
+    )
     return app
 
 
@@ -270,7 +277,7 @@ async def test_get_session_includes_context_support_snapshot(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
-    await store.create_session(session_id="chat-context-session")
+    await store.create_session(session_id="chat-context-session", owner_user_id="test-user")
     await store.update_session_preferences(
         "chat-context-session",
         {

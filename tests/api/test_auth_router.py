@@ -18,6 +18,9 @@ def _build_app(tmp_path, monkeypatch: pytest.MonkeyPatch) -> FastAPI:
 
     database_url = f"sqlite+pysqlite:///{tmp_path / 'auth-router.db'}"
     monkeypatch.setenv("DEEPTUTOR_AUTH_DATABASE_URL", database_url)
+    monkeypatch.setenv("DEEPTUTOR_GOOGLE_CLIENT_ID", "google-client-id")
+    monkeypatch.setenv("DEEPTUTOR_GOOGLE_CLIENT_SECRET", "google-client-secret")
+    monkeypatch.setenv("DEEPTUTOR_GOOGLE_REDIRECT_URI", "http://localhost:8001/api/v1/auth/google/callback")
     clear_auth_database_caches()
 
     app = FastAPI()
@@ -91,3 +94,11 @@ def test_me_requires_valid_session_cookie(tmp_path, monkeypatch: pytest.MonkeyPa
         response = client.get("/api/v1/auth/me")
 
     assert response.status_code == 401
+
+
+def test_google_start_redirects_to_provider(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        response = client.get("/api/v1/auth/google/start?role=teacher", follow_redirects=False)
+
+    assert response.status_code in {302, 307}
+    assert "accounts.google.com" in response.headers["location"]

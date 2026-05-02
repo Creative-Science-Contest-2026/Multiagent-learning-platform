@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from deeptutor.services.auth.models import AuthSession
 from deeptutor.services.auth.models import User
+from deeptutor.services.auth.models import UserOAuthIdentity
 from deeptutor.services.auth.models import UserPasswordCredential
 from deeptutor.services.auth.passwords import hash_password
 from deeptutor.services.auth.passwords import verify_password
@@ -132,3 +133,72 @@ class AuthService:
                 return
             auth_session.revoked_at = datetime.utcnow()
             session.commit()
+
+    def list_users(self) -> list[dict[str, str]]:
+        with self._session() as session:
+            rows = session.execute(select(User).order_by(User.created_at.asc())).scalars().all()
+            return [
+                {
+                    "id": user.id,
+                    "email": user.email,
+                    "display_name": user.display_name,
+                    "role": str(user.role.value if hasattr(user.role, "value") else user.role),
+                    "status": user.status,
+                }
+                for user in rows
+            ]
+
+    def upsert_google_user(
+        self,
+        *,
+        email: str,
+        display_name: str,
+        provider_subject: str,
+        desired_role: str,
+    ) -> dict[str, str]:
+        normalized_email = email.strip().lower()
+        with self._session() as session:
+            identity = session.execute(
+                select(UserOAuthIdentity).where(
+                    UserOAuthIdentity.provider == "google",
+                    UserOAuthIdentity.provider_subject == provider_subject,
+                )
+            ).scalar_one_or_none()
+            if identity is not None:
+                user = session.get(User, identity.user_id)
+                if user is None:
+                    raise ValueError("google_identity_without_user")
+                return {
+                    "id": user.id,
+                    "email": user.email,
+                    "display_name": user.display_name,
+                    "role": str(user.role.value if hasattr(user.role, "value") else user.role),
+                }
+
+            user = session.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
+            if user is None:
+                user = User(
+                    email=normalized_email,
+                    display_name=display_name.strip() or normalized_email,
+                    role=desired_role,
+                    status="active",
+                    email_verified_at=datetime.utcnow(),
+                )
+                session.add(user)
+                session.flush()
+
+            session.add(
+                UserOAuthIdentity(
+                    user_id=user.id,
+                    provider="google",
+                    provider_subject=provider_subject,
+                    email_at_link_time=normalized_email,
+                )
+            )
+            session.commit()
+            return {
+                "id": user.id,
+                "email": user.email,
+                "display_name": user.display_name,
+                "role": str(user.role.value if hasattr(user.role, "value") else user.role),
+            }

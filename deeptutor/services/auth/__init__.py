@@ -1,3 +1,4 @@
+from .google_oauth import GoogleIdentity, GoogleOAuthSettings
 from .models import Base, UserRole
 from .passwords import hash_password, verify_password
 from .schemas import AuthenticatedUser, LoginRequest, SignupRequest
@@ -8,6 +9,8 @@ __all__ = [
     "AuthenticatedUser",
     "AuthService",
     "Base",
+    "GoogleIdentity",
+    "GoogleOAuthSettings",
     "LoginRequest",
     "SignupRequest",
     "UserRole",
