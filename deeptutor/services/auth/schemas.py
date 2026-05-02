@@ -33,6 +33,13 @@ class VerifyEmailRequest(BaseModel):
     token: str = Field(..., min_length=16, max_length=256)
 
 
+class AdminCreateUserRequest(BaseModel):
+    display_name: str = Field(..., min_length=1, max_length=120)
+    email: EmailStr
+    password: str = Field(..., min_length=8, max_length=128)
+    role: Literal["teacher", "student", "admin"]
+
+
 class AuthenticatedUser(BaseModel):
     id: str
     email: EmailStr

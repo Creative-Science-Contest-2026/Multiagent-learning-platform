@@ -1,3 +1,5 @@
+import AdminUsersPanel from "@/components/auth/AdminUsersPanel";
+
 export default function AdminHomePage() {
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#ffffff_0%,#f4f4f7_100%)] px-4 py-8 text-[#0a1530]">
@@ -9,6 +11,7 @@ export default function AdminHomePage() {
             Đây là không gian quản trị tối thiểu cho việc kiểm tra tình trạng tài khoản, vai trò và khả năng truy cập hệ thống.
           </p>
         </header>
+        <AdminUsersPanel />
       </div>
     </main>
   );

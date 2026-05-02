@@ -9,8 +9,10 @@ export default defineConfig({
     setupFiles: ["./tests/setup-vitest.ts"],
     include: [
       "tests/api-base-url.test.ts",
+      "tests/auth-admin-page.test.tsx",
       "tests/auth-login-page.test.tsx",
       "tests/auth-recovery-pages.test.tsx",
+      "tests/auth-role-hubs.test.tsx",
       "tests/auth-role-picker.test.tsx",
       "tests/auth-shell-layout-source.test.ts",
       "tests/auth-signup-page.test.tsx",

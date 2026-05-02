@@ -21,6 +21,18 @@ interface GenericAuthActionResponse {
   debug_url?: string;
 }
 
+export interface AdminUserRecord {
+  id: string;
+  email: string;
+  display_name: string;
+  role: AppRole;
+  status: string;
+}
+
+interface AdminUsersResponse {
+  users: AdminUserRecord[];
+}
+
 async function expectJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const detail = await response.text();
@@ -121,4 +133,27 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   }
   const payload = await expectJson<AuthResponse>(response);
   return payload.user;
+}
+
+export async function listAdminUsers(): Promise<AdminUsersResponse> {
+  const response = await fetch(apiUrl("/api/v1/admin/users"), {
+    credentials: "include",
+    cache: "no-store",
+  });
+  return expectJson<AdminUsersResponse>(response);
+}
+
+export async function createAdminUser(payload: {
+  display_name: string;
+  email: string;
+  password: string;
+  role: AppRole;
+}): Promise<{ user: AdminUserRecord }> {
+  const response = await fetch(apiUrl("/api/v1/admin/users"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  return expectJson<{ user: AdminUserRecord }>(response);
 }

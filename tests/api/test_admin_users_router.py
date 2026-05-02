@@ -47,3 +47,22 @@ def test_admin_users_list_requires_admin_dependency(tmp_path, monkeypatch: pytes
         response = client.get("/api/v1/admin/users")
 
     assert response.status_code == 200
+
+
+def test_admin_can_create_teacher_accounts(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    with TestClient(_build_admin_app(tmp_path, monkeypatch)) as client:
+        create_response = client.post(
+            "/api/v1/admin/users",
+            json={
+                "display_name": "Teacher Two",
+                "email": "teacher2@example.com",
+                "password": "StrongPass123!",
+                "role": "teacher",
+            },
+        )
+        list_response = client.get("/api/v1/admin/users")
+
+    assert create_response.status_code == 201
+    assert create_response.json()["user"]["email"] == "teacher2@example.com"
+    users = list_response.json()["users"]
+    assert any(user["email"] == "teacher2@example.com" and user["role"] == "teacher" for user in users)
