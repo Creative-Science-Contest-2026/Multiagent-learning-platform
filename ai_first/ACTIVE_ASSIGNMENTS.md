@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-introduce-public-docs-page`
+- Task: Build a standalone public `/introduce` docs route with a fixed sidebar, bilingual content, and screenshot gallery
+- Status: local validation passing
+- Branch: `fix/introduce-public-docs-page`
+- Task packet: `docs/superpowers/tasks/2026-05-02-introduce-public-docs-page.md`
+- Owned files: `web/app/introduce/**`, `web/components/introduce/**`, `web/public/introduce/**`, `web/tests/introduce-*.test.ts*`, `web/vitest.config.ts`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-02.md`, `docs/superpowers/pr-notes/2026-05-02-introduce-public-docs-page.md`, `ai_first/architecture/MAIN_SYSTEM_MAP.md` only if the new route materially changes the documented product surface
+- PR: uncreated
+- Last update: 2026-05-02
+- Next action: self-review the standalone docs route diff, then stage and open a draft PR if requested
+- Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-frontend-test-coverage-gate`
 - Task: Implement the frontend `80%` coverage gate for the teacher-first contest path, document the in-scope frontend surface, and enforce the same command in CI
 - Status: local validation passing

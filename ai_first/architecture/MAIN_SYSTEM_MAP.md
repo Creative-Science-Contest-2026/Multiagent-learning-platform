@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-04-30
+Last updated: 2026-05-02
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -45,6 +45,11 @@ flowchart TD
 
   Project --> Product["Contest MVP Product Layer"]
   Product --> TeacherWorkspace["Teacher Workspace"]
+  Product --> IntroduceDocs["Public Introduce Docs Surface"]
+  IntroduceDocs --> IntroduceRoute["/introduce"]
+  IntroduceDocs --> IntroduceSidebar["Fixed docs sidebar + section anchors"]
+  IntroduceDocs --> IntroduceGallery["Real screenshot gallery + click-to-enlarge lightbox"]
+  IntroduceDocs --> IntroduceDocBridge["Judge-first overview + educator docs + technical docs bridge"]
   TeacherWorkspace --> AgentSpecAuthoring["Agent Spec Authoring"]
   AgentSpecAuthoring --> AgentSpecUI["/agents authoring tab"]
   AgentSpecAuthoring --> AgentSpecAPI["/api/v1/agent-specs"]
