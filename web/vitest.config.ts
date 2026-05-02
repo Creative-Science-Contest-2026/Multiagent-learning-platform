@@ -9,6 +9,9 @@ export default defineConfig({
     setupFiles: ["./tests/setup-vitest.ts"],
     include: [
       "tests/api-base-url.test.ts",
+      "tests/auth-login-page.test.tsx",
+      "tests/auth-role-picker.test.tsx",
+      "tests/auth-signup-page.test.tsx",
       "tests/class-tutor-pack-presenters.test.ts",
       "tests/introduce-content.test.ts",
       "tests/introduce-gallery.test.tsx",
@@ -16,6 +19,7 @@ export default defineConfig({
       "tests/knowledge-page-wizard-shell.test.ts",
       "tests/markdown-display.test.ts",
       "tests/playground-trace.test.ts",
+      "tests/role-shell-routing.test.tsx",
       "tests/sidebar-nav-groups.test.ts",
       "tests/teacher-cockpit-content.test.ts",
       "tests/teacher-dashboard-copy.test.ts",

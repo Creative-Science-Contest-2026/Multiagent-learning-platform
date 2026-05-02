@@ -55,7 +55,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `ai_first/daily/2026-05-02.md`
 - `ai_first/architecture/MAIN_SYSTEM_MAP.md`
 
-### Frontend scope intended later, but currently blocked
+### Frontend scope now approved by decomposed ownership
 
 - `web/app/login/**`
 - `web/app/signup/**`
@@ -71,10 +71,15 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `web/lib/session-api.ts`
 - `web/tests/auth-*.test.tsx`
 - `web/tests/role-shell-routing.test.tsx`
+- `web/tests/setup-vitest.ts`
+- `web/vitest.config.ts`
+- `web/app/layout.tsx`
+- `web/package.json`
+- `web/package-lock.json`
 
 ## Do-Not-Touch
 
-- any `web/**` file currently owned by `fix/frontend-test-coverage-gate` until ownership is decomposed or that lane closes
+- any `web/**` file outside the decomposed frontend auth scope above
 - unrelated contest documentation under `docs/contest/**`
 - unrelated runtime/product features outside auth, admin, and session ownership
 - lockfiles unless dependency changes require them
@@ -107,8 +112,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - PostgreSQL/auth foundation exists
   - email/password auth API exists
   - admin and owned-session backend enforcement exists
-- current intentional stop before frontend if blocker remains:
-  - no `web/**` edits unless ownership conflict is resolved
+- current stop condition for frontend:
+  - stay inside the decomposed auth-only frontend scope and do not broaden into unrelated `web/**`
 
 ## Required Tests
 
@@ -118,4 +123,4 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 ## Parallel-Work Notes
 
 - use the dedicated worktree `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-auth-multi-user-foundation`
-- frontend auth UI work is blocked until the active `web/**` lane is decomposed or closed
+- frontend auth UI work is approved only for the decomposed auth-only frontend scope listed above

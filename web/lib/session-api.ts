@@ -124,6 +124,7 @@ export async function listSessions(
     async () => {
       const response = await fetch(apiUrl(`/api/v1/sessions?limit=${limit}&offset=${offset}`), {
         cache: "no-store",
+        credentials: "include",
       });
       const data = await expectJson<{ sessions: SessionSummary[] }>(response);
       return data.sessions ?? [];
@@ -138,6 +139,7 @@ export async function listSessions(
 export async function getSession(sessionId: string): Promise<SessionDetail> {
   const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}`), {
     cache: "no-store",
+    credentials: "include",
   });
   return expectJson<SessionDetail>(response);
 }
@@ -146,6 +148,7 @@ export async function updateSessionTitle(sessionId: string, title: string): Prom
   const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}`), {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ title }),
   });
   const data = await expectJson<{ session: SessionDetail }>(response);
@@ -156,6 +159,7 @@ export async function updateSessionTitle(sessionId: string, title: string): Prom
 export async function deleteSession(sessionId: string): Promise<void> {
   const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}`), {
     method: "DELETE",
+    credentials: "include",
   });
   await expectJson<{ deleted: boolean }>(response);
   invalidateClientCache("sessions:");
@@ -169,6 +173,7 @@ export async function recordQuizResults(
     const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/quiz-results`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ answers }),
     });
     await expectJson<{ recorded: boolean }>(response);
@@ -196,6 +201,7 @@ export async function flushQueuedQuizResults(): Promise<number> {
       const response = await fetch(apiUrl(`/api/v1/sessions/${item.sessionId}/quiz-results`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ answers: item.answers }),
       });
       await expectJson<{ recorded: boolean }>(response);

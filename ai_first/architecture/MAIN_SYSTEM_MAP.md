@@ -44,8 +44,12 @@ flowchart TD
   RuntimePolicy --> TurnBinding["Bounded turn binding: chat + deep_question + deep_solve"]
 
   Project --> Product["Contest MVP Product Layer"]
+  Product --> PublicAuth["Public Auth Surface"]
   Product --> TeacherWorkspace["Teacher Workspace"]
   Product --> IntroduceDocs["Public Introduce Docs Surface"]
+  PublicAuth --> AuthRoutes["/login · /signup · /forgot-password · /reset-password · /verify-email"]
+  PublicAuth --> RoleChoice["Role-first public entry: teacher | student"]
+  PublicAuth --> RoleShells["Post-login shells: /teacher · /student · /admin"]
   IntroduceDocs --> IntroduceRoute["/introduce"]
   IntroduceDocs --> IntroduceSidebar["Fixed docs sidebar + section anchors"]
   IntroduceDocs --> IntroduceGallery["Real screenshot gallery + click-to-enlarge lightbox"]
@@ -197,11 +201,14 @@ flowchart TD
 
   Project --> Data["Data Layer"]
   Data --> SQLite["data/user/chat_history.db"]
+  Data --> Postgres["PostgreSQL auth + identity store"]
   Data --> KnowledgeBases["data/knowledge_bases"]
   Data --> Memory["data/memory"]
   Data --> Settings["data/user/settings"]
   Data --> Workspace["data/user/workspace"]
   Workspace --> AgentSpecWorkspace["agent_specs/<agent_id>/ + versions/"]
+  SQLite --> OwnedSessions["Owned learning sessions: owner_user_id boundary"]
+  Postgres --> AuthTables["users · credentials · oauth identities · auth sessions · tokens"]
 
   Project --> AIFirst["AI-first Operating Layer"]
   AIFirst --> OperatingPrompt["ai_first/AI_OPERATING_PROMPT.md"]
@@ -227,6 +234,12 @@ flowchart TD
   PRs --> Reviews
   API --> APISecurity["API Security Middleware"]
   APISecurity --> RateLimit["Rate limiting + 429 Retry-After"]
+  API --> AuthAPI["Auth + admin identity API"]
+  AuthAPI --> AuthRouter["/api/v1/auth"]
+  AuthAPI --> AdminUsersRouter["/api/v1/admin/users"]
+  AuthRouter --> SessionCookie["Opaque HttpOnly deeptutor_session cookie"]
+  AuthRouter --> GoogleOAuth["Google OAuth start + callback"]
+  AuthRouter --> CurrentUser["Current-user contract for role-aware shells"]
   MergeGates --> PRs
   MergeGates --> CI
   MergeGates --> Reviews

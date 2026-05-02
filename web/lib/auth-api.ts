@@ -1,0 +1,79 @@
+import { apiUrl } from "@/lib/api";
+
+export type PublicRole = "teacher" | "student";
+export type AppRole = PublicRole | "admin";
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  display_name: string;
+  role: AppRole;
+}
+
+interface AuthResponse {
+  user: AuthUser;
+}
+
+async function expectJson<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(detail || `Auth request failed: ${response.status}`);
+  }
+  return response.json() as Promise<T>;
+}
+
+export function appHomeForRole(role: AppRole): string {
+  return `/${role}`;
+}
+
+export function googleLoginUrl(role: PublicRole = "student"): string {
+  return apiUrl(`/api/v1/auth/google/start?role=${role}`);
+}
+
+export async function signup(payload: {
+  display_name: string;
+  email: string;
+  password: string;
+  role: PublicRole;
+}): Promise<AuthResponse> {
+  const response = await fetch(apiUrl("/api/v1/auth/signup"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  return expectJson<AuthResponse>(response);
+}
+
+export async function login(payload: {
+  email: string;
+  password: string;
+}): Promise<AuthResponse> {
+  const response = await fetch(apiUrl("/api/v1/auth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  return expectJson<AuthResponse>(response);
+}
+
+export async function logout(): Promise<void> {
+  const response = await fetch(apiUrl("/api/v1/auth/logout"), {
+    method: "POST",
+    credentials: "include",
+  });
+  await expectJson<{ ok: boolean }>(response);
+}
+
+export async function getCurrentUser(): Promise<AuthUser | null> {
+  const response = await fetch(apiUrl("/api/v1/auth/me"), {
+    credentials: "include",
+    cache: "no-store",
+  });
+  if (response.status === 401) {
+    return null;
+  }
+  const payload = await expectJson<AuthResponse>(response);
+  return payload.user;
+}
