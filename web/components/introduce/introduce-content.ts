@@ -245,7 +245,7 @@ export const INTRODUCE_RESOURCE_LINKS: IntroduceResourceLink[] = [
   {
     labelVi: "Gói hồ sơ cuộc thi trong repo",
     labelEn: "Contest submission package in the repository",
-    href: "/introduce#resources",
+    href: "https://github.com/Creative-Science-Contest-2026/Multiagent-learning-platform/tree/main/docs/contest",
   },
   {
     labelVi: "Hồ sơ email VnExpress",
