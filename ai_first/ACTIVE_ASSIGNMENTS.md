@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-auth-multi-user-foundation`
+- Task: Introduce PostgreSQL-backed auth, admin account control, and owned learning sessions; defer frontend auth shell work until `web/**` ownership is resolved
+- Status: implementing backend foundation
+- Branch: `fix/auth-multi-user-foundation`
+- Task packet: `docs/superpowers/tasks/2026-05-02-auth-multi-user-foundation.md`
+- Owned files: `deeptutor/api/main.py`, `deeptutor/api/routers/auth.py`, `deeptutor/api/routers/admin_users.py`, `deeptutor/api/routers/sessions.py`, `deeptutor/services/auth/**`, `deeptutor/services/db/**`, `deeptutor/services/session/**`, `alembic/**`, `tests/api/test_auth_router.py`, `tests/api/test_admin_users_router.py`, `tests/services/auth/**`, `tests/services/session/test_owned_session_store.py`, `pyproject.toml`, `requirements/server.txt`, `docs/superpowers/tasks/2026-05-02-auth-multi-user-foundation.md`, `docs/superpowers/specs/2026-05-02-auth-multi-user-foundation-design.md`, `docs/superpowers/plans/2026-05-02-auth-multi-user-foundation.md`, `docs/superpowers/pr-notes/2026-05-02-auth-multi-user-foundation.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-02.md`, `ai_first/architecture/MAIN_SYSTEM_MAP.md`
+- PR: uncreated
+- Last update: 2026-05-02
+- Next action: add PostgreSQL/auth foundation and task-local tests before opening any frontend scope
+- Blocker: `web/**` remains owned by `fix/frontend-test-coverage-gate`
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-frontend-test-coverage-gate`
 - Task: Implement the frontend `80%` coverage gate for the teacher-first contest path, document the in-scope frontend surface, and enforce the same command in CI
 - Status: local validation passing
