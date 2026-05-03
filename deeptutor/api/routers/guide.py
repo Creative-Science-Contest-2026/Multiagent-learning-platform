@@ -139,12 +139,13 @@ async def create_session(
     task_manager = TaskIDManager.get_instance()
 
     try:
+        owner_scope = owner_scope_for_user(current_user)
         user_input = request.user_input.strip()
 
         if not user_input and request.records and isinstance(request.records, list):
             user_input = _build_user_input_from_records(request.records)
         elif not user_input and request.notebook_id:
-            notebook = notebook_manager.get_notebook(request.notebook_id)
+            notebook = notebook_manager.get_notebook(request.notebook_id, owner_scope)
             if not notebook:
                 raise HTTPException(status_code=404, detail="Notebook not found")
             user_input = _build_user_input_from_records(notebook.get("records", []))
@@ -157,7 +158,10 @@ async def create_session(
         raw_user_input = user_input
         notebook_context = ""
         if request.notebook_references:
-            selected_records = notebook_manager.get_records_by_references(request.notebook_references)
+            selected_records = notebook_manager.get_records_by_references(
+                request.notebook_references,
+                owner_scope,
+            )
             if selected_records:
                 analysis_agent = NotebookAnalysisAgent(language=get_ui_language(default="en"))
                 notebook_context = await analysis_agent.analyze(
@@ -177,7 +181,7 @@ async def create_session(
             user_input=user_input,
             display_title=raw_user_input,
             notebook_context=notebook_context,
-            owner_user_id=owner_scope_for_user(current_user),
+            owner_user_id=owner_scope,
         )
 
         if result and "session_id" in result:

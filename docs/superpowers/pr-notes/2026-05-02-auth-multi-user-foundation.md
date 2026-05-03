@@ -25,6 +25,9 @@
 - hardens the legacy `/api/v1/chat*` and `/api/v1/solve*` transports by requiring authenticated cookies on REST + websocket entrypoints and filtering their JSON session stores by `owner_user_id`
 - auth-gates the legacy guided-learning `/api/v1/guide*` REST + websocket surface and binds guided-learning session files to `owner_user_id`
 - auth-gates `/api/v1/tutorbot*`, persists bot owner metadata, filters teacher access to owned bots/workspaces/history/websockets, and keeps admin override for internal support
+- auth-gates `/api/v1/notebook*`, persists notebook owner metadata, and filters notebook/index access by `owner_user_id`
+- moves UI settings from one shared `interface.json` file into per-user settings files, while restricting settings catalog mutation/test/apply flows to admins
+- gates `/api/v1/agent-specs*` behind authenticated teacher/admin access so student and anonymous users cannot reach authoring/runtime-policy surfaces
 - makes knowledge-pack default selection user-specific and stamps newly created/imported knowledge packs with auth-era ownership metadata
 - changes marketplace imports to create per-user imported copies, preventing two teachers from colliding on the same imported pack name
 
@@ -81,6 +84,12 @@ flowchart TD
   TeacherShell --> TutorBotSurface["/api/v1/tutorbot"]
   TutorBotSurface --> TutorBotConfigs["teacher-owned bot configs + workspace/history access"]
   TutorBotSurface --> AdminOverride["admin override for tutorbot support"]
+  TeacherShell --> NotebookSurface["/api/v1/notebook"]
+  NotebookSurface --> NotebookFiles["notebook files + index filtered by owner_user_id"]
+  Me --> SettingsSurface["/api/v1/settings"]
+  SettingsSurface --> PerUserUISettings["interface.<owner>.json per user"]
+  SettingsSurface --> AdminCatalogControls["admin-only catalog apply/test/mutate"]
+  TeacherShell --> AgentSpecSurface["/api/v1/agent-specs teacher/admin only"]
   AccountLifecycle --> ActiveOnlyAuth["Only active accounts may login or resume sessions"]
 ```
 
@@ -98,6 +107,10 @@ flowchart TD
 - legacy `/api/v1/chat*` and `/api/v1/solve*` routes now require authentication and filter their JSON-backed session CRUD + websocket resume flows by `owner_user_id`
 - legacy `/api/v1/guide*` routes now require authentication, and guide session create/get/list/chat/page/reset/delete flows resolve only owned guided-learning sessions for normal teachers while admins retain cross-session visibility
 - legacy `/api/v1/tutorbot*` routes now require authenticated `teacher` or `admin` access, and newly created bots persist owner metadata so non-admin teachers can only see and connect to their own bots, bot files, and history
+- notebook routes now require authentication, persist `owner_user_id`, `owner_email`, and `owner_display_name`, and hide ownerless/foreign notebooks from normal users while admins retain cross-owner access
+- UI settings now live in `data/user/settings/interface.<owner>.json`, so theme/language/sidebar preferences are no longer shared across all accounts on the same deployment
+- settings catalog mutation, apply, guided test, and setup-tour flows are now admin-only even though authenticated users can still read their own UI settings payload
+- agent-spec authoring and runtime-policy-audit routes now require authenticated `teacher` or `admin` access
 - assessment recommendation and diagnosis now use the same teacher/admin gate and owner-scoped signal store, so support-heavy diagnosis cannot be influenced by another teacher's sessions or tutoring evidence
 - `GET/PUT /api/v1/knowledge/default` is now per-user instead of global, and newly created/imported auth-era packs record `owner_user_id`, `owner_email`, and `owner_display_name`
 - unrelated `web/**` surfaces remain outside scope because this lane only owns the decomposed auth frontend subset

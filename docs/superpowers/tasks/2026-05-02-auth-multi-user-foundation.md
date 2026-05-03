@@ -46,6 +46,9 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/solve.py`
 - `deeptutor/api/routers/guide.py`
 - `deeptutor/api/routers/tutorbot.py`
+- `deeptutor/api/routers/notebook.py`
+- `deeptutor/api/routers/settings.py`
+- `deeptutor/api/routers/agent_specs.py`
 - `deeptutor/services/auth/**`
 - `deeptutor/services/db/**`
 - `deeptutor/services/session/**`
@@ -55,6 +58,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/agents/solve/session_manager.py`
 - `deeptutor/agents/guide/guide_manager.py`
 - `deeptutor/services/tutorbot/**`
+- `deeptutor/services/notebook/**`
+- `deeptutor/services/agent_spec/**`
 - `alembic/**`
 - `tests/api/test_auth_router.py`
 - `tests/api/test_admin_users_router.py`
@@ -69,6 +74,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `tests/api/test_solve_router.py`
 - `tests/api/test_guide_router.py`
 - `tests/api/test_tutorbot_router.py`
+- `tests/api/test_notebook_router.py`
+- `tests/api/test_settings_router.py`
+- `tests/api/test_agent_specs_router.py`
+- `tests/services/notebook/**`
 - `tests/services/auth/**`
 - `tests/services/memory/**`
 - `tests/services/session/test_owned_session_store.py`
@@ -175,6 +184,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - `/api/v1/tutorbot` exposes bot lifecycle, bot files, history, souls, and bot websocket chat without auth, and bot configs/workspaces do not yet carry ownership metadata
 - Intended tutorbot change:
   - require authenticated teacher/admin access on tutorbot routes, persist bot owner metadata for newly created bots, filter normal teacher access to owned bots/workspaces/history/websockets, and keep admin with cross-bot visibility for internal support
+- Current notebook/settings/agent-spec behavior:
+  - `notebook` still stores a shared notebook index and notebook JSON files without `owner_user_id`, `settings` still writes one shared UI settings file for all users, and `agent_specs` exposes authoring/runtime-policy routes without auth despite being teacher-side authoring surfaces
+- Intended notebook/settings/agent-spec change:
+  - move UI settings to per-user files, restrict model-catalog mutation/testing to teacher/admin or admin as appropriate, require auth on notebook routes, persist `owner_user_id` on notebook files/index entries so normal users only read/write their own notebooks, and gate `agent_specs` behind authenticated teacher/admin access as an authoring surface
 - Candidate approaches:
   - router-level role gates only, leaving underlying dashboard evidence tables global
   - full per-user isolation by extending router auth plus owner scoping into dashboard evidence services and auth-era knowledge-pack metadata
@@ -193,6 +206,9 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/solve.py`
 - `deeptutor/api/routers/guide.py`
 - `deeptutor/api/routers/tutorbot.py`
+- `deeptutor/api/routers/notebook.py`
+- `deeptutor/api/routers/settings.py`
+- `deeptutor/api/routers/agent_specs.py`
 - `deeptutor/api/routers/dashboard.py`
 - `deeptutor/api/routers/marketplace.py`
 - `deeptutor/api/routers/knowledge.py`
@@ -209,6 +225,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/agents/solve/session_manager.py`
 - `deeptutor/agents/guide/guide_manager.py`
 - `deeptutor/services/tutorbot/manager.py`
+- `deeptutor/services/notebook/service.py`
+- `deeptutor/services/agent_spec/service.py`
 - `deeptutor/services/path_service.py`
 - `deeptutor/tutorbot/channels/email.py`
 - `pyproject.toml`
@@ -240,6 +258,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - current stop condition for guided-learning/tutorbot hardening:
   - `/api/v1/guide*` rejects unauthenticated REST and websocket access and binds guided-learning session files to `owner_user_id`
   - `/api/v1/tutorbot*` rejects unauthenticated access, and non-admin teachers can only access bots/workspaces/history/websockets they own
+- current stop condition for notebook/settings/agent-spec hardening:
+  - `/api/v1/notebook*` rejects unauthenticated access, persists `owner_user_id` on notebook files/index rows, and prevents non-admin users from listing or mutating notebooks they do not own
+  - `/api/v1/settings*` requires auth for UI settings, uses per-user UI settings files, and restricts catalog mutation/test/apply surfaces away from anonymous callers
+  - `/api/v1/agent-specs*` requires authenticated teacher/admin access
 
 ## Required Tests
 

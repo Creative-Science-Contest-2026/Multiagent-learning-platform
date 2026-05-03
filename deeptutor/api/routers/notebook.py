@@ -6,11 +6,14 @@ Provides notebook creation, querying, updating, deletion, and record management 
 import json
 from typing import AsyncGenerator, Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from deeptutor.agents.notebook import NotebookSummarizeAgent
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.deps import owner_scope_for_user
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.notebook import notebook_manager
 
 router = APIRouter()
@@ -85,6 +88,7 @@ async def _build_record_summary(request: AddRecordRequest) -> str:
 
 async def _stream_add_record_with_summary(
     request: AddRecordRequest,
+    owner_user_id: str | None,
 ) -> AsyncGenerator[str, None]:
     try:
         agent = NotebookSummarizeAgent(language=str(request.metadata.get("ui_language", "en")))
@@ -115,6 +119,7 @@ async def _stream_add_record_with_summary(
             output=request.output,
             metadata=request.metadata,
             kb_name=request.kb_name,
+            owner_user_id=owner_user_id,
         )
         payload = {
             "type": "result",
@@ -130,7 +135,7 @@ async def _stream_add_record_with_summary(
 
 
 @router.get("/list")
-async def list_notebooks():
+async def list_notebooks(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Get all notebook list
 
@@ -138,14 +143,14 @@ async def list_notebooks():
         Notebook list (includes summary information)
     """
     try:
-        notebooks = notebook_manager.list_notebooks()
+        notebooks = notebook_manager.list_notebooks(owner_scope_for_user(current_user))
         return {"notebooks": notebooks, "total": len(notebooks)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/statistics")
-async def get_statistics():
+async def get_statistics(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Get notebook statistics
 
@@ -153,14 +158,17 @@ async def get_statistics():
         Statistics information
     """
     try:
-        stats = notebook_manager.get_statistics()
+        stats = notebook_manager.get_statistics(owner_scope_for_user(current_user))
         return stats
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/create")
-async def create_notebook(request: CreateNotebookRequest):
+async def create_notebook(
+    request: CreateNotebookRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Create new notebook
 
@@ -176,6 +184,9 @@ async def create_notebook(request: CreateNotebookRequest):
             description=request.description,
             color=request.color,
             icon=request.icon,
+            owner_user_id=owner_scope_for_user(current_user),
+            owner_email=current_user.email,
+            owner_display_name=current_user.display_name,
         )
         return {"success": True, "notebook": notebook}
     except Exception as e:
@@ -183,7 +194,10 @@ async def create_notebook(request: CreateNotebookRequest):
 
 
 @router.get("/{notebook_id}")
-async def get_notebook(notebook_id: str):
+async def get_notebook(
+    notebook_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Get notebook details
 
@@ -194,7 +208,7 @@ async def get_notebook(notebook_id: str):
         Notebook details (includes all records)
     """
     try:
-        notebook = notebook_manager.get_notebook(notebook_id)
+        notebook = notebook_manager.get_notebook(notebook_id, owner_scope_for_user(current_user))
         if not notebook:
             raise HTTPException(status_code=404, detail="Notebook not found")
         return notebook
@@ -205,7 +219,11 @@ async def get_notebook(notebook_id: str):
 
 
 @router.put("/{notebook_id}")
-async def update_notebook(notebook_id: str, request: UpdateNotebookRequest):
+async def update_notebook(
+    notebook_id: str,
+    request: UpdateNotebookRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Update notebook information
 
@@ -223,6 +241,7 @@ async def update_notebook(notebook_id: str, request: UpdateNotebookRequest):
             description=request.description,
             color=request.color,
             icon=request.icon,
+            owner_user_id=owner_scope_for_user(current_user),
         )
         if not notebook:
             raise HTTPException(status_code=404, detail="Notebook not found")
@@ -234,7 +253,10 @@ async def update_notebook(notebook_id: str, request: UpdateNotebookRequest):
 
 
 @router.delete("/{notebook_id}")
-async def delete_notebook(notebook_id: str):
+async def delete_notebook(
+    notebook_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Delete notebook
 
@@ -245,7 +267,7 @@ async def delete_notebook(notebook_id: str):
         Deletion result
     """
     try:
-        success = notebook_manager.delete_notebook(notebook_id)
+        success = notebook_manager.delete_notebook(notebook_id, owner_scope_for_user(current_user))
         if not success:
             raise HTTPException(status_code=404, detail="Notebook not found")
         return {"success": True, "message": "Notebook deleted successfully"}
@@ -256,7 +278,10 @@ async def delete_notebook(notebook_id: str):
 
 
 @router.post("/add_record")
-async def add_record(request: AddRecordRequest):
+async def add_record(
+    request: AddRecordRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Add record to notebook
 
@@ -277,6 +302,7 @@ async def add_record(request: AddRecordRequest):
             output=request.output,
             metadata=request.metadata,
             kb_name=request.kb_name,
+            owner_user_id=owner_scope_for_user(current_user),
         )
         return {
             "success": True,
@@ -289,17 +315,25 @@ async def add_record(request: AddRecordRequest):
 
 
 @router.post("/add_record_with_summary")
-async def add_record_with_summary(request: AddRecordRequest):
+async def add_record_with_summary(
+    request: AddRecordRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Add record to notebook and stream generated summary."""
+    owner_scope = owner_scope_for_user(current_user)
     return StreamingResponse(
-        _stream_add_record_with_summary(request),
+        _stream_add_record_with_summary(request, owner_scope),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
 @router.delete("/{notebook_id}/records/{record_id}")
-async def remove_record(notebook_id: str, record_id: str):
+async def remove_record(
+    notebook_id: str,
+    record_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Remove record from notebook
 
@@ -311,7 +345,11 @@ async def remove_record(notebook_id: str, record_id: str):
         Deletion result
     """
     try:
-        success = notebook_manager.remove_record(notebook_id, record_id)
+        success = notebook_manager.remove_record(
+            notebook_id,
+            record_id,
+            owner_scope_for_user(current_user),
+        )
         if not success:
             raise HTTPException(status_code=404, detail="Record not found")
         return {"success": True, "message": "Record removed successfully"}
@@ -322,7 +360,12 @@ async def remove_record(notebook_id: str, record_id: str):
 
 
 @router.put("/{notebook_id}/records/{record_id}")
-async def update_record(notebook_id: str, record_id: str, request: UpdateRecordRequest):
+async def update_record(
+    notebook_id: str,
+    record_id: str,
+    request: UpdateRecordRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Update an existing notebook record in place."""
     try:
         updated = notebook_manager.update_record(
@@ -334,6 +377,7 @@ async def update_record(notebook_id: str, record_id: str, request: UpdateRecordR
             output=request.output,
             metadata=request.metadata,
             kb_name=request.kb_name,
+            owner_user_id=owner_scope_for_user(current_user),
         )
         if not updated:
             raise HTTPException(status_code=404, detail="Record not found")

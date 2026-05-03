@@ -12,10 +12,12 @@ import json
 import time
 from typing import Any, List, Literal, Optional
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.config import get_config_test_runner, get_model_catalog_service
 from deeptutor.services.embedding.client import reset_embedding_client
 from deeptutor.services.llm.client import reset_llm_client
@@ -25,7 +27,7 @@ from deeptutor.services.path_service import get_path_service
 router = APIRouter()
 
 _path_service = get_path_service()
-SETTINGS_FILE = _path_service.get_settings_file("interface")
+UI_SETTINGS_BASENAME = "interface"
 
 DEFAULT_SIDEBAR_NAV_ORDER = {
     "start": ["/", "/history", "/knowledge", "/notebook"],
@@ -79,10 +81,20 @@ def _invalidate_runtime_caches() -> None:
     reset_embedding_client()
 
 
-def load_ui_settings() -> dict[str, Any]:
-    if SETTINGS_FILE.exists():
+def _require_admin(user: AuthenticatedUser) -> None:
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+def _settings_file_for_user(user: AuthenticatedUser):
+    return _path_service.get_settings_dir() / f"{UI_SETTINGS_BASENAME}.{user.id}.json"
+
+
+def load_ui_settings(user: AuthenticatedUser) -> dict[str, Any]:
+    settings_file = _settings_file_for_user(user)
+    if settings_file.exists():
         try:
-            with open(SETTINGS_FILE, encoding="utf-8") as handle:
+            with open(settings_file, encoding="utf-8") as handle:
                 saved = json.load(handle)
                 return {**DEFAULT_UI_SETTINGS, **saved}
         except Exception:
@@ -90,9 +102,10 @@ def load_ui_settings() -> dict[str, Any]:
     return DEFAULT_UI_SETTINGS.copy()
 
 
-def save_ui_settings(settings: dict[str, Any]) -> None:
-    SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(SETTINGS_FILE, "w", encoding="utf-8") as handle:
+def save_ui_settings(user: AuthenticatedUser, settings: dict[str, Any]) -> None:
+    settings_file = _settings_file_for_user(user)
+    settings_file.parent.mkdir(parents=True, exist_ok=True)
+    with open(settings_file, "w", encoding="utf-8") as handle:
         json.dump(settings, handle, ensure_ascii=False, indent=2)
 
 
@@ -116,28 +129,36 @@ def _provider_choices() -> dict[str, list[dict[str, str]]]:
 
 
 @router.get("")
-async def get_settings():
+async def get_settings(current_user: AuthenticatedUser = Depends(get_current_user)):
     return {
-        "ui": load_ui_settings(),
+        "ui": load_ui_settings(current_user),
         "catalog": get_model_catalog_service().load(),
         "providers": _provider_choices(),
     }
 
 
 @router.get("/catalog")
-async def get_catalog():
+async def get_catalog(current_user: AuthenticatedUser = Depends(get_current_user)):
     return {"catalog": get_model_catalog_service().load()}
 
 
 @router.put("/catalog")
-async def update_catalog(payload: CatalogPayload):
+async def update_catalog(
+    payload: CatalogPayload,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_admin(current_user)
     catalog = get_model_catalog_service().save(payload.catalog)
     _invalidate_runtime_caches()
     return {"catalog": catalog}
 
 
 @router.post("/apply")
-async def apply_catalog(payload: CatalogPayload | None = None):
+async def apply_catalog(
+    payload: CatalogPayload | None = None,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_admin(current_user)
     catalog = payload.catalog if payload is not None else get_model_catalog_service().load()
     rendered = get_model_catalog_service().apply(catalog)
     _invalidate_runtime_caches()
@@ -149,37 +170,46 @@ async def apply_catalog(payload: CatalogPayload | None = None):
 
 
 @router.put("/theme")
-async def update_theme(update: ThemeUpdate):
-    current_ui = load_ui_settings()
+async def update_theme(
+    update: ThemeUpdate,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    current_ui = load_ui_settings(current_user)
     current_ui["theme"] = update.theme
-    save_ui_settings(current_ui)
+    save_ui_settings(current_user, current_ui)
     return {"theme": update.theme}
 
 
 @router.put("/language")
-async def update_language(update: LanguageUpdate):
-    current_ui = load_ui_settings()
+async def update_language(
+    update: LanguageUpdate,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    current_ui = load_ui_settings(current_user)
     current_ui["language"] = update.language
-    save_ui_settings(current_ui)
+    save_ui_settings(current_user, current_ui)
     return {"language": update.language}
 
 
 @router.put("/ui")
-async def update_ui_settings(update: UISettings):
-    current_ui = load_ui_settings()
+async def update_ui_settings(
+    update: UISettings,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    current_ui = load_ui_settings(current_user)
     current_ui.update(update.model_dump(exclude_none=True))
-    save_ui_settings(current_ui)
+    save_ui_settings(current_user, current_ui)
     return current_ui
 
 
 @router.post("/reset")
-async def reset_settings():
-    save_ui_settings(DEFAULT_UI_SETTINGS)
+async def reset_settings(current_user: AuthenticatedUser = Depends(get_current_user)):
+    save_ui_settings(current_user, DEFAULT_UI_SETTINGS)
     return DEFAULT_UI_SETTINGS
 
 
 @router.get("/themes")
-async def get_themes():
+async def get_themes(current_user: AuthenticatedUser = Depends(get_current_user)):
     return {
         "themes": [
             {"id": "light", "name": "Light"},
@@ -189,8 +219,8 @@ async def get_themes():
 
 
 @router.get("/sidebar")
-async def get_sidebar_settings():
-    current_ui = load_ui_settings()
+async def get_sidebar_settings(current_user: AuthenticatedUser = Depends(get_current_user)):
+    current_ui = load_ui_settings(current_user)
     return {
         "description": current_ui.get(
             "sidebar_description", DEFAULT_UI_SETTINGS["sidebar_description"]
@@ -200,29 +230,46 @@ async def get_sidebar_settings():
 
 
 @router.put("/sidebar/description")
-async def update_sidebar_description(update: SidebarDescriptionUpdate):
-    current_ui = load_ui_settings()
+async def update_sidebar_description(
+    update: SidebarDescriptionUpdate,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    current_ui = load_ui_settings(current_user)
     current_ui["sidebar_description"] = update.description
-    save_ui_settings(current_ui)
+    save_ui_settings(current_user, current_ui)
     return {"description": update.description}
 
 
 @router.put("/sidebar/nav-order")
-async def update_sidebar_nav_order(update: SidebarNavOrderUpdate):
-    current_ui = load_ui_settings()
+async def update_sidebar_nav_order(
+    update: SidebarNavOrderUpdate,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    current_ui = load_ui_settings(current_user)
     current_ui["sidebar_nav_order"] = update.nav_order.model_dump()
-    save_ui_settings(current_ui)
+    save_ui_settings(current_user, current_ui)
     return {"nav_order": update.nav_order.model_dump()}
 
 
 @router.post("/tests/{service}/start")
-async def start_service_test(service: str, payload: CatalogPayload | None = None):
+async def start_service_test(
+    service: str,
+    payload: CatalogPayload | None = None,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_admin(current_user)
     run = get_config_test_runner().start(service, payload.catalog if payload else None)
     return {"run_id": run.id}
 
 
 @router.get("/tests/{service}/{run_id}/events")
-async def stream_service_test_events(service: str, run_id: str, request: Request):
+async def stream_service_test_events(
+    service: str,
+    run_id: str,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_admin(current_user)
     runner = get_config_test_runner()
     run = runner.get(run_id)
 
@@ -246,7 +293,12 @@ async def stream_service_test_events(service: str, run_id: str, request: Request
 
 
 @router.post("/tests/{service}/{run_id}/cancel")
-async def cancel_service_test(service: str, run_id: str):
+async def cancel_service_test(
+    service: str,
+    run_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_admin(current_user)
     get_config_test_runner().cancel(run_id)
     return {"message": "Cancelled"}
 
@@ -255,7 +307,8 @@ TOUR_CACHE = _path_service.get_settings_dir() / ".tour_cache.json"
 
 
 @router.get("/tour/status")
-async def tour_status():
+async def tour_status(current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_admin(current_user)
     if TOUR_CACHE.exists():
         try:
             cache = json.loads(TOUR_CACHE.read_text(encoding="utf-8"))
@@ -276,7 +329,11 @@ class TourCompletePayload(BaseModel):
 
 
 @router.post("/tour/complete")
-async def complete_tour(payload: TourCompletePayload | None = None):
+async def complete_tour(
+    payload: TourCompletePayload | None = None,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_admin(current_user)
     catalog = payload.catalog if payload and payload.catalog else get_model_catalog_service().load()
     rendered = get_model_catalog_service().apply(catalog)
     _invalidate_runtime_caches()
@@ -306,7 +363,8 @@ async def complete_tour(payload: TourCompletePayload | None = None):
 
 
 @router.post("/tour/reopen")
-async def reopen_tour():
+async def reopen_tour(current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_admin(current_user)
     return {
         "message": "Run the terminal setup guide from the project root to re-open the guided setup.",
         "command": "python scripts/start_tour.py",
