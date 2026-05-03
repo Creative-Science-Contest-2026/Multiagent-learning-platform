@@ -14,18 +14,25 @@ import re
 import time
 from typing import Any, AsyncGenerator
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from deeptutor.runtime.registry.capability_registry import get_capability_registry
 from deeptutor.runtime.registry.tool_registry import get_tool_registry
 from deeptutor.logging import ConsoleFormatter
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.schemas import AuthenticatedUser
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 ANSI_ESCAPE_RE = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
+
+
+def _require_admin(user: AuthenticatedUser) -> None:
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 def _discover_plugins() -> list[Any]:
@@ -51,7 +58,8 @@ class CapabilityExecuteRequest(BaseModel):
 
 
 @router.get("/list")
-async def list_plugins():
+async def list_plugins(current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_admin(current_user)
     tool_registry = get_tool_registry()
     capability_registry = get_capability_registry()
     plugin_manifests = _discover_plugins()
@@ -97,8 +105,13 @@ async def list_plugins():
 
 
 @router.post("/tools/{tool_name}/execute")
-async def execute_tool(tool_name: str, body: ToolExecuteRequest):
+async def execute_tool(
+    tool_name: str,
+    body: ToolExecuteRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Execute a single tool with explicit parameters (for Playground testing)."""
+    _require_admin(current_user)
     registry = get_tool_registry()
     tool = registry.get(tool_name)
     if not tool:
@@ -266,8 +279,13 @@ async def _execute_stream(tool_name: str, params: dict[str, Any]) -> AsyncGenera
 
 
 @router.post("/tools/{tool_name}/execute-stream")
-async def execute_tool_stream(tool_name: str, body: ToolExecuteRequest):
+async def execute_tool_stream(
+    tool_name: str,
+    body: ToolExecuteRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Execute a tool and stream logs + result as SSE."""
+    _require_admin(current_user)
     return StreamingResponse(
         _execute_stream(tool_name, body.params),
         media_type="text/event-stream",
@@ -394,8 +412,10 @@ async def _execute_capability_stream(
 async def execute_capability_stream(
     capability_name: str,
     body: CapabilityExecuteRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Execute a capability and stream logs + trace + final result as SSE."""
+    _require_admin(current_user)
     return StreamingResponse(
         _execute_capability_stream(capability_name, body),
         media_type="text/event-stream",

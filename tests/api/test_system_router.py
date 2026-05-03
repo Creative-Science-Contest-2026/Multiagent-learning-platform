@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from deeptutor.services.auth.schemas import AuthenticatedUser
 
 try:
     from fastapi import FastAPI
@@ -23,13 +24,25 @@ def _build_app(store: SQLiteSessionStore, monkeypatch: pytest.MonkeyPatch) -> Fa
     return app
 
 
+def _user(user_id: str = "teacher-1", role: str = "teacher") -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id=user_id,
+        email=f"{user_id}@example.com",
+        display_name=f"User {user_id}",
+        role=role,
+    )
+
+
 def test_system_pilot_feedback_status_stays_explicit_when_empty(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    from deeptutor.api.routers import system
 
-    with TestClient(_build_app(store, monkeypatch)) as client:
+    app = _build_app(store, monkeypatch)
+    app.dependency_overrides[system.get_current_user] = lambda: _user()
+    with TestClient(app) as client:
         response = client.get("/api/v1/system/pilot-feedback-status")
 
     assert response.status_code == 200
@@ -47,8 +60,11 @@ def test_system_pilot_feedback_create_and_list_round_trip(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    from deeptutor.api.routers import system
 
-    with TestClient(_build_app(store, monkeypatch)) as client:
+    app = _build_app(store, monkeypatch)
+    app.dependency_overrides[system.get_current_user] = lambda: _user()
+    with TestClient(app) as client:
         create_response = client.post(
             "/api/v1/system/pilot-feedback",
             json={
@@ -78,3 +94,24 @@ def test_system_pilot_feedback_create_and_list_round_trip(
     assert status_response.json()["status"] == "feedback_records_available"
     assert status_response.json()["record_count"] == 1
     assert status_response.json()["levels_present"] == ["limited_external_feedback"]
+
+
+def test_system_routes_require_authentication(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        response = client.get("/api/v1/system/status")
+
+    assert response.status_code == 401
+
+
+def test_system_admin_only_tests_reject_teacher(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    from deeptutor.api.routers import system
+
+    app = _build_app(store, monkeypatch)
+    app.dependency_overrides[system.get_current_user] = lambda: _user(role="teacher")
+    with TestClient(app) as client:
+        response = client.post("/api/v1/system/test/llm")
+
+    assert response.status_code == 403

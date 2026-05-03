@@ -3,9 +3,11 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 import pytest
+from fastapi import HTTPException
 
 from deeptutor.core.stream import StreamEvent, StreamEventType
 from deeptutor.services.agent_spec.service import AgentSpecService
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.session.sqlite_store import SQLiteSessionStore
 from deeptutor.services.session.turn_runtime import TurnRuntimeManager
 from deeptutor.services.runtime_policy import compiler as runtime_policy_compiler
@@ -16,6 +18,23 @@ TestClient = pytest.importorskip("fastapi.testclient").TestClient
 
 async def _noop_refresh(**_kwargs):
     return None
+
+
+def _teacher_user(user_id: str = "teacher-1", role: str = "teacher") -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id=user_id,
+        email=f"{user_id}@example.com",
+        display_name=f"Teacher {user_id}",
+        role=role,  # type: ignore[arg-type]
+    )
+
+
+@pytest.fixture(autouse=True)
+def _authenticated_unified_ws(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        "deeptutor.api.routers.unified_ws.get_current_user_from_websocket",
+        lambda _ws: _teacher_user(),
+    )
 
 
 @pytest.mark.asyncio
@@ -69,7 +88,7 @@ async def test_turn_runtime_replays_events_and_materializes_messages(
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
         lambda: SimpleNamespace(
-            build_memory_context=lambda: "",
+            build_memory_context=lambda owner_user_id=None: "",
             refresh_from_turn=_noop_refresh,
         ),
     )
@@ -92,7 +111,7 @@ async def test_turn_runtime_replays_events_and_materializes_messages(
     async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
         events.append(event)
 
-    assert [event["type"] for event in events] == ["session", "content", "done"]
+    assert [event["type"] for event in events] == ["session", "progress", "content", "done"]
     assert events[-1]["metadata"]["status"] == "completed"
 
     detail = await store.get_session_with_messages(session["id"])
@@ -108,6 +127,135 @@ async def test_turn_runtime_replays_events_and_materializes_messages(
     persisted_turn = await store.get_turn(turn["id"])
     assert persisted_turn is not None
     assert persisted_turn["status"] == "completed"
+
+
+@pytest.mark.asyncio
+async def test_turn_runtime_persists_tutoring_signals_under_session_owner(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+
+    class FakeContextBuilder:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        async def build(self, **_kwargs):
+            return SimpleNamespace(
+                conversation_history=[],
+                conversation_summary="",
+                context_text="",
+                token_count=0,
+                budget=0,
+            )
+
+    class FakeOrchestrator:
+        async def handle(self, _context):
+            yield StreamEvent(
+                type=StreamEventType.CONTENT,
+                source="chat",
+                stage="responding",
+                content="Try decomposing the fraction step by step.",
+                metadata={"call_kind": "llm_final_response"},
+            )
+            yield StreamEvent(type=StreamEventType.DONE, source="chat")
+
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
+    monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
+    monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", FakeOrchestrator)
+    monkeypatch.setattr(
+        "deeptutor.services.evidence.extractor.extract_observations_from_tutoring_turn",
+        lambda **kwargs: [
+            {
+                "observation_id": "owned-obs-1",
+                "session_id": kwargs["session_id"],
+                "student_id": kwargs["student_id"],
+                "source": "tutoring",
+                "topic": "fractions subtraction",
+                "question_id": "followup-1",
+                "is_correct": False,
+                "latency_seconds": 24,
+                "hint_count": 1,
+                "retry_count": 1,
+                "dominant_error": "needs_scaffold",
+            }
+        ],
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.memory.get_memory_service",
+        lambda: SimpleNamespace(
+            build_memory_context=lambda owner_user_id=None: "",
+            refresh_from_turn=_noop_refresh,
+        ),
+    )
+
+    await store.create_session(session_id="owned-chat", owner_user_id="teacher-1")
+    await store.update_session_preferences(
+        "owned-chat",
+        {
+            "student_id": "student-owned",
+            "capability": "chat",
+            "tools": [],
+            "knowledge_bases": [],
+            "language": "en",
+        },
+    )
+
+    _session, turn = await runtime.start_turn(
+        {
+            "type": "start_turn",
+            "content": "Help me with this fraction problem",
+            "session_id": "owned-chat",
+            "capability": "chat",
+            "tools": [],
+            "knowledge_bases": [],
+            "attachments": [],
+            "language": "en",
+            "config": {},
+        }
+    )
+
+    async for _event in runtime.subscribe_turn(turn["id"], after_seq=0):
+        pass
+
+    owned_observations = await store.list_observations("student-owned", owner_user_id="teacher-1")
+    anonymous_observations = await store.list_observations("student-owned", owner_user_id="")
+    owned_state = await store.get_student_state("student-owned", owner_user_id="teacher-1")
+
+    assert [row["topic"] for row in owned_observations] == ["fractions subtraction"]
+    assert anonymous_observations == []
+    assert owned_state is not None
+    assert owned_state["owner_user_id"] == "teacher-1"
+    assert owned_state["misconception_signals"]["dominant_errors"] == {
+        "fractions subtraction": "needs_scaffold"
+    }
+
+
+@pytest.mark.asyncio
+async def test_turn_runtime_rejects_foreign_owned_session_id(tmp_path) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+    await store.create_session(session_id="teacher-two-session", owner_user_id="teacher-2")
+
+    with pytest.raises(RuntimeError, match="Session not found"):
+        await runtime.start_turn(
+            {
+                "type": "start_turn",
+                "content": "hello",
+                "session_id": "teacher-two-session",
+                "capability": "chat",
+                "tools": [],
+                "knowledge_bases": [],
+                "attachments": [],
+                "language": "en",
+                "config": {},
+            },
+            owner_user_id="teacher-1",
+        )
 
 
 def test_unified_ws_rejects_invalid_after_seq(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -179,11 +327,31 @@ def test_unified_ws_reports_invalid_json() -> None:
     assert payload == {"type": "error", "content": "Invalid JSON."}
 
 
+def test_unified_ws_requires_authenticated_cookie(monkeypatch: pytest.MonkeyPatch) -> None:
+    from deeptutor.api.routers import unified_ws as unified_ws_router
+
+    monkeypatch.setattr(
+        unified_ws_router,
+        "get_current_user_from_websocket",
+        lambda _ws: (_ for _ in ()).throw(HTTPException(status_code=401, detail="Authentication required")),
+    )
+
+    app = FastAPI()
+    app.include_router(unified_ws_router.router, prefix="/api/v1")
+
+    with TestClient(app) as client:
+        with pytest.raises(Exception):
+            with client.websocket_connect("/api/v1/ws"):
+                pass
+
+
 def test_unified_ws_reports_rejected_turn(monkeypatch: pytest.MonkeyPatch) -> None:
     from deeptutor.api.routers import unified_ws as unified_ws_router
 
     class FakeRuntime:
-        async def start_turn(self, _msg):
+        async def start_turn(self, _msg, *, owner_user_id=None, actor_user_id=None):
+            assert owner_user_id == "teacher-1"
+            assert actor_user_id == "teacher-1"
             raise RuntimeError("turn rejected")
 
     app = FastAPI()
@@ -236,12 +404,15 @@ def test_unified_ws_start_turn_forwards_stream_events(monkeypatch: pytest.Monkey
     from deeptutor.api.routers import unified_ws as unified_ws_router
 
     class FakeRuntime:
-        async def start_turn(self, _msg):
+        async def start_turn(self, _msg, *, owner_user_id=None, actor_user_id=None):
+            assert owner_user_id == "teacher-1"
+            assert actor_user_id == "teacher-1"
             return {"id": "session-1"}, {"id": "turn-1"}
 
-        async def subscribe_turn(self, turn_id: str, after_seq: int = 0):
+        async def subscribe_turn(self, turn_id: str, after_seq: int = 0, owner_user_id=None):
             assert turn_id == "turn-1"
             assert after_seq == 0
+            assert owner_user_id == "teacher-1"
             yield {"type": "session", "turn_id": "turn-1", "seq": 0}
             yield {"type": "done", "turn_id": "turn-1", "seq": 1}
 
@@ -264,9 +435,10 @@ def test_unified_ws_subscribe_session_forwards_events(monkeypatch: pytest.Monkey
     from deeptutor.api.routers import unified_ws as unified_ws_router
 
     class FakeRuntime:
-        async def subscribe_session(self, session_id: str, after_seq: int = 0):
+        async def subscribe_session(self, session_id: str, after_seq: int = 0, owner_user_id=None):
             assert session_id == "session-1"
             assert after_seq == 2
+            assert owner_user_id == "teacher-1"
             yield {"type": "content", "session_id": session_id, "seq": 3}
 
     app = FastAPI()
@@ -290,8 +462,9 @@ def test_unified_ws_cancel_turn_reports_not_found(monkeypatch: pytest.MonkeyPatc
     from deeptutor.api.routers import unified_ws as unified_ws_router
 
     class FakeRuntime:
-        async def cancel_turn(self, turn_id: str) -> bool:
+        async def cancel_turn(self, turn_id: str, owner_user_id=None) -> bool:
             assert turn_id == "turn-missing"
+            assert owner_user_id == "teacher-1"
             return False
 
     app = FastAPI()
@@ -352,7 +525,7 @@ async def test_turn_runtime_passes_deep_question_subject_config(
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
         lambda: SimpleNamespace(
-            build_memory_context=lambda: "",
+            build_memory_context=lambda owner_user_id=None: "",
             refresh_from_turn=_noop_refresh,
         ),
     )
@@ -437,7 +610,7 @@ async def test_turn_runtime_bootstraps_question_followup_context_once(
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
         lambda: SimpleNamespace(
-            build_memory_context=lambda: "",
+            build_memory_context=lambda owner_user_id=None: "",
             refresh_from_turn=_noop_refresh,
         ),
     )
@@ -555,7 +728,7 @@ async def test_turn_runtime_persists_deep_research_session_preference(
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
         lambda: SimpleNamespace(
-            build_memory_context=lambda: "",
+            build_memory_context=lambda owner_user_id=None: "",
             refresh_from_turn=_noop_refresh,
         ),
     )
@@ -631,6 +804,10 @@ async def test_turn_runtime_injects_memory_and_refreshes_after_completion(
         refresh_calls.append(kwargs)
         return None
 
+    def fake_build_memory_context(owner_user_id=None):
+        captured["memory_owner_user_id"] = owner_user_id
+        return "## Memory\n## Preferences\n- Prefer concise answers."
+
     monkeypatch.setattr(
         "deeptutor.services.llm.config.get_llm_config",
         lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
@@ -640,7 +817,7 @@ async def test_turn_runtime_injects_memory_and_refreshes_after_completion(
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
         lambda: SimpleNamespace(
-            build_memory_context=lambda: "## Memory\n## Preferences\n- Prefer concise answers.",
+            build_memory_context=fake_build_memory_context,
             refresh_from_turn=fake_refresh_from_turn,
         ),
     )
@@ -656,16 +833,19 @@ async def test_turn_runtime_injects_memory_and_refreshes_after_completion(
             "attachments": [],
             "language": "en",
             "config": {},
-        }
+        },
+        owner_user_id="teacher-1",
     )
 
     async for _event in runtime.subscribe_turn(turn["id"], after_seq=0):
         pass
 
     assert captured["memory_context"] == "## Memory\n## Preferences\n- Prefer concise answers."
+    assert captured["memory_owner_user_id"] == "teacher-1"
     assert captured["conversation_history"] == []
     assert captured["conversation_context_text"] == "Recent chat summary"
     assert refresh_calls[0]["assistant_message"] == "Stored reply"
+    assert refresh_calls[0]["owner_user_id"] == "teacher-1"
 
 
 @pytest.mark.asyncio
@@ -738,7 +918,10 @@ async def test_turn_runtime_passes_agent_spec_id_for_live_chat_policy_binding(
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
-        lambda: SimpleNamespace(build_memory_context=lambda: "", refresh_from_turn=_noop_refresh),
+        lambda: SimpleNamespace(
+            build_memory_context=lambda owner_user_id=None: "",
+            refresh_from_turn=_noop_refresh,
+        ),
     )
     monkeypatch.setattr("deeptutor.capabilities.chat.AgenticChatPipeline", FakePipeline)
     monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
@@ -817,7 +1000,10 @@ async def test_turn_runtime_pins_agent_spec_version_per_session(
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
-        lambda: SimpleNamespace(build_memory_context=lambda: "", refresh_from_turn=_noop_refresh),
+        lambda: SimpleNamespace(
+            build_memory_context=lambda owner_user_id=None: "",
+            refresh_from_turn=_noop_refresh,
+        ),
     )
     monkeypatch.setattr("deeptutor.capabilities.chat.AgenticChatPipeline", FakePipeline)
     monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
@@ -934,7 +1120,10 @@ async def test_turn_runtime_passes_agent_spec_id_for_deep_question_policy_bindin
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
-        lambda: SimpleNamespace(build_memory_context=lambda: "", refresh_from_turn=_noop_refresh),
+        lambda: SimpleNamespace(
+            build_memory_context=lambda owner_user_id=None: "",
+            refresh_from_turn=_noop_refresh,
+        ),
     )
     monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
 
@@ -1023,7 +1212,10 @@ async def test_turn_runtime_passes_agent_spec_id_for_deep_solve_policy_binding(
     monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
     monkeypatch.setattr(
         "deeptutor.services.memory.get_memory_service",
-        lambda: SimpleNamespace(build_memory_context=lambda: "", refresh_from_turn=_noop_refresh),
+        lambda: SimpleNamespace(
+            build_memory_context=lambda owner_user_id=None: "",
+            refresh_from_turn=_noop_refresh,
+        ),
     )
     monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
 

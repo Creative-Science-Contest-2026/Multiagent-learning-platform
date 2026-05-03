@@ -41,6 +41,9 @@ class BotConfig:
     persona: str = ""
     channels: dict[str, Any] = field(default_factory=dict)
     model: str | None = None
+    owner_user_id: str = ""
+    owner_email: str = ""
+    owner_display_name: str = ""
 
 
 @dataclass
@@ -69,6 +72,9 @@ class TutorBotInstance:
             "persona": self.config.persona,
             "channels": list(self.config.channels.keys()),
             "model": self.config.model,
+            "owner_user_id": self.config.owner_user_id,
+            "owner_email": self.config.owner_email,
+            "owner_display_name": self.config.owner_display_name,
             "running": self.running,
             "started_at": self.started_at.isoformat(),
         }
@@ -197,6 +203,9 @@ class TutorBotManager:
                 persona=data.get("persona", ""),
                 channels=data.get("channels", {}),
                 model=data.get("model"),
+                owner_user_id=str(data.get("owner_user_id", "") or "").strip(),
+                owner_email=str(data.get("owner_email", "") or "").strip(),
+                owner_display_name=str(data.get("owner_display_name", "") or "").strip(),
             )
         except Exception:
             logger.exception("Failed to load bot config %s", bot_id)
@@ -212,6 +221,9 @@ class TutorBotManager:
             "persona": config.persona,
             "channels": config.channels,
             "auto_start": auto_start,
+            "owner_user_id": config.owner_user_id,
+            "owner_email": config.owner_email,
+            "owner_display_name": config.owner_display_name,
         }
         if config.model:
             data["model"] = config.model
@@ -458,6 +470,9 @@ class TutorBotManager:
                 "persona": cfg.persona if cfg else "",
                 "channels": list(cfg.channels.keys()) if cfg else [],
                 "model": cfg.model if cfg else None,
+                "owner_user_id": cfg.owner_user_id if cfg else "",
+                "owner_email": cfg.owner_email if cfg else "",
+                "owner_display_name": cfg.owner_display_name if cfg else "",
                 "running": False,
                 "started_at": None,
             }
@@ -533,6 +548,9 @@ class TutorBotManager:
             bot_activity.append((mtime, bid, {
                 "bot_id": bid,
                 "name": cfg.name if cfg else bid,
+                "owner_user_id": cfg.owner_user_id if cfg else "",
+                "owner_email": cfg.owner_email if cfg else "",
+                "owner_display_name": cfg.owner_display_name if cfg else "",
                 "running": instance.running if instance else False,
                 "last_message": last_msg[:200] if last_msg else "",
                 "updated_at": datetime.fromtimestamp(mtime).isoformat(),
@@ -606,6 +624,9 @@ class TutorBotManager:
                     persona=data.get("persona", ""),
                     channels=data.get("channels", {}),
                     model=data.get("model"),
+                    owner_user_id=str(data.get("owner_user_id", "") or "").strip(),
+                    owner_email=str(data.get("owner_email", "") or "").strip(),
+                    owner_display_name=str(data.get("owner_display_name", "") or "").strip(),
                 )
                 await self.start_bot(bid, config)
                 logger.info("Auto-started bot '%s'", bid)

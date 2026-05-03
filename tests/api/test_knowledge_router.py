@@ -14,6 +14,8 @@ except Exception:  # pragma: no cover - optional dependency in lightweight envs
     FastAPI = None
     TestClient = None
 
+from deeptutor.services.auth.schemas import AuthenticatedUser
+
 pytestmark = pytest.mark.skipif(FastAPI is None or TestClient is None, reason="fastapi not installed")
 
 knowledge_router_module = None
@@ -40,11 +42,32 @@ def _import_knowledge_router(monkeypatch, tmp_path: Path):
     return module
 
 
-def _build_app(knowledge_module) -> FastAPI:
+def _teacher_user(user_id: str = "teacher-1", role: str = "teacher") -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id=user_id,
+        email=f"{user_id}@example.com",
+        display_name=f"Teacher {user_id}",
+        role=role,  # type: ignore[arg-type]
+    )
+
+
+def _build_app(
+    knowledge_module,
+    *,
+    current_user: AuthenticatedUser | None = None,
+    authenticated: bool = True,
+) -> FastAPI:
     if FastAPI is None or knowledge_module is None:  # pragma: no cover - guarded by pytestmark
         raise RuntimeError("fastapi is not installed")
     app = FastAPI()
     app.include_router(knowledge_module.router, prefix="/api/v1/knowledge")
+    if authenticated:
+        app.dependency_overrides[knowledge_module.require_teacher_or_admin] = (
+            lambda: current_user or _teacher_user()
+        )
+        app.dependency_overrides[knowledge_module.require_admin] = (
+            lambda: _teacher_user("admin-1", role="admin")
+        )
     return app
 
 
@@ -141,6 +164,71 @@ def test_rag_providers_returns_llamaindex_only() -> None:
     }
 
 
+def test_knowledge_routes_require_authenticated_teacher_surface(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+
+    with TestClient(_build_app(knowledge_module, authenticated=False)) as client:
+        response = client.get("/api/v1/knowledge/list")
+
+    assert response.status_code == 401
+
+
+def test_list_knowledge_bases_filters_owned_entries(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    manager.config["knowledge_bases"]["owned-kb"] = {
+        "path": "owned-kb",
+        "status": "ready",
+        "owner_user_id": "teacher-1",
+        "owner": "Teacher teacher-1",
+    }
+    manager.config["knowledge_bases"]["other-kb"] = {
+        "path": "other-kb",
+        "status": "ready",
+        "owner_user_id": "teacher-2",
+        "owner": "Teacher teacher-2",
+    }
+    manager.config["knowledge_bases"]["legacy-kb"] = {
+        "path": "legacy-kb",
+        "status": "ready",
+    }
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app(knowledge_module, current_user=_teacher_user("teacher-1"))) as client:
+        response = client.get("/api/v1/knowledge/list")
+
+    assert response.status_code == 200
+    names = [row["name"] for row in response.json()]
+    assert "owned-kb" in names
+    assert "legacy-kb" in names
+    assert "other-kb" not in names
+
+
+def test_default_knowledge_base_is_user_specific(monkeypatch, tmp_path: Path) -> None:
+    knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    manager.config["knowledge_bases"]["kb-a"] = {
+        "path": "kb-a",
+        "status": "ready",
+        "owner_user_id": "teacher-1",
+    }
+    manager.config["knowledge_bases"]["kb-b"] = {
+        "path": "kb-b",
+        "status": "ready",
+        "owner_user_id": "teacher-2",
+    }
+    monkeypatch.setattr(knowledge_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app(knowledge_module, current_user=_teacher_user("teacher-1"))) as client:
+        set_response = client.put("/api/v1/knowledge/default/kb-a")
+        get_response = client.get("/api/v1/knowledge/default")
+
+    assert set_response.status_code == 200
+    assert get_response.status_code == 200
+    assert get_response.json() == {"default_kb": "kb-a"}
+    assert manager.config["user_defaults"]["teacher-1"] == "kb-a"
+
+
 def test_create_kb_does_not_require_llm_precheck(monkeypatch, tmp_path: Path) -> None:
     knowledge_module = _import_knowledge_router(monkeypatch, tmp_path)
     manager = _FakeKBManager(tmp_path / "knowledge_bases")
@@ -167,6 +255,8 @@ def test_create_kb_does_not_require_llm_precheck(monkeypatch, tmp_path: Path) ->
     assert isinstance(body.get("task_id"), str) and body["task_id"]
     assert manager.config["knowledge_bases"]["kb-new"]["rag_provider"] == "llamaindex"
     assert manager.config["knowledge_bases"]["kb-new"]["needs_reindex"] is False
+    assert manager.config["knowledge_bases"]["kb-new"]["owner_user_id"] == "teacher-1"
+    assert manager.config["user_defaults"]["teacher-1"] == "kb-new"
 
 
 def test_create_kb_defaults_to_system_provider_when_request_omits_provider(

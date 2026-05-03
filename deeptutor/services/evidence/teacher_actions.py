@@ -32,6 +32,7 @@ def _ensure_table(db_path) -> None:
             """
             CREATE TABLE IF NOT EXISTS teacher_actions (
                 id TEXT PRIMARY KEY,
+                owner_user_id TEXT NOT NULL DEFAULT '',
                 target_type TEXT NOT NULL,
                 target_id TEXT NOT NULL,
                 source_recommendation_id TEXT NOT NULL,
@@ -51,12 +52,24 @@ def _ensure_table(db_path) -> None:
                 ON teacher_actions(target_type, target_id, updated_at DESC)
             """
         )
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(teacher_actions)").fetchall()}
+        if "owner_user_id" not in columns:
+            conn.execute(
+                "ALTER TABLE teacher_actions ADD COLUMN owner_user_id TEXT NOT NULL DEFAULT ''"
+            )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_teacher_actions_owner
+                ON teacher_actions(owner_user_id, updated_at DESC)
+            """
+        )
         conn.commit()
 
 
 def _row_to_record(row: sqlite3.Row) -> dict[str, Any]:
     return {
         "id": row["id"],
+        "owner_user_id": row["owner_user_id"],
         "target_type": row["target_type"],
         "target_id": row["target_id"],
         "source_recommendation_id": row["source_recommendation_id"],
@@ -70,17 +83,20 @@ def _row_to_record(row: sqlite3.Row) -> dict[str, Any]:
     }
 
 
-def list_teacher_actions(store: Any) -> list[dict[str, Any]]:
+def list_teacher_actions(store: Any, *, owner_user_id: str | None = None) -> list[dict[str, Any]]:
     _ensure_table(store.db_path)
     with _connect(store.db_path) as conn:
-        rows = conn.execute(
-            """
+        query = """
             SELECT id, target_type, target_id, source_recommendation_id, action_type,
-                   topic, teacher_instruction, priority, status, created_at, updated_at
+                   topic, teacher_instruction, priority, status, created_at, updated_at, owner_user_id
             FROM teacher_actions
-            ORDER BY updated_at DESC, created_at DESC, id DESC
             """
-        ).fetchall()
+        params: list[str] = []
+        if owner_user_id is not None:
+            query += " WHERE owner_user_id = ?"
+            params.append((owner_user_id or "").strip())
+        query += " ORDER BY updated_at DESC, created_at DESC, id DESC"
+        rows = conn.execute(query, params).fetchall()
     return [_row_to_record(row) for row in rows]
 
 
@@ -94,6 +110,7 @@ def create_teacher_action(
     topic: str,
     teacher_instruction: str,
     priority: str,
+    owner_user_id: str = "",
 ) -> dict[str, Any]:
     if target_type not in {"student", "small_group"}:
         raise ValueError("invalid target_type")
@@ -112,6 +129,7 @@ def create_teacher_action(
     now = _now_ts()
     record = {
         "id": f"teacher-action:{uuid4().hex}",
+        "owner_user_id": owner_user_id.strip(),
         "target_type": target_type,
         "target_id": cleaned_target_id,
         "source_recommendation_id": cleaned_source,
@@ -129,12 +147,13 @@ def create_teacher_action(
         conn.execute(
             """
             INSERT INTO teacher_actions (
-                id, target_type, target_id, source_recommendation_id, action_type,
+                id, owner_user_id, target_type, target_id, source_recommendation_id, action_type,
                 topic, teacher_instruction, priority, status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 record["id"],
+                record["owner_user_id"],
                 record["target_type"],
                 record["target_id"],
                 record["source_recommendation_id"],
@@ -151,22 +170,30 @@ def create_teacher_action(
     return deepcopy(record)
 
 
-def update_teacher_action_status(store: Any, action_id: str, *, status: str) -> dict[str, Any]:
+def update_teacher_action_status(
+    store: Any,
+    action_id: str,
+    *,
+    status: str,
+    owner_user_id: str | None = None,
+) -> dict[str, Any]:
     if status not in _ALLOWED_STATUSES:
         raise ValueError("invalid status")
 
     _ensure_table(store.db_path)
     now = _now_ts()
     with _connect(store.db_path) as conn:
-        row = conn.execute(
-            """
+        query = """
             SELECT id, target_type, target_id, source_recommendation_id, action_type,
-                   topic, teacher_instruction, priority, status, created_at, updated_at
+                   topic, teacher_instruction, priority, status, created_at, updated_at, owner_user_id
             FROM teacher_actions
             WHERE id = ?
-            """,
-            (action_id,),
-        ).fetchone()
+            """
+        params: list[str] = [action_id]
+        if owner_user_id is not None:
+            query += " AND owner_user_id = ?"
+            params.append((owner_user_id or "").strip())
+        row = conn.execute(query, params).fetchone()
         if row is None:
             raise KeyError(action_id)
 

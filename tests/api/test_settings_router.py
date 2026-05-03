@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import importlib
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 from deeptutor.api.routers import settings as settings_router
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.config.provider_runtime import (
     ResolvedEmbeddingConfig,
     ResolvedLLMConfig,
@@ -14,6 +17,12 @@ from deeptutor.services.embedding import client as embedding_client_module
 from deeptutor.services.embedding import config as embedding_config_module
 from deeptutor.services.llm import client as llm_client_module
 from deeptutor.services.llm import config as llm_config_module
+
+pytest.importorskip("fastapi")
+
+FastAPI = pytest.importorskip("fastapi").FastAPI
+TestClient = pytest.importorskip("fastapi.testclient").TestClient
+settings_module = importlib.import_module("deeptutor.api.routers.settings")
 
 
 class _DummyLogger:
@@ -134,6 +143,7 @@ def _patch_runtime(
     service: _FakeCatalogService,
 ) -> None:
     monkeypatch.setattr(settings_router, "get_model_catalog_service", lambda: service)
+    monkeypatch.setattr(settings_module, "get_model_catalog_service", lambda: service)
     monkeypatch.setattr(llm_client_module, "get_logger", lambda *_args, **_kwargs: _DummyLogger())
     monkeypatch.setattr(
         embedding_client_module,
@@ -196,6 +206,21 @@ def _patch_runtime(
     )
 
 
+def _build_app() -> FastAPI:
+    app = FastAPI()
+    app.include_router(settings_module.router, prefix="/api/v1/settings")
+    return app
+
+
+def _user(user_id: str, role: str = "teacher") -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id=user_id,
+        email=f"{user_id}@example.com",
+        display_name=f"User {user_id}",
+        role=role,
+    )
+
+
 @pytest.fixture(autouse=True)
 def _reset_runtime_state() -> None:
     llm_config_module.clear_llm_config_cache()
@@ -233,7 +258,8 @@ async def test_update_catalog_invalidates_runtime_caches(monkeypatch: pytest.Mon
     old_embedding_client = embedding_client_module.get_embedding_client()
 
     response = await settings_router.update_catalog(
-        settings_router.CatalogPayload(catalog=updated_catalog)
+        settings_router.CatalogPayload(catalog=updated_catalog),
+        current_user=_user("admin-1", role="admin"),
     )
 
     new_llm_config = llm_config_module.get_llm_config()
@@ -278,7 +304,8 @@ async def test_apply_catalog_invalidates_runtime_caches(monkeypatch: pytest.Monk
     old_embedding_client = embedding_client_module.get_embedding_client()
 
     response = await settings_router.apply_catalog(
-        settings_router.CatalogPayload(catalog=applied_catalog)
+        settings_router.CatalogPayload(catalog=applied_catalog),
+        current_user=_user("admin-1", role="admin"),
     )
 
     new_llm_config = llm_config_module.get_llm_config()
@@ -297,7 +324,8 @@ async def test_apply_catalog_invalidates_runtime_caches(monkeypatch: pytest.Monk
 
 @pytest.mark.asyncio
 async def test_complete_tour_invalidates_runtime_caches(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     initial_catalog = _build_catalog(
         llm_model="gpt-before-tour",
@@ -327,7 +355,8 @@ async def test_complete_tour_invalidates_runtime_caches(
     old_embedding_client = embedding_client_module.get_embedding_client()
 
     response = await settings_router.complete_tour(
-        settings_router.TourCompletePayload(catalog=completed_catalog)
+        settings_router.TourCompletePayload(catalog=completed_catalog),
+        current_user=_user("admin-1", role="admin"),
     )
 
     new_llm_config = llm_config_module.get_llm_config()
@@ -342,3 +371,65 @@ async def test_complete_tour_invalidates_runtime_caches(
     assert new_llm_client is not old_llm_client
     assert new_embedding_client is not old_embedding_client
     assert '"status": "completed"' in cache
+
+
+def test_settings_routes_require_authentication() -> None:
+    with TestClient(_build_app()) as client:
+        response = client.get("/api/v1/settings")
+
+    assert response.status_code == 401
+
+
+def test_settings_ui_preferences_are_per_user(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    settings_dir = tmp_path / "settings"
+    settings_dir.mkdir(parents=True, exist_ok=True)
+
+    class FakePathService:
+        def get_settings_dir(self):
+            return settings_dir
+
+    class FakeCatalogService:
+        def load(self):
+            return {"llm": "demo"}
+
+    monkeypatch.setattr(settings_module, "_path_service", FakePathService())
+    monkeypatch.setattr(settings_module, "get_model_catalog_service", lambda: FakeCatalogService())
+
+    app = _build_app()
+    app.dependency_overrides[settings_module.get_current_user] = lambda: _user("teacher-1")
+    with TestClient(app) as client:
+        response = client.put("/api/v1/settings/theme", json={"theme": "dark"})
+        assert response.status_code == 200
+        assert response.json()["theme"] == "dark"
+        teacher_settings = client.get("/api/v1/settings").json()["ui"]
+        assert teacher_settings["theme"] == "dark"
+
+    app = _build_app()
+    app.dependency_overrides[settings_module.get_current_user] = lambda: _user("teacher-2")
+    with TestClient(app) as client:
+        teacher_two_settings = client.get("/api/v1/settings").json()["ui"]
+        assert teacher_two_settings["theme"] == "light"
+
+    assert (settings_dir / "interface.teacher-1.json").exists()
+    assert not (settings_dir / "interface.teacher-2.json").exists()
+
+
+def test_settings_catalog_writes_are_admin_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeCatalogService:
+        def load(self):
+            return {"llm": "demo"}
+
+        def save(self, catalog):
+            return catalog
+
+        def apply(self, catalog):
+            return catalog
+
+    monkeypatch.setattr(settings_module, "get_model_catalog_service", lambda: FakeCatalogService())
+    app = _build_app()
+    app.dependency_overrides[settings_module.get_current_user] = lambda: _user("teacher-1", role="teacher")
+
+    with TestClient(app) as client:
+        response = client.put("/api/v1/settings/catalog", json={"catalog": {"llm": "prod"}})
+
+    assert response.status_code == 403

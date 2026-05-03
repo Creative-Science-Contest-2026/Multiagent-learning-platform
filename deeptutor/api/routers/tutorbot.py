@@ -7,14 +7,18 @@ from __future__ import annotations
 import json
 import logging
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.deps import get_current_user_from_websocket
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.tutorbot import get_tutorbot_manager
 from deeptutor.services.tutorbot.manager import BotConfig
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+require_teacher_or_admin_roles = {"teacher", "admin"}
 
 
 class CreateBotRequest(BaseModel):
@@ -49,15 +53,41 @@ class SoulUpdateRequest(BaseModel):
     content: str | None = None
 
 
+def _require_teacher_or_admin(user: AuthenticatedUser) -> None:
+    if user.role not in require_teacher_or_admin_roles:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+def _can_access_bot(record: dict[str, object] | None, current_user: AuthenticatedUser) -> bool:
+    if current_user.role == "admin":
+        return True
+    if not record:
+        return False
+    return str(record.get("owner_user_id") or "").strip() == current_user.id
+
+
+def _resolve_bot_record(bot_id: str, current_user: AuthenticatedUser) -> dict[str, object] | None:
+    manager = get_tutorbot_manager()
+    for entry in manager.list_bots():
+        if entry.get("bot_id") == bot_id and _can_access_bot(entry, current_user):
+            return entry
+    return None
+
+
 # ── Soul template library (must be before /{bot_id} routes) ───
 
 @router.get("/souls")
-async def list_souls():
+async def list_souls(current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
     return get_tutorbot_manager().list_souls()
 
 
 @router.post("/souls")
-async def create_soul(payload: SoulCreateRequest):
+async def create_soul(
+    payload: SoulCreateRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     mgr = get_tutorbot_manager()
     if mgr.get_soul(payload.id):
         raise HTTPException(status_code=409, detail=f"Soul '{payload.id}' already exists")
@@ -65,7 +95,8 @@ async def create_soul(payload: SoulCreateRequest):
 
 
 @router.get("/souls/{soul_id}")
-async def get_soul(soul_id: str):
+async def get_soul(soul_id: str, current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
     soul = get_tutorbot_manager().get_soul(soul_id)
     if not soul:
         raise HTTPException(status_code=404, detail="Soul not found")
@@ -73,7 +104,12 @@ async def get_soul(soul_id: str):
 
 
 @router.put("/souls/{soul_id}")
-async def update_soul(soul_id: str, payload: SoulUpdateRequest):
+async def update_soul(
+    soul_id: str,
+    payload: SoulUpdateRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     result = get_tutorbot_manager().update_soul(soul_id, payload.name, payload.content)
     if not result:
         raise HTTPException(status_code=404, detail="Soul not found")
@@ -81,7 +117,8 @@ async def update_soul(soul_id: str, payload: SoulUpdateRequest):
 
 
 @router.delete("/souls/{soul_id}")
-async def delete_soul(soul_id: str):
+async def delete_soul(soul_id: str, current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
     if not get_tutorbot_manager().delete_soul(soul_id):
         raise HTTPException(status_code=404, detail="Soul not found")
     return {"id": soul_id, "deleted": True}
@@ -90,18 +127,33 @@ async def delete_soul(soul_id: str):
 # ── Bot management (static paths before /{bot_id} parameterized routes) ──
 
 @router.get("")
-async def list_bots():
-    return get_tutorbot_manager().list_bots()
+async def list_bots(current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
+    bots = get_tutorbot_manager().list_bots()
+    if current_user.role == "admin":
+        return bots
+    return [entry for entry in bots if _can_access_bot(entry, current_user)]
 
 
 @router.get("/recent")
-async def recent_bots(limit: int = 3):
+async def recent_bots(
+    limit: int = 3,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Return the most recently active bots with their last message preview."""
-    return get_tutorbot_manager().get_recent_active_bots(limit=limit)
+    _require_teacher_or_admin(current_user)
+    bots = get_tutorbot_manager().get_recent_active_bots(limit=limit * 4)
+    if current_user.role != "admin":
+        bots = [entry for entry in bots if _can_access_bot(entry, current_user)]
+    return bots[:limit]
 
 
 @router.post("")
-async def create_and_start_bot(payload: CreateBotRequest):
+async def create_and_start_bot(
+    payload: CreateBotRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     mgr = get_tutorbot_manager()
     config = BotConfig(
         name=payload.name or payload.bot_id,
@@ -109,6 +161,9 @@ async def create_and_start_bot(payload: CreateBotRequest):
         persona=payload.persona,
         channels=payload.channels,
         model=payload.model,
+        owner_user_id=current_user.id,
+        owner_email=current_user.email,
+        owner_display_name=current_user.display_name,
     )
     try:
         instance = await mgr.start_bot(payload.bot_id, config)
@@ -118,23 +173,19 @@ async def create_and_start_bot(payload: CreateBotRequest):
 
 
 @router.get("/{bot_id}")
-async def get_bot(bot_id: str):
-    mgr = get_tutorbot_manager()
-    instance = mgr.get_bot(bot_id)
-    if instance:
-        return instance.to_dict()
-    cfg = mgr._load_bot_config(bot_id)
-    if cfg:
-        return {
-            "bot_id": bot_id, "name": cfg.name, "description": cfg.description,
-            "persona": cfg.persona, "channels": list(cfg.channels.keys()),
-            "model": cfg.model, "running": False, "started_at": None,
-        }
+async def get_bot(bot_id: str, current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
+    record = _resolve_bot_record(bot_id, current_user)
+    if record:
+        return record
     raise HTTPException(status_code=404, detail="Bot not found")
 
 
 @router.delete("/{bot_id}")
-async def stop_bot(bot_id: str):
+async def stop_bot(bot_id: str, current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
+    if not _resolve_bot_record(bot_id, current_user):
+        raise HTTPException(status_code=404, detail="Bot not found or not running")
     stopped = await get_tutorbot_manager().stop_bot(bot_id)
     if not stopped:
         raise HTTPException(status_code=404, detail="Bot not found or not running")
@@ -142,7 +193,10 @@ async def stop_bot(bot_id: str):
 
 
 @router.delete("/{bot_id}/destroy")
-async def destroy_bot(bot_id: str):
+async def destroy_bot(bot_id: str, current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
+    if not _resolve_bot_record(bot_id, current_user):
+        raise HTTPException(status_code=404, detail="Bot not found")
     destroyed = await get_tutorbot_manager().destroy_bot(bot_id)
     if not destroyed:
         raise HTTPException(status_code=404, detail="Bot not found")
@@ -150,8 +204,15 @@ async def destroy_bot(bot_id: str):
 
 
 @router.patch("/{bot_id}")
-async def update_bot(bot_id: str, payload: UpdateBotRequest):
+async def update_bot(
+    bot_id: str,
+    payload: UpdateBotRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     mgr = get_tutorbot_manager()
+    if not _resolve_bot_record(bot_id, current_user):
+        raise HTTPException(status_code=404, detail="Bot not found")
     instance = mgr.get_bot(bot_id)
     if not instance:
         raise HTTPException(status_code=404, detail="Bot not found")
@@ -174,12 +235,22 @@ async def update_bot(bot_id: str, payload: UpdateBotRequest):
 # ── Workspace file endpoints ──────────────────────────────────
 
 @router.get("/{bot_id}/files")
-async def list_bot_files(bot_id: str):
+async def list_bot_files(bot_id: str, current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
+    if not _resolve_bot_record(bot_id, current_user):
+        raise HTTPException(status_code=404, detail="Bot not found")
     return get_tutorbot_manager().read_all_bot_files(bot_id)
 
 
 @router.get("/{bot_id}/files/{filename}")
-async def read_bot_file(bot_id: str, filename: str):
+async def read_bot_file(
+    bot_id: str,
+    filename: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
+    if not _resolve_bot_record(bot_id, current_user):
+        raise HTTPException(status_code=404, detail="Bot not found")
     content = get_tutorbot_manager().read_bot_file(bot_id, filename)
     if content is None:
         raise HTTPException(status_code=400, detail=f"Not an editable file: {filename}")
@@ -187,7 +258,15 @@ async def read_bot_file(bot_id: str, filename: str):
 
 
 @router.put("/{bot_id}/files/{filename}")
-async def write_bot_file(bot_id: str, filename: str, payload: FileUpdateRequest):
+async def write_bot_file(
+    bot_id: str,
+    filename: str,
+    payload: FileUpdateRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
+    if not _resolve_bot_record(bot_id, current_user):
+        raise HTTPException(status_code=404, detail="Bot not found")
     ok = get_tutorbot_manager().write_bot_file(bot_id, filename, payload.content)
     if not ok:
         raise HTTPException(status_code=400, detail=f"Not an editable file: {filename}")
@@ -197,14 +276,33 @@ async def write_bot_file(bot_id: str, filename: str, payload: FileUpdateRequest)
 # ── Chat history & WebSocket ──────────────────────────────────
 
 @router.get("/{bot_id}/history")
-async def get_bot_history(bot_id: str, limit: int = 100):
+async def get_bot_history(
+    bot_id: str,
+    limit: int = 100,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Read chat history from the bot's per-bot JSONL session files."""
+    _require_teacher_or_admin(current_user)
+    if not _resolve_bot_record(bot_id, current_user):
+        raise HTTPException(status_code=404, detail="Bot not found")
     return get_tutorbot_manager().get_bot_history(bot_id, limit=limit)
 
 
 @router.websocket("/{bot_id}/ws")
 async def bot_chat_ws(ws: WebSocket, bot_id: str):
     import asyncio
+
+    try:
+        current_user = get_current_user_from_websocket(ws)
+    except Exception:
+        await ws.close(code=4401)
+        return
+    if current_user.role not in require_teacher_or_admin_roles:
+        await ws.close(code=4403)
+        return
+    if not _resolve_bot_record(bot_id, current_user):
+        await ws.close(code=4404, reason="Bot not found")
+        return
 
     mgr = get_tutorbot_manager()
     instance = mgr.get_bot(bot_id)

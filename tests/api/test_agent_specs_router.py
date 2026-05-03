@@ -10,6 +10,7 @@ except Exception:  # pragma: no cover
     TestClient = None
 
 from deeptutor.services.agent_spec.service import AgentSpecService
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.runtime_policy import compiler as runtime_policy_compiler
 
 pytestmark = pytest.mark.skipif(FastAPI is None or TestClient is None, reason="fastapi not installed")
@@ -23,6 +24,15 @@ def _build_app(service: AgentSpecService, monkeypatch: pytest.MonkeyPatch) -> Fa
     monkeypatch.setattr(agent_specs, "get_agent_spec_service", lambda: service)
     monkeypatch.setattr(runtime_policy_compiler, "get_agent_spec_service", lambda: service)
     return app
+
+
+def _user(user_id: str = "teacher-1", role: str = "teacher") -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id=user_id,
+        email=f"{user_id}@example.com",
+        display_name=f"User {user_id}",
+        role=role,
+    )
 
 
 def _payload(agent_id: str = "fraction-coach") -> dict:
@@ -63,7 +73,11 @@ def _payload(agent_id: str = "fraction-coach") -> dict:
 def test_agent_specs_router_supports_create_list_update_and_export(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     service = AgentSpecService(tmp_path / "agent_specs")
 
-    with TestClient(_build_app(service, monkeypatch)) as client:
+    app = _build_app(service, monkeypatch)
+    from deeptutor.api.routers import agent_specs
+    app.dependency_overrides[agent_specs.get_current_user] = lambda: _user()
+
+    with TestClient(app) as client:
         created = client.post("/api/v1/agent-specs", json=_payload())
         assert created.status_code == 200
         assert created.json()["agent_id"] == "fraction-coach"
@@ -96,7 +110,11 @@ def test_agent_specs_router_supports_create_list_update_and_export(tmp_path, mon
 def test_agent_specs_router_returns_404_for_missing_pack(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     service = AgentSpecService(tmp_path / "agent_specs")
 
-    with TestClient(_build_app(service, monkeypatch)) as client:
+    app = _build_app(service, monkeypatch)
+    from deeptutor.api.routers import agent_specs
+    app.dependency_overrides[agent_specs.get_current_user] = lambda: _user()
+
+    with TestClient(app) as client:
         response = client.get("/api/v1/agent-specs/missing-pack")
 
     assert response.status_code == 404
@@ -126,7 +144,11 @@ def test_agent_specs_router_returns_runtime_policy_audit_for_latest_and_versione
         files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion two.\n"},
     )
 
-    with TestClient(_build_app(service, monkeypatch)) as client:
+    app = _build_app(service, monkeypatch)
+    from deeptutor.api.routers import agent_specs
+    app.dependency_overrides[agent_specs.get_current_user] = lambda: _user()
+
+    with TestClient(app) as client:
         latest = client.get("/api/v1/agent-specs/fraction-coach/runtime-policy-audit")
         assert latest.status_code == 200
         assert latest.json()["agent_spec_version"] == 2
@@ -150,9 +172,29 @@ def test_agent_specs_router_returns_404_for_missing_runtime_policy_audit_pack_or
         files={"WORKFLOW.md": "# Workflow\n\n## Session Flow\n\nVersion one.\n"},
     )
 
-    with TestClient(_build_app(service, monkeypatch)) as client:
+    app = _build_app(service, monkeypatch)
+    from deeptutor.api.routers import agent_specs
+    app.dependency_overrides[agent_specs.get_current_user] = lambda: _user()
+
+    with TestClient(app) as client:
         missing_pack = client.get("/api/v1/agent-specs/missing-pack/runtime-policy-audit")
         missing_version = client.get("/api/v1/agent-specs/fraction-coach/runtime-policy-audit?version=9")
 
     assert missing_pack.status_code == 404
     assert missing_version.status_code == 404
+
+
+def test_agent_specs_router_requires_teacher_or_admin(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    service = AgentSpecService(tmp_path / "agent_specs")
+    app = _build_app(service, monkeypatch)
+    from deeptutor.api.routers import agent_specs
+
+    with TestClient(app) as client:
+        anonymous = client.get("/api/v1/agent-specs")
+    assert anonymous.status_code == 401
+
+    app = _build_app(service, monkeypatch)
+    app.dependency_overrides[agent_specs.get_current_user] = lambda: _user(role="student")
+    with TestClient(app) as client:
+        student = client.get("/api/v1/agent-specs")
+    assert student.status_code == 403

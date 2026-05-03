@@ -88,6 +88,7 @@ class SQLiteSessionStore:
                 """
                 CREATE TABLE IF NOT EXISTS sessions (
                     id TEXT PRIMARY KEY,
+                    owner_user_id TEXT DEFAULT '',
                     title TEXT NOT NULL DEFAULT 'New conversation',
                     created_at REAL NOT NULL,
                     updated_at REAL NOT NULL,
@@ -148,7 +149,8 @@ class SQLiteSessionStore:
                     ON turn_events(turn_id, seq);
 
                 CREATE TABLE IF NOT EXISTS observations (
-                    observation_id TEXT PRIMARY KEY,
+                    owner_user_id TEXT NOT NULL DEFAULT '',
+                    observation_id TEXT NOT NULL,
                     session_id TEXT NOT NULL,
                     student_id TEXT NOT NULL,
                     source TEXT NOT NULL,
@@ -159,14 +161,16 @@ class SQLiteSessionStore:
                     hint_count INTEGER NOT NULL DEFAULT 0,
                     retry_count INTEGER NOT NULL DEFAULT 0,
                     dominant_error TEXT DEFAULT '',
-                    created_at REAL NOT NULL
+                    created_at REAL NOT NULL,
+                    PRIMARY KEY (owner_user_id, observation_id)
                 );
 
-                CREATE INDEX IF NOT EXISTS idx_observations_student_created
-                    ON observations(student_id, created_at DESC);
+                CREATE INDEX IF NOT EXISTS idx_observations_owner_student_created
+                    ON observations(owner_user_id, student_id, created_at DESC);
 
                 CREATE TABLE IF NOT EXISTS student_states (
-                    student_id TEXT PRIMARY KEY,
+                    owner_user_id TEXT NOT NULL DEFAULT '',
+                    student_id TEXT NOT NULL,
                     repeated_mistakes_json TEXT NOT NULL DEFAULT '[]',
                     support_level TEXT NOT NULL DEFAULT 'independent',
                     confidence_trend TEXT NOT NULL DEFAULT 'flat',
@@ -174,15 +178,22 @@ class SQLiteSessionStore:
                     mastery_signals_json TEXT NOT NULL DEFAULT '{}',
                     support_signals_json TEXT NOT NULL DEFAULT '{}',
                     misconception_signals_json TEXT NOT NULL DEFAULT '{}',
-                    updated_at REAL NOT NULL
+                    updated_at REAL NOT NULL,
+                    PRIMARY KEY (owner_user_id, student_id)
                 );
                 """
             )
             columns = {row[1] for row in conn.execute("PRAGMA table_info(sessions)").fetchall()}
+            if "owner_user_id" not in columns:
+                conn.execute(
+                    "ALTER TABLE sessions ADD COLUMN owner_user_id TEXT DEFAULT ''"
+                )
             if "preferences_json" not in columns:
                 conn.execute(
                     "ALTER TABLE sessions ADD COLUMN preferences_json TEXT DEFAULT '{}'"
                 )
+            self._ensure_observations_schema(conn)
+            self._ensure_student_states_schema(conn)
             student_state_columns = {
                 row[1] for row in conn.execute("PRAGMA table_info(student_states)").fetchall()
             }
@@ -204,6 +215,154 @@ class SQLiteSessionStore:
                 )
             conn.commit()
 
+    @staticmethod
+    def _table_columns(conn: sqlite3.Connection, table_name: str) -> list[str]:
+        return [str(row[1]) for row in conn.execute(f"PRAGMA table_info({table_name})").fetchall()]
+
+    @staticmethod
+    def _table_pk_columns(conn: sqlite3.Connection, table_name: str) -> list[str]:
+        rows = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
+        return [str(row[1]) for row in sorted(rows, key=lambda row: int(row[5])) if int(row[5]) > 0]
+
+    @staticmethod
+    def _legacy_column_expr(columns: list[str], column_name: str, default_sql: str) -> str:
+        return column_name if column_name in columns else default_sql
+
+    def _ensure_observations_schema(self, conn: sqlite3.Connection) -> None:
+        columns = self._table_columns(conn, "observations")
+        pk_columns = self._table_pk_columns(conn, "observations")
+        if columns and pk_columns == ["owner_user_id", "observation_id"]:
+            conn.execute(
+                """
+                CREATE INDEX IF NOT EXISTS idx_observations_owner_student_created
+                    ON observations(owner_user_id, student_id, created_at DESC)
+                """
+            )
+            return
+
+        has_owner = "owner_user_id" in columns
+        conn.execute("ALTER TABLE observations RENAME TO observations_legacy")
+        conn.execute(
+            """
+            CREATE TABLE observations (
+                owner_user_id TEXT NOT NULL DEFAULT '',
+                observation_id TEXT NOT NULL,
+                session_id TEXT NOT NULL,
+                student_id TEXT NOT NULL,
+                source TEXT NOT NULL,
+                topic TEXT NOT NULL,
+                question_id TEXT DEFAULT '',
+                is_correct INTEGER NOT NULL,
+                latency_seconds INTEGER,
+                hint_count INTEGER NOT NULL DEFAULT 0,
+                retry_count INTEGER NOT NULL DEFAULT 0,
+                dominant_error TEXT DEFAULT '',
+                created_at REAL NOT NULL,
+                PRIMARY KEY (owner_user_id, observation_id)
+            )
+            """
+        )
+        owner_expr = "COALESCE(owner_user_id, '')" if has_owner else "''"
+        conn.execute(
+            f"""
+            INSERT INTO observations (
+                owner_user_id, observation_id, session_id, student_id, source, topic,
+                question_id, is_correct, latency_seconds, hint_count, retry_count,
+                dominant_error, created_at
+            )
+            SELECT
+                {owner_expr},
+                observation_id,
+                session_id,
+                student_id,
+                source,
+                topic,
+                question_id,
+                is_correct,
+                latency_seconds,
+                hint_count,
+                retry_count,
+                dominant_error,
+                created_at
+            FROM observations_legacy
+            """
+        )
+        conn.execute("DROP TABLE observations_legacy")
+        conn.execute(
+            """
+            CREATE INDEX idx_observations_owner_student_created
+                ON observations(owner_user_id, student_id, created_at DESC)
+            """
+        )
+
+    def _ensure_student_states_schema(self, conn: sqlite3.Connection) -> None:
+        columns = self._table_columns(conn, "student_states")
+        pk_columns = self._table_pk_columns(conn, "student_states")
+        if columns and pk_columns == ["owner_user_id", "student_id"]:
+            conn.execute(
+                """
+                CREATE INDEX IF NOT EXISTS idx_student_states_owner_updated
+                    ON student_states(owner_user_id, updated_at DESC)
+                """
+            )
+            return
+
+        has_owner = "owner_user_id" in columns
+        conn.execute("ALTER TABLE student_states RENAME TO student_states_legacy")
+        conn.execute(
+            """
+            CREATE TABLE student_states (
+                owner_user_id TEXT NOT NULL DEFAULT '',
+                student_id TEXT NOT NULL,
+                repeated_mistakes_json TEXT NOT NULL DEFAULT '[]',
+                support_level TEXT NOT NULL DEFAULT 'independent',
+                confidence_trend TEXT NOT NULL DEFAULT 'flat',
+                recency_summary_json TEXT NOT NULL DEFAULT '{}',
+                mastery_signals_json TEXT NOT NULL DEFAULT '{}',
+                support_signals_json TEXT NOT NULL DEFAULT '{}',
+                misconception_signals_json TEXT NOT NULL DEFAULT '{}',
+                updated_at REAL NOT NULL,
+                PRIMARY KEY (owner_user_id, student_id)
+            )
+            """
+        )
+        owner_expr = "COALESCE(owner_user_id, '')" if has_owner else "''"
+        conn.execute(
+            f"""
+            INSERT INTO student_states (
+                owner_user_id,
+                student_id,
+                repeated_mistakes_json,
+                support_level,
+                confidence_trend,
+                recency_summary_json,
+                mastery_signals_json,
+                support_signals_json,
+                misconception_signals_json,
+                updated_at
+            )
+            SELECT
+                {owner_expr},
+                student_id,
+                repeated_mistakes_json,
+                support_level,
+                confidence_trend,
+                {self._legacy_column_expr(columns, "recency_summary_json", "'{}'")},
+                {self._legacy_column_expr(columns, "mastery_signals_json", "'{}'")},
+                {self._legacy_column_expr(columns, "support_signals_json", "'{}'")},
+                {self._legacy_column_expr(columns, "misconception_signals_json", "'{}'")},
+                updated_at
+            FROM student_states_legacy
+            """
+        )
+        conn.execute("DROP TABLE student_states_legacy")
+        conn.execute(
+            """
+            CREATE INDEX idx_student_states_owner_updated
+                ON student_states(owner_user_id, updated_at DESC)
+            """
+        )
+
     async def _run(self, fn, *args):
         async with self._lock:
             return await asyncio.to_thread(fn, *args)
@@ -214,22 +373,29 @@ class SQLiteSessionStore:
         conn.execute("PRAGMA foreign_keys = ON")
         return conn
 
-    def _create_session_sync(self, title: str | None = None, session_id: str | None = None) -> dict[str, Any]:
+    def _create_session_sync(
+        self,
+        title: str | None = None,
+        session_id: str | None = None,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
         now = time.time()
         resolved_id = session_id or f"unified_{int(now * 1000)}_{uuid.uuid4().hex[:8]}"
         resolved_title = (title or "New conversation").strip() or "New conversation"
+        resolved_owner = (owner_user_id or "").strip()
         with self._connect() as conn:
             conn.execute(
                 """
-                INSERT INTO sessions (id, title, created_at, updated_at, compressed_summary, summary_up_to_msg_id)
-                VALUES (?, ?, ?, ?, '', 0)
+                INSERT INTO sessions (id, owner_user_id, title, created_at, updated_at, compressed_summary, summary_up_to_msg_id)
+                VALUES (?, ?, ?, ?, ?, '', 0)
                 """,
-                (resolved_id, resolved_title[:100], now, now),
+                (resolved_id, resolved_owner, resolved_title[:100], now, now),
             )
             conn.commit()
         return {
             "id": resolved_id,
             "session_id": resolved_id,
+            "owner_user_id": resolved_owner,
             "title": resolved_title[:100],
             "created_at": now,
             "updated_at": now,
@@ -237,15 +403,20 @@ class SQLiteSessionStore:
             "summary_up_to_msg_id": 0,
         }
 
-    async def create_session(self, title: str | None = None, session_id: str | None = None) -> dict[str, Any]:
-        return await self._run(self._create_session_sync, title, session_id)
+    async def create_session(
+        self,
+        title: str | None = None,
+        session_id: str | None = None,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
+        return await self._run(self._create_session_sync, title, session_id, owner_user_id)
 
-    def _get_session_sync(self, session_id: str) -> dict[str, Any] | None:
+    def _get_session_sync(self, session_id: str, owner_user_id: str | None = None) -> dict[str, Any] | None:
         with self._connect() as conn:
-            row = conn.execute(
-                """
+            query = """
                 SELECT
                     s.id,
+                    s.owner_user_id,
                     s.title,
                     s.created_at,
                     s.updated_at,
@@ -282,12 +453,14 @@ class SQLiteSessionStore:
                         ),
                         ''
                     ) AS capability
-                FROM sessions
-                s
+                FROM sessions s
                 WHERE s.id = ?
-                """,
-                (session_id,),
-            ).fetchone()
+            """
+            params: list[Any] = [session_id]
+            if owner_user_id is not None:
+                query += " AND s.owner_user_id = ?"
+                params.append((owner_user_id or "").strip())
+            row = conn.execute(query, tuple(params)).fetchone()
         if not row:
             return None
         payload = dict(row)
@@ -295,15 +468,15 @@ class SQLiteSessionStore:
         payload["preferences"] = _json_loads(payload.pop("preferences_json", ""), {})
         return payload
 
-    async def get_session(self, session_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_session_sync, session_id)
+    async def get_session(self, session_id: str, owner_user_id: str | None = None) -> dict[str, Any] | None:
+        return await self._run(self._get_session_sync, session_id, owner_user_id)
 
-    async def ensure_session(self, session_id: str | None = None) -> dict[str, Any]:
+    async def ensure_session(self, session_id: str | None = None, owner_user_id: str | None = None) -> dict[str, Any]:
         if session_id:
-            session = await self.get_session(session_id)
+            session = await self.get_session(session_id, owner_user_id=owner_user_id)
             if session is not None:
                 return session
-        return await self.create_session()
+        return await self.create_session(owner_user_id=owner_user_id)
 
     @staticmethod
     def _serialize_turn(row: sqlite3.Row) -> dict[str, Any]:
@@ -362,45 +535,77 @@ class SQLiteSessionStore:
     async def create_turn(self, session_id: str, capability: str = "") -> dict[str, Any]:
         return await self._run(self._create_turn_sync, session_id, capability)
 
-    def _get_turn_sync(self, turn_id: str) -> dict[str, Any] | None:
+    def _get_turn_sync(
+        self,
+        turn_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
         with self._connect() as conn:
-            row = conn.execute(
-                """
+            query = """
                 SELECT
                     t.*,
+                    s.owner_user_id AS session_owner_user_id,
                     COALESCE((SELECT MAX(seq) FROM turn_events te WHERE te.turn_id = t.id), 0) AS last_seq
                 FROM turns t
+                JOIN sessions s ON s.id = t.session_id
                 WHERE t.id = ?
-                """,
-                (turn_id,),
+            """
+            params: list[Any] = [turn_id]
+            if owner_user_id is not None:
+                query += " AND s.owner_user_id = ?"
+                params.append((owner_user_id or "").strip())
+            row = conn.execute(
+                query,
+                tuple(params),
             ).fetchone()
         if row is None:
             return None
-        return self._serialize_turn(row)
+        payload = self._serialize_turn(row)
+        payload["owner_user_id"] = row["session_owner_user_id"] or ""
+        return payload
 
-    async def get_turn(self, turn_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_turn_sync, turn_id)
+    async def get_turn(self, turn_id: str, owner_user_id: str | None = None) -> dict[str, Any] | None:
+        return await self._run(self._get_turn_sync, turn_id, owner_user_id)
 
-    def _get_active_turn_sync(self, session_id: str) -> dict[str, Any] | None:
+    def _get_active_turn_sync(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
         with self._connect() as conn:
-            row = conn.execute(
-                """
+            query = """
                 SELECT
                     t.*,
+                    s.owner_user_id AS session_owner_user_id,
                     COALESCE((SELECT MAX(seq) FROM turn_events te WHERE te.turn_id = t.id), 0) AS last_seq
                 FROM turns t
+                JOIN sessions s ON s.id = t.session_id
                 WHERE t.session_id = ? AND t.status = 'running'
+            """
+            params: list[Any] = [session_id]
+            if owner_user_id is not None:
+                query += " AND s.owner_user_id = ?"
+                params.append((owner_user_id or "").strip())
+            query += """
                 ORDER BY t.updated_at DESC
                 LIMIT 1
-                """,
-                (session_id,),
+            """
+            row = conn.execute(
+                query,
+                tuple(params),
             ).fetchone()
         if row is None:
             return None
-        return self._serialize_turn(row)
+        payload = self._serialize_turn(row)
+        payload["owner_user_id"] = row["session_owner_user_id"] or ""
+        return payload
 
-    async def get_active_turn(self, session_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_active_turn_sync, session_id)
+    async def get_active_turn(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        return await self._run(self._get_active_turn_sync, session_id, owner_user_id)
 
     def _list_active_turns_sync(self, session_id: str) -> list[dict[str, Any]]:
         with self._connect() as conn:
@@ -485,8 +690,26 @@ class SQLiteSessionStore:
     async def append_turn_event(self, turn_id: str, event: dict[str, Any]) -> dict[str, Any]:
         return await self._run(self._append_turn_event_sync, turn_id, event)
 
-    def _get_turn_events_sync(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
+    def _get_turn_events_sync(
+        self,
+        turn_id: str,
+        after_seq: int = 0,
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         with self._connect() as conn:
+            turn_query = """
+                SELECT t.session_id
+                FROM turns t
+                JOIN sessions s ON s.id = t.session_id
+                WHERE t.id = ?
+            """
+            turn_params: list[Any] = [turn_id]
+            if owner_user_id is not None:
+                turn_query += " AND s.owner_user_id = ?"
+                turn_params.append((owner_user_id or "").strip())
+            turn = conn.execute(turn_query, tuple(turn_params)).fetchone()
+            if turn is None:
+                return []
             rows = conn.execute(
                 """
                 SELECT turn_id, seq, type, source, stage, content, metadata_json, timestamp
@@ -496,7 +719,6 @@ class SQLiteSessionStore:
                 """,
                 (turn_id, max(0, int(after_seq))),
             ).fetchall()
-            turn = conn.execute("SELECT session_id FROM turns WHERE id = ?", (turn_id,)).fetchone()
         session_id = turn["session_id"] if turn else ""
         return [
             {
@@ -513,21 +735,32 @@ class SQLiteSessionStore:
             for row in rows
         ]
 
-    async def get_turn_events(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
-        return await self._run(self._get_turn_events_sync, turn_id, after_seq)
+    async def get_turn_events(
+        self,
+        turn_id: str,
+        after_seq: int = 0,
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        return await self._run(self._get_turn_events_sync, turn_id, after_seq, owner_user_id)
 
-    def _save_observations_sync(self, observations: list[dict[str, Any]]) -> None:
+    def _save_observations_sync(
+        self,
+        observations: list[dict[str, Any]],
+        owner_user_id: str | None = None,
+    ) -> None:
         now = time.time()
+        resolved_owner = (owner_user_id or "").strip()
         with self._connect() as conn:
             conn.executemany(
                 """
                 INSERT OR REPLACE INTO observations (
-                    observation_id, session_id, student_id, source, topic, question_id,
+                    owner_user_id, observation_id, session_id, student_id, source, topic, question_id,
                     is_correct, latency_seconds, hint_count, retry_count, dominant_error, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
                     (
+                        str(row.get("owner_user_id") or resolved_owner).strip(),
                         row["observation_id"],
                         row["session_id"],
                         row["student_id"],
@@ -546,19 +779,29 @@ class SQLiteSessionStore:
             )
             conn.commit()
 
-    async def save_observations(self, observations: list[dict[str, Any]]) -> None:
-        return await self._run(self._save_observations_sync, observations)
+    async def save_observations(
+        self,
+        observations: list[dict[str, Any]],
+        owner_user_id: str | None = None,
+    ) -> None:
+        return await self._run(self._save_observations_sync, observations, owner_user_id)
 
-    def _upsert_student_state_sync(self, student_id: str, state: dict[str, Any]) -> None:
+    def _upsert_student_state_sync(
+        self,
+        student_id: str,
+        state: dict[str, Any],
+        owner_user_id: str | None = None,
+    ) -> None:
         now = time.time()
+        resolved_owner = str(state.get("owner_user_id") or owner_user_id or "").strip()
         with self._connect() as conn:
             conn.execute(
                 """
                 INSERT INTO student_states (
-                    student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json,
+                    owner_user_id, student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json,
                     mastery_signals_json, support_signals_json, misconception_signals_json, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(student_id) DO UPDATE SET
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(owner_user_id, student_id) DO UPDATE SET
                     repeated_mistakes_json = excluded.repeated_mistakes_json,
                     support_level = excluded.support_level,
                     confidence_trend = excluded.confidence_trend,
@@ -569,6 +812,7 @@ class SQLiteSessionStore:
                     updated_at = excluded.updated_at
                 """,
                 (
+                    resolved_owner,
                     student_id,
                     _json_dumps(state.get("repeated_mistakes", [])),
                     state.get("support_level", "independent"),
@@ -582,23 +826,34 @@ class SQLiteSessionStore:
             )
             conn.commit()
 
-    async def upsert_student_state(self, student_id: str, state: dict[str, Any]) -> None:
-        return await self._run(self._upsert_student_state_sync, student_id, state)
+    async def upsert_student_state(
+        self,
+        student_id: str,
+        state: dict[str, Any],
+        owner_user_id: str | None = None,
+    ) -> None:
+        return await self._run(self._upsert_student_state_sync, student_id, state, owner_user_id)
 
-    def _get_student_state_sync(self, student_id: str) -> dict[str, Any] | None:
+    def _get_student_state_sync(
+        self,
+        student_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        resolved_owner = (owner_user_id or "").strip()
         with self._connect() as conn:
             row = conn.execute(
                 """
-                SELECT student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json,
+                SELECT owner_user_id, student_id, repeated_mistakes_json, support_level, confidence_trend, recency_summary_json,
                        mastery_signals_json, support_signals_json, misconception_signals_json, updated_at
                 FROM student_states
-                WHERE student_id = ?
+                WHERE owner_user_id = ? AND student_id = ?
                 """,
-                (student_id,),
+                (resolved_owner, student_id),
             ).fetchone()
         if row is None:
             return None
         return {
+            "owner_user_id": row["owner_user_id"],
             "student_id": row["student_id"],
             "repeated_mistakes": _json_loads(row["repeated_mistakes_json"], []),
             "support_level": row["support_level"],
@@ -610,23 +865,33 @@ class SQLiteSessionStore:
             "updated_at": row["updated_at"],
         }
 
-    async def get_student_state(self, student_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_student_state_sync, student_id)
+    async def get_student_state(
+        self,
+        student_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        return await self._run(self._get_student_state_sync, student_id, owner_user_id)
 
-    def _list_observations_sync(self, student_id: str) -> list[dict[str, Any]]:
+    def _list_observations_sync(
+        self,
+        student_id: str,
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        resolved_owner = (owner_user_id or "").strip()
         with self._connect() as conn:
             rows = conn.execute(
                 """
-                SELECT observation_id, session_id, student_id, source, topic, question_id, is_correct,
+                SELECT owner_user_id, observation_id, session_id, student_id, source, topic, question_id, is_correct,
                        latency_seconds, hint_count, retry_count, dominant_error, created_at
                 FROM observations
-                WHERE student_id = ?
+                WHERE owner_user_id = ? AND student_id = ?
                 ORDER BY created_at DESC
                 """,
-                (student_id,),
+                (resolved_owner, student_id),
             ).fetchall()
         return [
             {
+                "owner_user_id": row["owner_user_id"],
                 "observation_id": row["observation_id"],
                 "session_id": row["session_id"],
                 "student_id": row["student_id"],
@@ -643,8 +908,12 @@ class SQLiteSessionStore:
             for row in rows
         ]
 
-    async def list_observations(self, student_id: str) -> list[dict[str, Any]]:
-        return await self._run(self._list_observations_sync, student_id)
+    async def list_observations(
+        self,
+        student_id: str,
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        return await self._run(self._list_observations_sync, student_id, owner_user_id)
 
     @staticmethod
     def _recency_bucket(age_seconds: float) -> str:
@@ -657,17 +926,23 @@ class SQLiteSessionStore:
             return "last_30d"
         return "older"
 
-    def _build_student_state_rollup_sync(self, student_id: str, limit: int = 24) -> dict[str, Any] | None:
+    def _build_student_state_rollup_sync(
+        self,
+        student_id: str,
+        limit: int = 24,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        resolved_owner = (owner_user_id or "").strip()
         with self._connect() as conn:
             rows = conn.execute(
                 """
                 SELECT topic, is_correct, hint_count, retry_count, dominant_error, created_at
                 FROM observations
-                WHERE student_id = ?
+                WHERE owner_user_id = ? AND student_id = ?
                 ORDER BY created_at DESC
                 LIMIT ?
                 """,
-                (student_id, max(1, int(limit))),
+                (resolved_owner, student_id, max(1, int(limit))),
             ).fetchall()
         if not rows:
             return None
@@ -792,6 +1067,7 @@ class SQLiteSessionStore:
         ]
 
         return {
+            "owner_user_id": resolved_owner,
             "student_id": student_id,
             "repeated_mistakes": repeated_mistakes,
             "support_level": support_level,
@@ -813,33 +1089,48 @@ class SQLiteSessionStore:
             },
         }
 
-    async def build_student_state_rollup(self, student_id: str, limit: int = 24) -> dict[str, Any] | None:
-        return await self._run(self._build_student_state_rollup_sync, student_id, limit)
+    async def build_student_state_rollup(
+        self,
+        student_id: str,
+        limit: int = 24,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        return await self._run(self._build_student_state_rollup_sync, student_id, limit, owner_user_id)
 
-    def _update_session_title_sync(self, session_id: str, title: str) -> bool:
+    def _update_session_title_sync(self, session_id: str, title: str, owner_user_id: str | None = None) -> bool:
         with self._connect() as conn:
-            cur = conn.execute(
-                """
+            query = """
                 UPDATE sessions
                 SET title = ?, updated_at = ?
                 WHERE id = ?
-                """,
-                ((title.strip() or "New conversation")[:100], time.time(), session_id),
+            """
+            params: list[Any] = [((title.strip() or "New conversation")[:100]), time.time(), session_id]
+            if owner_user_id is not None:
+                query += " AND owner_user_id = ?"
+                params.append((owner_user_id or "").strip())
+            cur = conn.execute(
+                query,
+                tuple(params),
             )
             conn.commit()
         return cur.rowcount > 0
 
-    async def update_session_title(self, session_id: str, title: str) -> bool:
-        return await self._run(self._update_session_title_sync, session_id, title)
+    async def update_session_title(self, session_id: str, title: str, owner_user_id: str | None = None) -> bool:
+        return await self._run(self._update_session_title_sync, session_id, title, owner_user_id)
 
-    def _delete_session_sync(self, session_id: str) -> bool:
+    def _delete_session_sync(self, session_id: str, owner_user_id: str | None = None) -> bool:
         with self._connect() as conn:
-            cur = conn.execute("DELETE FROM sessions WHERE id = ?", (session_id,))
+            query = "DELETE FROM sessions WHERE id = ?"
+            params: list[Any] = [session_id]
+            if owner_user_id is not None:
+                query += " AND owner_user_id = ?"
+                params.append((owner_user_id or "").strip())
+            cur = conn.execute(query, tuple(params))
             conn.commit()
         return cur.rowcount > 0
 
-    async def delete_session(self, session_id: str) -> bool:
-        return await self._run(self._delete_session_sync, session_id)
+    async def delete_session(self, session_id: str, owner_user_id: str | None = None) -> bool:
+        return await self._run(self._delete_session_sync, session_id, owner_user_id)
 
     def _add_message_sync(
         self,
@@ -958,12 +1249,17 @@ class SQLiteSessionStore:
     async def get_messages_for_context(self, session_id: str) -> list[dict[str, Any]]:
         return await self._run(self._get_messages_for_context_sync, session_id)
 
-    def _list_sessions_sync(self, limit: int = 50, offset: int = 0) -> list[dict[str, Any]]:
+    def _list_sessions_sync(
+        self,
+        limit: int = 50,
+        offset: int = 0,
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         with self._connect() as conn:
-            rows = conn.execute(
-                """
+            query = """
                 SELECT
                     s.id,
+                    s.owner_user_id,
                     s.title,
                     s.created_at,
                     s.updated_at,
@@ -1014,12 +1310,18 @@ class SQLiteSessionStore:
                     ) AS last_message
                 FROM sessions s
                 LEFT JOIN messages m ON m.session_id = s.id
+            """
+            params: list[Any] = []
+            if owner_user_id is not None:
+                query += " WHERE s.owner_user_id = ?"
+                params.append((owner_user_id or "").strip())
+            query += """
                 GROUP BY s.id
                 ORDER BY s.updated_at DESC
                 LIMIT ? OFFSET ?
-                """,
-                (limit, offset),
-            ).fetchall()
+            """
+            params.extend([limit, offset])
+            rows = conn.execute(query, tuple(params)).fetchall()
         sessions = []
         for row in rows:
             payload = dict(row)
@@ -1028,8 +1330,13 @@ class SQLiteSessionStore:
             sessions.append(payload)
         return sessions
 
-    async def list_sessions(self, limit: int = 50, offset: int = 0) -> list[dict[str, Any]]:
-        return await self._run(self._list_sessions_sync, limit, offset)
+    async def list_sessions(
+        self,
+        limit: int = 50,
+        offset: int = 0,
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        return await self._run(self._list_sessions_sync, limit, offset, owner_user_id)
 
     def _update_summary_sync(self, session_id: str, summary: str, up_to_msg_id: int) -> bool:
         with self._connect() as conn:
@@ -1073,8 +1380,12 @@ class SQLiteSessionStore:
     async def update_session_preferences(self, session_id: str, preferences: dict[str, Any]) -> bool:
         return await self._run(self._update_session_preferences_sync, session_id, preferences)
 
-    async def get_session_with_messages(self, session_id: str) -> dict[str, Any] | None:
-        session = await self.get_session(session_id)
+    async def get_session_with_messages(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        session = await self.get_session(session_id, owner_user_id=owner_user_id)
         if session is None:
             return None
         session["messages"] = await self.get_messages(session_id)

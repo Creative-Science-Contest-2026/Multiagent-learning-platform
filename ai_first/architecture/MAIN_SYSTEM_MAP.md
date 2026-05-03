@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-05-02
+Last updated: 2026-05-03
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -44,20 +44,42 @@ flowchart TD
   RuntimePolicy --> TurnBinding["Bounded turn binding: chat + deep_question + deep_solve"]
 
   Project --> Product["Contest MVP Product Layer"]
+  Product --> PublicAuth["Public Auth Surface"]
   Product --> TeacherWorkspace["Teacher Workspace"]
+  Product --> AdminWorkspace["Admin Workspace"]
   Product --> IntroduceDocs["Public Introduce Docs Surface"]
+  PublicAuth --> AuthRoutes["/login · /signup · /forgot-password · /reset-password · /verify-email"]
+  PublicAuth --> RoleChoice["Role-first public entry: teacher | student"]
+  PublicAuth --> AuthReturnFlow["Safe next redirect + Google first-login role selection"]
+  PublicAuth --> RoleShells["Post-login shells: /teacher · /student · /admin"]
+  PublicAuth --> VerificationSurface["Signed-in verification banner + resend / refresh actions"]
+  PublicAuth --> AccountSurface["Signed-in account bar + logout + verification status"]
+  PublicAuth --> ActiveAccountPolicy["Only active accounts may enter auth shells"]
+  PublicAuth --> MemorySurface["/api/v1/memory now auth-gated and per-user"]
+  RoleShells --> TeacherHub["Teacher hub links to knowledge · dashboard · agents"]
+  RoleShells --> StudentHub["Student hub links to playground · student progress · docs"]
+  RoleShells --> AdminHub["Admin hub roster + internal account creation"]
   IntroduceDocs --> IntroduceRoute["/introduce"]
   IntroduceDocs --> IntroduceSidebar["Fixed docs sidebar + section anchors"]
   IntroduceDocs --> IntroduceGallery["Real screenshot gallery + click-to-enlarge lightbox"]
   IntroduceDocs --> IntroduceDocBridge["Judge-first overview + educator docs + technical docs bridge"]
+  AdminWorkspace --> AdminUsersRouterSurface["/api/v1/admin/users GET/POST"]
   TeacherWorkspace --> AgentSpecAuthoring["Agent Spec Authoring"]
+  TeacherWorkspace --> NotebookSurface["Notebook Workspace"]
+  TeacherWorkspace --> SettingsSurface["Settings Workspace"]
   AgentSpecAuthoring --> AgentSpecUI["/agents authoring tab"]
   AgentSpecAuthoring --> AgentSpecAPI["/api/v1/agent-specs"]
   AgentSpecAuthoring --> AgentSpecAuditAPI["/api/v1/agent-specs/{agent_id}/runtime-policy-audit"]
   AgentSpecAuditAPI --> AgentSpecTrustSurface["Runtime policy audit panel: slices + sources + knowledge policy"]
   AgentSpecAuthoring --> AgentSpecStorage["Versioned Markdown spec packs"]
+  AgentSpecAuthoring --> AgentSpecAuth["Teacher/admin authoring gate"]
   AgentSpecStorage --> RuntimePolicy
   AgentSpecAuditAPI --> RuntimePolicy
+  NotebookSurface --> NotebookAPI["/api/v1/notebook"]
+  NotebookAPI --> NotebookOwnerScope["Notebook owner_user_id filter"]
+  SettingsSurface --> SettingsAPI["/api/v1/settings"]
+  SettingsAPI --> PerUserSettings["Per-user UI settings files"]
+  SettingsAPI --> AdminCatalogControls["Admin-only catalog apply/test/mutate"]
   Product --> KnowledgePack["Knowledge Pack"]
   KnowledgePack --> KPMetaFlow["Metadata Create/Edit/Update Flow"]
   KnowledgePack --> KPVersions["Versioned teacher-pack metadata: current_version + version_history"]
@@ -75,7 +97,8 @@ flowchart TD
   Marketplace --> MarketplaceBatchImport["POST /api/v1/marketplace/import-batch"]
   Marketplace --> MarketplaceReviewAPI["POST /api/v1/marketplace/{pack_name}/reviews"]
   MarketplaceReviewAPI --> ReviewStorage["KB config: marketplace_reviews metadata"]
-  MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported"]
+  MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported__<user_id>"]
+  MarketplaceImport --> MarketplaceOwnerMetadata["Imported KB owner_user_id + owner_email + owner_display_name"]
   MarketplaceBatchImport --> BatchSelectUI["Multi-select cards + import selected action bar"]
   MarketplaceBatchImport --> ImportedClone
   ImportedClone --> OfflinePackManifest["Browser offline imported-pack manifest"]
@@ -88,7 +111,10 @@ flowchart TD
   AssessmentRecommendAPI --> RecommendEngine["Assessment Recommendation Engine"]
   RecommendEngine --> AssessmentSignals["Weak topics + score trend + KB context"]
   AssessmentDiagnosisAPI --> EvidenceExtractor["Observation extractor (assessment + tutoring runtime)"]
+  TeacherSurfaceAuth --> AssessmentRecommendAPI
+  TeacherSurfaceAuth --> AssessmentDiagnosisAPI
   EvidenceExtractor --> ObservationStore["SQLite observations + student_states (+ enriched rollups)"]
+  ObservationStore --> AssessmentOwnerScope["Teacher owner scope on assessment diagnosis + support signals"]
   ObservationStore --> DiagnosisEngine["Rule-first diagnosis + action selection"]
   DiagnosisEngine --> DiagnosisTaxonomy["Diagnosis taxonomy scoring: misconception patterns + state boosts"]
   DiagnosisEngine --> EvidenceGate["Evidence sufficiency gate: thin / stale / mixed"]
@@ -99,6 +125,33 @@ flowchart TD
   AdaptiveDifficulty --> DeepQuestion
   
   Product --> StudentTutor["Student Tutor Workspace"]
+  Product --> LegacyTransports["Legacy Chat/Solve Transports"]
+  Product --> GuidedLearning["Guided Learning Surface"]
+  Product --> TutorBotSurface["TutorBot Surface"]
+  Product --> QuestionSurface["Question Generation Surface"]
+  Product --> CoWriterSurface["Co-writer Surface"]
+  Product --> VisionSurface["Vision Solver Surface"]
+  Product --> OperatorSurface["Operator Runtime Surface"]
+  LegacyTransports --> LegacyChat["/api/v1/chat REST + WS"]
+  LegacyTransports --> LegacySolve["/api/v1/solve REST + WS"]
+  LegacyChat --> LegacyOwnerScope["BaseSessionManager owner_user_id filter"]
+  LegacySolve --> LegacyOwnerScope
+  GuidedLearning --> GuideAPI["/api/v1/guide REST + WS"]
+  GuideAPI --> GuideOwnerScope["GuidedSession owner_user_id filter"]
+  TutorBotSurface --> TutorBotAPI["/api/v1/tutorbot"]
+  TutorBotAPI --> TutorBotOwnerScope["Teacher-owned bot configs + admin override"]
+  QuestionSurface --> QuestionAPI["/api/v1/question WS"]
+  QuestionAPI --> QuestionAuth["Teacher/admin websocket auth gate"]
+  CoWriterSurface --> CoWriterAPI["/api/v1/co-writer"]
+  CoWriterAPI --> CoWriterOwnerScope["Co-writer history + tool call owner boundary"]
+  VisionSurface --> VisionAPI["/api/v1/vision/**"]
+  VisionAPI --> VisionAuth["Authenticated image-analysis REST + WS"]
+  OperatorSurface --> SystemAPI["/api/v1/system"]
+  OperatorSurface --> PluginsAPI["/api/v1/plugins"]
+  OperatorSurface --> AgentConfigAPI["/api/v1/agent-config"]
+  SystemAPI --> SystemRolePolicy["Teacher/admin pilot-feedback + admin-only runtime tests"]
+  PluginsAPI --> PluginsRolePolicy["Admin-only tool/capability playground execution"]
+  AgentConfigAPI --> AgentConfigAuth["Authenticated metadata access"]
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
   StudentTutor --> TutorKBBadges["KB Context Badges in Chat Messages"]
   StudentTutor --> TutorFollowups["Optional follow-up questions in tutor replies"]
@@ -125,6 +178,7 @@ flowchart TD
   TeacherInsights --> TeacherActionAPI["POST/PATCH /api/v1/dashboard/teacher-actions"]
   TeacherInsights --> InterventionAssignmentAPI["POST/PATCH /api/v1/dashboard/intervention-assignments"]
   TeacherInsights --> InsightTrustTrace["Student + small-group trust traces"]
+  TeacherInsights --> TeacherSurfaceAuth["Teacher/Admin API gate + teacher owner scope"]
   InsightsAPI --> DiagnosisEngine
   EvidenceGate --> InsightsAPI
   InsightsAPI --> DiagnosisFeedback["Diagnosis feedback records"]
@@ -135,6 +189,12 @@ flowchart TD
   InsightsAPI --> TeacherActions["Teacher action records"]
   InsightsAPI --> InterventionAssignments["Intervention assignment records"]
   InsightsAPI --> InterventionEffectiveness["Observational intervention effectiveness summaries"]
+  TeacherSurfaceAuth --> DiagnosisFeedback
+  TeacherSurfaceAuth --> RecommendationAcks
+  TeacherSurfaceAuth --> RecommendationFeedback
+  TeacherSurfaceAuth --> TeacherOverrides
+  TeacherSurfaceAuth --> TeacherActions
+  TeacherSurfaceAuth --> InterventionAssignments
   DiagnosisFeedbackAPI --> DiagnosisFeedback
   RecommendationAckAPI --> RecommendationAcks
   RecommendationFeedbackAPI --> RecommendationFeedback
@@ -167,6 +227,7 @@ flowchart TD
   AssessmentReview --> ReviewRoute["/dashboard/assessments/[sessionId]"]
   AssessmentReview --> ReviewAPI["/api/v1/sessions/{session_id}/assessment-review"]
   AssessmentReview --> AssessmentRubricAPI["POST/PATCH /api/v1/sessions/{session_id}/assessment-rubric-review"]
+  AssessmentReview --> QuizResultsAPI["POST /api/v1/sessions/{session_id}/quiz-results"]
   AssessmentReview --> OfflineQuizQueue["Browser offline quiz-result sync queue"]
   AssessmentReview --> ProgressIndicator["ProgressIndicator Component"]
   AssessmentReview --> LearningJourney["LearningJourneySummary Component"]
@@ -174,6 +235,9 @@ flowchart TD
   AssessmentReview --> TimeMetrics["Timing metrics: total + average + per-question response time"]
   AssessmentReview --> AssessErrorBoundary["Route Error Boundary: /dashboard/assessments/error.tsx"]
   ReviewAPI --> QuizTranscript["[Quiz Performance] transcript with optional time: Ns suffix"]
+  ReviewAPI --> ReviewOwnership["Owner-enforced review boundary via current_user.id"]
+  AssessmentRubricAPI --> ReviewOwnership
+  QuizResultsAPI --> ReviewOwnership
   ProgressIndicator --> ScoreViz["Score Progress Bar + Recommendations"]
   LearningJourney --> TopicBadges["Mastered/Recommended Topics"]
   Marketplace --> MarketErrorBoundary["Route Error Boundary: /marketplace/error.tsx"]
@@ -197,11 +261,27 @@ flowchart TD
 
   Project --> Data["Data Layer"]
   Data --> SQLite["data/user/chat_history.db"]
+  Data --> Postgres["PostgreSQL auth + identity store"]
   Data --> KnowledgeBases["data/knowledge_bases"]
   Data --> Memory["data/memory"]
+  Data --> LegacyJSONSessions["data/user/workspace/chat/**/sessions.json"]
+  Data --> GuideSessions["data/user/workspace/guide/session_*.json"]
+  Data --> TutorBotConfigs["data/tutorbot/<bot_id>/config.yaml"]
+  Data --> CoWriterHistory["data/user/workspace/co-writer/history.json + tool_calls/*.json"]
   Data --> Settings["data/user/settings"]
   Data --> Workspace["data/user/workspace"]
   Workspace --> AgentSpecWorkspace["agent_specs/<agent_id>/ + versions/"]
+  Workspace --> NotebookWorkspace["notebook/<id>.json + notebooks_index.json"]
+  SQLite --> OwnedSessions["Owned learning sessions: owner_user_id boundary"]
+  KnowledgeBases --> KBAuthMetadata["Knowledge-pack owner_user_id + user-specific default selection"]
+  Postgres --> AuthTables["users · credentials · oauth identities · auth sessions · tokens"]
+  Memory --> PerUserMemory["users/<owner>/SUMMARY.md + PROFILE.md"]
+  LegacyJSONSessions --> LegacyOwnerBoundary["Legacy chat/solve JSON sessions filtered by owner_user_id"]
+  GuideSessions --> GuideOwnerBoundary["GuidedSession owner_user_id boundary"]
+  TutorBotConfigs --> TutorBotOwnerBoundary["TutorBot config owner_user_id + owner profile"]
+  CoWriterHistory --> CoWriterOwnerBoundary["Co-writer owner_user_id on history + tool calls"]
+  Settings --> SettingsOwnerBoundary["interface.<owner>.json per user"]
+  NotebookWorkspace --> NotebookOwnerBoundary["Notebook + index owner_user_id boundary"]
 
   Project --> AIFirst["AI-first Operating Layer"]
   AIFirst --> OperatingPrompt["ai_first/AI_OPERATING_PROMPT.md"]
@@ -227,6 +307,14 @@ flowchart TD
   PRs --> Reviews
   API --> APISecurity["API Security Middleware"]
   APISecurity --> RateLimit["Rate limiting + 429 Retry-After"]
+  API --> AuthAPI["Auth + admin identity API"]
+  AuthAPI --> AuthRouter["/api/v1/auth"]
+  AuthAPI --> AdminUsersRouter["/api/v1/admin/users"]
+  AuthRouter --> SessionCookie["Opaque HttpOnly deeptutor_session cookie"]
+  AuthRouter --> GoogleOAuth["Google OAuth start + callback"]
+  GoogleOAuth --> OAuthState["Role + safe next-path state relay"]
+  AuthRouter --> CurrentUser["Current-user contract for role-aware shells"]
+  AuthRouter --> AuthMailer["SMTP reset/verify delivery seam + debug fallback"]
   MergeGates --> PRs
   MergeGates --> CI
   MergeGates --> Reviews

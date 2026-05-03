@@ -14,6 +14,9 @@ from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
+from deeptutor.services.auth.deps import get_current_user_from_websocket
+from deeptutor.services.auth.deps import owner_scope_for_user
+
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
@@ -27,6 +30,13 @@ def _parse_sequence_value(raw: Any, field_name: str) -> int:
 
 @router.websocket("/ws")
 async def unified_websocket(ws: WebSocket) -> None:
+    try:
+        current_user = get_current_user_from_websocket(ws)
+    except Exception:
+        await ws.close(code=4401)
+        return
+
+    owner_scope = owner_scope_for_user(current_user)
     await ws.accept()
     closed = False
     subscription_tasks: dict[str, asyncio.Task[None]] = {}
@@ -55,7 +65,11 @@ async def unified_websocket(ws: WebSocket) -> None:
 
         async def _forward() -> None:
             runtime = get_turn_runtime_manager()
-            async for event in runtime.subscribe_turn(turn_id, after_seq=after_seq):
+            async for event in runtime.subscribe_turn(
+                turn_id,
+                after_seq=after_seq,
+                owner_user_id=owner_scope,
+            ):
                 await safe_send(event)
 
         await stop_subscription(turn_id)
@@ -66,7 +80,11 @@ async def unified_websocket(ws: WebSocket) -> None:
 
         async def _forward() -> None:
             runtime = get_turn_runtime_manager()
-            async for event in runtime.subscribe_session(session_id, after_seq=after_seq):
+            async for event in runtime.subscribe_session(
+                session_id,
+                after_seq=after_seq,
+                owner_user_id=owner_scope,
+            ):
                 await safe_send(event)
 
         key = f"session:{session_id}"
@@ -89,7 +107,11 @@ async def unified_websocket(ws: WebSocket) -> None:
 
                 runtime = get_turn_runtime_manager()
                 try:
-                    _, turn = await runtime.start_turn(msg)
+                    _, turn = await runtime.start_turn(
+                        msg,
+                        owner_user_id=owner_scope,
+                        actor_user_id=current_user.id,
+                    )
                 except RuntimeError as exc:
                     await safe_send(
                         {
@@ -163,7 +185,7 @@ async def unified_websocket(ws: WebSocket) -> None:
                 from deeptutor.services.session import get_turn_runtime_manager
 
                 runtime = get_turn_runtime_manager()
-                cancelled = await runtime.cancel_turn(turn_id)
+                cancelled = await runtime.cancel_turn(turn_id, owner_user_id=owner_scope)
                 if not cancelled:
                     await safe_send({"type": "error", "content": f"Turn not found: {turn_id}"})
                 continue

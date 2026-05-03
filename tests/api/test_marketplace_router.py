@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import importlib
 from pathlib import Path
+import sys
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+from deeptutor.services.auth.schemas import AuthenticatedUser
 
 
 class _FakeKBManager:
@@ -81,10 +84,32 @@ class _FakeKBManager:
         return
 
 
-def _build_app(monkeypatch, tmp_path: Path) -> tuple[TestClient, object]:
-    settings_dir = Path.cwd() / "data" / "user" / "settings"
-    settings_dir.mkdir(parents=True, exist_ok=True)
-    (settings_dir / "main.yaml").write_text("knowledge_base: {}\n", encoding="utf-8")
+def _teacher_user(user_id: str = "teacher-1", role: str = "teacher") -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id=user_id,
+        email=f"{user_id}@example.com",
+        display_name=f"Teacher {user_id}",
+        role=role,  # type: ignore[arg-type]
+    )
+
+
+def _build_app(
+    monkeypatch,
+    tmp_path: Path,
+    *,
+    current_user: AuthenticatedUser | None = None,
+    authenticated: bool = True,
+) -> tuple[TestClient, object]:
+    config_module = importlib.import_module("deeptutor.services.config")
+    fake_settings_dir = tmp_path / "data" / "user" / "settings"
+    fake_settings_dir.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(config_module, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(
+        config_module,
+        "load_config_with_main",
+        lambda *_args, **_kwargs: {"paths": {"user_log_dir": str(tmp_path / "logs")}},
+    )
 
     (tmp_path / "shared-pack").mkdir(parents=True)
     (tmp_path / "shared-pack" / "raw").mkdir(parents=True)
@@ -95,11 +120,17 @@ def _build_app(monkeypatch, tmp_path: Path) -> tuple[TestClient, object]:
     (tmp_path / "shared-pack" / "raw" / "lesson-4.md").write_text("Lesson 4", encoding="utf-8")
 
     manager = _FakeKBManager(tmp_path)
+    sys.modules.pop("deeptutor.api.routers.knowledge", None)
+    sys.modules.pop("deeptutor.api.routers.marketplace", None)
     marketplace = importlib.import_module("deeptutor.api.routers.marketplace")
     monkeypatch.setattr(marketplace, "get_kb_manager", lambda: manager)
 
     app = FastAPI()
     app.include_router(marketplace.router, prefix="/api/v1/marketplace")
+    if authenticated:
+        app.dependency_overrides[marketplace.require_teacher_or_admin] = (
+            lambda: current_user or _teacher_user()
+        )
     return TestClient(app), marketplace
 
 
@@ -113,6 +144,14 @@ def test_marketplace_list_only_returns_shareable_packs(monkeypatch, tmp_path: Pa
     assert payload["total"] == 1
     assert payload["packs"][0]["name"] == "shared-pack"
     assert payload["packs"][0]["sharing_status"] == "public"
+
+
+def test_marketplace_requires_authenticated_teacher_surface(monkeypatch, tmp_path: Path) -> None:
+    client, _ = _build_app(monkeypatch, tmp_path, authenticated=False)
+
+    response = client.get("/api/v1/marketplace/list")
+
+    assert response.status_code == 401
 
 
 def test_marketplace_list_includes_extended_metadata(monkeypatch, tmp_path: Path) -> None:
@@ -132,23 +171,30 @@ def test_marketplace_list_includes_extended_metadata(monkeypatch, tmp_path: Path
 
 
 def test_marketplace_import_copies_pack_and_registers_new_entry(monkeypatch, tmp_path: Path) -> None:
-    client, _ = _build_app(monkeypatch, tmp_path)
+    current_user = _teacher_user("teacher-importer")
+    client, marketplace = _build_app(monkeypatch, tmp_path, current_user=current_user)
 
     response = client.post("/api/v1/marketplace/import/shared-pack")
 
     assert response.status_code == 200
     payload = response.json()
     assert payload["success"] is True
-    assert payload["pack"]["name"] == "shared-pack__imported"
+    imported_name = f"shared-pack__imported__{current_user.id}"
+    assert payload["pack"]["name"] == imported_name
 
-    imported_path = tmp_path / "shared-pack__imported"
+    imported_path = tmp_path / imported_name
     assert imported_path.exists()
     assert (imported_path / "raw").exists()
     assert (imported_path / "rag_storage").exists()
+    imported_cfg = marketplace.get_kb_manager().config["knowledge_bases"][imported_name]
+    assert imported_cfg["owner_user_id"] == current_user.id
+    assert imported_cfg["owner_email"] == current_user.email
+    assert imported_cfg["owner"] == current_user.display_name
 
 
 def test_marketplace_batch_import_returns_per_pack_results(monkeypatch, tmp_path: Path) -> None:
-    client, marketplace = _build_app(monkeypatch, tmp_path)
+    current_user = _teacher_user("teacher-batch")
+    client, marketplace = _build_app(monkeypatch, tmp_path, current_user=current_user)
 
     second_pack = tmp_path / "science-pack"
     (second_pack / "raw").mkdir(parents=True)
@@ -181,8 +227,8 @@ def test_marketplace_batch_import_returns_per_pack_results(monkeypatch, tmp_path
     assert payload["imported"] == 2
     assert [row["source_pack"] for row in payload["results"]] == ["shared-pack", "science-pack"]
     assert all(row["success"] is True for row in payload["results"])
-    assert (tmp_path / "shared-pack__imported").exists()
-    assert (tmp_path / "science-pack__imported").exists()
+    assert (tmp_path / f"shared-pack__imported__{current_user.id}").exists()
+    assert (tmp_path / f"science-pack__imported__{current_user.id}").exists()
 
 
 def test_marketplace_preview_returns_compact_pack_summary(monkeypatch, tmp_path: Path) -> None:
@@ -212,7 +258,8 @@ def test_marketplace_list_includes_rating_summary(monkeypatch, tmp_path: Path) -
 
 
 def test_marketplace_review_submission_updates_pack_summary(monkeypatch, tmp_path: Path) -> None:
-    client, _ = _build_app(monkeypatch, tmp_path)
+    current_user = _teacher_user("teacher-reviewer")
+    client, _ = _build_app(monkeypatch, tmp_path, current_user=current_user)
 
     response = client.post(
         "/api/v1/marketplace/shared-pack/reviews",
@@ -223,7 +270,8 @@ def test_marketplace_review_submission_updates_pack_summary(monkeypatch, tmp_pat
     payload = response.json()
     assert payload["success"] is True
     assert payload["rating_summary"] == {"average_rating": 4.5, "review_count": 2}
-    assert payload["review"]["reviewer"] == "Teacher C"
+    assert payload["review"]["reviewer"] == current_user.display_name
+    assert payload["review"]["reviewer_user_id"] == current_user.id
     assert payload["review"]["rating"] == 5
 
     preview_response = client.get("/api/v1/marketplace/shared-pack/preview")

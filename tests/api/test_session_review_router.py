@@ -16,10 +16,17 @@ pytestmark = pytest.mark.skipif(FastAPI is None or TestClient is None, reason="f
 
 def _build_app(store: SQLiteSessionStore, monkeypatch: pytest.MonkeyPatch) -> FastAPI:
     from deeptutor.api.routers import sessions
+    from deeptutor.services.auth.schemas import AuthenticatedUser
 
     app = FastAPI()
     app.include_router(sessions.router, prefix="/api/v1/sessions")
     monkeypatch.setattr(sessions, "get_sqlite_session_store", lambda: store)
+    app.dependency_overrides[sessions.get_current_user] = lambda: AuthenticatedUser(
+        id="test-user",
+        email="teacher@example.com",
+        display_name="Teacher",
+        role="teacher",
+    )
     return app
 
 
@@ -29,7 +36,7 @@ async def test_get_assessment_review_returns_structured_score(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
-    await store.create_session(session_id="quiz-review-session")
+    await store.create_session(session_id="quiz-review-session", owner_user_id="test-user")
     await store.update_session_preferences(
         "quiz-review-session",
         {
@@ -69,7 +76,7 @@ async def test_record_and_review_quiz_results_preserves_duration_metrics(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
-    await store.create_session(session_id="quiz-duration-session")
+    await store.create_session(session_id="quiz-duration-session", owner_user_id="test-user")
 
     with TestClient(_build_app(store, monkeypatch)) as client:
         record_response = client.post(
@@ -117,7 +124,7 @@ async def test_assessment_review_includes_context_support_and_followups(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
-    await store.create_session(session_id="quiz-context-session")
+    await store.create_session(session_id="quiz-context-session", owner_user_id="test-user")
     await store.update_session_preferences(
         "quiz-context-session",
         {
@@ -191,7 +198,7 @@ async def test_assessment_review_supports_teacher_rubric_review(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
-    await store.create_session(session_id="quiz-rubric-session")
+    await store.create_session(session_id="quiz-rubric-session", owner_user_id="test-user")
     await store.add_message(
         "quiz-rubric-session",
         "user",
@@ -226,7 +233,7 @@ async def test_assessment_rubric_review_can_be_updated(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
-    await store.create_session(session_id="quiz-rubric-update-session")
+    await store.create_session(session_id="quiz-rubric-update-session", owner_user_id="test-user")
     await store.add_message(
         "quiz-rubric-update-session",
         "user",
@@ -265,12 +272,49 @@ async def test_assessment_rubric_review_can_be_updated(
 
 
 @pytest.mark.asyncio
+async def test_assessment_review_rejects_sessions_owned_by_other_users(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await store.create_session(session_id="other-owner-session", owner_user_id="someone-else")
+    await store.add_message(
+        "other-owner-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: 2+2 -> Answered: 4 (Correct)\n"
+        "Score: 1/1 (100%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch)) as client:
+        review_response = client.get("/api/v1/sessions/other-owner-session/assessment-review")
+        record_response = client.post(
+            "/api/v1/sessions/other-owner-session/quiz-results",
+            json={
+                "answers": [
+                    {
+                        "question_id": "q2",
+                        "question": "5-1",
+                        "user_answer": "4",
+                        "correct_answer": "4",
+                        "is_correct": True,
+                    }
+                ]
+            },
+        )
+
+    assert review_response.status_code == 404
+    assert record_response.status_code == 404
+
+
+@pytest.mark.asyncio
 async def test_get_session_includes_context_support_snapshot(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
-    await store.create_session(session_id="chat-context-session")
+    await store.create_session(session_id="chat-context-session", owner_user_id="test-user")
     await store.update_session_preferences(
         "chat-context-session",
         {

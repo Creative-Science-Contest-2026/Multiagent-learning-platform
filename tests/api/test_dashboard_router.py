@@ -12,17 +12,37 @@ except Exception:  # pragma: no cover - optional dependency in lightweight envs
     FastAPI = None
     TestClient = None
 
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.session.sqlite_store import SQLiteSessionStore
 
 pytestmark = pytest.mark.skipif(FastAPI is None or TestClient is None, reason="fastapi not installed")
 
 
-def _build_app(store: SQLiteSessionStore, monkeypatch: pytest.MonkeyPatch) -> FastAPI:
+def _teacher_user(user_id: str = "teacher-1", role: str = "teacher") -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id=user_id,
+        email=f"{user_id}@example.com",
+        display_name=f"Teacher {user_id}",
+        role=role,  # type: ignore[arg-type]
+    )
+
+
+def _build_app(
+    store: SQLiteSessionStore,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    current_user: AuthenticatedUser | None = None,
+    authenticated: bool = True,
+) -> FastAPI:
     from deeptutor.api.routers import dashboard
 
     app = FastAPI()
     app.include_router(dashboard.router, prefix="/api/v1/dashboard")
     monkeypatch.setattr(dashboard, "get_sqlite_session_store", lambda: store)
+    if authenticated:
+        app.dependency_overrides[dashboard.require_teacher_or_admin] = (
+            lambda: current_user or _teacher_user()
+        )
     return app
 
 
@@ -34,8 +54,9 @@ async def _seed_session(
     message: str,
     knowledge_bases: list[str],
     status: str = "completed",
+    owner_user_id: str = "teacher-1",
 ) -> None:
-    await store.create_session(session_id=session_id)
+    await store.create_session(session_id=session_id, owner_user_id=owner_user_id)
     await store.update_session_preferences(
         session_id,
         {
@@ -100,6 +121,53 @@ async def test_dashboard_overview_groups_activity_and_knowledge_packs(
     assert payload["knowledge_packs"] == [{"name": "math-pack", "session_count": 2}]
     assert payload["recent_activity"][0]["knowledge_bases"] == ["math-pack"]
     assert payload["recent_activity"][0]["type"] in {"assessment", "tutoring"}
+
+
+@pytest.mark.asyncio
+async def test_dashboard_requires_authenticated_teacher_surface(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+
+    with TestClient(_build_app(store, monkeypatch, authenticated=False)) as client:
+        response = client.get("/api/v1/dashboard/overview")
+
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_dashboard_overview_only_returns_owner_sessions(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="owned-session",
+        capability="chat",
+        message="Tutor my own student",
+        knowledge_bases=["math-pack"],
+        owner_user_id="teacher-1",
+    )
+    await _seed_session(
+        store,
+        session_id="other-session",
+        capability="chat",
+        message="Tutor another teacher student",
+        knowledge_bases=["science-pack"],
+        owner_user_id="teacher-2",
+    )
+
+    with TestClient(
+        _build_app(store, monkeypatch, current_user=_teacher_user("teacher-1"))
+    ) as client:
+        response = client.get("/api/v1/dashboard/overview")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["totals"]["total_sessions"] == 1
+    assert [row["id"] for row in payload["recent_activity"]] == ["owned-session"]
 
 
 @pytest.mark.asyncio
@@ -558,7 +626,8 @@ async def test_dashboard_insights_preserve_procedure_breakdown_taxonomy_for_smal
                     "dominant_error": None,
                     "created_at": 1_710_200_002,
                 },
-            ]
+            ],
+            owner_user_id="teacher-1",
         )
         await store.add_message(
             sid,
@@ -706,6 +775,68 @@ async def test_dashboard_teacher_action_create_round_trip(
         refreshed = client.get("/api/v1/dashboard/insights").json()
         refreshed_student = next(row for row in refreshed["students"] if row["student_id"] == "student-a")
         assert refreshed_student["teacher_actions"][0]["source_recommendation_id"] == recommendation_id
+
+
+@pytest.mark.asyncio
+async def test_dashboard_teacher_action_update_is_owner_scoped(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="student-a-session",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+        owner_user_id="teacher-1",
+    )
+    await store.update_session_preferences(
+        "student-a-session",
+        {
+            "student_id": "student-a",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "student-a-session",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(
+        _build_app(store, monkeypatch, current_user=_teacher_user("teacher-1"))
+    ) as teacher_one_client:
+        insights = teacher_one_client.get("/api/v1/dashboard/insights")
+        recommendation_id = insights.json()["students"][0]["recommended_actions"][0]["action_id"]
+        create_resp = teacher_one_client.post(
+            "/api/v1/dashboard/teacher-actions",
+            json={
+                "target_type": "student",
+                "target_id": "student-a",
+                "source_recommendation_id": recommendation_id,
+                "action_type": "reteach_concept",
+                "topic": "fractions subtraction",
+                "teacher_instruction": "Reteach subtraction with one visual fraction model.",
+                "priority": "high",
+            },
+        )
+        assert create_resp.status_code == 200
+        action_id = create_resp.json()["id"]
+
+    with TestClient(
+        _build_app(store, monkeypatch, current_user=_teacher_user("teacher-2"))
+    ) as teacher_two_client:
+        update_resp = teacher_two_client.patch(
+            f"/api/v1/dashboard/teacher-actions/{action_id}",
+            json={"status": "done"},
+        )
+
+    assert update_resp.status_code == 404
 
 
 @pytest.mark.asyncio
@@ -1955,7 +2086,8 @@ async def test_dashboard_intervention_history_attaches_effectiveness_summary(
                     "dominant_error": None,
                     "created_at": float(assignment["updated_at"] + 20),
                 },
-            ]
+            ],
+            owner_user_id="teacher-1",
         )
 
         refreshed = client.get("/api/v1/dashboard/insights").json()
@@ -1965,6 +2097,139 @@ async def test_dashboard_intervention_history_attaches_effectiveness_summary(
 
         assert assignment_row["effectiveness_summary"]["label"] == "appears_helpful"
         assert assignment_row["effectiveness_summary"]["followup_observation_count"] == 2
+
+
+@pytest.mark.asyncio
+async def test_dashboard_insights_do_not_count_followup_observations_from_other_teachers(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="teacher-one-student",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+        owner_user_id="teacher-1",
+    )
+    await store.update_session_preferences(
+        "teacher-one-student",
+        {
+            "student_id": "student-shared",
+            "knowledge_bases": ["fractions-pack"],
+            "capability": "deep_question",
+        },
+    )
+    await store.add_message(
+        "teacher-one-student",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch, current_user=_teacher_user("teacher-1"))) as client:
+        insights = client.get("/api/v1/dashboard/insights")
+        student = insights.json()["students"][0]
+        recommendation_id = student["recommended_actions"][0]["action_id"]
+
+        action = client.post(
+            "/api/v1/dashboard/teacher-actions",
+            json={
+                "target_type": "student",
+                "target_id": "student-shared",
+                "source_recommendation_id": recommendation_id,
+                "action_type": "reteach_concept",
+                "topic": "fractions subtraction",
+                "teacher_instruction": "Reteach denominator alignment.",
+                "priority": "high",
+            },
+        ).json()
+        assignment = client.post(
+            "/api/v1/dashboard/intervention-assignments",
+            json={
+                "teacher_action_id": action["id"],
+                "assignment_type": "reteach_session",
+                "title": "Fractions subtraction reteach",
+                "teacher_note": "One model example then guided practice.",
+                "practice_note": "Close with one independent item.",
+            },
+        ).json()
+
+        baseline = client.get("/api/v1/dashboard/insights").json()
+        baseline_student = next(
+            row for row in baseline["students"] if row["student_id"] == "student-shared"
+        )
+        baseline_assignment = next(
+            row
+            for row in baseline_student["intervention_history"]
+            if row["item_type"] == "intervention_assignment"
+        )
+        baseline_teacher_one_observations = await store.list_observations(
+            "student-shared",
+            owner_user_id="teacher-1",
+        )
+
+        await store.save_observations(
+            [
+                {
+                    "observation_id": "teacher-two-followup-1",
+                    "session_id": "teacher-two-session",
+                    "student_id": "student-shared",
+                    "source": "tutoring",
+                    "topic": "fractions subtraction",
+                    "question_id": "f1",
+                    "is_correct": True,
+                    "latency_seconds": 19,
+                    "hint_count": 0,
+                    "retry_count": 0,
+                    "dominant_error": None,
+                    "created_at": float(assignment["updated_at"] + 10),
+                },
+                {
+                    "observation_id": "teacher-two-followup-2",
+                    "session_id": "teacher-two-session",
+                    "student_id": "student-shared",
+                    "source": "tutoring",
+                    "topic": "fractions subtraction",
+                    "question_id": "f2",
+                    "is_correct": True,
+                    "latency_seconds": 17,
+                    "hint_count": 0,
+                    "retry_count": 0,
+                    "dominant_error": None,
+                    "created_at": float(assignment["updated_at"] + 20),
+                },
+            ],
+            owner_user_id="teacher-2",
+        )
+
+        teacher_one_after_teacher_two_insert = await store.list_observations(
+            "student-shared",
+            owner_user_id="teacher-1",
+        )
+        teacher_two_observations = await store.list_observations(
+            "student-shared",
+            owner_user_id="teacher-2",
+        )
+
+        refreshed = client.get("/api/v1/dashboard/insights").json()
+        refreshed_student = next(
+            row for row in refreshed["students"] if row["student_id"] == "student-shared"
+        )
+        assignment_row = next(
+            row
+            for row in refreshed_student["intervention_history"]
+            if row["item_type"] == "intervention_assignment"
+        )
+
+    assert len(teacher_one_after_teacher_two_insert) == len(baseline_teacher_one_observations)
+    assert len(teacher_two_observations) == 2
+    assert assignment_row["effectiveness_summary"]["followup_observation_count"] >= baseline_assignment[
+        "effectiveness_summary"
+    ]["followup_observation_count"]
 
 
 @pytest.mark.asyncio

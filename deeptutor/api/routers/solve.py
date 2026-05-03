@@ -9,12 +9,15 @@ import asyncio
 import re
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 
 from deeptutor.agents.solve import MainSolver, SolverSessionManager
 from deeptutor.api.utils.log_interceptor import LogInterceptor
 from deeptutor.capabilities.deep_solve import DeepSolveCapability
 from deeptutor.api.utils.task_id_manager import TaskIDManager
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.deps import get_current_user_from_websocket
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.path_service import get_path_service
 
 from deeptutor.logging import get_logger
@@ -39,7 +42,10 @@ solver_session_manager = SolverSessionManager()
 
 
 @router.get("/solve/sessions")
-async def list_solver_sessions(limit: int = 20):
+async def list_solver_sessions(
+    limit: int = 20,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     List recent solver sessions.
 
@@ -49,11 +55,18 @@ async def list_solver_sessions(limit: int = 20):
     Returns:
         List of session summaries
     """
-    return solver_session_manager.list_sessions(limit=limit, include_messages=False)
+    return solver_session_manager.list_sessions(
+        limit=limit,
+        include_messages=False,
+        owner_user_id=current_user.id,
+    )
 
 
 @router.get("/solve/sessions/{session_id}")
-async def get_solver_session(session_id: str):
+async def get_solver_session(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Get a specific solver session with full message history.
 
@@ -63,14 +76,17 @@ async def get_solver_session(session_id: str):
     Returns:
         Complete session data including messages
     """
-    session = solver_session_manager.get_session(session_id)
+    session = solver_session_manager.get_session(session_id, owner_user_id=current_user.id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
 
 
 @router.delete("/solve/sessions/{session_id}")
-async def delete_solver_session(session_id: str):
+async def delete_solver_session(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Delete a solver session.
 
@@ -80,7 +96,7 @@ async def delete_solver_session(session_id: str):
     Returns:
         Success message
     """
-    if solver_session_manager.delete_session(session_id):
+    if solver_session_manager.delete_session(session_id, owner_user_id=current_user.id):
         return {"status": "deleted", "session_id": session_id}
     raise HTTPException(status_code=404, detail="Session not found")
 
@@ -92,6 +108,12 @@ async def delete_solver_session(session_id: str):
 
 @router.websocket("/solve")
 async def websocket_solve(websocket: WebSocket):
+    try:
+        current_user = get_current_user_from_websocket(websocket)
+    except Exception:
+        await websocket.close(code=4401)
+        return
+
     await websocket.accept()
 
     task_manager = TaskIDManager.get_instance()
@@ -161,12 +183,16 @@ async def websocket_solve(websocket: WebSocket):
 
         # Get or create session
         if session_id:
-            session = solver_session_manager.get_session(session_id)
+            session = solver_session_manager.get_session(
+                session_id,
+                owner_user_id=current_user.id,
+            )
             if not session:
                 # Session not found, create new one
                 session = solver_session_manager.create_session(
                     title=question[:50] + ("..." if len(question) > 50 else ""),
                     kb_name=kb_name or "",
+                    owner_user_id=current_user.id,
                 )
                 session_id = session["session_id"]
         else:
@@ -174,6 +200,7 @@ async def websocket_solve(websocket: WebSocket):
             session = solver_session_manager.create_session(
                 title=question[:50] + ("..." if len(question) > 50 else ""),
                 kb_name=kb_name or "",
+                owner_user_id=current_user.id,
             )
             session_id = session["session_id"]
 
@@ -185,6 +212,7 @@ async def websocket_solve(websocket: WebSocket):
             session_id=session_id,
             role="user",
             content=question,
+            owner_user_id=current_user.id,
         )
 
         task_key = f"solve_{kb_name}_{hash(str(question))}"
@@ -370,12 +398,14 @@ async def websocket_solve(websocket: WebSocket):
                     role="assistant",
                     content=final_answer,
                     output_dir=dir_name,
+                    owner_user_id=current_user.id,
                 )
                 # Update token stats in session
                 if display_manager:
                     solver_session_manager.update_token_stats(
                         session_id=session_id,
                         token_stats=display_manager.stats.copy(),
+                        owner_user_id=current_user.id,
                     )
 
     except Exception as e:

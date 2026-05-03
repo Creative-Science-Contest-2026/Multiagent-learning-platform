@@ -97,6 +97,7 @@ class SessionManager(BaseSessionManager):
         self,
         title: str | None = None,
         settings: dict[str, Any] | None = None,
+        owner_user_id: str | None = None,
     ) -> dict[str, Any]:
         """
         Create a new chat session.
@@ -111,6 +112,7 @@ class SessionManager(BaseSessionManager):
         return super().create_session(
             title=title,
             settings=settings,
+            owner_user_id=owner_user_id,
         )
 
     def add_message(
@@ -119,6 +121,7 @@ class SessionManager(BaseSessionManager):
         role: str,
         content: str,
         sources: dict[str, Any] | None = None,
+        owner_user_id: str | None = None,
     ) -> dict[str, Any] | None:
         """
         Add a single message to a session.
@@ -137,6 +140,7 @@ class SessionManager(BaseSessionManager):
             role=role,
             content=content,
             sources=sources,
+            owner_user_id=owner_user_id,
         )
 
     def update_session(
@@ -145,6 +149,7 @@ class SessionManager(BaseSessionManager):
         messages: list[dict[str, Any]] | None = None,
         title: str | None = None,
         settings: dict[str, Any] | None = None,
+        owner_user_id: str | None = None,
     ) -> dict[str, Any] | None:
         """
         Update a session with new data.
@@ -163,6 +168,7 @@ class SessionManager(BaseSessionManager):
             messages=messages,
             title=title,
             settings=settings,
+            owner_user_id=owner_user_id,
         )
 
 

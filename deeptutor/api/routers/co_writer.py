@@ -5,7 +5,7 @@ from dataclasses import asdict
 from typing import AsyncGenerator, Literal
 import uuid
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
@@ -23,6 +23,9 @@ from deeptutor.agents.chat.agentic_pipeline import AgenticChatPipeline
 from deeptutor.core.context import UnifiedContext
 from deeptutor.core.stream_bus import StreamBus
 from deeptutor.logging import get_logger
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.deps import owner_scope_for_user
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.config import PROJECT_ROOT, load_config_with_main
 from deeptutor.services.settings.interface_settings import get_ui_language
 
@@ -211,6 +214,7 @@ async def _run_react_edit(
     request: ReactEditRequest,
     *,
     language: str,
+    current_user: AuthenticatedUser,
     stream: StreamBus | None = None,
 ) -> dict[str, object]:
     selected_text, instruction, tools, knowledge_bases, prompt = (
@@ -310,6 +314,9 @@ async def _run_react_edit(
                 "type": "react_tools",
                 "timestamp": datetime.now().isoformat(),
                 "operation_id": operation_id,
+                "owner_user_id": current_user.id,
+                "owner_email": current_user.email,
+                "owner_display_name": current_user.display_name,
                 "mode": request.mode,
                 "tools": tools,
                 "kb_name": request.kb_name,
@@ -323,6 +330,9 @@ async def _run_react_edit(
         {
             "id": operation_id,
             "timestamp": datetime.now().isoformat(),
+            "owner_user_id": current_user.id,
+            "owner_email": current_user.email,
+            "owner_display_name": current_user.display_name,
             "action": "react_edit",
             "mode": request.mode,
             "tools": tools,
@@ -359,7 +369,7 @@ async def _stream_react_edit(request: ReactEditRequest) -> AsyncGenerator[str, N
     async def _run() -> None:
         nonlocal result_holder
         try:
-            result_holder = await _run_react_edit(request, language=language, stream=bus)
+            raise RuntimeError("current_user must be supplied by router")
         except HTTPException as exc:
             error_holder["detail"] = str(exc.detail)
         except Exception as exc:
@@ -383,7 +393,10 @@ async def _stream_react_edit(request: ReactEditRequest) -> AsyncGenerator[str, N
 
 
 @router.post("/edit", response_model=EditResponse)
-async def edit_text(request: EditRequest):
+async def edit_text(
+    request: EditRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     try:
         # Get agent with refreshed LLM configuration from Settings
         agent = get_edit_agent()
@@ -394,6 +407,9 @@ async def edit_text(request: EditRequest):
             action=request.action,
             source=request.source,
             kb_name=request.kb_name,
+            owner_user_id=current_user.id,
+            owner_email=current_user.email,
+            owner_display_name=current_user.display_name,
         )
 
         # Print token stats
@@ -407,9 +423,12 @@ async def edit_text(request: EditRequest):
 
 
 @router.post("/edit_react", response_model=ReactEditResponse)
-async def edit_text_react(request: ReactEditRequest):
+async def edit_text_react(
+    request: ReactEditRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     try:
-        return await _run_react_edit(request, language=_current_language())
+        return await _run_react_edit(request, language=_current_language(), current_user=current_user)
     except HTTPException:
         raise
     except Exception as e:
@@ -418,26 +437,73 @@ async def edit_text_react(request: ReactEditRequest):
 
 
 @router.post("/edit_react/stream")
-async def edit_text_react_stream(request: ReactEditRequest):
+async def edit_text_react_stream(
+    request: ReactEditRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     try:
         _prepare_react_edit_request(request, _current_language())
     except HTTPException:
         raise
+    async def _owned_stream():
+        language = _current_language()
+        bus = StreamBus()
+        error_holder: dict[str, str] = {}
+        result_holder: dict[str, object] | None = None
+
+        async def _run() -> None:
+            nonlocal result_holder
+            try:
+                result_holder = await _run_react_edit(
+                    request,
+                    language=language,
+                    current_user=current_user,
+                    stream=bus,
+                )
+            except HTTPException as exc:
+                error_holder["detail"] = str(exc.detail)
+            except Exception as exc:
+                error_holder["detail"] = str(exc)
+            finally:
+                await bus.close()
+
+        task = asyncio.create_task(_run())
+        try:
+            async for event in bus.subscribe():
+                yield f"event: stream\ndata: {json.dumps(event.to_dict(), default=str)}\n\n"
+
+            await task
+            if error_holder:
+                yield f"event: error\ndata: {json.dumps(error_holder, default=str)}\n\n"
+            else:
+                yield f"event: result\ndata: {json.dumps(result_holder or {}, default=str)}\n\n"
+        finally:
+            if not task.done():
+                task.cancel()
+
     return StreamingResponse(
-        _stream_react_edit(request),
+        _owned_stream(),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
 @router.post("/automark", response_model=AutoMarkResponse)
-async def auto_mark_text(request: AutoMarkRequest):
+async def auto_mark_text(
+    request: AutoMarkRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """AI auto-mark text"""
     try:
         # Get agent with refreshed LLM configuration from Settings
         agent = get_edit_agent()
 
-        result = await agent.auto_mark(text=request.text)
+        result = await agent.auto_mark(
+            text=request.text,
+            owner_user_id=current_user.id,
+            owner_email=current_user.email,
+            owner_display_name=current_user.display_name,
+        )
 
         # Print token stats
         print_stats()
@@ -449,20 +515,23 @@ async def auto_mark_text(request: AutoMarkRequest):
 
 
 @router.get("/history")
-async def get_history():
+async def get_history(current_user: AuthenticatedUser = Depends(get_current_user)):
     """Get all operation history"""
     try:
-        history = load_history()
+        history = load_history(owner_scope_for_user(current_user))
         return {"history": history, "total": len(history)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/history/{operation_id}")
-async def get_operation(operation_id: str):
+async def get_operation(
+    operation_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Get single operation details"""
     try:
-        history = load_history()
+        history = load_history(owner_scope_for_user(current_user))
         for op in history:
             if op.get("id") == operation_id:
                 return op
@@ -474,13 +543,20 @@ async def get_operation(operation_id: str):
 
 
 @router.get("/tool_calls/{operation_id}")
-async def get_tool_call(operation_id: str):
+async def get_tool_call(
+    operation_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Get tool call details"""
     try:
         # Find matching file
         for filepath in TOOL_CALLS_DIR.glob(f"{operation_id}_*.json"):
             with open(filepath, encoding="utf-8") as f:
-                return json.load(f)
+                payload = json.load(f)
+            owner_scope = owner_scope_for_user(current_user)
+            if owner_scope is not None and str(payload.get("owner_user_id", "") or "").strip() != owner_scope:
+                continue
+            return payload
         raise HTTPException(status_code=404, detail="Tool call not found")
     except HTTPException:
         raise
@@ -489,7 +565,10 @@ async def get_tool_call(operation_id: str):
 
 
 @router.post("/export/markdown")
-async def export_markdown(content: dict):
+async def export_markdown(
+    content: dict,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Export as Markdown file"""
     try:
         markdown_content = content.get("content", "")
@@ -502,4 +581,3 @@ async def export_markdown(content: dict):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-

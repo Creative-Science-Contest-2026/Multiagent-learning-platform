@@ -137,12 +137,37 @@ class BaseSessionManager(ABC):
         """Get list of all sessions."""
         data = self._load_data()
         return data.get("sessions", [])
+
+    @staticmethod
+    def _matches_owner(session: dict[str, Any], owner_user_id: str | None = None) -> bool:
+        if owner_user_id is None:
+            return True
+        return str(session.get("owner_user_id") or "").strip() == str(owner_user_id or "").strip()
     
     def _save_sessions(self, sessions: list[dict[str, Any]]) -> None:
         """Save sessions list."""
         data = self._load_data()
         data["sessions"] = sessions
         self._save_data(data)
+
+    def _trim_sessions_for_owner(
+        self,
+        sessions: list[dict[str, Any]],
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Trim only the current owner's sessions while preserving other owners' data."""
+        if owner_user_id is None:
+            return sessions[:self.MAX_SESSIONS]
+
+        trimmed: list[dict[str, Any]] = []
+        owned_count = 0
+        for session in sessions:
+            if self._matches_owner(session, owner_user_id):
+                owned_count += 1
+                if owned_count > self.MAX_SESSIONS:
+                    continue
+            trimmed.append(session)
+        return trimmed
     
     # =========================================================================
     # Session CRUD Operations
@@ -151,6 +176,7 @@ class BaseSessionManager(ABC):
     def create_session(
         self,
         title: str | None = None,
+        owner_user_id: str | None = None,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -174,6 +200,7 @@ class BaseSessionManager(ABC):
         # Create base session structure
         session = {
             "session_id": session_id,
+            "owner_user_id": str(owner_user_id or "").strip(),
             "title": title[:100] if title else self._get_default_title(),  # Limit title length
             "messages": [],
             "created_at": now,
@@ -187,16 +214,15 @@ class BaseSessionManager(ABC):
         # Add to sessions list
         sessions = self._get_sessions()
         sessions.insert(0, session)  # Add to front (newest first)
-        
-        # Limit total sessions
-        if len(sessions) > self.MAX_SESSIONS:
-            sessions = sessions[:self.MAX_SESSIONS]
+
+        # Limit the current owner's sessions without evicting unrelated owners.
+        sessions = self._trim_sessions_for_owner(sessions, owner_user_id)
         
         self._save_sessions(sessions)
         
         return session
     
-    def get_session(self, session_id: str) -> dict[str, Any] | None:
+    def get_session(self, session_id: str, owner_user_id: str | None = None) -> dict[str, Any] | None:
         """
         Get a session by ID.
         
@@ -208,7 +234,10 @@ class BaseSessionManager(ABC):
         """
         sessions = self._get_sessions()
         for session in sessions:
-            if session.get("session_id") == session_id:
+            if session.get("session_id") == session_id and self._matches_owner(
+                session,
+                owner_user_id,
+            ):
                 return session
         return None
     
@@ -217,6 +246,7 @@ class BaseSessionManager(ABC):
         session_id: str,
         messages: list[dict[str, Any]] | None = None,
         title: str | None = None,
+        owner_user_id: str | None = None,
         **kwargs,
     ) -> dict[str, Any] | None:
         """
@@ -232,9 +262,12 @@ class BaseSessionManager(ABC):
             Updated session or None if not found
         """
         sessions = self._get_sessions()
-        
+
         for i, session in enumerate(sessions):
-            if session.get("session_id") == session_id:
+            if session.get("session_id") == session_id and self._matches_owner(
+                session,
+                owner_user_id,
+            ):
                 if messages is not None:
                     session["messages"] = messages
                 if title is not None:
@@ -261,6 +294,7 @@ class BaseSessionManager(ABC):
         session_id: str,
         role: str,
         content: str,
+        owner_user_id: str | None = None,
         **metadata,
     ) -> dict[str, Any] | None:
         """
@@ -275,7 +309,7 @@ class BaseSessionManager(ABC):
         Returns:
             Updated session or None if not found
         """
-        session = self.get_session(session_id)
+        session = self.get_session(session_id, owner_user_id=owner_user_id)
         if not session:
             return None
         
@@ -298,12 +332,18 @@ class BaseSessionManager(ABC):
         if session.get("title") == self._get_default_title() and role == "user":
             title = content[:50] + ("..." if len(content) > 50 else "")
         
-        return self.update_session(session_id, messages=messages, title=title)
+        return self.update_session(
+            session_id,
+            messages=messages,
+            title=title,
+            owner_user_id=owner_user_id,
+        )
     
     def list_sessions(
         self,
         limit: int = 20,
         include_messages: bool = False,
+        owner_user_id: str | None = None,
     ) -> list[dict[str, Any]]:
         """
         List recent sessions.
@@ -315,7 +355,10 @@ class BaseSessionManager(ABC):
         Returns:
             List of session dicts (newest first)
         """
-        sessions = self._get_sessions()[:limit]
+        sessions = [
+            session for session in self._get_sessions()
+            if self._matches_owner(session, owner_user_id)
+        ][:limit]
         
         if not include_messages:
             # Return summary only (without full messages)
@@ -323,7 +366,7 @@ class BaseSessionManager(ABC):
         
         return sessions
     
-    def delete_session(self, session_id: str) -> bool:
+    def delete_session(self, session_id: str, owner_user_id: str | None = None) -> bool:
         """
         Delete a session.
         
@@ -335,8 +378,14 @@ class BaseSessionManager(ABC):
         """
         sessions = self._get_sessions()
         original_count = len(sessions)
-        
-        sessions = [s for s in sessions if s.get("session_id") != session_id]
+
+        sessions = [
+            s for s in sessions
+            if not (
+                s.get("session_id") == session_id
+                and self._matches_owner(s, owner_user_id)
+            )
+        ]
         
         if len(sessions) < original_count:
             self._save_sessions(sessions)
@@ -344,7 +393,7 @@ class BaseSessionManager(ABC):
         
         return False
     
-    def clear_all_sessions(self) -> int:
+    def clear_all_sessions(self, owner_user_id: str | None = None) -> int:
         """
         Delete all sessions.
         
@@ -352,21 +401,34 @@ class BaseSessionManager(ABC):
             Number of sessions deleted
         """
         sessions = self._get_sessions()
-        count = len(sessions)
-        self._save_sessions([])
+        if owner_user_id is None:
+            count = len(sessions)
+            self._save_sessions([])
+            return count
+        retained = [
+            session for session in sessions
+            if not self._matches_owner(session, owner_user_id)
+        ]
+        count = len(sessions) - len(retained)
+        self._save_sessions(retained)
         return count
     
     # =========================================================================
     # Utility Methods
     # =========================================================================
     
-    def get_session_count(self) -> int:
+    def get_session_count(self, owner_user_id: str | None = None) -> int:
         """Get the total number of sessions."""
-        return len(self._get_sessions())
-    
-    def session_exists(self, session_id: str) -> bool:
+        return len(
+            [
+                session for session in self._get_sessions()
+                if self._matches_owner(session, owner_user_id)
+            ]
+        )
+
+    def session_exists(self, session_id: str, owner_user_id: str | None = None) -> bool:
         """Check if a session exists."""
-        return self.get_session(session_id) is not None
+        return self.get_session(session_id, owner_user_id=owner_user_id) is not None
 
 
 __all__ = ["BaseSessionManager"]

@@ -6,10 +6,13 @@ WebSocket endpoint for lightweight chat with session management.
 REST endpoints for session operations.
 """
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 
 from deeptutor.agents.chat import ChatAgent, SessionManager
 from deeptutor.logging import get_logger
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.deps import get_current_user_from_websocket
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.config import PROJECT_ROOT, load_config_with_main
 from deeptutor.services.llm.config import get_llm_config
 from deeptutor.services.settings.interface_settings import get_ui_language
@@ -31,7 +34,10 @@ session_manager = SessionManager()
 
 
 @router.get("/chat/sessions")
-async def list_sessions(limit: int = 20):
+async def list_sessions(
+    limit: int = 20,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     List recent chat sessions.
 
@@ -41,11 +47,18 @@ async def list_sessions(limit: int = 20):
     Returns:
         List of session summaries
     """
-    return session_manager.list_sessions(limit=limit, include_messages=False)
+    return session_manager.list_sessions(
+        limit=limit,
+        include_messages=False,
+        owner_user_id=current_user.id,
+    )
 
 
 @router.get("/chat/sessions/{session_id}")
-async def get_session(session_id: str):
+async def get_session(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Get a specific chat session with full message history.
 
@@ -55,14 +68,17 @@ async def get_session(session_id: str):
     Returns:
         Complete session data including messages
     """
-    session = session_manager.get_session(session_id)
+    session = session_manager.get_session(session_id, owner_user_id=current_user.id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
 
 
 @router.delete("/chat/sessions/{session_id}")
-async def delete_session(session_id: str):
+async def delete_session(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Delete a chat session.
 
@@ -72,7 +88,7 @@ async def delete_session(session_id: str):
     Returns:
         Success message
     """
-    if session_manager.delete_session(session_id):
+    if session_manager.delete_session(session_id, owner_user_id=current_user.id):
         return {"status": "deleted", "session_id": session_id}
     raise HTTPException(status_code=404, detail="Session not found")
 
@@ -105,6 +121,12 @@ async def websocket_chat(websocket: WebSocket):
     - {"type": "result", "content": str}               # Final complete response
     - {"type": "error", "message": str}                # Error message
     """
+    try:
+        current_user = get_current_user_from_websocket(websocket)
+    except Exception:
+        await websocket.close(code=4401)
+        return
+
     await websocket.accept()
 
     try:
@@ -132,7 +154,10 @@ async def websocket_chat(websocket: WebSocket):
             try:
                 # Get or create session
                 if session_id:
-                    session = session_manager.get_session(session_id)
+                    session = session_manager.get_session(
+                        session_id,
+                        owner_user_id=current_user.id,
+                    )
                     if not session:
                         # Session not found, create new one
                         session = session_manager.create_session(
@@ -142,6 +167,7 @@ async def websocket_chat(websocket: WebSocket):
                                 "enable_rag": enable_rag,
                                 "enable_web_search": enable_web_search,
                             },
+                            owner_user_id=current_user.id,
                         )
                         session_id = session["session_id"]
                 else:
@@ -153,6 +179,7 @@ async def websocket_chat(websocket: WebSocket):
                             "enable_rag": enable_rag,
                             "enable_web_search": enable_web_search,
                         },
+                        owner_user_id=current_user.id,
                     )
                     session_id = session["session_id"]
 
@@ -179,6 +206,7 @@ async def websocket_chat(websocket: WebSocket):
                     session_id=session_id,
                     role="user",
                     content=message,
+                    owner_user_id=current_user.id,
                 )
 
                 # Initialize ChatAgent
@@ -271,6 +299,7 @@ async def websocket_chat(websocket: WebSocket):
                     role="assistant",
                     content=full_response,
                     sources=sources if (sources.get("rag") or sources.get("web")) else None,
+                    owner_user_id=current_user.id,
                 )
 
                 logger.info(f"Chat completed: session={session_id}, {len(full_response)} chars")

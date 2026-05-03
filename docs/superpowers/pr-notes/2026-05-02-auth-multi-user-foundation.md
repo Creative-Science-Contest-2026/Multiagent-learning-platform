@@ -1,0 +1,135 @@
+# PR Note: Auth And Multi-User Foundation
+
+## Summary
+
+- adds a PostgreSQL-backed auth foundation with SQLAlchemy and Alembic
+- introduces backend-owned email/password login, Google OAuth entry, admin-only user listing, and opaque auth sessions
+- adds internal admin account creation so `/admin` can list and create teacher/student/admin accounts
+- adds password-reset and email-verification token issue/consume flows with SMTP-backed delivery when configured plus explicit debug-link fallback for local/test flows
+- upgrades auth mail delivery from a best-effort toggle into an explicit policy seam with `auto`, `disabled`, and `required` modes plus provider/reply-to metadata hooks
+- binds learning-session list/get/rename/delete behavior to `owner_user_id`
+- enforces session ownership on assessment review, rubric review, and quiz-result write endpoints so review flows no longer bypass the auth boundary
+- makes the auth session cookie production-configurable for `secure`, `samesite`, and `max-age` instead of hardcoding demo defaults
+- preserves safe `next` redirects across login/signup and Google auth entry so protected teacher surfaces now bounce users back to the route they originally requested
+- surfaces non-blocking email-verification banners across signed-in shells and teacher-first legacy surfaces, with resend and refresh-status actions instead of leaving verification hidden behind a standalone route
+- adds a shared signed-in account bar so teacher, student, admin, and legacy teacher-first shells always expose current identity, role, verification state, and logout
+- upgrades the admin roster from create-only to lifecycle management, including role/status edits, while auth entry points now reject suspended accounts across email-password, session reuse, and Google callback
+- adds public auth routes, recovery/verification pages, and role-specific `/teacher`, `/student`, and `/admin` shells in the approved frontend auth scope
+- upgrades `/teacher` and `/student` from placeholder shells into role hubs that link into the current teacher-first and student-facing routes
+- gates the legacy teacher-first `(workspace)` and `(utility)` shells behind authenticated teacher/admin access
+- extends that teacher/admin gate into backend teacher-first routers: `dashboard`, `knowledge`, `marketplace`, and `assessment`
+- scopes dashboard evidence rows by `owner_user_id` so teacher actions, acknowledgements, feedback, overrides, and intervention assignments no longer bleed across accounts
+- rebuilds dashboard observation/state persistence onto owner-aware composite keys so repeated `student_id` and `observation_id` values no longer collide across teachers inside the SQLite learning-session store
+- propagates that owner scope into tutoring turn runtime and context building, so live tutoring observations and retrieved student-state context no longer regress back to anonymous storage after authentication
+- moves lightweight `SUMMARY.md` / `PROFILE.md` memory into owner-specific storage, auth-gates `/api/v1/memory`, and binds runtime memory context/refresh writes to the authenticated actor instead of a global shared file pair
+- hardens the legacy `/api/v1/chat*` and `/api/v1/solve*` transports by requiring authenticated cookies on REST + websocket entrypoints and filtering their JSON session stores by `owner_user_id`
+- auth-gates the legacy guided-learning `/api/v1/guide*` REST + websocket surface and binds guided-learning session files to `owner_user_id`
+- auth-gates `/api/v1/tutorbot*`, persists bot owner metadata, filters teacher access to owned bots/workspaces/history/websockets, and keeps admin override for internal support
+- auth-gates `/api/v1/notebook*`, persists notebook owner metadata, and filters notebook/index access by `owner_user_id`
+- moves UI settings from one shared `interface.json` file into per-user settings files, while restricting settings catalog mutation/test/apply flows to admins
+- gates `/api/v1/agent-specs*` behind authenticated teacher/admin access so student and anonymous users cannot reach authoring/runtime-policy surfaces
+- auth-gates the remaining runtime/operator routers around `question`, `co_writer`, `vision_solver`, `system`, `plugins_api`, and `agent_config`, so no FastAPI router remains anonymously reachable by default
+- adds owner metadata to co-writer history and tool-call artifacts, with router-level filtering so one account cannot browse another account's writing history
+- makes knowledge-pack default selection user-specific and stamps newly created/imported knowledge packs with auth-era ownership metadata
+- changes marketplace imports to create per-user imported copies, preventing two teachers from colliding on the same imported pack name
+- binds Google OAuth start/callback with an HttpOnly nonce cookie, closing login CSRF on the new Google auth flow instead of trusting caller-supplied `state` alone
+- changes legacy JSON session retention so `MAX_SESSIONS` trims only the current owner rather than evicting other users' chat/solve history from the shared file
+
+## Architecture
+
+```mermaid
+flowchart TD
+  Public["Public auth routes"] --> Signup["/signup"]
+  Public --> Login["/login"]
+  Public --> Recovery["/forgot-password · /reset-password · /verify-email"]
+  Login --> AuthAPI["/api/v1/auth"]
+  Signup --> AuthAPI
+  Recovery --> AuthAPI
+  Login --> NextRedirect["Safe next redirect + Google role selection"]
+  Me --> VerificationBanner["Signed-in verification banner + resend / refresh actions"]
+  Me --> AccountBar["Signed-in account bar + logout"]
+  AdminUsersAPI --> AccountLifecycle["Role/status updates from admin roster"]
+  AuthAPI --> Users["PostgreSQL users + credentials + oauth identities"]
+  AuthAPI --> Sessions["HttpOnly deeptutor_session"]
+  AuthAPI --> OneTimeTokens["Password-reset + email-verification tokens"]
+  OneTimeTokens --> AuthMailer["SMTP auth mailer seam + debug fallback"]
+  AdminShell --> AdminUsersAPI["/api/v1/admin/users GET/POST"]
+  AdminUsersAPI --> AdminPanel["Roster + internal account creation"]
+  Sessions --> Me["GET /api/v1/auth/me"]
+  Me --> TeacherShell["/teacher"]
+  Me --> StudentShell["/student"]
+  Me --> AdminShell["/admin"]
+  NextRedirect --> TeacherShell
+  NextRedirect --> StudentShell
+  TeacherShell --> TeacherHub["Knowledge · Dashboard · Agents entry links"]
+  StudentShell --> StudentHub["Playground · Student progress · Docs entry links"]
+  Me --> TeacherGate["TeacherSurfaceGate for legacy shells"]
+  TeacherGate --> LegacyShells["(workspace) + (utility) layouts"]
+  TeacherShell --> OwnedSessionAPI["/api/v1/sessions scoped by owner_user_id"]
+  StudentShell --> OwnedSessionAPI
+  OwnedSessionAPI --> SQLiteStore["SQLite learning-session store with owner boundary"]
+  SQLiteStore --> ScopedSignals["observations + student_states keyed by owner_user_id"]
+  OwnedSessionAPI --> TurnRuntime["Turn runtime + context builder use owner-scoped tutoring signals"]
+  OwnedSessionAPI --> ReviewFlows["assessment-review + rubric-review + quiz-results now owner-scoped"]
+  TeacherShell --> TeacherFirstAPIs["/api/v1/dashboard · /api/v1/knowledge · /api/v1/marketplace require teacher/admin"]
+  TeacherFirstAPIs --> DashboardEvidence["teacher_actions · recommendation_* · diagnosis_feedback · intervention_assignments owner-scoped"]
+  TeacherFirstAPIs --> ScopedSignals
+  TeacherFirstAPIs --> KnowledgeDefaults["user-specific knowledge default + KB ownership metadata"]
+  TeacherFirstAPIs --> MarketplaceImports["per-user imported pack copies"]
+  TeacherFirstAPIs --> AssessmentScope["assessment recommend + diagnosis owner-scoped"]
+  Me --> MemoryAPI["/api/v1/memory auth-gated per user"]
+  MemoryAPI --> MemoryFiles["users/<owner>/SUMMARY.md + PROFILE.md"]
+  TurnRuntime --> MemoryFiles
+  Public --> LegacyChatSolve["Legacy /chat and /solve routes"]
+  LegacyChatSolve --> LegacySessionJSON["JSON session stores with owner_user_id"]
+  LegacySessionJSON --> AuthBoundary["Auth cookie required for REST + WS access"]
+  TeacherShell --> GuideSurface["/api/v1/guide REST + WS"]
+  GuideSurface --> GuideSessions["guided session JSON with owner_user_id"]
+  TeacherShell --> TutorBotSurface["/api/v1/tutorbot"]
+  TutorBotSurface --> TutorBotConfigs["teacher-owned bot configs + workspace/history access"]
+  TutorBotSurface --> AdminOverride["admin override for tutorbot support"]
+  TeacherShell --> NotebookSurface["/api/v1/notebook"]
+  NotebookSurface --> NotebookFiles["notebook files + index filtered by owner_user_id"]
+  Me --> SettingsSurface["/api/v1/settings"]
+  SettingsSurface --> PerUserUISettings["interface.<owner>.json per user"]
+  SettingsSurface --> AdminCatalogControls["admin-only catalog apply/test/mutate"]
+  TeacherShell --> AgentSpecSurface["/api/v1/agent-specs teacher/admin only"]
+  TeacherShell --> QuestionSurface["/api/v1/question teacher/admin websocket flows"]
+  Me --> CoWriterSurface["/api/v1/co-writer"]
+  CoWriterSurface --> CoWriterHistory["history + tool calls filtered by owner_user_id"]
+  Me --> VisionSurface["/api/v1/vision/** authenticated REST + WS"]
+  Me --> SystemSurface["/api/v1/system"]
+  SystemSurface --> SystemRoles["teacher/admin pilot feedback · admin runtime tests"]
+  Me --> AgentConfigSurface["/api/v1/agent-config authenticated metadata"]
+  AdminShell --> PluginsSurface["/api/v1/plugins admin-only execution"]
+  AccountLifecycle --> ActiveOnlyAuth["Only active accounts may login or resume sessions"]
+```
+
+## Scope Notes
+
+- `admin` is internal-only and blocked from public signup
+- password reset and email verification now issue and consume real backend tokens
+- delivery now uses SMTP when `DEEPTUTOR_AUTH_SMTP_*` and `DEEPTUTOR_AUTH_FROM_*` are configured, with debug-link fallback preserved for local/test environments
+- signed-in verification resend now fails loudly with `503` in `required` mail-delivery mode when production email transport is missing or broken, while forgot-password keeps a privacy-safe generic response
+- assessment review write/read flows now require the authenticated owner instead of only the session id
+- dashboard analytics and teacher-evidence mutations are now teacher-owner scoped for non-admin users
+- dashboard observation rollups and persisted student-state snapshots are now teacher-owner scoped as well, so two teachers can reuse the same `student_id` without sharing diagnosis residue
+- live tutoring turns now persist observations and retrieve student-state context under the owning session account, not the legacy anonymous bucket
+- lightweight memory reads, writes, clears, and refreshes are now per-user, and runtime memory injection uses the authenticated actor id even when an admin is viewing a globally scoped session
+- legacy `/api/v1/chat*` and `/api/v1/solve*` routes now require authentication and filter their JSON-backed session CRUD + websocket resume flows by `owner_user_id`
+- legacy `/api/v1/guide*` routes now require authentication, and guide session create/get/list/chat/page/reset/delete flows resolve only owned guided-learning sessions for normal teachers while admins retain cross-session visibility
+- legacy `/api/v1/tutorbot*` routes now require authenticated `teacher` or `admin` access, and newly created bots persist owner metadata so non-admin teachers can only see and connect to their own bots, bot files, and history
+- notebook routes now require authentication, persist `owner_user_id`, `owner_email`, and `owner_display_name`, and hide ownerless/foreign notebooks from normal users while admins retain cross-owner access
+- UI settings now live in `data/user/settings/interface.<owner>.json`, so theme/language/sidebar preferences are no longer shared across all accounts on the same deployment
+- settings catalog mutation, apply, guided test, and setup-tour flows are now admin-only even though authenticated users can still read their own UI settings payload
+- agent-spec authoring and runtime-policy-audit routes now require authenticated `teacher` or `admin` access
+- question-generation websocket routes now require authenticated `teacher` or `admin` access before they allocate heavy generation work
+- co-writer edit/history/tool-call routes now require authentication, and recorded edit history plus tool-call payloads carry owner metadata so normal users only see their own writing traces
+- Google OAuth callback now requires the same browser-bound nonce cookie that `/google/start` minted, preventing forged callback URLs from logging a victim into the wrong account
+- vision-solver image analysis now requires authenticated REST/websocket access instead of remaining a public compute endpoint
+- system runtime tests are now admin-only, while pilot-feedback surfaces require teacher/admin and simple status/topology reads require an authenticated account
+- plugins playground execution is now admin-only, and even static agent-config metadata now sits behind auth so the router scan closes cleanly
+- assessment recommendation and diagnosis now use the same teacher/admin gate and owner-scoped signal store, so support-heavy diagnosis cannot be influenced by another teacher's sessions or tutoring evidence
+- `GET/PUT /api/v1/knowledge/default` is now per-user instead of global, and newly created/imported auth-era packs record `owner_user_id`, `owner_email`, and `owner_display_name`
+- legacy chat/solve session retention now preserves other owners' records even when one owner exceeds the per-owner session cap
+- unrelated `web/**` surfaces remain outside scope because this lane only owns the decomposed auth frontend subset

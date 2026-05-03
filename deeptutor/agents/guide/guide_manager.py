@@ -29,6 +29,7 @@ class GuidedSession:
     notebook_id: str
     notebook_name: str
     created_at: float
+    owner_user_id: str = ""
     knowledge_points: list[dict[str, Any]] = field(default_factory=list)
     current_index: int = -1
     chat_history: list[dict[str, Any]] = field(default_factory=list)
@@ -191,10 +192,26 @@ class GuideManager:
         if filepath.exists():
             filepath.unlink()
 
-    def _load_session(self, session_id: str) -> GuidedSession | None:
+    @staticmethod
+    def _session_owned_by(
+        session: GuidedSession | None,
+        owner_user_id: str | None = None,
+    ) -> bool:
+        if session is None:
+            return False
+        if owner_user_id is None:
+            return True
+        return str(session.owner_user_id or "").strip() == str(owner_user_id or "").strip()
+
+    def _load_session(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> GuidedSession | None:
         """Load session from file"""
         if session_id in self._sessions:
-            return self._sessions[session_id]
+            session = self._sessions[session_id]
+            return session if self._session_owned_by(session, owner_user_id) else None
 
         filepath = self._get_session_file(session_id)
         if filepath.exists():
@@ -202,7 +219,7 @@ class GuideManager:
                 data = json.load(f)
             session = GuidedSession.from_dict(data)
             self._sessions[session_id] = session
-            return session
+            return session if self._session_owned_by(session, owner_user_id) else None
         return None
 
     def _initialize_page_statuses(self, session: GuidedSession):
@@ -340,6 +357,7 @@ class GuideManager:
         user_input: str,
         display_title: str | None = None,
         notebook_context: str = "",
+        owner_user_id: str | None = None,
     ) -> dict[str, Any]:
         """
         Create new learning session
@@ -384,6 +402,7 @@ class GuideManager:
             notebook_id="user_input",
             notebook_name=session_title or "Guided Learning",
             created_at=time.time(),
+            owner_user_id=str(owner_user_id or "").strip(),
             knowledge_points=knowledge_points,
             current_index=-1,
             status="initialized",
@@ -446,7 +465,11 @@ class GuideManager:
             "message": message,
         }
 
-    async def start_learning(self, session_id: str) -> dict[str, Any]:
+    async def start_learning(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         Start learning the first knowledge point
 
@@ -456,7 +479,7 @@ class GuideManager:
         Returns:
             First knowledge point information and interactive page
         """
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if not session:
             return {"success": False, "error": "Session does not exist"}
 
@@ -487,9 +510,14 @@ class GuideManager:
             "message": "Interactive pages are generating in parallel. Open any page as soon as it is ready.",
         }
 
-    async def navigate_to_knowledge(self, session_id: str, knowledge_index: int) -> dict[str, Any]:
+    async def navigate_to_knowledge(
+        self,
+        session_id: str,
+        knowledge_index: int,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
         """Navigate to any knowledge point."""
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if not session:
             return {"success": False, "error": "Session does not exist"}
 
@@ -522,9 +550,13 @@ class GuideManager:
             "message": f"Viewing knowledge point {knowledge_index + 1}.",
         }
 
-    async def complete_learning(self, session_id: str) -> dict[str, Any]:
+    async def complete_learning(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
         """Generate the final learning summary."""
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if not session:
             return {"success": False, "error": "Session does not exist"}
 
@@ -554,7 +586,11 @@ class GuideManager:
         }
 
     async def chat(
-        self, session_id: str, user_message: str, knowledge_index: int | None = None
+        self,
+        session_id: str,
+        user_message: str,
+        knowledge_index: int | None = None,
+        owner_user_id: str | None = None,
     ) -> dict[str, Any]:
         """
         Process user chat message
@@ -566,7 +602,7 @@ class GuideManager:
         Returns:
             Assistant's answer
         """
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if not session:
             return {"success": False, "error": "Session does not exist"}
 
@@ -617,7 +653,12 @@ class GuideManager:
             "knowledge_index": current_index,
         }
 
-    async def fix_html(self, session_id: str, bug_description: str) -> dict[str, Any]:
+    async def fix_html(
+        self,
+        session_id: str,
+        bug_description: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         Fix HTML page bug
 
@@ -628,7 +669,7 @@ class GuideManager:
         Returns:
             Fixed HTML
         """
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if not session:
             return {"success": False, "error": "Session does not exist"}
 
@@ -648,18 +689,26 @@ class GuideManager:
 
         return result
 
-    def get_session(self, session_id: str) -> dict[str, Any] | None:
+    def get_session(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
         """Get session information"""
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if session:
             self._initialize_page_statuses(session)
             self._save_session(session)
             return session.to_dict()
         return None
 
-    def get_session_pages(self, session_id: str) -> dict[str, Any] | None:
+    def get_session_pages(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
         """Get page generation status for a session."""
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if not session:
             return None
 
@@ -684,16 +733,25 @@ class GuideManager:
             "total_points": len(session.knowledge_points),
         }
 
-    def get_current_html(self, session_id: str) -> str | None:
+    def get_current_html(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> str | None:
         """Get current HTML page"""
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if not session or session.current_index < 0:
             return None
         return session.html_pages.get(str(session.current_index))
 
-    async def retry_page(self, session_id: str, page_index: int) -> dict[str, Any]:
+    async def retry_page(
+        self,
+        session_id: str,
+        page_index: int,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
         """Retry a failed or pending page generation."""
-        session = self._load_session(session_id)
+        session = self._load_session(session_id, owner_user_id)
         if not session:
             return {"success": False, "error": "Session does not exist"}
 
@@ -713,13 +771,17 @@ class GuideManager:
             "message": f"Retrying knowledge point {page_index + 1}.",
         }
 
-    def list_sessions(self) -> list[dict[str, Any]]:
+    def list_sessions(self, owner_user_id: str | None = None) -> list[dict[str, Any]]:
         """List all sessions with summary metadata (no html_pages / chat_history)."""
         summaries: list[dict[str, Any]] = []
         for filepath in self.output_dir.glob("session_*.json"):
             try:
                 with open(filepath, encoding="utf-8") as f:
                     data = json.load(f)
+                if owner_user_id is not None and str(data.get("owner_user_id") or "").strip() != str(
+                    owner_user_id or ""
+                ).strip():
+                    continue
                 page_statuses = data.get("page_statuses") or {}
                 ready_count = sum(1 for v in page_statuses.values() if v == "ready")
                 total_points = len(data.get("knowledge_points") or [])
@@ -740,14 +802,26 @@ class GuideManager:
         summaries.sort(key=lambda s: s["created_at"], reverse=True)
         return summaries
 
-    async def reset_session(self, session_id: str) -> dict[str, Any]:
+    async def reset_session(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
         """Detach from a session (cancel tasks, clear cache, but keep the file for history)."""
+        if not self._load_session(session_id, owner_user_id):
+            return {"success": False, "error": "Session does not exist"}
         self._clear_generation_task(session_id)
         self._sessions.pop(session_id, None)
         return {"success": True, "message": "Session reset"}
 
-    async def delete_session(self, session_id: str) -> dict[str, Any]:
+    async def delete_session(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any]:
         """Permanently delete a session from memory and disk."""
+        if not self._load_session(session_id, owner_user_id):
+            return {"success": False, "error": "Session does not exist"}
         self._clear_generation_task(session_id)
         self._delete_session(session_id)
         return {"success": True, "message": "Session deleted"}

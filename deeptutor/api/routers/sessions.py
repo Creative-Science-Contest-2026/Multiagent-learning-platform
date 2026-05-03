@@ -8,8 +8,10 @@ from typing import Any
 from enum import Enum
 
 from pydantic import BaseModel, Field
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.session import (
     extract_assessment_review,
     get_assessment_rubric_review,
@@ -188,18 +190,23 @@ def _format_quiz_results_message(answers: list[QuizResultItem]) -> str:
 
 @router.get("")
 async def list_sessions(
+    current_user: AuthenticatedUser = Depends(get_current_user),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
 ):
     store = get_sqlite_session_store()
-    sessions = await store.list_sessions(limit=limit, offset=offset)
+    sessions = await store.list_sessions(
+        owner_user_id=current_user.id,
+        limit=limit,
+        offset=offset,
+    )
     return {"sessions": sessions}
 
 
 @router.get("/{session_id}")
-async def get_session(session_id: str):
+async def get_session(session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)):
     store = get_sqlite_session_store()
-    session = await store.get_session_with_messages(session_id)
+    session = await store.get_session_with_messages(session_id, owner_user_id=current_user.id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
     preferences = dict(session.get("preferences") or {})
@@ -214,9 +221,12 @@ async def get_session(session_id: str):
 
 
 @router.get("/{session_id}/assessment-review")
-async def get_assessment_review(session_id: str):
+async def get_assessment_review(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     store = get_sqlite_session_store()
-    session = await store.get_session_with_messages(session_id)
+    session = await store.get_session_with_messages(session_id, owner_user_id=current_user.id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
     review = extract_assessment_review(session)
@@ -230,9 +240,13 @@ async def get_assessment_review(session_id: str):
 
 
 @router.post("/{session_id}/assessment-rubric-review")
-async def create_assessment_rubric_review(session_id: str, payload: TeacherAssessmentReviewRequest):
+async def create_assessment_rubric_review(
+    session_id: str,
+    payload: TeacherAssessmentReviewRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     store = get_sqlite_session_store()
-    session = await store.get_session_with_messages(session_id)
+    session = await store.get_session_with_messages(session_id, owner_user_id=current_user.id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
     review = extract_assessment_review(session)
@@ -242,9 +256,13 @@ async def create_assessment_rubric_review(session_id: str, payload: TeacherAsses
 
 
 @router.patch("/{session_id}/assessment-rubric-review")
-async def update_assessment_rubric_review(session_id: str, payload: TeacherAssessmentReviewRequest):
+async def update_assessment_rubric_review(
+    session_id: str,
+    payload: TeacherAssessmentReviewRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     store = get_sqlite_session_store()
-    session = await store.get_session_with_messages(session_id)
+    session = await store.get_session_with_messages(session_id, owner_user_id=current_user.id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
     review = extract_assessment_review(session)
@@ -254,30 +272,38 @@ async def update_assessment_rubric_review(session_id: str, payload: TeacherAsses
 
 
 @router.patch("/{session_id}")
-async def rename_session(session_id: str, payload: SessionRenameRequest):
+async def rename_session(
+    session_id: str,
+    payload: SessionRenameRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     store = get_sqlite_session_store()
-    updated = await store.update_session_title(session_id, payload.title)
+    updated = await store.update_session_title(session_id, payload.title, owner_user_id=current_user.id)
     if not updated:
         raise HTTPException(status_code=404, detail="Session not found")
-    session = await store.get_session(session_id)
+    session = await store.get_session(session_id, owner_user_id=current_user.id)
     return {"session": session}
 
 
 @router.delete("/{session_id}")
-async def delete_session(session_id: str):
+async def delete_session(session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)):
     store = get_sqlite_session_store()
-    deleted = await store.delete_session(session_id)
+    deleted = await store.delete_session(session_id, owner_user_id=current_user.id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Session not found")
     return {"deleted": True, "session_id": session_id}
 
 
 @router.post("/{session_id}/quiz-results")
-async def record_quiz_results(session_id: str, payload: QuizResultsRequest):
+async def record_quiz_results(
+    session_id: str,
+    payload: QuizResultsRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     if not payload.answers:
         raise HTTPException(status_code=400, detail="Quiz results are required")
     store = get_sqlite_session_store()
-    session = await store.get_session(session_id)
+    session = await store.get_session(session_id, owner_user_id=current_user.id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
     content = _format_quiz_results_message(payload.answers)

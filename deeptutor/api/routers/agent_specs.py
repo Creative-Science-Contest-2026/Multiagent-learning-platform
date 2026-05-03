@@ -1,13 +1,20 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.agent_spec import get_agent_spec_service
 from deeptutor.services.runtime_policy.compiler import build_runtime_policy_audit
 
 router = APIRouter()
+
+
+def _require_teacher_or_admin(user: AuthenticatedUser) -> None:
+    if user.role not in {"teacher", "admin"}:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 class IdentityPayload(BaseModel):
@@ -50,12 +57,17 @@ class AgentSpecUpsertRequest(BaseModel):
 
 
 @router.get("")
-async def list_agent_specs():
+async def list_agent_specs(current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
     return {"items": get_agent_spec_service().list_packs()}
 
 
 @router.post("")
-async def create_agent_spec(payload: AgentSpecUpsertRequest):
+async def create_agent_spec(
+    payload: AgentSpecUpsertRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     service = get_agent_spec_service()
     try:
         return service.create_pack(
@@ -71,7 +83,11 @@ async def create_agent_spec(payload: AgentSpecUpsertRequest):
 
 
 @router.get("/{agent_id}")
-async def get_agent_spec(agent_id: str):
+async def get_agent_spec(
+    agent_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     service = get_agent_spec_service()
     try:
         return service.get_pack(agent_id)
@@ -84,7 +100,9 @@ async def get_agent_spec_runtime_policy_audit(
     agent_id: str,
     capability: str = "chat",
     version: int | None = None,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
+    _require_teacher_or_admin(current_user)
     try:
         return build_runtime_policy_audit(
             agent_spec_id=agent_id,
@@ -96,7 +114,12 @@ async def get_agent_spec_runtime_policy_audit(
 
 
 @router.put("/{agent_id}")
-async def update_agent_spec(agent_id: str, payload: AgentSpecUpsertRequest):
+async def update_agent_spec(
+    agent_id: str,
+    payload: AgentSpecUpsertRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     service = get_agent_spec_service()
     try:
         return service.save_pack(
@@ -114,7 +137,11 @@ async def update_agent_spec(agent_id: str, payload: AgentSpecUpsertRequest):
 
 
 @router.get("/{agent_id}/export")
-async def export_agent_spec(agent_id: str):
+async def export_agent_spec(
+    agent_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     service = get_agent_spec_service()
     try:
         content = service.export_pack_archive(agent_id)

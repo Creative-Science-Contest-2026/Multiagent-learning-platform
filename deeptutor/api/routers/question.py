@@ -12,6 +12,8 @@ from deeptutor.agents.question import AgentCoordinator
 from deeptutor.api.utils.log_interceptor import LogInterceptor
 from deeptutor.api.utils.task_id_manager import TaskIDManager
 from deeptutor.logging import get_logger
+from deeptutor.services.auth.deps import get_current_user_from_websocket
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.config import PROJECT_ROOT, load_config_with_main
 from deeptutor.services.llm.config import get_llm_config
 from deeptutor.services.path_service import get_path_service
@@ -30,6 +32,11 @@ router = APIRouter()
 # Output directory for mimic mode - use agent/question/mimic_papers
 _path_service = get_path_service()
 MIMIC_OUTPUT_DIR = _path_service.get_question_dir() / "mimic_papers"
+
+
+def _require_teacher_or_admin_websocket(user: AuthenticatedUser) -> None:
+    if user.role not in {"teacher", "admin"}:
+        raise PermissionError("Forbidden")
 
 
 @router.websocket("/mimic")
@@ -58,6 +65,17 @@ async def websocket_mimic_generate(websocket: WebSocket):
         "max_questions": 5  // optional
     }
     """
+    try:
+        current_user = get_current_user_from_websocket(websocket)
+    except Exception:
+        await websocket.close(code=4401)
+        return
+    try:
+        _require_teacher_or_admin_websocket(current_user)
+    except PermissionError:
+        await websocket.close(code=4403)
+        return
+
     await websocket.accept()
 
     pusher_task = None
@@ -323,6 +341,17 @@ async def websocket_mimic_generate(websocket: WebSocket):
 
 @router.websocket("/generate")
 async def websocket_question_generate(websocket: WebSocket):
+    try:
+        current_user = get_current_user_from_websocket(websocket)
+    except Exception:
+        await websocket.close(code=4401)
+        return
+    try:
+        _require_teacher_or_admin_websocket(current_user)
+    except PermissionError:
+        await websocket.close(code=4403)
+        return
+
     await websocket.accept()
 
     # Get task ID manager

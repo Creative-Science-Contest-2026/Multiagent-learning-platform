@@ -4,9 +4,12 @@ from datetime import datetime, timezone
 from typing import Any
 
 import fitz
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import BaseModel
 
+from deeptutor.services.auth.deps import owner_scope_for_user
+from deeptutor.services.auth.deps import require_roles
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.assessment import build_assessment_analysis
 from deeptutor.services.evidence.diagnosis import build_student_diagnosis
 from deeptutor.services.evidence.diagnosis_feedback import (
@@ -45,6 +48,7 @@ from deeptutor.services.learning_path import build_suggested_learning_path
 from deeptutor.services.session import extract_assessment_review, get_sqlite_session_store
 
 router = APIRouter()
+require_teacher_or_admin = require_roles("teacher", "admin")
 
 
 class TeacherActionCreateRequest(BaseModel):
@@ -284,6 +288,10 @@ def _build_dashboard_analytics(
     }
 
 
+def _teacher_scope(current_user: AuthenticatedUser) -> str | None:
+    return owner_scope_for_user(current_user)
+
+
 def _learning_streak_days(activities: list[dict[str, Any]]) -> int:
     days = []
     seen_days: set[int] = set()
@@ -408,9 +416,14 @@ async def get_recent_activities(
     knowledge_base: str | None = None,
     search: str | None = None,
     min_score: int | None = None,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ):
     store = get_sqlite_session_store()
-    sessions = await store.list_sessions(limit=limit, offset=0)
+    sessions = await store.list_sessions(
+        limit=limit,
+        offset=0,
+        owner_user_id=_teacher_scope(current_user),
+    )
     activities: list[dict[str, Any]] = []
 
     for session in sessions:
@@ -435,9 +448,11 @@ async def get_dashboard_overview(
     knowledge_base: str | None = None,
     search: str | None = None,
     min_score: int | None = None,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ):
     store = get_sqlite_session_store()
-    sessions = await store.list_sessions(limit=limit, offset=0)
+    scope = _teacher_scope(current_user)
+    sessions = await store.list_sessions(limit=limit, offset=0, owner_user_id=scope)
     activities = [
         activity
         for session in sessions
@@ -467,7 +482,10 @@ async def get_dashboard_overview(
             "summary": activity["assessment_summary"],
             "review_ref": activity["review_ref"],
             "assessment_results": activity.get("assessment_summary") and (
-                extract_assessment_review(await store.get_session_with_messages(activity["id"])) or {}
+                extract_assessment_review(
+                    await store.get_session_with_messages(activity["id"], owner_user_id=scope)
+                )
+                or {}
             ).get("results", []),
         }
         for activity in activities
@@ -496,9 +514,13 @@ async def get_dashboard_overview(
 
 
 @router.get("/student-progress")
-async def get_student_progress(limit: int = 50):
+async def get_student_progress(
+    limit: int = 50,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     store = get_sqlite_session_store()
-    sessions = await store.list_sessions(limit=limit, offset=0)
+    scope = _teacher_scope(current_user)
+    sessions = await store.list_sessions(limit=limit, offset=0, owner_user_id=scope)
     activities = [await _activity_with_review(store, session) for session in sessions]
 
     assessment_rows = [
@@ -510,7 +532,10 @@ async def get_student_progress(limit: int = 50):
             "summary": activity["assessment_summary"],
             "review_ref": activity["review_ref"],
             "assessment_results": activity.get("assessment_summary") and (
-                extract_assessment_review(await store.get_session_with_messages(activity["id"])) or {}
+                extract_assessment_review(
+                    await store.get_session_with_messages(activity["id"], owner_user_id=scope)
+                )
+                or {}
             ).get("results", []),
         }
         for activity in activities
@@ -579,9 +604,11 @@ async def get_dashboard_insights(
     cohort: str | None = None,
     start_ts: int | None = None,
     end_ts: int | None = None,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ):
     store = get_sqlite_session_store()
-    sessions = await store.list_sessions(limit=limit, offset=0)
+    scope = _teacher_scope(current_user)
+    sessions = await store.list_sessions(limit=limit, offset=0, owner_user_id=scope)
     student_payloads: list[dict[str, Any]] = []
     observations_by_student: dict[str, list[dict[str, Any]]] = {}
 
@@ -601,7 +628,7 @@ async def get_dashboard_insights(
         if end_ts is not None and ts > end_ts:
             continue
 
-        detail = await store.get_session_with_messages(activity["id"])
+        detail = await store.get_session_with_messages(activity["id"], owner_user_id=scope)
         review = extract_assessment_review(detail) if detail else None
         if review is None:
             continue
@@ -609,12 +636,12 @@ async def get_dashboard_insights(
         student_id = str((detail.get("preferences") or {}).get("student_id") or activity["id"])
         review["student_id"] = student_id
         observations = extract_observations_from_review(review)
-        await store.save_observations(observations)
+        await store.save_observations(observations, owner_user_id=scope)
 
-        rollup = await store.build_student_state_rollup(student_id)
+        rollup = await store.build_student_state_rollup(student_id, owner_user_id=scope)
         if rollup is not None:
-            await store.upsert_student_state(student_id, rollup)
-        state = await store.get_student_state(student_id)
+            await store.upsert_student_state(student_id, rollup, owner_user_id=scope)
+        state = await store.get_student_state(student_id, owner_user_id=scope)
 
         student_payloads.append(
             build_student_diagnosis(
@@ -623,14 +650,17 @@ async def get_dashboard_insights(
                 student_state=state,
             )
         )
-        observations_by_student[student_id] = await store.list_observations(student_id)
+        observations_by_student[student_id] = await store.list_observations(
+            student_id,
+            owner_user_id=scope,
+        )
 
-    teacher_actions = list_teacher_actions(store)
-    intervention_assignments = list_intervention_assignments(store)
-    recommendation_acks = list_recommendation_acks(store)
-    recommendation_feedback = list_recommendation_feedback(store)
-    teacher_overrides = list_teacher_overrides(store)
-    diagnosis_feedback = list_diagnosis_feedback(store)
+    teacher_actions = list_teacher_actions(store, owner_user_id=scope)
+    intervention_assignments = list_intervention_assignments(store, owner_user_id=scope)
+    recommendation_acks = list_recommendation_acks(store, owner_user_id=scope)
+    recommendation_feedback = list_recommendation_feedback(store, owner_user_id=scope)
+    teacher_overrides = list_teacher_overrides(store, owner_user_id=scope)
+    diagnosis_feedback = list_diagnosis_feedback(store, owner_user_id=scope)
     return build_teacher_insights_payload(
         student_payloads=student_payloads,
         teacher_actions=teacher_actions,
@@ -646,6 +676,7 @@ async def get_dashboard_insights(
 @router.post("/teacher-overrides")
 async def create_dashboard_teacher_override(
     payload: TeacherOverrideCreateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -657,6 +688,7 @@ async def create_dashboard_teacher_override(
             override_reason=payload.override_reason,
             teacher_selected_move=payload.teacher_selected_move,
             teacher_note=payload.teacher_note,
+            owner_user_id=current_user.id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -666,6 +698,7 @@ async def create_dashboard_teacher_override(
 async def update_dashboard_teacher_override(
     override_id: str,
     payload: TeacherOverrideUpdateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -675,6 +708,7 @@ async def update_dashboard_teacher_override(
             override_reason=payload.override_reason,
             teacher_selected_move=payload.teacher_selected_move,
             teacher_note=payload.teacher_note,
+            owner_user_id=_teacher_scope(current_user),
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -685,6 +719,7 @@ async def update_dashboard_teacher_override(
 @router.post("/recommendation-feedback")
 async def create_dashboard_recommendation_feedback(
     payload: RecommendationFeedbackCreateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -695,6 +730,7 @@ async def create_dashboard_recommendation_feedback(
             target_id=payload.target_id,
             feedback_label=payload.feedback_label,
             teacher_note=payload.teacher_note,
+            owner_user_id=current_user.id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -704,6 +740,7 @@ async def create_dashboard_recommendation_feedback(
 async def update_dashboard_recommendation_feedback(
     feedback_id: str,
     payload: RecommendationFeedbackUpdateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -712,6 +749,7 @@ async def update_dashboard_recommendation_feedback(
             feedback_id,
             feedback_label=payload.feedback_label,
             teacher_note=payload.teacher_note,
+            owner_user_id=_teacher_scope(current_user),
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -722,6 +760,7 @@ async def update_dashboard_recommendation_feedback(
 @router.post("/diagnosis-feedback")
 async def create_dashboard_diagnosis_feedback(
     payload: DiagnosisFeedbackCreateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -732,6 +771,7 @@ async def create_dashboard_diagnosis_feedback(
             source_diagnosis_type=payload.source_diagnosis_type,
             feedback_label=payload.feedback_label,
             teacher_note=payload.teacher_note,
+            owner_user_id=current_user.id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -741,6 +781,7 @@ async def create_dashboard_diagnosis_feedback(
 async def update_dashboard_diagnosis_feedback(
     feedback_id: str,
     payload: DiagnosisFeedbackUpdateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -749,6 +790,7 @@ async def update_dashboard_diagnosis_feedback(
             feedback_id,
             feedback_label=payload.feedback_label,
             teacher_note=payload.teacher_note,
+            owner_user_id=_teacher_scope(current_user),
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -759,6 +801,7 @@ async def update_dashboard_diagnosis_feedback(
 @router.post("/recommendation-acks")
 async def create_dashboard_recommendation_ack(
     payload: RecommendationAckCreateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -769,6 +812,7 @@ async def create_dashboard_recommendation_ack(
             target_id=payload.target_id,
             status=payload.status,
             teacher_note=payload.teacher_note,
+            owner_user_id=current_user.id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -778,6 +822,7 @@ async def create_dashboard_recommendation_ack(
 async def update_dashboard_recommendation_ack(
     ack_id: str,
     payload: RecommendationAckUpdateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -786,6 +831,7 @@ async def update_dashboard_recommendation_ack(
             ack_id,
             status=payload.status,
             teacher_note=payload.teacher_note,
+            owner_user_id=_teacher_scope(current_user),
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -794,7 +840,10 @@ async def update_dashboard_recommendation_ack(
 
 
 @router.post("/teacher-actions")
-async def create_dashboard_teacher_action(payload: TeacherActionCreateRequest) -> dict[str, Any]:
+async def create_dashboard_teacher_action(
+    payload: TeacherActionCreateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
         return create_teacher_action(
@@ -806,6 +855,7 @@ async def create_dashboard_teacher_action(payload: TeacherActionCreateRequest) -
             topic=payload.topic,
             teacher_instruction=payload.teacher_instruction,
             priority=payload.priority,
+            owner_user_id=current_user.id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -815,10 +865,16 @@ async def create_dashboard_teacher_action(payload: TeacherActionCreateRequest) -
 async def update_dashboard_teacher_action(
     action_id: str,
     payload: TeacherActionStatusUpdateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
-        return update_teacher_action_status(store, action_id, status=payload.status)
+        return update_teacher_action_status(
+            store,
+            action_id,
+            status=payload.status,
+            owner_user_id=_teacher_scope(current_user),
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except KeyError as exc:
@@ -828,6 +884,7 @@ async def update_dashboard_teacher_action(
 @router.post("/intervention-assignments")
 async def create_dashboard_intervention_assignment(
     payload: InterventionAssignmentCreateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
@@ -838,6 +895,7 @@ async def create_dashboard_intervention_assignment(
             title=payload.title,
             teacher_note=payload.teacher_note,
             practice_note=payload.practice_note,
+            owner_user_id=current_user.id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -849,10 +907,16 @@ async def create_dashboard_intervention_assignment(
 async def update_dashboard_intervention_assignment(
     assignment_id: str,
     payload: InterventionAssignmentStatusUpdateRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ) -> dict[str, Any]:
     store = get_sqlite_session_store()
     try:
-        return update_intervention_assignment_status(store, assignment_id, status=payload.status)
+        return update_intervention_assignment_status(
+            store,
+            assignment_id,
+            status=payload.status,
+            owner_user_id=_teacher_scope(current_user),
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except KeyError as exc:
@@ -860,9 +924,15 @@ async def update_dashboard_intervention_assignment(
 
 
 @router.get("/{entry_id}")
-async def get_activity_entry(entry_id: str):
+async def get_activity_entry(
+    entry_id: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     store = get_sqlite_session_store()
-    session = await store.get_session_with_messages(entry_id)
+    session = await store.get_session_with_messages(
+        entry_id,
+        owner_user_id=_teacher_scope(current_user),
+    )
     if session is None:
         raise HTTPException(status_code=404, detail="Entry not found")
 
@@ -886,9 +956,15 @@ async def get_activity_entry(entry_id: str):
 
 
 @router.get("/assessment-analysis/{session_id}")
-async def get_assessment_analysis(session_id: str):
+async def get_assessment_analysis(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     store = get_sqlite_session_store()
-    session = await store.get_session_with_messages(session_id)
+    session = await store.get_session_with_messages(
+        session_id,
+        owner_user_id=_teacher_scope(current_user),
+    )
     if session is None:
         raise HTTPException(status_code=404, detail="Assessment session not found")
 
@@ -900,9 +976,15 @@ async def get_assessment_analysis(session_id: str):
 
 
 @router.get("/assessment-export/{session_id}")
-async def export_assessment_report(session_id: str):
+async def export_assessment_report(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     store = get_sqlite_session_store()
-    session = await store.get_session_with_messages(session_id)
+    session = await store.get_session_with_messages(
+        session_id,
+        owner_user_id=_teacher_scope(current_user),
+    )
     if session is None:
         raise HTTPException(status_code=404, detail="Assessment session not found")
 

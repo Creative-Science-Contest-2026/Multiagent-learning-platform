@@ -11,17 +11,37 @@ except Exception:  # pragma: no cover - optional dependency in lightweight envs
     FastAPI = None
     TestClient = None
 
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.session.sqlite_store import SQLiteSessionStore
 
 pytestmark = pytest.mark.skipif(FastAPI is None or TestClient is None, reason="fastapi not installed")
 
 
-def _build_app(store: SQLiteSessionStore, monkeypatch: pytest.MonkeyPatch) -> FastAPI:
+def _teacher_user(user_id: str = "teacher-1", role: str = "teacher") -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id=user_id,
+        email=f"{user_id}@example.com",
+        display_name=f"Teacher {user_id}",
+        role=role,  # type: ignore[arg-type]
+    )
+
+
+def _build_app(
+    store: SQLiteSessionStore,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    current_user: AuthenticatedUser | None = None,
+    authenticated: bool = True,
+) -> FastAPI:
     from deeptutor.api.routers import assessment
 
     app = FastAPI()
     app.include_router(assessment.router, prefix="/api/v1/assessment")
     monkeypatch.setattr(assessment, "get_sqlite_session_store", lambda: store)
+    if authenticated:
+        app.dependency_overrides[assessment.require_teacher_or_admin] = (
+            lambda: current_user or _teacher_user()
+        )
     return app
 
 
@@ -33,8 +53,9 @@ async def _seed_session(
     message: str,
     knowledge_bases: list[str],
     status: str = "completed",
+    owner_user_id: str = "teacher-1",
 ) -> None:
-    await store.create_session(session_id=session_id)
+    await store.create_session(session_id=session_id, owner_user_id=owner_user_id)
     await store.update_session_preferences(
         session_id,
         {
@@ -127,6 +148,69 @@ async def test_assessment_recommend_returns_targeted_next_topic(
 
 
 @pytest.mark.asyncio
+async def test_assessment_routes_require_authenticated_teacher_surface(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+
+    with TestClient(_build_app(store, monkeypatch, authenticated=False)) as client:
+        recommend_response = client.post("/api/v1/assessment/recommend", json={})
+        diagnosis_response = client.get("/api/v1/assessment/diagnosis/missing")
+
+    assert recommend_response.status_code == 401
+    assert diagnosis_response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_assessment_recommend_only_uses_owner_sessions(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="teacher-one-assessment",
+        capability="deep_question",
+        message="Generate a quiz on fractions",
+        knowledge_bases=["fractions-pack"],
+        owner_user_id="teacher-1",
+    )
+    await store.add_message(
+        "teacher-one-assessment",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve fractions subtraction 3/4 - 1/2 -> Answered: 1/5 (Incorrect, correct: 1/4, time: 48s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+    await _seed_session(
+        store,
+        session_id="teacher-two-assessment",
+        capability="deep_question",
+        message="Generate a quiz on algebra",
+        knowledge_bases=["algebra-pack"],
+        owner_user_id="teacher-2",
+    )
+    await store.add_message(
+        "teacher-two-assessment",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Solve algebra equation x + 2 = 5 -> Answered: 3 (Correct)\n"
+        "Score: 1/1 (100%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch, current_user=_teacher_user("teacher-1"))) as client:
+        response = client.post("/api/v1/assessment/recommend", json={"limit": 10})
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["source_session_ids"] == ["teacher-one-assessment"]
+    assert payload["recommended_knowledge_bases"] == ["fractions-pack"]
+
+
+@pytest.mark.asyncio
 async def test_assessment_recommend_returns_clean_empty_state_without_reviews(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
@@ -184,6 +268,36 @@ async def test_assessment_diagnosis_endpoint_returns_structured_payload(
     assert payload["inferred"][0]["confidence_tag"] in {"medium", "high"}
     assert payload["observed"]["abstained"] is False
     assert payload["recommended_actions"][0]["topic"] == "fractions subtraction"
+
+
+@pytest.mark.asyncio
+async def test_assessment_diagnosis_is_owner_scoped(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    await _seed_session(
+        store,
+        session_id="teacher-two-assessment",
+        capability="deep_question",
+        message="Generate a quiz on geometry",
+        knowledge_bases=["geometry-pack"],
+        owner_user_id="teacher-2",
+    )
+    await store.add_message(
+        "teacher-two-assessment",
+        "user",
+        "[Quiz Performance]\n"
+        "1. [q1] Q: Identify triangle type -> Answered: acute (Incorrect, correct: right, time: 18s)\n"
+        "Score: 0/1 (0%)",
+        capability="deep_question",
+    )
+
+    with TestClient(_build_app(store, monkeypatch, current_user=_teacher_user("teacher-1"))) as client:
+        response = client.get("/api/v1/assessment/diagnosis/teacher-two-assessment")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Assessment session not found"
 
 
 @pytest.mark.asyncio
@@ -321,7 +435,8 @@ async def test_assessment_diagnosis_endpoint_downgrades_confidence_when_support_
                 "dominant_error": None,
                 "created_at": 1_710_000_102,
             },
-        ]
+        ],
+        owner_user_id="teacher-1",
     )
 
     with TestClient(_build_app(store, monkeypatch)) as client:
@@ -385,7 +500,8 @@ async def test_assessment_diagnosis_endpoint_emits_support_dependency_from_stude
                 "dominant_error": None,
                 "created_at": 1_710_100_002,
             },
-        ]
+        ],
+        owner_user_id="teacher-1",
     )
     await store.add_message(
         "assessment-support-dependency",
