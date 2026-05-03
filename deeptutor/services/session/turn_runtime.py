@@ -406,7 +406,6 @@ class TurnRuntimeManager:
         session_id = execution.session_id
         capability_name = execution.capability
         turn_id = execution.turn_id
-        student_id = str(payload.get("student_id") or session_id or "unknown")
         attachments = []
         attachment_records = []
         assistant_events: list[dict[str, Any]] = []
@@ -468,6 +467,14 @@ class TurnRuntimeManager:
                 self.store,
                 session_id,
                 request_config,
+            )
+            session_record = await self.store.get_session(session_id)
+            session_owner_user_id = str((session_record or {}).get("owner_user_id") or "").strip()
+            student_id = str(
+                payload.get("student_id")
+                or session_preferences.get("student_id")
+                or session_id
+                or "unknown"
             )
 
             if notebook_references:
@@ -621,10 +628,20 @@ class TurnRuntimeManager:
                 assistant_events=assistant_events,
             )
             if tutoring_observations:
-                await self.store.save_observations(tutoring_observations)
-                state_rollup = await self.store.build_student_state_rollup(student_id)
+                await self.store.save_observations(
+                    tutoring_observations,
+                    owner_user_id=session_owner_user_id,
+                )
+                state_rollup = await self.store.build_student_state_rollup(
+                    student_id,
+                    owner_user_id=session_owner_user_id,
+                )
                 if state_rollup:
-                    await self.store.upsert_student_state(student_id, state_rollup)
+                    await self.store.upsert_student_state(
+                        student_id,
+                        state_rollup,
+                        owner_user_id=session_owner_user_id,
+                    )
             await self.store.update_turn_status(turn_id, "completed")
             try:
                 await memory_service.refresh_from_turn(

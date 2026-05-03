@@ -636,12 +636,12 @@ async def get_dashboard_insights(
         student_id = str((detail.get("preferences") or {}).get("student_id") or activity["id"])
         review["student_id"] = student_id
         observations = extract_observations_from_review(review)
-        await store.save_observations(observations)
+        await store.save_observations(observations, owner_user_id=scope)
 
-        rollup = await store.build_student_state_rollup(student_id)
+        rollup = await store.build_student_state_rollup(student_id, owner_user_id=scope)
         if rollup is not None:
-            await store.upsert_student_state(student_id, rollup)
-        state = await store.get_student_state(student_id)
+            await store.upsert_student_state(student_id, rollup, owner_user_id=scope)
+        state = await store.get_student_state(student_id, owner_user_id=scope)
 
         student_payloads.append(
             build_student_diagnosis(
@@ -650,7 +650,10 @@ async def get_dashboard_insights(
                 student_state=state,
             )
         )
-        observations_by_student[student_id] = await store.list_observations(student_id)
+        observations_by_student[student_id] = await store.list_observations(
+            student_id,
+            owner_user_id=scope,
+        )
 
     teacher_actions = list_teacher_actions(store, owner_user_id=scope)
     intervention_assignments = list_intervention_assignments(store, owner_user_id=scope)

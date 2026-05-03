@@ -127,6 +127,14 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - `dashboard`, `knowledge`, and `marketplace` still expose teacher-first product data and mutations without authenticated role enforcement, and `dashboard` evidence rows are still global rather than bound to the authenticated owner
 - Intended backend product-router change:
   - require authenticated `teacher` or `admin` access on the teacher-first backend routers, scope session-backed dashboard reads to the authenticated owner for teachers, scope dashboard evidence rows to the authenticated owner, and stamp/import knowledge-pack ownership metadata so new auth-era records stop leaking across users
+- Current dashboard-signal persistence behavior:
+  - `observations` and `student_states` in the SQLite learning-session store still key only on `student_id` or `observation_id`, so repeated identifiers across teachers can collide or overwrite after multi-user auth lands
+- Intended dashboard-signal persistence change:
+  - rebuild those tables onto owner-aware composite keys and thread `owner_user_id` through dashboard rollup/save/read paths so teacher-specific diagnosis state stays isolated even when teachers reuse the same student identifiers
+- Current tutoring-runtime signal behavior:
+  - even after backend auth and dashboard hardening, live tutoring turns and context-building still materialize observations/state through ownerless store calls, which can repopulate the anonymous bucket during authenticated use
+- Intended tutoring-runtime signal change:
+  - carry the owning session's `owner_user_id` through tutoring observation persistence, student-state rollups, and context-builder lookups so authenticated chat and dashboard diagnostics share the same owner-scoped evidence model
 - Candidate approaches:
   - router-level role gates only, leaving underlying dashboard evidence tables global
   - full per-user isolation by extending router auth plus owner scoping into dashboard evidence services and auth-era knowledge-pack metadata

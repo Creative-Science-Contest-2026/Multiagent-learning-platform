@@ -179,6 +179,73 @@ async def test_sqlite_store_builds_recency_aware_student_state_rollup(tmp_path: 
 
 
 @pytest.mark.asyncio
+async def test_sqlite_store_scopes_observations_and_student_state_by_owner(tmp_path: Path) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    now = time.time()
+
+    await store.save_observations(
+        [
+            {
+                "observation_id": "shared-obs",
+                "session_id": "teacher-a-session",
+                "student_id": "student-shared",
+                "source": "assessment",
+                "topic": "fractions",
+                "question_id": "q1",
+                "is_correct": False,
+                "latency_seconds": 22,
+                "hint_count": 2,
+                "retry_count": 1,
+                "dominant_error": "needs_scaffold",
+                "created_at": now - 300,
+            }
+        ],
+        owner_user_id="teacher-a",
+    )
+    await store.save_observations(
+        [
+            {
+                "observation_id": "shared-obs",
+                "session_id": "teacher-b-session",
+                "student_id": "student-shared",
+                "source": "assessment",
+                "topic": "geometry",
+                "question_id": "q1",
+                "is_correct": True,
+                "latency_seconds": 18,
+                "hint_count": 0,
+                "retry_count": 0,
+                "dominant_error": None,
+                "created_at": now - 120,
+            }
+        ],
+        owner_user_id="teacher-b",
+    )
+
+    teacher_a_rollup = await store.build_student_state_rollup("student-shared", owner_user_id="teacher-a")
+    teacher_b_rollup = await store.build_student_state_rollup("student-shared", owner_user_id="teacher-b")
+    assert teacher_a_rollup is not None
+    assert teacher_b_rollup is not None
+
+    await store.upsert_student_state("student-shared", teacher_a_rollup, owner_user_id="teacher-a")
+    await store.upsert_student_state("student-shared", teacher_b_rollup, owner_user_id="teacher-b")
+
+    teacher_a_observations = await store.list_observations("student-shared", owner_user_id="teacher-a")
+    teacher_b_observations = await store.list_observations("student-shared", owner_user_id="teacher-b")
+    teacher_a_state = await store.get_student_state("student-shared", owner_user_id="teacher-a")
+    teacher_b_state = await store.get_student_state("student-shared", owner_user_id="teacher-b")
+
+    assert [row["topic"] for row in teacher_a_observations] == ["fractions"]
+    assert [row["topic"] for row in teacher_b_observations] == ["geometry"]
+    assert teacher_a_state is not None
+    assert teacher_b_state is not None
+    assert teacher_a_state["owner_user_id"] == "teacher-a"
+    assert teacher_b_state["owner_user_id"] == "teacher-b"
+    assert teacher_a_state["misconception_signals"]["dominant_errors"] == {"fractions": "needs_scaffold"}
+    assert teacher_b_state["misconception_signals"]["dominant_errors"] == {}
+
+
+@pytest.mark.asyncio
 async def test_sqlite_store_persists_agent_spec_pin_in_session_preferences(tmp_path: Path) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
     session = await store.create_session(title="Pinned session")

@@ -349,8 +349,14 @@ class ContextBuilder:
         if session is None:
             return ContextBuildResult([], "", "", [], 0, self._history_budget(llm_config))
 
+        session_preferences = session.get("preferences") if isinstance(session, dict) else {}
+        student_state_student_id = str((session_preferences or {}).get("student_id") or session_id)
+        student_state_owner_user_id = str(session.get("owner_user_id") or "").strip()
         student_state_context = self._format_student_state_context(
-            await self.store.get_student_state(session_id)
+            await self.store.get_student_state(
+                student_state_student_id,
+                owner_user_id=student_state_owner_user_id,
+            )
         )
 
         budget = self._history_budget(llm_config)

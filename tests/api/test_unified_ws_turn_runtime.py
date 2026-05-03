@@ -110,6 +110,112 @@ async def test_turn_runtime_replays_events_and_materializes_messages(
     assert persisted_turn["status"] == "completed"
 
 
+@pytest.mark.asyncio
+async def test_turn_runtime_persists_tutoring_signals_under_session_owner(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+
+    class FakeContextBuilder:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        async def build(self, **_kwargs):
+            return SimpleNamespace(
+                conversation_history=[],
+                conversation_summary="",
+                context_text="",
+                token_count=0,
+                budget=0,
+            )
+
+    class FakeOrchestrator:
+        async def handle(self, _context):
+            yield StreamEvent(
+                type=StreamEventType.CONTENT,
+                source="chat",
+                stage="responding",
+                content="Try decomposing the fraction step by step.",
+                metadata={"call_kind": "llm_final_response"},
+            )
+            yield StreamEvent(type=StreamEventType.DONE, source="chat")
+
+    monkeypatch.setattr(
+        "deeptutor.services.llm.config.get_llm_config",
+        lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
+    )
+    monkeypatch.setattr("deeptutor.services.session.context_builder.ContextBuilder", FakeContextBuilder)
+    monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", FakeOrchestrator)
+    monkeypatch.setattr(
+        "deeptutor.services.evidence.extractor.extract_observations_from_tutoring_turn",
+        lambda **kwargs: [
+            {
+                "observation_id": "owned-obs-1",
+                "session_id": kwargs["session_id"],
+                "student_id": kwargs["student_id"],
+                "source": "tutoring",
+                "topic": "fractions subtraction",
+                "question_id": "followup-1",
+                "is_correct": False,
+                "latency_seconds": 24,
+                "hint_count": 1,
+                "retry_count": 1,
+                "dominant_error": "needs_scaffold",
+            }
+        ],
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.memory.get_memory_service",
+        lambda: SimpleNamespace(
+            build_memory_context=lambda: "",
+            refresh_from_turn=_noop_refresh,
+        ),
+    )
+
+    await store.create_session(session_id="owned-chat", owner_user_id="teacher-1")
+    await store.update_session_preferences(
+        "owned-chat",
+        {
+            "student_id": "student-owned",
+            "capability": "chat",
+            "tools": [],
+            "knowledge_bases": [],
+            "language": "en",
+        },
+    )
+
+    _session, turn = await runtime.start_turn(
+        {
+            "type": "start_turn",
+            "content": "Help me with this fraction problem",
+            "session_id": "owned-chat",
+            "capability": "chat",
+            "tools": [],
+            "knowledge_bases": [],
+            "attachments": [],
+            "language": "en",
+            "config": {},
+        }
+    )
+
+    async for _event in runtime.subscribe_turn(turn["id"], after_seq=0):
+        pass
+
+    owned_observations = await store.list_observations("student-owned", owner_user_id="teacher-1")
+    anonymous_observations = await store.list_observations("student-owned", owner_user_id="")
+    owned_state = await store.get_student_state("student-owned", owner_user_id="teacher-1")
+
+    assert [row["topic"] for row in owned_observations] == ["fractions subtraction"]
+    assert anonymous_observations == []
+    assert owned_state is not None
+    assert owned_state["owner_user_id"] == "teacher-1"
+    assert owned_state["misconception_signals"]["dominant_errors"] == {
+        "fractions subtraction": "needs_scaffold"
+    }
+
+
 def test_unified_ws_rejects_invalid_after_seq(monkeypatch: pytest.MonkeyPatch) -> None:
     from deeptutor.api.routers import unified_ws as unified_ws_router
 
