@@ -2,18 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
-import { appHomeForRole, googleLoginUrl, login } from "@/lib/auth-api";
+import { googleLoginUrl, login, postAuthRedirect, type PublicRole } from "@/lib/auth-api";
+import RolePicker from "./RolePicker";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [googleRole, setGoogleRole] = useState<PublicRole>("teacher");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const nextPath = searchParams.get("next");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -26,7 +30,7 @@ export default function LoginForm() {
         password,
       });
       setUser(result.user);
-      router.push(appHomeForRole(result.user.role));
+      router.push(postAuthRedirect(result.user.role, nextPath));
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Không thể đăng nhập.");
     } finally {
@@ -69,12 +73,16 @@ export default function LoginForm() {
         <Button type="submit" loading={submitting} className="w-full justify-center rounded-2xl py-3">
           Đăng nhập / Sign in
         </Button>
+        <div className="space-y-3 rounded-[28px] border border-[rgba(10,21,48,0.08)] bg-[#f6f8fc] p-4">
+          <p className="text-sm font-semibold text-[#0a1530]">Vai trò cho lần đầu đăng nhập Google</p>
+          <RolePicker selectedRole={googleRole} onSelect={setGoogleRole} />
+        </div>
         <Button
           type="button"
           variant="secondary"
           className="w-full justify-center rounded-2xl py-3"
           onClick={() => {
-            window.location.assign(googleLoginUrl("student"));
+            window.location.assign(googleLoginUrl(googleRole, nextPath));
           }}
         >
           Tiếp tục với Google / Continue with Google

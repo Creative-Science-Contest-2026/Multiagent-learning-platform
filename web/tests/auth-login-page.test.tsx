@@ -3,11 +3,16 @@ import { describe, expect, it, vi } from "vitest";
 
 const push = vi.fn();
 const login = vi.fn();
-const googleLoginUrl = vi.fn((role?: string) => `/api/v1/auth/google/start?role=${role ?? "student"}`);
-const appHomeForRole = vi.fn((role: string) => `/${role}`);
+const googleLoginUrl = vi.fn(
+  (role?: string, nextPath?: string | null) =>
+    `/api/v1/auth/google/start?role=${role ?? "student"}${nextPath ? `&next=${encodeURIComponent(nextPath)}` : ""}`,
+);
+const postAuthRedirect = vi.fn((role: string, nextPath?: string | null) => nextPath || `/${role}`);
+const searchParams = new URLSearchParams("next=/dashboard");
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
+  useSearchParams: () => searchParams,
 }));
 
 vi.mock("../lib/auth-api", async () => {
@@ -16,12 +21,12 @@ vi.mock("../lib/auth-api", async () => {
     ...actual,
     login,
     googleLoginUrl,
-    appHomeForRole,
+    postAuthRedirect,
   };
 });
 
 describe("login page", () => {
-  it("renders email/password login and a Google CTA", async () => {
+  it("returns the user to the requested page and forwards Google role selection", async () => {
     login.mockResolvedValue({
       user: {
         id: "teacher-1",
@@ -36,6 +41,7 @@ describe("login page", () => {
     render(<LoginPage />);
 
     expect(screen.getByRole("button", { name: /tiếp tục với google \/ continue with google/i })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /giáo viên \/ teacher/i }));
 
     fireEvent.change(screen.getByLabelText(/^email$/i), {
       target: { value: "teacher@example.com" },
@@ -51,6 +57,21 @@ describe("login page", () => {
         password: "StrongPass123!",
       });
     });
-    expect(push).toHaveBeenCalledWith("/teacher");
-  });
+    expect(postAuthRedirect).toHaveBeenCalledWith("teacher", "/dashboard");
+    expect(push).toHaveBeenCalledWith("/dashboard");
+
+    const originalLocation = window.location;
+    const assignSpy = vi.fn();
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { ...originalLocation, assign: assignSpy },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /tiếp tục với google \/ continue with google/i }));
+    expect(googleLoginUrl).toHaveBeenCalledWith("teacher", "/dashboard");
+    expect(assignSpy).toHaveBeenCalledWith("/api/v1/auth/google/start?role=teacher&next=%2Fdashboard");
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: originalLocation,
+    });
+  }, 10000);
 });

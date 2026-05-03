@@ -45,8 +45,24 @@ export function appHomeForRole(role: AppRole): string {
   return `/${role}`;
 }
 
-export function googleLoginUrl(role: PublicRole = "student"): string {
-  return apiUrl(`/api/v1/auth/google/start?role=${role}`);
+export function postAuthRedirect(role: AppRole, nextPath?: string | null): string {
+  const candidate = (nextPath ?? "").trim();
+  if (!candidate.startsWith("/") || candidate.startsWith("//")) {
+    return appHomeForRole(role);
+  }
+  if (role === "student" && !candidate.startsWith("/student")) {
+    return appHomeForRole(role);
+  }
+  return candidate;
+}
+
+export function googleLoginUrl(role: PublicRole = "student", nextPath?: string | null): string {
+  const query = new URLSearchParams({ role });
+  const normalizedNext = (nextPath ?? "").trim();
+  if (normalizedNext.startsWith("/") && !normalizedNext.startsWith("//")) {
+    query.set("next", normalizedNext);
+  }
+  return apiUrl(`/api/v1/auth/google/start?${query.toString()}`);
 }
 
 export async function signup(payload: {

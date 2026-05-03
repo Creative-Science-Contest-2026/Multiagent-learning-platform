@@ -9,6 +9,7 @@
 - binds learning-session list/get/rename/delete behavior to `owner_user_id`
 - enforces session ownership on assessment review, rubric review, and quiz-result write endpoints so review flows no longer bypass the auth boundary
 - makes the auth session cookie production-configurable for `secure`, `samesite`, and `max-age` instead of hardcoding demo defaults
+- preserves safe `next` redirects across login/signup and Google auth entry so protected teacher surfaces now bounce users back to the route they originally requested
 - adds public auth routes, recovery/verification pages, and role-specific `/teacher`, `/student`, and `/admin` shells in the approved frontend auth scope
 - upgrades `/teacher` and `/student` from placeholder shells into role hubs that link into the current teacher-first and student-facing routes
 - gates the legacy teacher-first `(workspace)` and `(utility)` shells behind authenticated teacher/admin access
@@ -23,6 +24,7 @@ flowchart TD
   Login --> AuthAPI["/api/v1/auth"]
   Signup --> AuthAPI
   Recovery --> AuthAPI
+  Login --> NextRedirect["Safe next redirect + Google role selection"]
   AuthAPI --> Users["PostgreSQL users + credentials + oauth identities"]
   AuthAPI --> Sessions["HttpOnly deeptutor_session"]
   AuthAPI --> OneTimeTokens["Password-reset + email-verification tokens"]
@@ -33,6 +35,8 @@ flowchart TD
   Me --> TeacherShell["/teacher"]
   Me --> StudentShell["/student"]
   Me --> AdminShell["/admin"]
+  NextRedirect --> TeacherShell
+  NextRedirect --> StudentShell
   TeacherShell --> TeacherHub["Knowledge · Dashboard · Agents entry links"]
   StudentShell --> StudentHub["Playground · Student progress · Docs entry links"]
   Me --> TeacherGate["TeacherSurfaceGate for legacy shells"]

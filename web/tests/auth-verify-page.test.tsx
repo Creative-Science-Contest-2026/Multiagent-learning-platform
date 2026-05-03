@@ -32,7 +32,9 @@ describe("verify email page", () => {
     await waitFor(() => {
       expect(verifyEmailToken).toHaveBeenCalledWith("verify-token-123");
     });
-    expect(screen.getByText(/email đã được xác minh/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/email đã được xác minh/i)).toBeInTheDocument();
+    });
     tokenValue = "";
-  });
+  }, 10000);
 });

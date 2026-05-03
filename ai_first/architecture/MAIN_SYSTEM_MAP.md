@@ -50,6 +50,7 @@ flowchart TD
   Product --> IntroduceDocs["Public Introduce Docs Surface"]
   PublicAuth --> AuthRoutes["/login · /signup · /forgot-password · /reset-password · /verify-email"]
   PublicAuth --> RoleChoice["Role-first public entry: teacher | student"]
+  PublicAuth --> AuthReturnFlow["Safe next redirect + Google first-login role selection"]
   PublicAuth --> RoleShells["Post-login shells: /teacher · /student · /admin"]
   RoleShells --> TeacherHub["Teacher hub links to knowledge · dashboard · agents"]
   RoleShells --> StudentHub["Student hub links to playground · student progress · docs"]
@@ -248,6 +249,7 @@ flowchart TD
   AuthAPI --> AdminUsersRouter["/api/v1/admin/users"]
   AuthRouter --> SessionCookie["Opaque HttpOnly deeptutor_session cookie"]
   AuthRouter --> GoogleOAuth["Google OAuth start + callback"]
+  GoogleOAuth --> OAuthState["Role + safe next-path state relay"]
   AuthRouter --> CurrentUser["Current-user contract for role-aware shells"]
   AuthRouter --> AuthMailer["SMTP reset/verify delivery seam + debug fallback"]
   MergeGates --> PRs

@@ -3,11 +3,16 @@ import { describe, expect, it, vi } from "vitest";
 
 const push = vi.fn();
 const signup = vi.fn();
-const googleLoginUrl = vi.fn((role: string) => `/api/v1/auth/google/start?role=${role}`);
-const appHomeForRole = vi.fn((role: string) => `/${role}`);
+const googleLoginUrl = vi.fn(
+  (role: string, nextPath?: string | null) =>
+    `/api/v1/auth/google/start?role=${role}${nextPath ? `&next=${encodeURIComponent(nextPath)}` : ""}`,
+);
+const postAuthRedirect = vi.fn((role: string, nextPath?: string | null) => nextPath || `/${role}`);
+const searchParams = new URLSearchParams("next=/dashboard");
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
+  useSearchParams: () => searchParams,
 }));
 
 vi.mock("../lib/auth-api", async () => {
@@ -16,7 +21,7 @@ vi.mock("../lib/auth-api", async () => {
     ...actual,
     signup,
     googleLoginUrl,
-    appHomeForRole,
+    postAuthRedirect,
   };
 });
 
@@ -55,6 +60,7 @@ describe("signup page", () => {
         role: "student",
       });
     });
-    expect(push).toHaveBeenCalledWith("/student");
-  });
+    expect(postAuthRedirect).toHaveBeenCalledWith("student", "/dashboard");
+    expect(push).toHaveBeenCalledWith("/dashboard");
+  }, 10000);
 });

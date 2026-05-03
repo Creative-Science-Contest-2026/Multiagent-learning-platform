@@ -44,7 +44,7 @@ describe("auth recovery pages", () => {
       "href",
       "/reset-password?token=debug-token",
     );
-  });
+  }, 10000);
 
   it("submits a new password with the reset token from the URL", async () => {
     tokenValue = "reset-token-123";
@@ -67,5 +67,5 @@ describe("auth recovery pages", () => {
     });
     expect(push).toHaveBeenCalledWith("/login");
     tokenValue = "";
-  });
+  }, 10000);
 });

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from email.message import EmailMessage
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 
@@ -130,6 +131,48 @@ def test_google_start_redirects_to_provider(tmp_path, monkeypatch: pytest.Monkey
 
     assert response.status_code in {302, 307}
     assert "accounts.google.com" in response.headers["location"]
+
+
+def test_google_start_preserves_safe_next_path_in_state(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        response = client.get(
+            "/api/v1/auth/google/start?role=teacher&next=%2Fdashboard",
+            follow_redirects=False,
+        )
+
+    assert response.status_code in {302, 307}
+    query = parse_qs(urlparse(response.headers["location"]).query)
+    assert '"role":"teacher"' in query["state"][0]
+    assert '"next":"/dashboard"' in query["state"][0]
+
+
+def test_google_callback_redirects_to_requested_next_path_for_teacher(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services.auth.google_oauth import GoogleIdentity
+
+    async def _fake_exchange(_code: str, _settings) -> GoogleIdentity:
+        return GoogleIdentity(
+            subject="google-subject-1",
+            email="teacher@example.com",
+            name="Teacher One",
+        )
+
+    monkeypatch.setattr(
+        "deeptutor.api.routers.auth.exchange_google_code_for_identity",
+        _fake_exchange,
+    )
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        response = client.get(
+            '/api/v1/auth/google/callback?code=abc123&state={"role":"teacher","next":"/dashboard"}',
+            follow_redirects=False,
+        )
+
+    assert response.status_code in {302, 307}
+    assert response.headers["location"] == "/dashboard"
+    assert "deeptutor_session=" in response.headers.get("set-cookie", "")
 
 
 def test_forgot_password_is_generic_and_reset_token_changes_password(

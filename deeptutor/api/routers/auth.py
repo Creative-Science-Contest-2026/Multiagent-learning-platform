@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from logging import getLogger
 from urllib.parse import urlencode
@@ -88,6 +89,45 @@ def _build_public_auth_url(request: Request, path: str, token: str) -> str:
     base_url = _public_app_url(request)
     query = urlencode({"token": token})
     return f"{base_url}{path}?{query}"
+
+
+def _normalize_next_path(candidate: object, *, role: str) -> str | None:
+    next_path = str(candidate or "").strip()
+    if not next_path.startswith("/") or next_path.startswith("//"):
+        return None
+    if role == "student" and not next_path.startswith("/student"):
+        return None
+    return next_path
+
+
+def _post_auth_redirect(role: str, next_path: object = "") -> str:
+    normalized = _normalize_next_path(next_path, role=role)
+    if normalized:
+        return normalized
+    return f"/{role}"
+
+
+def _encode_google_state(role: str, next_path: str = "") -> str:
+    payload: dict[str, str] = {"role": role}
+    normalized = _normalize_next_path(next_path, role=role)
+    if normalized:
+        payload["next"] = normalized
+    return json.dumps(payload, separators=(",", ":"))
+
+
+def _decode_google_state(raw_state: str) -> tuple[str, str | None]:
+    state = raw_state.strip()
+    if not state:
+        return "student", None
+    try:
+        payload = json.loads(state)
+    except json.JSONDecodeError:
+        role = state.lower()
+        return (role if role in _PUBLIC_SIGNUP_ROLES else "student"), None
+    role = str(payload.get("role", "student")).strip().lower()
+    if role not in _PUBLIC_SIGNUP_ROLES:
+        role = "student"
+    return role, _normalize_next_path(payload.get("next"), role=role)
 
 
 def _debug_token_payload(flow: str, token: str | None) -> dict[str, str]:
@@ -256,12 +296,12 @@ def verify_email(
 
 
 @router.get("/google/start")
-def google_start(role: str = "student"):
+def google_start(role: str = "student", next: str = ""):
     normalized_role = role.strip().lower() or "student"
     if normalized_role not in _PUBLIC_SIGNUP_ROLES:
         raise HTTPException(status_code=400, detail="Unsupported signup role")
     settings = get_google_oauth_settings()
-    authorize_url = build_google_authorize_url(settings, state=normalized_role)
+    authorize_url = build_google_authorize_url(settings, state=_encode_google_state(normalized_role, next))
     return RedirectResponse(authorize_url)
 
 
@@ -275,9 +315,7 @@ async def google_callback(
 ):
     if not code.strip():
         raise HTTPException(status_code=400, detail="Missing Google authorization code")
-    role = state.strip().lower() or "student"
-    if role not in _PUBLIC_SIGNUP_ROLES:
-        role = "student"
+    role, next_path = _decode_google_state(state)
     settings = get_google_oauth_settings()
     try:
         identity = await exchange_google_code_for_identity(code.strip(), settings)
@@ -294,6 +332,6 @@ async def google_callback(
         user_agent=request.headers.get("user-agent"),
         ip_address=request.client.host if request.client else None,
     )
-    redirect = RedirectResponse(url=f"/{user['role']}", status_code=302)
+    redirect = RedirectResponse(url=_post_auth_redirect(str(user["role"]), next_path), status_code=302)
     _set_auth_cookie(redirect, session_secret)
     return redirect

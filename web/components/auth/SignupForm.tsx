@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
-import { appHomeForRole, googleLoginUrl, signup, type PublicRole } from "@/lib/auth-api";
+import { googleLoginUrl, postAuthRedirect, signup, type PublicRole } from "@/lib/auth-api";
 import RolePicker from "./RolePicker";
 
 export default function SignupForm({ initialRole = "teacher" }: { initialRole?: PublicRole }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setUser } = useAuth();
   const [role, setRole] = useState<PublicRole>(initialRole);
   const [displayName, setDisplayName] = useState("");
@@ -16,6 +17,7 @@ export default function SignupForm({ initialRole = "teacher" }: { initialRole?: 
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const nextPath = searchParams.get("next");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,7 +32,7 @@ export default function SignupForm({ initialRole = "teacher" }: { initialRole?: 
         role,
       });
       setUser(result.user);
-      router.push(appHomeForRole(result.user.role));
+      router.push(postAuthRedirect(result.user.role, nextPath));
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Không thể tạo tài khoản.");
     } finally {
@@ -92,7 +94,7 @@ export default function SignupForm({ initialRole = "teacher" }: { initialRole?: 
           variant="secondary"
           className="w-full justify-center rounded-2xl py-3"
           onClick={() => {
-            window.location.assign(googleLoginUrl(role));
+            window.location.assign(googleLoginUrl(role, nextPath));
           }}
         >
           Tiếp tục với Google / Continue with Google
