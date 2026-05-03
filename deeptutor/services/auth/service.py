@@ -145,7 +145,7 @@ class AuthService:
                 for user in rows
             ]
 
-    def request_password_reset(self, *, email: str) -> str | None:
+    def request_password_reset(self, *, email: str) -> dict[str, str] | None:
         normalized_email = email.strip().lower()
         token = mint_session_secret()
         with self._session() as session:
@@ -160,7 +160,11 @@ class AuthService:
                 )
             )
             session.commit()
-            return token
+            return {
+                "token": token,
+                "email": user.email,
+                "display_name": user.display_name,
+            }
 
     def reset_password(self, *, token: str, new_password: str) -> bool:
         token_hash = hash_session_secret(token.strip())
@@ -185,7 +189,7 @@ class AuthService:
             session.commit()
             return True
 
-    def issue_email_verification(self, *, user_id: str) -> str | None:
+    def issue_email_verification(self, *, user_id: str) -> dict[str, str] | None:
         token = mint_session_secret()
         with self._session() as session:
             user = session.get(User, user_id)
@@ -199,7 +203,11 @@ class AuthService:
                 )
             )
             session.commit()
-            return token
+            return {
+                "token": token,
+                "email": user.email,
+                "display_name": user.display_name,
+            }
 
     def verify_email(self, *, token: str) -> bool:
         token_hash = hash_session_secret(token.strip())

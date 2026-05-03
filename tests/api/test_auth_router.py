@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from email.message import EmailMessage
+
 import pytest
 
 try:
@@ -58,6 +60,32 @@ def test_signup_sets_session_cookie_for_teacher(tmp_path, monkeypatch: pytest.Mo
     assert response.status_code == 200
     assert response.json()["user"]["role"] == "teacher"
     assert "deeptutor_session=" in response.headers.get("set-cookie", "")
+
+
+def test_signup_can_issue_secure_cookie_when_configured(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("DEEPTUTOR_AUTH_COOKIE_SECURE", "1")
+    monkeypatch.setenv("DEEPTUTOR_AUTH_COOKIE_SAMESITE", "strict")
+    monkeypatch.setenv("DEEPTUTOR_AUTH_COOKIE_MAX_AGE_SECONDS", "7200")
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Teacher Two",
+                "email": "teacher2@example.com",
+                "password": "StrongPass123!",
+                "role": "teacher",
+            },
+        )
+
+    assert response.status_code == 200
+    set_cookie = response.headers.get("set-cookie", "")
+    assert "Secure" in set_cookie
+    assert "SameSite=strict" in set_cookie
+    assert "Max-Age=7200" in set_cookie
 
 
 def test_login_returns_current_user_payload(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -188,3 +216,79 @@ def test_send_verification_requires_auth_and_verify_email_marks_user_verified(
     assert me_response.status_code == 200
     assert me_response.json()["user"]["email"] == "student@example.com"
     assert me_response.json()["user"]["email_verified_at"] is not None
+
+
+def test_forgot_password_sends_email_when_smtp_is_configured(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sent_messages: list[EmailMessage] = []
+
+    def _capture_send(_settings, message: EmailMessage) -> None:
+        sent_messages.append(message)
+
+    monkeypatch.setenv("DEEPTUTOR_AUTH_DEBUG_TOKENS", "0")
+    monkeypatch.setenv("DEEPTUTOR_AUTH_SMTP_HOST", "smtp.example.com")
+    monkeypatch.setenv("DEEPTUTOR_AUTH_FROM_ADDRESS", "noreply@example.com")
+    monkeypatch.setenv("DEEPTUTOR_PUBLIC_APP_URL", "https://app.example.com")
+    monkeypatch.setattr("deeptutor.api.routers.auth.send_auth_email", _capture_send)
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        signup_response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Teacher One",
+                "email": "teacher@example.com",
+                "password": "StrongPass123!",
+                "role": "teacher",
+            },
+        )
+        assert signup_response.status_code == 200
+        client.cookies.clear()
+
+        forgot_response = client.post(
+            "/api/v1/auth/forgot-password",
+            json={"email": "teacher@example.com"},
+        )
+
+    assert forgot_response.status_code == 200
+    assert forgot_response.json() == {"ok": True}
+    assert len(sent_messages) == 1
+    assert sent_messages[0]["To"] == "teacher@example.com"
+    assert "https://app.example.com/reset-password?token=" in sent_messages[0].get_content()
+
+
+def test_send_verification_sends_email_when_smtp_is_configured(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sent_messages: list[EmailMessage] = []
+
+    def _capture_send(_settings, message: EmailMessage) -> None:
+        sent_messages.append(message)
+
+    monkeypatch.setenv("DEEPTUTOR_AUTH_DEBUG_TOKENS", "0")
+    monkeypatch.setenv("DEEPTUTOR_AUTH_SMTP_HOST", "smtp.example.com")
+    monkeypatch.setenv("DEEPTUTOR_AUTH_FROM_ADDRESS", "noreply@example.com")
+    monkeypatch.setenv("DEEPTUTOR_PUBLIC_APP_URL", "https://app.example.com")
+    monkeypatch.setattr("deeptutor.api.routers.auth.send_auth_email", _capture_send)
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        signup_response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Student One",
+                "email": "student@example.com",
+                "password": "StrongPass123!",
+                "role": "student",
+            },
+        )
+        assert signup_response.status_code == 200
+
+        send_response = client.post("/api/v1/auth/send-verification")
+
+    assert send_response.status_code == 200
+    assert send_response.json() == {"ok": True}
+    assert len(sent_messages) == 1
+    assert sent_messages[0]["To"] == "student@example.com"
+    assert "https://app.example.com/verify-email?token=" in sent_messages[0].get_content()

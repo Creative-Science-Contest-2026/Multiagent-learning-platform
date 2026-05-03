@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+from logging import getLogger
+from urllib.parse import urlencode
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -15,6 +17,10 @@ from deeptutor.services.auth.deps import get_current_user
 from deeptutor.services.auth.google_oauth import build_google_authorize_url
 from deeptutor.services.auth.google_oauth import exchange_google_code_for_identity
 from deeptutor.services.auth.google_oauth import get_google_oauth_settings
+from deeptutor.services.auth.mailer import AuthEmailDeliverySettings
+from deeptutor.services.auth.mailer import build_password_reset_email
+from deeptutor.services.auth.mailer import build_verification_email
+from deeptutor.services.auth.mailer import send_auth_email
 from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.auth.schemas import ForgotPasswordRequest
 from deeptutor.services.auth.schemas import LoginRequest
@@ -24,8 +30,36 @@ from deeptutor.services.auth.schemas import VerifyEmailRequest
 from deeptutor.services.auth.service import AuthService
 
 router = APIRouter()
+logger = getLogger(__name__)
 
 _PUBLIC_SIGNUP_ROLES = {"teacher", "student"}
+
+
+def _bool_env(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _cookie_secure() -> bool:
+    return _bool_env("DEEPTUTOR_AUTH_COOKIE_SECURE", default=False)
+
+
+def _cookie_samesite() -> str:
+    value = os.getenv("DEEPTUTOR_AUTH_COOKIE_SAMESITE", "lax").strip().lower()
+    if value not in {"lax", "strict", "none"}:
+        return "lax"
+    return value
+
+
+def _cookie_max_age_seconds() -> int:
+    raw = os.getenv("DEEPTUTOR_AUTH_COOKIE_MAX_AGE_SECONDS", str(14 * 24 * 60 * 60)).strip()
+    try:
+        value = int(raw)
+    except ValueError:
+        return 14 * 24 * 60 * 60
+    return value if value > 0 else 14 * 24 * 60 * 60
 
 
 def _set_auth_cookie(response: Response, session_secret: str) -> None:
@@ -33,15 +67,33 @@ def _set_auth_cookie(response: Response, session_secret: str) -> None:
         key=AUTH_COOKIE_NAME,
         value=session_secret,
         httponly=True,
-        samesite="lax",
-        secure=False,
+        samesite=_cookie_samesite(),
+        secure=_cookie_secure(),
+        max_age=_cookie_max_age_seconds(),
     )
+
+
+def _debug_tokens_enabled() -> bool:
+    return os.getenv("DEEPTUTOR_AUTH_DEBUG_TOKENS", "1").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _public_app_url(request: Request) -> str:
+    configured = os.getenv("DEEPTUTOR_PUBLIC_APP_URL", "").strip().rstrip("/")
+    if configured:
+        return configured
+    return str(request.base_url).rstrip("/")
+
+
+def _build_public_auth_url(request: Request, path: str, token: str) -> str:
+    base_url = _public_app_url(request)
+    query = urlencode({"token": token})
+    return f"{base_url}{path}?{query}"
 
 
 def _debug_token_payload(flow: str, token: str | None) -> dict[str, str]:
     if not token:
         return {}
-    if os.getenv("DEEPTUTOR_AUTH_DEBUG_TOKENS", "1").strip().lower() not in {"1", "true", "yes", "on"}:
+    if not _debug_tokens_enabled():
         return {}
     if flow == "verify-email":
         return {
@@ -52,6 +104,44 @@ def _debug_token_payload(flow: str, token: str | None) -> dict[str, str]:
         "debug_token": token,
         "debug_url": f"/reset-password?token={token}",
     }
+
+
+def _deliver_password_reset_email(request: Request, reset_info: dict[str, str] | None) -> None:
+    if reset_info is None:
+        return
+    settings = AuthEmailDeliverySettings.from_env()
+    if not settings.is_configured():
+        return
+    message = build_password_reset_email(
+        to_email=reset_info["email"],
+        display_name=reset_info["display_name"],
+        reset_url=_build_public_auth_url(request, "/reset-password", reset_info["token"]),
+        from_address=settings.from_address,
+        from_name=settings.from_name,
+    )
+    try:
+        send_auth_email(settings, message)
+    except Exception:  # pragma: no cover - logs only, privacy-preserving flow stays generic
+        logger.exception("Password reset email delivery failed")
+
+
+def _deliver_verification_email(request: Request, verification_info: dict[str, str] | None) -> None:
+    if verification_info is None:
+        return
+    settings = AuthEmailDeliverySettings.from_env()
+    if not settings.is_configured():
+        return
+    message = build_verification_email(
+        to_email=verification_info["email"],
+        display_name=verification_info["display_name"],
+        verify_url=_build_public_auth_url(request, "/verify-email", verification_info["token"]),
+        from_address=settings.from_address,
+        from_name=settings.from_name,
+    )
+    try:
+        send_auth_email(settings, message)
+    except Exception:  # pragma: no cover - logs only, privacy-preserving flow stays generic
+        logger.exception("Email verification delivery failed")
 
 
 @router.post("/signup")
@@ -122,11 +212,13 @@ def me(current_user: AuthenticatedUser = Depends(get_current_user)):
 @router.post("/forgot-password")
 def forgot_password(
     payload: ForgotPasswordRequest,
+    request: Request,
     service: AuthService = Depends(get_auth_service),
 ):
-    token = service.request_password_reset(email=payload.email)
+    reset_info = service.request_password_reset(email=payload.email)
+    _deliver_password_reset_email(request, reset_info)
     body: dict[str, object] = {"ok": True}
-    body.update(_debug_token_payload("reset-password", token))
+    body.update(_debug_token_payload("reset-password", reset_info["token"] if reset_info else None))
     return body
 
 
@@ -142,12 +234,14 @@ def reset_password(
 
 @router.post("/send-verification")
 def send_verification(
+    request: Request,
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: AuthService = Depends(get_auth_service),
 ):
-    token = service.issue_email_verification(user_id=current_user.id)
+    verification_info = service.issue_email_verification(user_id=current_user.id)
+    _deliver_verification_email(request, verification_info)
     body: dict[str, object] = {"ok": True}
-    body.update(_debug_token_payload("verify-email", token))
+    body.update(_debug_token_payload("verify-email", verification_info["token"] if verification_info else None))
     return body
 
 

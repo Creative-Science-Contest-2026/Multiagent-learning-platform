@@ -100,13 +100,25 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - backend-owned auth domain, PostgreSQL identity foundation, and owned learning sessions
 - Chosen approach:
   - FastAPI-owned auth and identity, Next.js as a client
+- Current auth-delivery behavior:
+  - password reset and email verification now issue real backend tokens and can send SMTP email when configured, while preserving explicit debug-link behavior for local development and tests
+- Intended auth-delivery change:
+  - add a bounded SMTP-backed auth mailer seam that sends reset and verification emails when configured, while preserving explicit debug-link behavior for local development and tests
+- Candidate approaches:
+  - reuse the full `tutorbot` email channel implementation directly
+  - add ad-hoc `smtplib` calls inside auth routers
+  - chosen: add a focused `deeptutor/services/auth/mailer.py` module with SMTP settings, message builders, and a small delivery API used by the auth router
+- Chosen reason:
+  - this keeps auth delivery isolated from the larger tutorbot subsystem, avoids scattered mail logic in routers, and stays dependency-light by reusing stdlib email/SMTP primitives
 
 ## Required Code Reading
 
 - `deeptutor/api/main.py`
+- `deeptutor/api/routers/auth.py`
 - `deeptutor/api/routers/sessions.py`
 - `deeptutor/services/session/sqlite_store.py`
 - `deeptutor/services/path_service.py`
+- `deeptutor/tutorbot/channels/email.py`
 - `pyproject.toml`
 - `requirements/server.txt`
 
@@ -118,6 +130,11 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - admin and owned-session backend enforcement exists
 - current stop condition for frontend:
   - stay inside the decomposed auth/frontend-gating scope and do not broaden into unrelated `web/**`
+- current stop condition for delivery:
+  - SMTP-configured environments send reset/verification emails through the new auth mailer seam
+  - local/debug environments still expose explicit debug links for development and tests
+- current stop condition for authorization depth inside owned session scope:
+  - assessment review read/write endpoints and quiz-result writes enforce the authenticated owner boundary, not only the session id
 
 ## Required Tests
 

@@ -1,6 +1,6 @@
 # Main System Map
 
-Last updated: 2026-05-02
+Last updated: 2026-05-03
 
 This is the required top-level Mermaid map for the project. Any PR that adds, removes, or materially changes product features, capabilities, tools, routers, routes, data models, or AI-first workflow must update this map.
 
@@ -176,6 +176,7 @@ flowchart TD
   AssessmentReview --> ReviewRoute["/dashboard/assessments/[sessionId]"]
   AssessmentReview --> ReviewAPI["/api/v1/sessions/{session_id}/assessment-review"]
   AssessmentReview --> AssessmentRubricAPI["POST/PATCH /api/v1/sessions/{session_id}/assessment-rubric-review"]
+  AssessmentReview --> QuizResultsAPI["POST /api/v1/sessions/{session_id}/quiz-results"]
   AssessmentReview --> OfflineQuizQueue["Browser offline quiz-result sync queue"]
   AssessmentReview --> ProgressIndicator["ProgressIndicator Component"]
   AssessmentReview --> LearningJourney["LearningJourneySummary Component"]
@@ -183,6 +184,9 @@ flowchart TD
   AssessmentReview --> TimeMetrics["Timing metrics: total + average + per-question response time"]
   AssessmentReview --> AssessErrorBoundary["Route Error Boundary: /dashboard/assessments/error.tsx"]
   ReviewAPI --> QuizTranscript["[Quiz Performance] transcript with optional time: Ns suffix"]
+  ReviewAPI --> ReviewOwnership["Owner-enforced review boundary via current_user.id"]
+  AssessmentRubricAPI --> ReviewOwnership
+  QuizResultsAPI --> ReviewOwnership
   ProgressIndicator --> ScoreViz["Score Progress Bar + Recommendations"]
   LearningJourney --> TopicBadges["Mastered/Recommended Topics"]
   Marketplace --> MarketErrorBoundary["Route Error Boundary: /marketplace/error.tsx"]
@@ -245,6 +249,7 @@ flowchart TD
   AuthRouter --> SessionCookie["Opaque HttpOnly deeptutor_session cookie"]
   AuthRouter --> GoogleOAuth["Google OAuth start + callback"]
   AuthRouter --> CurrentUser["Current-user contract for role-aware shells"]
+  AuthRouter --> AuthMailer["SMTP reset/verify delivery seam + debug fallback"]
   MergeGates --> PRs
   MergeGates --> CI
   MergeGates --> Reviews
