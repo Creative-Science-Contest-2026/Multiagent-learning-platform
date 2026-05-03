@@ -17,7 +17,7 @@
 - adds public auth routes, recovery/verification pages, and role-specific `/teacher`, `/student`, and `/admin` shells in the approved frontend auth scope
 - upgrades `/teacher` and `/student` from placeholder shells into role hubs that link into the current teacher-first and student-facing routes
 - gates the legacy teacher-first `(workspace)` and `(utility)` shells behind authenticated teacher/admin access
-- extends that teacher/admin gate into backend teacher-first routers: `dashboard`, `knowledge`, and `marketplace`
+- extends that teacher/admin gate into backend teacher-first routers: `dashboard`, `knowledge`, `marketplace`, and `assessment`
 - scopes dashboard evidence rows by `owner_user_id` so teacher actions, acknowledgements, feedback, overrides, and intervention assignments no longer bleed across accounts
 - rebuilds dashboard observation/state persistence onto owner-aware composite keys so repeated `student_id` and `observation_id` values no longer collide across teachers inside the SQLite learning-session store
 - propagates that owner scope into tutoring turn runtime and context building, so live tutoring observations and retrieved student-state context no longer regress back to anonymous storage after authentication
@@ -65,6 +65,7 @@ flowchart TD
   TeacherFirstAPIs --> ScopedSignals
   TeacherFirstAPIs --> KnowledgeDefaults["user-specific knowledge default + KB ownership metadata"]
   TeacherFirstAPIs --> MarketplaceImports["per-user imported pack copies"]
+  TeacherFirstAPIs --> AssessmentScope["assessment recommend + diagnosis owner-scoped"]
   AccountLifecycle --> ActiveOnlyAuth["Only active accounts may login or resume sessions"]
 ```
 
@@ -78,5 +79,6 @@ flowchart TD
 - dashboard analytics and teacher-evidence mutations are now teacher-owner scoped for non-admin users
 - dashboard observation rollups and persisted student-state snapshots are now teacher-owner scoped as well, so two teachers can reuse the same `student_id` without sharing diagnosis residue
 - live tutoring turns now persist observations and retrieve student-state context under the owning session account, not the legacy anonymous bucket
+- assessment recommendation and diagnosis now use the same teacher/admin gate and owner-scoped signal store, so support-heavy diagnosis cannot be influenced by another teacher's sessions or tutoring evidence
 - `GET/PUT /api/v1/knowledge/default` is now per-user instead of global, and newly created/imported auth-era packs record `owner_user_id`, `owner_email`, and `owner_display_name`
 - unrelated `web/**` surfaces remain outside scope because this lane only owns the decomposed auth frontend subset

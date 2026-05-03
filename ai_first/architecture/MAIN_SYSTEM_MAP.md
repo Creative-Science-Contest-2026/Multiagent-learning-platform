@@ -102,7 +102,10 @@ flowchart TD
   AssessmentRecommendAPI --> RecommendEngine["Assessment Recommendation Engine"]
   RecommendEngine --> AssessmentSignals["Weak topics + score trend + KB context"]
   AssessmentDiagnosisAPI --> EvidenceExtractor["Observation extractor (assessment + tutoring runtime)"]
+  TeacherSurfaceAuth --> AssessmentRecommendAPI
+  TeacherSurfaceAuth --> AssessmentDiagnosisAPI
   EvidenceExtractor --> ObservationStore["SQLite observations + student_states (+ enriched rollups)"]
+  ObservationStore --> AssessmentOwnerScope["Teacher owner scope on assessment diagnosis + support signals"]
   ObservationStore --> DiagnosisEngine["Rule-first diagnosis + action selection"]
   DiagnosisEngine --> DiagnosisTaxonomy["Diagnosis taxonomy scoring: misconception patterns + state boosts"]
   DiagnosisEngine --> EvidenceGate["Evidence sufficiency gate: thin / stale / mixed"]

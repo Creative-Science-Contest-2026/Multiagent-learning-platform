@@ -39,6 +39,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/dashboard.py`
 - `deeptutor/api/routers/marketplace.py`
 - `deeptutor/api/routers/knowledge.py`
+- `deeptutor/api/routers/assessment.py`
 - `deeptutor/services/auth/**`
 - `deeptutor/services/db/**`
 - `deeptutor/services/session/**`
@@ -50,6 +51,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `tests/api/test_dashboard_router.py`
 - `tests/api/test_marketplace_router.py`
 - `tests/api/test_knowledge_router.py`
+- `tests/api/test_assessment_router.py`
 - `tests/services/auth/**`
 - `tests/services/session/test_owned_session_store.py`
 - `pyproject.toml`
@@ -124,9 +126,9 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - Intended admin account-lifecycle change:
   - allow admin to update owned user role/status from the roster, and enforce non-active account states in email-password login, session lookup, and Google auth entry
 - Current backend product-router behavior:
-  - `dashboard`, `knowledge`, and `marketplace` still expose teacher-first product data and mutations without authenticated role enforcement, and `dashboard` evidence rows are still global rather than bound to the authenticated owner
+  - `dashboard`, `knowledge`, `marketplace`, and `assessment` still expose teacher-first product data and mutations without authenticated role enforcement, and assessment/dashboard support signals are still global rather than bound to the authenticated owner
 - Intended backend product-router change:
-  - require authenticated `teacher` or `admin` access on the teacher-first backend routers, scope session-backed dashboard reads to the authenticated owner for teachers, scope dashboard evidence rows to the authenticated owner, and stamp/import knowledge-pack ownership metadata so new auth-era records stop leaking across users
+  - require authenticated `teacher` or `admin` access on the teacher-first backend routers, scope session-backed dashboard and assessment reads to the authenticated owner for teachers, scope assessment/dashboard evidence rows to the authenticated owner, and stamp/import knowledge-pack ownership metadata so new auth-era records stop leaking across users
 - Current dashboard-signal persistence behavior:
   - `observations` and `student_states` in the SQLite learning-session store still key only on `student_id` or `observation_id`, so repeated identifiers across teachers can collide or overwrite after multi-user auth lands
 - Intended dashboard-signal persistence change:
@@ -176,8 +178,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - current stop condition for authorization depth inside owned session scope:
   - assessment review read/write endpoints and quiz-result writes enforce the authenticated owner boundary, not only the session id
 - current stop condition for authorization depth across teacher-first product routers:
-  - `dashboard`, `knowledge`, and `marketplace` require authenticated `teacher` or `admin`
-  - teacher-scoped dashboard reads stop returning other users' sessions and evidence rows
+  - `dashboard`, `knowledge`, `marketplace`, and `assessment` require authenticated `teacher` or `admin`
+  - teacher-scoped dashboard and assessment reads stop returning other users' sessions and support signals
   - new imported or created knowledge-pack records carry auth-era ownership metadata for later filtering and audits
 
 ## Required Tests
