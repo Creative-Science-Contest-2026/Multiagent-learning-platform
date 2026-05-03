@@ -62,8 +62,20 @@ class MemoryService:
     def _memory_dir(self) -> Path:
         return self._path_service.get_memory_dir()
 
-    def _path(self, which: MemoryFile) -> Path:
-        return self._memory_dir / _FILENAMES[which]
+    @staticmethod
+    def _owner_slug(owner_user_id: str | None = None) -> str:
+        cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", str(owner_user_id or "").strip())
+        cleaned = cleaned.strip("._-")
+        return cleaned or "user"
+
+    def _owner_dir(self, owner_user_id: str | None = None) -> Path:
+        resolved_owner = str(owner_user_id or "").strip()
+        if not resolved_owner:
+            return self._memory_dir
+        return self._memory_dir / "users" / self._owner_slug(resolved_owner)
+
+    def _path(self, which: MemoryFile, owner_user_id: str | None = None) -> Path:
+        return self._owner_dir(owner_user_id) / _FILENAMES[which]
 
     def _migrate_legacy(self) -> None:
         """One-time migration from old memory.md to the two-file system."""
@@ -92,8 +104,8 @@ class MemoryService:
 
     # ── Read ──────────────────────────────────────────────────────────
 
-    def read_file(self, which: MemoryFile) -> str:
-        path = self._path(which)
+    def read_file(self, which: MemoryFile, owner_user_id: str | None = None) -> str:
+        path = self._path(which, owner_user_id)
         if not path.exists():
             return ""
         try:
@@ -101,14 +113,14 @@ class MemoryService:
         except Exception:
             return ""
 
-    def read_summary(self) -> str:
-        return self.read_file("summary")
+    def read_summary(self, owner_user_id: str | None = None) -> str:
+        return self.read_file("summary", owner_user_id)
 
-    def read_profile(self) -> str:
-        return self.read_file("profile")
+    def read_profile(self, owner_user_id: str | None = None) -> str:
+        return self.read_file("profile", owner_user_id)
 
-    def _file_updated_at(self, which: MemoryFile) -> str | None:
-        path = self._path(which)
+    def _file_updated_at(self, which: MemoryFile, owner_user_id: str | None = None) -> str | None:
+        path = self._path(which, owner_user_id)
         if not path.exists():
             return None
         try:
@@ -116,51 +128,60 @@ class MemoryService:
         except Exception:
             return None
 
-    def read_snapshot(self) -> MemorySnapshot:
+    def read_snapshot(self, owner_user_id: str | None = None) -> MemorySnapshot:
         return MemorySnapshot(
-            summary=self.read_summary(),
-            profile=self.read_profile(),
-            summary_updated_at=self._file_updated_at("summary"),
-            profile_updated_at=self._file_updated_at("profile"),
+            summary=self.read_summary(owner_user_id),
+            profile=self.read_profile(owner_user_id),
+            summary_updated_at=self._file_updated_at("summary", owner_user_id),
+            profile_updated_at=self._file_updated_at("profile", owner_user_id),
         )
 
     # ── Write ─────────────────────────────────────────────────────────
 
-    def write_file(self, which: MemoryFile, content: str) -> MemorySnapshot:
+    def write_file(
+        self,
+        which: MemoryFile,
+        content: str,
+        owner_user_id: str | None = None,
+    ) -> MemorySnapshot:
         normalized = str(content or "").strip()
-        path = self._path(which)
+        path = self._path(which, owner_user_id)
         path.parent.mkdir(parents=True, exist_ok=True)
         if not normalized:
             if path.exists():
                 path.unlink()
         else:
             path.write_text(normalized, encoding="utf-8")
-        return self.read_snapshot()
+        return self.read_snapshot(owner_user_id)
 
-    def write_memory(self, content: str) -> MemorySnapshot:
+    def write_memory(self, content: str, owner_user_id: str | None = None) -> MemorySnapshot:
         """Legacy compat: write to profile (primary editable file)."""
-        return self.write_file("profile", content)
+        return self.write_file("profile", content, owner_user_id)
 
-    def clear_file(self, which: MemoryFile) -> MemorySnapshot:
-        return self.write_file(which, "")
+    def clear_file(self, which: MemoryFile, owner_user_id: str | None = None) -> MemorySnapshot:
+        return self.write_file(which, "", owner_user_id)
 
-    def clear_memory(self) -> MemorySnapshot:
+    def clear_memory(self, owner_user_id: str | None = None) -> MemorySnapshot:
         for f in MEMORY_FILES:
-            path = self._path(f)
+            path = self._path(f, owner_user_id)
             if path.exists():
                 path.unlink()
-        return self.read_snapshot()
+        return self.read_snapshot(owner_user_id)
 
     # ── Context building (injected into LLM prompts) ─────────────────
 
-    def build_memory_context(self, max_chars: int = 4000) -> str:
+    def build_memory_context(
+        self,
+        max_chars: int = 4000,
+        owner_user_id: str | None = None,
+    ) -> str:
         parts: list[str] = []
 
-        profile = self.read_profile()
+        profile = self.read_profile(owner_user_id)
         if profile:
             parts.append(f"### User Profile\n{profile}")
 
-        summary = self.read_summary()
+        summary = self.read_summary(owner_user_id)
         if summary:
             parts.append(f"### Learning Context\n{summary}")
 
@@ -177,8 +198,8 @@ class MemoryService:
             f"{combined}"
         )
 
-    def get_preferences_text(self) -> str:
-        profile = self.read_profile()
+    def get_preferences_text(self, owner_user_id: str | None = None) -> str:
+        profile = self.read_profile(owner_user_id)
         return f"## User Profile\n{profile}" if profile else ""
 
     # ── Auto-refresh from conversation ────────────────────────────────
@@ -192,6 +213,7 @@ class MemoryService:
         capability: str = "",
         language: str = "en",
         timestamp: str = "",
+        owner_user_id: str | None = None,
     ) -> MemoryUpdateResult:
         if not user_message.strip() or not assistant_message.strip():
             return MemoryUpdateResult(content="", changed=False, updated_at=None)
@@ -204,10 +226,10 @@ class MemoryService:
             f"[Assistant]\n{assistant_message.strip()}"
         )
 
-        p_changed = await self._rewrite_one("profile", source, language)
-        s_changed = await self._rewrite_one("summary", source, language)
+        p_changed = await self._rewrite_one("profile", source, language, owner_user_id)
+        s_changed = await self._rewrite_one("summary", source, language, owner_user_id)
 
-        snap = self.read_snapshot()
+        snap = self.read_snapshot(owner_user_id)
         return MemoryUpdateResult(
             content=snap.profile,
             changed=p_changed or s_changed,
@@ -220,10 +242,11 @@ class MemoryService:
         *,
         language: str = "en",
         max_messages: int = 10,
+        owner_user_id: str | None = None,
     ) -> MemoryUpdateResult:
         target = (session_id or "").strip()
         if not target:
-            sessions = await self._store.list_sessions(limit=1)
+            sessions = await self._store.list_sessions(limit=1, owner_user_id=owner_user_id)
             if sessions:
                 target = str(sessions[0].get("session_id", "") or "")
 
@@ -247,7 +270,7 @@ class MemoryService:
         )
 
         cap = ""
-        sess = await self._store.get_session(target)
+        sess = await self._store.get_session(target, owner_user_id=owner_user_id)
         if sess:
             cap = str(sess.get("capability", "") or "")
 
@@ -257,10 +280,10 @@ class MemoryService:
             f"[Recent Transcript]\n{transcript}"
         )
 
-        p_changed = await self._rewrite_one("profile", source, language)
-        s_changed = await self._rewrite_one("summary", source, language)
+        p_changed = await self._rewrite_one("profile", source, language, owner_user_id)
+        s_changed = await self._rewrite_one("summary", source, language, owner_user_id)
 
-        snap = self.read_snapshot()
+        snap = self.read_snapshot(owner_user_id)
         return MemoryUpdateResult(
             content=snap.profile,
             changed=p_changed or s_changed,
@@ -269,9 +292,15 @@ class MemoryService:
 
     # ── LLM rewrite for individual files ──────────────────────────────
 
-    async def _rewrite_one(self, which: MemoryFile, source: str, language: str) -> bool:
+    async def _rewrite_one(
+        self,
+        which: MemoryFile,
+        source: str,
+        language: str,
+        owner_user_id: str | None = None,
+    ) -> bool:
         """Rewrite a single memory file. Returns True if changed."""
-        current = self.read_file(which)
+        current = self.read_file(which, owner_user_id)
         zh = str(language).lower().startswith("zh")
 
         if which == "profile":
@@ -295,7 +324,7 @@ class MemoryService:
         if raw == current:
             return False
 
-        self.write_file(which, raw)
+        self.write_file(which, raw, owner_user_id)
         return True
 
     @staticmethod

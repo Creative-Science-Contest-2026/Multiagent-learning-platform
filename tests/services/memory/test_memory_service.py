@@ -26,6 +26,19 @@ def test_memory_service_snapshot_is_empty_without_file(tmp_path) -> None:
     assert snapshot.profile_updated_at is None
 
 
+def test_memory_service_scopes_files_by_owner(tmp_path) -> None:
+    service = _make_service(tmp_path)
+
+    service.write_file("profile", "teacher profile", owner_user_id="teacher-1")
+    service.write_file("profile", "student profile", owner_user_id="student-1")
+
+    assert service.read_snapshot(owner_user_id="teacher-1").profile == "teacher profile"
+    assert service.read_snapshot(owner_user_id="student-1").profile == "student profile"
+    assert service.read_snapshot().profile == ""
+    assert service._path("profile", owner_user_id="teacher-1").exists()
+    assert service._path("profile", owner_user_id="student-1").exists()
+
+
 async def _no_change_stream(**_kwargs):
     yield "NO_CHANGE"
 
@@ -47,12 +60,16 @@ def test_memory_service_refresh_turn_writes_rewritten_document(monkeypatch, tmp_
             session_id="s1",
             capability="chat",
             language="en",
+            owner_user_id="teacher-1",
         )
     )
 
     assert result.changed is True
     assert "concise answers" in result.content
-    assert service._path("profile").exists() or service._path("summary").exists()
+    assert (
+        service._path("profile", owner_user_id="teacher-1").exists()
+        or service._path("summary", owner_user_id="teacher-1").exists()
+    )
 
 
 def test_memory_service_refresh_turn_skips_when_model_returns_no_change(
@@ -71,10 +88,11 @@ def test_memory_service_refresh_turn_skips_when_model_returns_no_change(
             session_id="s1",
             capability="chat",
             language="en",
+            owner_user_id="teacher-1",
         )
     )
 
     assert result.changed is False
     assert result.content == ""
-    assert not service._path("profile").exists()
-    assert not service._path("summary").exists()
+    assert not service._path("profile", owner_user_id="teacher-1").exists()
+    assert not service._path("summary", owner_user_id="teacher-1").exists()

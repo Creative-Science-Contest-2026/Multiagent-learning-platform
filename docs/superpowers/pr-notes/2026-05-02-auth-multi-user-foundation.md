@@ -21,6 +21,8 @@
 - scopes dashboard evidence rows by `owner_user_id` so teacher actions, acknowledgements, feedback, overrides, and intervention assignments no longer bleed across accounts
 - rebuilds dashboard observation/state persistence onto owner-aware composite keys so repeated `student_id` and `observation_id` values no longer collide across teachers inside the SQLite learning-session store
 - propagates that owner scope into tutoring turn runtime and context building, so live tutoring observations and retrieved student-state context no longer regress back to anonymous storage after authentication
+- moves lightweight `SUMMARY.md` / `PROFILE.md` memory into owner-specific storage, auth-gates `/api/v1/memory`, and binds runtime memory context/refresh writes to the authenticated actor instead of a global shared file pair
+- hardens the legacy `/api/v1/chat*` and `/api/v1/solve*` transports by requiring authenticated cookies on REST + websocket entrypoints and filtering their JSON session stores by `owner_user_id`
 - makes knowledge-pack default selection user-specific and stamps newly created/imported knowledge packs with auth-era ownership metadata
 - changes marketplace imports to create per-user imported copies, preventing two teachers from colliding on the same imported pack name
 
@@ -66,6 +68,12 @@ flowchart TD
   TeacherFirstAPIs --> KnowledgeDefaults["user-specific knowledge default + KB ownership metadata"]
   TeacherFirstAPIs --> MarketplaceImports["per-user imported pack copies"]
   TeacherFirstAPIs --> AssessmentScope["assessment recommend + diagnosis owner-scoped"]
+  Me --> MemoryAPI["/api/v1/memory auth-gated per user"]
+  MemoryAPI --> MemoryFiles["users/<owner>/SUMMARY.md + PROFILE.md"]
+  TurnRuntime --> MemoryFiles
+  Public --> LegacyChatSolve["Legacy /chat and /solve routes"]
+  LegacyChatSolve --> LegacySessionJSON["JSON session stores with owner_user_id"]
+  LegacySessionJSON --> AuthBoundary["Auth cookie required for REST + WS access"]
   AccountLifecycle --> ActiveOnlyAuth["Only active accounts may login or resume sessions"]
 ```
 
@@ -79,6 +87,8 @@ flowchart TD
 - dashboard analytics and teacher-evidence mutations are now teacher-owner scoped for non-admin users
 - dashboard observation rollups and persisted student-state snapshots are now teacher-owner scoped as well, so two teachers can reuse the same `student_id` without sharing diagnosis residue
 - live tutoring turns now persist observations and retrieve student-state context under the owning session account, not the legacy anonymous bucket
+- lightweight memory reads, writes, clears, and refreshes are now per-user, and runtime memory injection uses the authenticated actor id even when an admin is viewing a globally scoped session
+- legacy `/api/v1/chat*` and `/api/v1/solve*` routes now require authentication and filter their JSON-backed session CRUD + websocket resume flows by `owner_user_id`
 - assessment recommendation and diagnosis now use the same teacher/admin gate and owner-scoped signal store, so support-heavy diagnosis cannot be influenced by another teacher's sessions or tutoring evidence
 - `GET/PUT /api/v1/knowledge/default` is now per-user instead of global, and newly created/imported auth-era packs record `owner_user_id`, `owner_email`, and `owner_display_name`
 - unrelated `web/**` surfaces remain outside scope because this lane only owns the decomposed auth frontend subset

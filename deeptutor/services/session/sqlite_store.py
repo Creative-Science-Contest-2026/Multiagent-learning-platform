@@ -535,45 +535,77 @@ class SQLiteSessionStore:
     async def create_turn(self, session_id: str, capability: str = "") -> dict[str, Any]:
         return await self._run(self._create_turn_sync, session_id, capability)
 
-    def _get_turn_sync(self, turn_id: str) -> dict[str, Any] | None:
+    def _get_turn_sync(
+        self,
+        turn_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
         with self._connect() as conn:
-            row = conn.execute(
-                """
+            query = """
                 SELECT
                     t.*,
+                    s.owner_user_id AS session_owner_user_id,
                     COALESCE((SELECT MAX(seq) FROM turn_events te WHERE te.turn_id = t.id), 0) AS last_seq
                 FROM turns t
+                JOIN sessions s ON s.id = t.session_id
                 WHERE t.id = ?
-                """,
-                (turn_id,),
+            """
+            params: list[Any] = [turn_id]
+            if owner_user_id is not None:
+                query += " AND s.owner_user_id = ?"
+                params.append((owner_user_id or "").strip())
+            row = conn.execute(
+                query,
+                tuple(params),
             ).fetchone()
         if row is None:
             return None
-        return self._serialize_turn(row)
+        payload = self._serialize_turn(row)
+        payload["owner_user_id"] = row["session_owner_user_id"] or ""
+        return payload
 
-    async def get_turn(self, turn_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_turn_sync, turn_id)
+    async def get_turn(self, turn_id: str, owner_user_id: str | None = None) -> dict[str, Any] | None:
+        return await self._run(self._get_turn_sync, turn_id, owner_user_id)
 
-    def _get_active_turn_sync(self, session_id: str) -> dict[str, Any] | None:
+    def _get_active_turn_sync(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
         with self._connect() as conn:
-            row = conn.execute(
-                """
+            query = """
                 SELECT
                     t.*,
+                    s.owner_user_id AS session_owner_user_id,
                     COALESCE((SELECT MAX(seq) FROM turn_events te WHERE te.turn_id = t.id), 0) AS last_seq
                 FROM turns t
+                JOIN sessions s ON s.id = t.session_id
                 WHERE t.session_id = ? AND t.status = 'running'
+            """
+            params: list[Any] = [session_id]
+            if owner_user_id is not None:
+                query += " AND s.owner_user_id = ?"
+                params.append((owner_user_id or "").strip())
+            query += """
                 ORDER BY t.updated_at DESC
                 LIMIT 1
-                """,
-                (session_id,),
+            """
+            row = conn.execute(
+                query,
+                tuple(params),
             ).fetchone()
         if row is None:
             return None
-        return self._serialize_turn(row)
+        payload = self._serialize_turn(row)
+        payload["owner_user_id"] = row["session_owner_user_id"] or ""
+        return payload
 
-    async def get_active_turn(self, session_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_active_turn_sync, session_id)
+    async def get_active_turn(
+        self,
+        session_id: str,
+        owner_user_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        return await self._run(self._get_active_turn_sync, session_id, owner_user_id)
 
     def _list_active_turns_sync(self, session_id: str) -> list[dict[str, Any]]:
         with self._connect() as conn:
@@ -658,8 +690,26 @@ class SQLiteSessionStore:
     async def append_turn_event(self, turn_id: str, event: dict[str, Any]) -> dict[str, Any]:
         return await self._run(self._append_turn_event_sync, turn_id, event)
 
-    def _get_turn_events_sync(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
+    def _get_turn_events_sync(
+        self,
+        turn_id: str,
+        after_seq: int = 0,
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         with self._connect() as conn:
+            turn_query = """
+                SELECT t.session_id
+                FROM turns t
+                JOIN sessions s ON s.id = t.session_id
+                WHERE t.id = ?
+            """
+            turn_params: list[Any] = [turn_id]
+            if owner_user_id is not None:
+                turn_query += " AND s.owner_user_id = ?"
+                turn_params.append((owner_user_id or "").strip())
+            turn = conn.execute(turn_query, tuple(turn_params)).fetchone()
+            if turn is None:
+                return []
             rows = conn.execute(
                 """
                 SELECT turn_id, seq, type, source, stage, content, metadata_json, timestamp
@@ -669,7 +719,6 @@ class SQLiteSessionStore:
                 """,
                 (turn_id, max(0, int(after_seq))),
             ).fetchall()
-            turn = conn.execute("SELECT session_id FROM turns WHERE id = ?", (turn_id,)).fetchone()
         session_id = turn["session_id"] if turn else ""
         return [
             {
@@ -686,8 +735,13 @@ class SQLiteSessionStore:
             for row in rows
         ]
 
-    async def get_turn_events(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
-        return await self._run(self._get_turn_events_sync, turn_id, after_seq)
+    async def get_turn_events(
+        self,
+        turn_id: str,
+        after_seq: int = 0,
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        return await self._run(self._get_turn_events_sync, turn_id, after_seq, owner_user_id)
 
     def _save_observations_sync(
         self,

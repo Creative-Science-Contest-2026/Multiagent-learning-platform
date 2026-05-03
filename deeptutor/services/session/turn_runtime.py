@@ -247,6 +247,8 @@ class _TurnExecution:
     session_id: str
     capability: str
     payload: dict[str, Any]
+    owner_user_id: str = ""
+    actor_user_id: str = ""
     task: asyncio.Task[None] | None = None
     subscribers: list[_LiveSubscriber] = field(default_factory=list)
 
@@ -259,7 +261,13 @@ class TurnRuntimeManager:
         self._lock = asyncio.Lock()
         self._executions: dict[str, _TurnExecution] = {}
 
-    async def start_turn(self, payload: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    async def start_turn(
+        self,
+        payload: dict[str, Any],
+        *,
+        owner_user_id: str | None = None,
+        actor_user_id: str | None = None,
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         capability = str(payload.get("capability") or "chat")
         tutor_pack = payload.get("tutor_pack")
         raw_config = dict(payload.get("config", {}) or {})
@@ -280,7 +288,14 @@ class TurnRuntimeManager:
             "capability": capability,
             "config": {**validated_public_config, **runtime_only_config},
         }
-        session = await self.store.ensure_session(payload.get("session_id"))
+        requested_session_id = str(payload.get("session_id") or "").strip() or None
+        if requested_session_id and owner_user_id is not None:
+            foreign_session = await self.store.get_session(requested_session_id)
+            if foreign_session is not None:
+                foreign_owner = str(foreign_session.get("owner_user_id") or "").strip()
+                if foreign_owner != owner_user_id:
+                    raise RuntimeError("Session not found")
+        session = await self.store.ensure_session(requested_session_id, owner_user_id=owner_user_id)
         normalized_tutor_pack = None
         if isinstance(tutor_pack, dict):
             name = str(tutor_pack.get("name") or "").strip()
@@ -314,6 +329,8 @@ class TurnRuntimeManager:
             session_id=session["id"],
             capability=capability,
             payload=dict(payload),
+            owner_user_id=str(session.get("owner_user_id") or owner_user_id or "").strip(),
+            actor_user_id=str(actor_user_id or owner_user_id or "").strip(),
         )
         await self._persist_and_publish(
             execution,
@@ -328,11 +345,13 @@ class TurnRuntimeManager:
             execution.task = asyncio.create_task(self._run_turn(execution))
         return session, turn
 
-    async def cancel_turn(self, turn_id: str) -> bool:
+    async def cancel_turn(self, turn_id: str, owner_user_id: str | None = None) -> bool:
         async with self._lock:
             execution = self._executions.get(turn_id)
+        if execution is not None and owner_user_id is not None and execution.owner_user_id != owner_user_id:
+            return False
         if execution is None or execution.task is None or execution.task.done():
-            turn = await self.store.get_turn(turn_id)
+            turn = await self.store.get_turn(turn_id, owner_user_id=owner_user_id)
             if turn is None or turn.get("status") != "running":
                 return False
             await self.store.update_turn_status(turn_id, "cancelled", "Turn cancelled")
@@ -344,8 +363,13 @@ class TurnRuntimeManager:
         self,
         turn_id: str,
         after_seq: int = 0,
+        owner_user_id: str | None = None,
     ) -> AsyncIterator[dict[str, Any]]:
-        backlog = await self.store.get_turn_events(turn_id, after_seq=after_seq)
+        backlog = await self.store.get_turn_events(
+            turn_id,
+            after_seq=after_seq,
+            owner_user_id=owner_user_id,
+        )
         last_seq = after_seq
         for item in backlog:
             last_seq = max(last_seq, int(item.get("seq") or 0))
@@ -356,10 +380,20 @@ class TurnRuntimeManager:
         execution: _TurnExecution | None = None
         async with self._lock:
             execution = self._executions.get(turn_id)
-            if execution is not None:
+            if (
+                execution is not None
+                and owner_user_id is not None
+                and execution.owner_user_id != owner_user_id
+            ):
+                execution = None
+            elif execution is not None:
                 execution.subscribers.append(subscriber)
 
-        catchup = await self.store.get_turn_events(turn_id, after_seq=last_seq)
+        catchup = await self.store.get_turn_events(
+            turn_id,
+            after_seq=last_seq,
+            owner_user_id=owner_user_id,
+        )
         for item in catchup:
             seq = int(item.get("seq") or 0)
             if seq <= last_seq:
@@ -370,7 +404,7 @@ class TurnRuntimeManager:
             else:
                 queue.put_nowait(item)
 
-        turn = await self.store.get_turn(turn_id)
+        turn = await self.store.get_turn(turn_id, owner_user_id=owner_user_id)
         if execution is None:
             if turn is None or turn.get("status") != "running":
                 return
@@ -394,11 +428,16 @@ class TurnRuntimeManager:
         self,
         session_id: str,
         after_seq: int = 0,
+        owner_user_id: str | None = None,
     ) -> AsyncIterator[dict[str, Any]]:
-        active_turn = await self.store.get_active_turn(session_id)
+        active_turn = await self.store.get_active_turn(session_id, owner_user_id=owner_user_id)
         if active_turn is None:
             return
-        async for item in self.subscribe_turn(active_turn["id"], after_seq=after_seq):
+        async for item in self.subscribe_turn(
+            active_turn["id"],
+            after_seq=after_seq,
+            owner_user_id=owner_user_id,
+        ):
             yield item
 
     async def _run_turn(self, execution: _TurnExecution) -> None:
@@ -455,6 +494,8 @@ class TurnRuntimeManager:
 
             llm_config = get_llm_config()
             builder = ContextBuilder(self.store)
+            session_record = await self.store.get_session(session_id)
+            session_owner_user_id = str((session_record or {}).get("owner_user_id") or "").strip()
             history_result = await builder.build(
                 session_id=session_id,
                 llm_config=llm_config,
@@ -462,14 +503,14 @@ class TurnRuntimeManager:
                 on_event=lambda event: self._persist_and_publish(execution, event),
             )
             memory_service = get_memory_service()
-            memory_context = memory_service.build_memory_context()
+            memory_context = memory_service.build_memory_context(
+                owner_user_id=execution.actor_user_id or session_owner_user_id,
+            )
             session_preferences = await _ensure_agent_spec_pin(
                 self.store,
                 session_id,
                 request_config,
             )
-            session_record = await self.store.get_session(session_id)
-            session_owner_user_id = str((session_record or {}).get("owner_user_id") or "").strip()
             student_id = str(
                 payload.get("student_id")
                 or session_preferences.get("student_id")
@@ -496,7 +537,10 @@ class TurnRuntimeManager:
                     if not history_session_id:
                         continue
 
-                    history_session = await self.store.get_session(history_session_id)
+                    history_session = await self.store.get_session(
+                        history_session_id,
+                        owner_user_id=session_owner_user_id or None,
+                    )
                     if not history_session:
                         continue
 
@@ -650,6 +694,7 @@ class TurnRuntimeManager:
                     session_id=session_id,
                     capability=capability_name or "chat",
                     language=str(payload.get("language", "en") or "en"),
+                    owner_user_id=execution.actor_user_id or session_owner_user_id,
                 )
             except Exception:
                 logger.debug("Failed to refresh lightweight memory", exc_info=True)

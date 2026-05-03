@@ -55,6 +55,7 @@ flowchart TD
   PublicAuth --> VerificationSurface["Signed-in verification banner + resend / refresh actions"]
   PublicAuth --> AccountSurface["Signed-in account bar + logout + verification status"]
   PublicAuth --> ActiveAccountPolicy["Only active accounts may enter auth shells"]
+  PublicAuth --> MemorySurface["/api/v1/memory now auth-gated and per-user"]
   RoleShells --> TeacherHub["Teacher hub links to knowledge · dashboard · agents"]
   RoleShells --> StudentHub["Student hub links to playground · student progress · docs"]
   RoleShells --> AdminHub["Admin hub roster + internal account creation"]
@@ -116,6 +117,11 @@ flowchart TD
   AdaptiveDifficulty --> DeepQuestion
   
   Product --> StudentTutor["Student Tutor Workspace"]
+  Product --> LegacyTransports["Legacy Chat/Solve Transports"]
+  LegacyTransports --> LegacyChat["/api/v1/chat REST + WS"]
+  LegacyTransports --> LegacySolve["/api/v1/solve REST + WS"]
+  LegacyChat --> LegacyOwnerScope["BaseSessionManager owner_user_id filter"]
+  LegacySolve --> LegacyOwnerScope
   StudentTutor --> TutorKBContext["Knowledge Pack Tutoring Context"]
   StudentTutor --> TutorKBBadges["KB Context Badges in Chat Messages"]
   StudentTutor --> TutorFollowups["Optional follow-up questions in tutor replies"]
@@ -228,12 +234,15 @@ flowchart TD
   Data --> Postgres["PostgreSQL auth + identity store"]
   Data --> KnowledgeBases["data/knowledge_bases"]
   Data --> Memory["data/memory"]
+  Data --> LegacyJSONSessions["data/user/workspace/chat/**/sessions.json"]
   Data --> Settings["data/user/settings"]
   Data --> Workspace["data/user/workspace"]
   Workspace --> AgentSpecWorkspace["agent_specs/<agent_id>/ + versions/"]
   SQLite --> OwnedSessions["Owned learning sessions: owner_user_id boundary"]
   KnowledgeBases --> KBAuthMetadata["Knowledge-pack owner_user_id + user-specific default selection"]
   Postgres --> AuthTables["users · credentials · oauth identities · auth sessions · tokens"]
+  Memory --> PerUserMemory["users/<owner>/SUMMARY.md + PROFILE.md"]
+  LegacyJSONSessions --> LegacyOwnerBoundary["Legacy chat/solve JSON sessions filtered by owner_user_id"]
 
   Project --> AIFirst["AI-first Operating Layer"]
   AIFirst --> OperatingPrompt["ai_first/AI_OPERATING_PROMPT.md"]

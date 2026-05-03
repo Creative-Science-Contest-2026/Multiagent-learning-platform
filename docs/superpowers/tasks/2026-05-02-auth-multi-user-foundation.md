@@ -36,23 +36,35 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/auth.py`
 - `deeptutor/api/routers/admin_users.py`
 - `deeptutor/api/routers/sessions.py`
+- `deeptutor/api/routers/unified_ws.py`
+- `deeptutor/api/routers/memory.py`
 - `deeptutor/api/routers/dashboard.py`
 - `deeptutor/api/routers/marketplace.py`
 - `deeptutor/api/routers/knowledge.py`
 - `deeptutor/api/routers/assessment.py`
+- `deeptutor/api/routers/chat.py`
+- `deeptutor/api/routers/solve.py`
 - `deeptutor/services/auth/**`
 - `deeptutor/services/db/**`
 - `deeptutor/services/session/**`
 - `deeptutor/services/evidence/**`
+- `deeptutor/services/memory/**`
+- `deeptutor/agents/chat/session_manager.py`
+- `deeptutor/agents/solve/session_manager.py`
 - `alembic/**`
 - `tests/api/test_auth_router.py`
 - `tests/api/test_admin_users_router.py`
 - `tests/api/test_session_review_router.py`
+- `tests/api/test_unified_ws_turn_runtime.py`
+- `tests/api/test_memory_router.py`
 - `tests/api/test_dashboard_router.py`
 - `tests/api/test_marketplace_router.py`
 - `tests/api/test_knowledge_router.py`
 - `tests/api/test_assessment_router.py`
+- `tests/api/test_chat_router.py`
+- `tests/api/test_solve_router.py`
 - `tests/services/auth/**`
+- `tests/services/memory/**`
 - `tests/services/session/test_owned_session_store.py`
 - `pyproject.toml`
 - `requirements/server.txt`
@@ -137,6 +149,18 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - even after backend auth and dashboard hardening, live tutoring turns and context-building still materialize observations/state through ownerless store calls, which can repopulate the anonymous bucket during authenticated use
 - Intended tutoring-runtime signal change:
   - carry the owning session's `owner_user_id` through tutoring observation persistence, student-state rollups, and context-builder lookups so authenticated chat and dashboard diagnostics share the same owner-scoped evidence model
+- Current unified WebSocket behavior:
+  - `/api/v1/ws` accepts connections and starts/subscribes/cancels turns without binding the socket to the authenticated user, so the owner-scoped session model can still be bypassed from the primary chat transport
+- Intended unified WebSocket change:
+  - resolve the authenticated user from the WS cookie at connect time, then propagate owner scope into start-turn, subscribe-session, subscribe-turn, and cancel-turn paths so websocket traffic cannot access or mutate another user's sessions
+- Current shared memory behavior:
+  - the lightweight `SUMMARY.md` / `PROFILE.md` memory system is still global, unauthenticated, and refreshed from whichever session is requested, so authenticated teacher/student traffic can leak profile and summary context across accounts
+- Intended shared memory change:
+  - require auth on the memory router, scope read/write/refresh/clear operations to the current user, and move persisted memory files under owner-specific paths so runtime memory context and refresh writes stop crossing user boundaries
+- Current legacy chat/solve behavior:
+  - the older `/chat` and `/solve` routes are still mounted publicly and store session history in shared JSON files without `owner_user_id`, so authenticated product users can bypass the new auth/session foundation through those legacy entrypoints
+- Intended legacy chat/solve change:
+  - require auth on the legacy chat and solve REST/websocket entrypoints, extend their shared `BaseSessionManager` records with optional `owner_user_id`, and filter list/get/update/delete/create flows by the authenticated owner so those fallback transports stop leaking sessions across accounts
 - Candidate approaches:
   - router-level role gates only, leaving underlying dashboard evidence tables global
   - full per-user isolation by extending router auth plus owner scoping into dashboard evidence services and auth-era knowledge-pack metadata
@@ -149,6 +173,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/main.py`
 - `deeptutor/api/routers/auth.py`
 - `deeptutor/api/routers/sessions.py`
+- `deeptutor/api/routers/unified_ws.py`
+- `deeptutor/api/routers/memory.py`
+- `deeptutor/api/routers/chat.py`
+- `deeptutor/api/routers/solve.py`
 - `deeptutor/api/routers/dashboard.py`
 - `deeptutor/api/routers/marketplace.py`
 - `deeptutor/api/routers/knowledge.py`
@@ -159,6 +187,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/services/evidence/teacher_overrides.py`
 - `deeptutor/services/evidence/diagnosis_feedback.py`
 - `deeptutor/services/evidence/intervention_assignments.py`
+- `deeptutor/services/memory/service.py`
+- `deeptutor/services/session/base_session_manager.py`
+- `deeptutor/agents/chat/session_manager.py`
+- `deeptutor/agents/solve/session_manager.py`
 - `deeptutor/services/path_service.py`
 - `deeptutor/tutorbot/channels/email.py`
 - `pyproject.toml`
@@ -181,6 +213,12 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - `dashboard`, `knowledge`, `marketplace`, and `assessment` require authenticated `teacher` or `admin`
   - teacher-scoped dashboard and assessment reads stop returning other users' sessions and support signals
   - new imported or created knowledge-pack records carry auth-era ownership metadata for later filtering and audits
+- current stop condition for owner-scoped runtime context:
+  - unified websocket traffic is bound to the authenticated owner at connect/start/subscribe/cancel time
+  - lightweight memory context and refresh writes are isolated per authenticated user instead of living in a global shared file pair
+- current stop condition for legacy transport hardening:
+  - `/api/v1/chat*` and `/api/v1/solve*` reject unauthenticated requests and websockets
+  - legacy chat/solve session CRUD and websocket resume paths use `owner_user_id` so one authenticated user cannot read or mutate another user's legacy JSON-backed sessions
 
 ## Required Tests
 

@@ -112,6 +112,7 @@ class SolverSessionManager(BaseSessionManager):
         title: str | None = None,
         kb_name: str = "",
         token_stats: dict[str, Any] | None = None,
+        owner_user_id: str | None = None,
     ) -> dict[str, Any]:
         """
         Create a new solver session.
@@ -128,6 +129,7 @@ class SolverSessionManager(BaseSessionManager):
             title=title,
             kb_name=kb_name,
             token_stats=token_stats,
+            owner_user_id=owner_user_id,
         )
 
     def add_message(
@@ -136,6 +138,7 @@ class SolverSessionManager(BaseSessionManager):
         role: str,
         content: str,
         output_dir: str | None = None,
+        owner_user_id: str | None = None,
     ) -> dict[str, Any] | None:
         """
         Add a single message to a session.
@@ -154,6 +157,7 @@ class SolverSessionManager(BaseSessionManager):
             role=role,
             content=content,
             output_dir=output_dir,
+            owner_user_id=owner_user_id,
         )
 
     def update_session(
@@ -163,6 +167,7 @@ class SolverSessionManager(BaseSessionManager):
         title: str | None = None,
         kb_name: str | None = None,
         token_stats: dict[str, Any] | None = None,
+        owner_user_id: str | None = None,
     ) -> dict[str, Any] | None:
         """
         Update a session with new data.
@@ -183,12 +188,14 @@ class SolverSessionManager(BaseSessionManager):
             title=title,
             kb_name=kb_name,
             token_stats=token_stats,
+            owner_user_id=owner_user_id,
         )
 
     def update_token_stats(
         self,
         session_id: str,
         token_stats: dict[str, Any],
+        owner_user_id: str | None = None,
     ) -> dict[str, Any] | None:
         """
         Update token stats for a session.
@@ -200,7 +207,11 @@ class SolverSessionManager(BaseSessionManager):
         Returns:
             Updated session or None if not found
         """
-        return self.update_session(session_id, token_stats=token_stats)
+        return self.update_session(
+            session_id,
+            token_stats=token_stats,
+            owner_user_id=owner_user_id,
+        )
 
 
 # Singleton instance for convenience
