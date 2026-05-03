@@ -28,13 +28,21 @@ def ensure_dirs():
     TOOL_CALLS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def load_history() -> list:
+def load_history(owner_user_id: str | None = None) -> list:
     """Load history"""
     ensure_dirs()
     if HISTORY_FILE.exists():
         try:
             with open(HISTORY_FILE, encoding="utf-8") as f:
-                return json.load(f)
+                history = json.load(f)
+            if owner_user_id is None:
+                return history
+            return [
+                item
+                for item in history
+                if str(item.get("owner_user_id", "") or "").strip()
+                == str(owner_user_id or "").strip()
+            ]
         except Exception:
             return []
     return []
@@ -92,6 +100,9 @@ class EditAgent(BaseAgent):
         action: Literal["rewrite", "shorten", "expand"] = "rewrite",
         source: Literal["rag", "web"] | None = None,
         kb_name: str | None = None,
+        owner_user_id: str = "",
+        owner_email: str = "",
+        owner_display_name: str = "",
     ) -> dict[str, Any]:
         """
         Process edit request
@@ -133,6 +144,9 @@ class EditAgent(BaseAgent):
                         "type": "rag",
                         "timestamp": datetime.now().isoformat(),
                         "operation_id": operation_id,
+                        "owner_user_id": owner_user_id,
+                        "owner_email": owner_email,
+                        "owner_display_name": owner_display_name,
                         "query": instruction,
                         "kb_name": kb_name,
                         "mode": "naive",
@@ -155,6 +169,9 @@ class EditAgent(BaseAgent):
                     "type": "web_search",
                     "timestamp": datetime.now().isoformat(),
                     "operation_id": operation_id,
+                    "owner_user_id": owner_user_id,
+                    "owner_email": owner_email,
+                    "owner_display_name": owner_display_name,
                     "query": instruction,
                     "answer": context,
                     "citations": search_result.get("citations", []),
@@ -215,6 +232,9 @@ class EditAgent(BaseAgent):
         operation_record = {
             "id": operation_id,
             "timestamp": datetime.now().isoformat(),
+            "owner_user_id": owner_user_id,
+            "owner_email": owner_email,
+            "owner_display_name": owner_display_name,
             "action": action,
             "source": source,
             "kb_name": kb_name,
@@ -230,7 +250,13 @@ class EditAgent(BaseAgent):
 
         return {"edited_text": response, "operation_id": operation_id}
 
-    async def auto_mark(self, text: str) -> dict[str, Any]:
+    async def auto_mark(
+        self,
+        text: str,
+        owner_user_id: str = "",
+        owner_email: str = "",
+        owner_display_name: str = "",
+    ) -> dict[str, Any]:
         """
         AI auto-marking feature - Add annotation tags to text
 
@@ -262,6 +288,9 @@ class EditAgent(BaseAgent):
         operation_record = {
             "id": operation_id,
             "timestamp": datetime.now().isoformat(),
+            "owner_user_id": owner_user_id,
+            "owner_email": owner_email,
+            "owner_display_name": owner_display_name,
             "action": "automark",
             "source": None,
             "kb_name": None,

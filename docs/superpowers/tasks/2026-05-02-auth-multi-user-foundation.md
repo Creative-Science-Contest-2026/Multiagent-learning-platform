@@ -49,6 +49,12 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/notebook.py`
 - `deeptutor/api/routers/settings.py`
 - `deeptutor/api/routers/agent_specs.py`
+- `deeptutor/api/routers/agent_config.py`
+- `deeptutor/api/routers/question.py`
+- `deeptutor/api/routers/co_writer.py`
+- `deeptutor/api/routers/system.py`
+- `deeptutor/api/routers/vision_solver.py`
+- `deeptutor/api/routers/plugins_api.py`
 - `deeptutor/services/auth/**`
 - `deeptutor/services/db/**`
 - `deeptutor/services/session/**`
@@ -60,6 +66,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/services/tutorbot/**`
 - `deeptutor/services/notebook/**`
 - `deeptutor/services/agent_spec/**`
+- `deeptutor/agents/co_writer/edit_agent.py`
 - `alembic/**`
 - `tests/api/test_auth_router.py`
 - `tests/api/test_admin_users_router.py`
@@ -77,6 +84,12 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `tests/api/test_notebook_router.py`
 - `tests/api/test_settings_router.py`
 - `tests/api/test_agent_specs_router.py`
+- `tests/api/test_question_router.py`
+- `tests/api/test_co_writer_router.py`
+- `tests/api/test_system_router.py`
+- `tests/api/test_vision_solver_router.py`
+- `tests/api/test_plugins_api_router.py`
+- `tests/api/test_agent_config_router.py`
 - `tests/services/notebook/**`
 - `tests/services/auth/**`
 - `tests/services/memory/**`
@@ -188,6 +201,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - `notebook` still stores a shared notebook index and notebook JSON files without `owner_user_id`, `settings` still writes one shared UI settings file for all users, and `agent_specs` exposes authoring/runtime-policy routes without auth despite being teacher-side authoring surfaces
 - Intended notebook/settings/agent-spec change:
   - move UI settings to per-user files, restrict model-catalog mutation/testing to teacher/admin or admin as appropriate, require auth on notebook routes, persist `owner_user_id` on notebook files/index entries so normal users only read/write their own notebooks, and gate `agent_specs` behind authenticated teacher/admin access as an authoring surface
+- Current question/co-writer/system/vision/plugins behavior:
+  - `question` websocket generation, `vision_solver` REST/websocket analysis, `plugins_api` tool/capability execution, and most `system` operator routes are still reachable without auth; `co_writer` is also public and stores shared history/tool-call artifacts without owner metadata
+- Intended question/co-writer/system/vision/plugins change:
+  - require auth on the remaining runtime surfaces, restrict teacher-only or admin-only operator/test routes where appropriate, and persist/filter `co_writer` history plus tool-call artifacts by owner so one authenticated user cannot read another user's writing history
 - Candidate approaches:
   - router-level role gates only, leaving underlying dashboard evidence tables global
   - full per-user isolation by extending router auth plus owner scoping into dashboard evidence services and auth-era knowledge-pack metadata
@@ -209,6 +226,12 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/notebook.py`
 - `deeptutor/api/routers/settings.py`
 - `deeptutor/api/routers/agent_specs.py`
+- `deeptutor/api/routers/question.py`
+- `deeptutor/api/routers/co_writer.py`
+- `deeptutor/api/routers/system.py`
+- `deeptutor/api/routers/vision_solver.py`
+- `deeptutor/api/routers/plugins_api.py`
+- `deeptutor/api/routers/agent_config.py`
 - `deeptutor/api/routers/dashboard.py`
 - `deeptutor/api/routers/marketplace.py`
 - `deeptutor/api/routers/knowledge.py`
@@ -227,6 +250,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/services/tutorbot/manager.py`
 - `deeptutor/services/notebook/service.py`
 - `deeptutor/services/agent_spec/service.py`
+- `deeptutor/agents/co_writer/edit_agent.py`
 - `deeptutor/services/path_service.py`
 - `deeptutor/tutorbot/channels/email.py`
 - `pyproject.toml`
@@ -262,6 +286,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - `/api/v1/notebook*` rejects unauthenticated access, persists `owner_user_id` on notebook files/index rows, and prevents non-admin users from listing or mutating notebooks they do not own
   - `/api/v1/settings*` requires auth for UI settings, uses per-user UI settings files, and restricts catalog mutation/test/apply surfaces away from anonymous callers
   - `/api/v1/agent-specs*` requires authenticated teacher/admin access
+- current stop condition for remaining operator/public runtime surfaces:
+  - `question`, `co_writer`, `vision_solver`, `system`, and `plugins_api` no longer accept anonymous access on stateful or high-cost routes
+  - `co_writer` history and tool-call lookup surfaces filter by the authenticated owner, while admin can still inspect all records
+  - model-test and arbitrary tool/capability execution surfaces are no longer reachable by students or anonymous users
 
 ## Required Tests
 

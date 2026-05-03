@@ -28,6 +28,8 @@
 - auth-gates `/api/v1/notebook*`, persists notebook owner metadata, and filters notebook/index access by `owner_user_id`
 - moves UI settings from one shared `interface.json` file into per-user settings files, while restricting settings catalog mutation/test/apply flows to admins
 - gates `/api/v1/agent-specs*` behind authenticated teacher/admin access so student and anonymous users cannot reach authoring/runtime-policy surfaces
+- auth-gates the remaining runtime/operator routers around `question`, `co_writer`, `vision_solver`, `system`, `plugins_api`, and `agent_config`, so no FastAPI router remains anonymously reachable by default
+- adds owner metadata to co-writer history and tool-call artifacts, with router-level filtering so one account cannot browse another account's writing history
 - makes knowledge-pack default selection user-specific and stamps newly created/imported knowledge packs with auth-era ownership metadata
 - changes marketplace imports to create per-user imported copies, preventing two teachers from colliding on the same imported pack name
 
@@ -90,6 +92,14 @@ flowchart TD
   SettingsSurface --> PerUserUISettings["interface.<owner>.json per user"]
   SettingsSurface --> AdminCatalogControls["admin-only catalog apply/test/mutate"]
   TeacherShell --> AgentSpecSurface["/api/v1/agent-specs teacher/admin only"]
+  TeacherShell --> QuestionSurface["/api/v1/question teacher/admin websocket flows"]
+  Me --> CoWriterSurface["/api/v1/co-writer"]
+  CoWriterSurface --> CoWriterHistory["history + tool calls filtered by owner_user_id"]
+  Me --> VisionSurface["/api/v1/vision/** authenticated REST + WS"]
+  Me --> SystemSurface["/api/v1/system"]
+  SystemSurface --> SystemRoles["teacher/admin pilot feedback · admin runtime tests"]
+  Me --> AgentConfigSurface["/api/v1/agent-config authenticated metadata"]
+  AdminShell --> PluginsSurface["/api/v1/plugins admin-only execution"]
   AccountLifecycle --> ActiveOnlyAuth["Only active accounts may login or resume sessions"]
 ```
 
@@ -111,6 +121,11 @@ flowchart TD
 - UI settings now live in `data/user/settings/interface.<owner>.json`, so theme/language/sidebar preferences are no longer shared across all accounts on the same deployment
 - settings catalog mutation, apply, guided test, and setup-tour flows are now admin-only even though authenticated users can still read their own UI settings payload
 - agent-spec authoring and runtime-policy-audit routes now require authenticated `teacher` or `admin` access
+- question-generation websocket routes now require authenticated `teacher` or `admin` access before they allocate heavy generation work
+- co-writer edit/history/tool-call routes now require authentication, and recorded edit history plus tool-call payloads carry owner metadata so normal users only see their own writing traces
+- vision-solver image analysis now requires authenticated REST/websocket access instead of remaining a public compute endpoint
+- system runtime tests are now admin-only, while pilot-feedback surfaces require teacher/admin and simple status/topology reads require an authenticated account
+- plugins playground execution is now admin-only, and even static agent-config metadata now sits behind auth so the router scan closes cleanly
 - assessment recommendation and diagnosis now use the same teacher/admin gate and owner-scoped signal store, so support-heavy diagnosis cannot be influenced by another teacher's sessions or tutoring evidence
 - `GET/PUT /api/v1/knowledge/default` is now per-user instead of global, and newly created/imported auth-era packs record `owner_user_id`, `owner_email`, and `owner_display_name`
 - unrelated `web/**` surfaces remain outside scope because this lane only owns the decomposed auth frontend subset

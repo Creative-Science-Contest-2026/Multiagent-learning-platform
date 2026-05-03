@@ -6,9 +6,11 @@ Manages system status checks and model connection tests
 from datetime import datetime
 import time
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.evidence.pilot_feedback import (
     build_pilot_feedback_status,
     create_pilot_feedback,
@@ -22,6 +24,16 @@ from deeptutor.services.search import web_search
 from deeptutor.services.session import get_sqlite_session_store
 
 router = APIRouter()
+
+
+def _require_teacher_or_admin(user: AuthenticatedUser) -> None:
+    if user.role not in {"teacher", "admin"}:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+def _require_admin(user: AuthenticatedUser) -> None:
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 class TestResponse(BaseModel):
@@ -45,17 +57,25 @@ class PilotFeedbackCreateRequest(BaseModel):
 
 
 @router.get("/pilot-feedback-status")
-async def get_pilot_feedback_status():
+async def get_pilot_feedback_status(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     return build_pilot_feedback_status(get_sqlite_session_store())
 
 
 @router.get("/pilot-feedback")
-async def get_pilot_feedback():
+async def get_pilot_feedback(current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_teacher_or_admin(current_user)
     return {"items": list_pilot_feedback(get_sqlite_session_store())}
 
 
 @router.post("/pilot-feedback")
-async def create_pilot_feedback_record(payload: PilotFeedbackCreateRequest):
+async def create_pilot_feedback_record(
+    payload: PilotFeedbackCreateRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    _require_teacher_or_admin(current_user)
     try:
         return create_pilot_feedback(
             get_sqlite_session_store(),
@@ -66,7 +86,7 @@ async def create_pilot_feedback_record(payload: PilotFeedbackCreateRequest):
 
 
 @router.get("/runtime-topology")
-async def get_runtime_topology():
+async def get_runtime_topology(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Describe the current execution topology.
 
@@ -98,7 +118,7 @@ async def get_runtime_topology():
 
 
 @router.get("/status")
-async def get_system_status():
+async def get_system_status(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Get overall system status including backend and model configurations
 
@@ -174,13 +194,14 @@ async def get_system_status():
 
 
 @router.post("/test/llm", response_model=TestResponse)
-async def test_llm_connection():
+async def test_llm_connection(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Test LLM model connection by sending a simple completion request
 
     Returns:
         Test result with success status and response time
     """
+    _require_admin(current_user)
     start_time = time.time()
 
     try:
@@ -242,13 +263,16 @@ async def test_llm_connection():
 
 
 @router.post("/test/embeddings", response_model=TestResponse)
-async def test_embeddings_connection():
+async def test_embeddings_connection(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Test Embeddings model connection by sending a simple embedding request
 
     Returns:
         Test result with success status and response time
     """
+    _require_admin(current_user)
     start_time = time.time()
 
     try:
@@ -293,7 +317,8 @@ async def test_embeddings_connection():
 
 
 @router.post("/test/search", response_model=TestResponse)
-async def test_search_connection():
+async def test_search_connection(current_user: AuthenticatedUser = Depends(get_current_user)):
+    _require_admin(current_user)
     start_time = time.time()
 
     try:

@@ -7,7 +7,10 @@ import sys
 import types
 
 import pytest
+from fastapi import HTTPException
 from starlette.websockets import WebSocketDisconnect
+
+from deeptutor.services.auth.schemas import AuthenticatedUser
 
 FastAPI = pytest.importorskip("fastapi").FastAPI
 TestClient = pytest.importorskip("fastapi.testclient").TestClient
@@ -105,6 +108,22 @@ def _load_question_router_module(monkeypatch: pytest.MonkeyPatch):
         "deeptutor.services.settings.interface_settings",
         fake_interface_settings,
     )
+
+    fake_auth_package = _package("deeptutor.services.auth")
+    fake_auth_deps = types.ModuleType("deeptutor.services.auth.deps")
+    fake_auth_schemas = types.ModuleType("deeptutor.services.auth.schemas")
+    fake_auth_schemas.AuthenticatedUser = AuthenticatedUser
+    fake_auth_deps.get_current_user_from_websocket = lambda _ws: AuthenticatedUser(
+        id="teacher-1",
+        email="teacher-1@example.com",
+        display_name="Teacher One",
+        role="teacher",
+    )
+    fake_auth_package.deps = fake_auth_deps
+    fake_auth_package.schemas = fake_auth_schemas
+    monkeypatch.setitem(sys.modules, "deeptutor.services.auth", fake_auth_package)
+    monkeypatch.setitem(sys.modules, "deeptutor.services.auth.deps", fake_auth_deps)
+    monkeypatch.setitem(sys.modules, "deeptutor.services.auth.schemas", fake_auth_schemas)
 
     fake_tools = _package("deeptutor.tools")
     fake_tools_question = types.ModuleType("deeptutor.tools.question")
@@ -224,6 +243,22 @@ def test_generate_websocket_requires_requirement(monkeypatch: pytest.MonkeyPatch
             payload = websocket.receive_json()
 
     assert payload == {"type": "error", "content": "Requirement is required"}
+
+
+def test_question_websockets_require_authenticated_cookie(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+    monkeypatch.setattr(
+        question_router_module,
+        "get_current_user_from_websocket",
+        lambda _ws: (_ for _ in ()).throw(HTTPException(status_code=401, detail="Authentication required")),
+    )
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with pytest.raises(Exception):
+            with client.websocket_connect("/api/v1/question/generate"):
+                pass
 
 
 def test_generate_websocket_streams_task_and_completion(
