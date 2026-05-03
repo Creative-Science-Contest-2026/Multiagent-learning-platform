@@ -104,6 +104,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - password reset and email verification now issue real backend tokens and can send SMTP email when configured, while preserving explicit debug-link behavior for local development and tests
 - Intended auth-delivery change:
   - add a bounded SMTP-backed auth mailer seam that sends reset and verification emails when configured, while preserving explicit debug-link behavior for local development and tests
+- Current verification UX behavior:
+  - `email_verified_at` exists in the auth contract, but signed-in teacher, student, and admin shells do not yet surface any inline verification state or resend path unless the user manually navigates to `/verify-email`
+- Intended verification UX change:
+  - add a shared non-blocking verification banner across signed-in shells and owned teacher-first layouts, with resend action and local refresh of auth state after successful verification
 - Candidate approaches:
   - reuse the full `tutorbot` email channel implementation directly
   - add ad-hoc `smtplib` calls inside auth routers

@@ -5,6 +5,9 @@ import { describe, expect, it } from "vitest";
 
 const workspaceLayout = readFileSync(path.resolve(__dirname, "../app/(workspace)/layout.tsx"), "utf-8");
 const utilityLayout = readFileSync(path.resolve(__dirname, "../app/(utility)/layout.tsx"), "utf-8");
+const teacherLayout = readFileSync(path.resolve(__dirname, "../app/teacher/layout.tsx"), "utf-8");
+const studentLayout = readFileSync(path.resolve(__dirname, "../app/student/layout.tsx"), "utf-8");
+const adminLayout = readFileSync(path.resolve(__dirname, "../app/admin/layout.tsx"), "utf-8");
 
 describe("shared shell layouts", () => {
   it("guard the workspace shell with TeacherSurfaceGate", () => {
@@ -13,5 +16,17 @@ describe("shared shell layouts", () => {
 
   it("guard the utility shell with TeacherSurfaceGate", () => {
     expect(utilityLayout).toContain("TeacherSurfaceGate");
+  });
+
+  it("render the verification banner in the teacher shell", () => {
+    expect(teacherLayout).toContain("EmailVerificationBanner");
+  });
+
+  it("render the verification banner in the student shell", () => {
+    expect(studentLayout).toContain("EmailVerificationBanner");
+  });
+
+  it("render the verification banner in the admin shell", () => {
+    expect(adminLayout).toContain("EmailVerificationBanner");
   });
 });

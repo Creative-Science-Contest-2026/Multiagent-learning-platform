@@ -69,8 +69,10 @@ describe("TeacherSurfaceGate", () => {
         email: "teacher@example.com",
         display_name: "Teacher One",
         role: "teacher",
+        email_verified_at: null,
       },
       loading: false,
+      refreshUser: vi.fn(),
     });
 
     const { default: TeacherSurfaceGate } = await import("../components/auth/TeacherSurfaceGate");
@@ -82,6 +84,7 @@ describe("TeacherSurfaceGate", () => {
     );
 
     expect(await screen.findByText("Teacher surface")).toBeInTheDocument();
+    expect(screen.getByText(/xác minh email để tăng độ tin cậy/i)).toBeInTheDocument();
     expect(replace).not.toHaveBeenCalled();
   });
 });

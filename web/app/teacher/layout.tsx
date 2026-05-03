@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import EmailVerificationBanner from "@/components/auth/EmailVerificationBanner";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function TeacherLayout({ children }: { children: React.ReactNode }) {
@@ -27,7 +28,10 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
         </div>
       }
     >
-      {children}
+      <div className="space-y-4 px-4 py-4">
+        <EmailVerificationBanner />
+        <div>{children}</div>
+      </div>
     </ProtectedRoute>
   );
 }

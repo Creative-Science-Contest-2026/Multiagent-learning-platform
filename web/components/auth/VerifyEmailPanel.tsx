@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { sendVerificationEmail, verifyEmailToken } from "@/lib/auth-api";
 
 export default function VerifyEmailPanel() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const searchParams = useSearchParams();
   const token = searchParams.get("token")?.trim() ?? "";
   const [submitting, setSubmitting] = useState(false);
@@ -26,6 +26,7 @@ export default function VerifyEmailPanel() {
 
     try {
       await verifyEmailToken(token);
+      await refreshUser();
       setSuccess("Email đã được xác minh. Bạn có thể quay lại đăng nhập hoặc tiếp tục vào sản phẩm.");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Không thể xác minh email.");

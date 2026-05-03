@@ -52,6 +52,7 @@ flowchart TD
   PublicAuth --> RoleChoice["Role-first public entry: teacher | student"]
   PublicAuth --> AuthReturnFlow["Safe next redirect + Google first-login role selection"]
   PublicAuth --> RoleShells["Post-login shells: /teacher · /student · /admin"]
+  PublicAuth --> VerificationSurface["Signed-in verification banner + resend / refresh actions"]
   RoleShells --> TeacherHub["Teacher hub links to knowledge · dashboard · agents"]
   RoleShells --> StudentHub["Student hub links to playground · student progress · docs"]
   RoleShells --> AdminHub["Admin hub roster + internal account creation"]
