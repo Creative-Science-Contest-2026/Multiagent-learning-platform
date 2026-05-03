@@ -32,6 +32,8 @@
 - adds owner metadata to co-writer history and tool-call artifacts, with router-level filtering so one account cannot browse another account's writing history
 - makes knowledge-pack default selection user-specific and stamps newly created/imported knowledge packs with auth-era ownership metadata
 - changes marketplace imports to create per-user imported copies, preventing two teachers from colliding on the same imported pack name
+- binds Google OAuth start/callback with an HttpOnly nonce cookie, closing login CSRF on the new Google auth flow instead of trusting caller-supplied `state` alone
+- changes legacy JSON session retention so `MAX_SESSIONS` trims only the current owner rather than evicting other users' chat/solve history from the shared file
 
 ## Architecture
 
@@ -123,9 +125,11 @@ flowchart TD
 - agent-spec authoring and runtime-policy-audit routes now require authenticated `teacher` or `admin` access
 - question-generation websocket routes now require authenticated `teacher` or `admin` access before they allocate heavy generation work
 - co-writer edit/history/tool-call routes now require authentication, and recorded edit history plus tool-call payloads carry owner metadata so normal users only see their own writing traces
+- Google OAuth callback now requires the same browser-bound nonce cookie that `/google/start` minted, preventing forged callback URLs from logging a victim into the wrong account
 - vision-solver image analysis now requires authenticated REST/websocket access instead of remaining a public compute endpoint
 - system runtime tests are now admin-only, while pilot-feedback surfaces require teacher/admin and simple status/topology reads require an authenticated account
 - plugins playground execution is now admin-only, and even static agent-config metadata now sits behind auth so the router scan closes cleanly
 - assessment recommendation and diagnosis now use the same teacher/admin gate and owner-scoped signal store, so support-heavy diagnosis cannot be influenced by another teacher's sessions or tutoring evidence
 - `GET/PUT /api/v1/knowledge/default` is now per-user instead of global, and newly created/imported auth-era packs record `owner_user_id`, `owner_email`, and `owner_display_name`
+- legacy chat/solve session retention now preserves other owners' records even when one owner exceeds the per-owner session cap
 - unrelated `web/**` surfaces remain outside scope because this lane only owns the decomposed auth frontend subset

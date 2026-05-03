@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from email.message import EmailMessage
 from urllib.parse import parse_qs, urlparse
 
@@ -143,8 +144,11 @@ def test_google_start_preserves_safe_next_path_in_state(tmp_path, monkeypatch: p
 
     assert response.status_code in {302, 307}
     query = parse_qs(urlparse(response.headers["location"]).query)
-    assert '"role":"teacher"' in query["state"][0]
-    assert '"next":"/dashboard"' in query["state"][0]
+    state = json.loads(query["state"][0])
+    assert state["role"] == "teacher"
+    assert state["next"] == "/dashboard"
+    assert state["nonce"]
+    assert "deeptutor_google_oauth_state=" in response.headers.get("set-cookie", "")
 
 
 def test_google_callback_redirects_to_requested_next_path_for_teacher(
@@ -166,14 +170,49 @@ def test_google_callback_redirects_to_requested_next_path_for_teacher(
     )
 
     with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        start_response = client.get(
+            "/api/v1/auth/google/start?role=teacher&next=%2Fdashboard",
+            follow_redirects=False,
+        )
+        assert start_response.status_code in {302, 307}
+        state = parse_qs(urlparse(start_response.headers["location"]).query)["state"][0]
         response = client.get(
-            '/api/v1/auth/google/callback?code=abc123&state={"role":"teacher","next":"/dashboard"}',
+            f"/api/v1/auth/google/callback?code=abc123&state={state}",
             follow_redirects=False,
         )
 
     assert response.status_code in {302, 307}
     assert response.headers["location"] == "/dashboard"
     assert "deeptutor_session=" in response.headers.get("set-cookie", "")
+    assert "deeptutor_google_oauth_state=" in response.headers.get("set-cookie", "")
+
+
+def test_google_callback_requires_matching_state_cookie(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services.auth.google_oauth import GoogleIdentity
+
+    async def _fake_exchange(_code: str, _settings) -> GoogleIdentity:
+        return GoogleIdentity(
+            subject="google-subject-1",
+            email="teacher@example.com",
+            name="Teacher One",
+        )
+
+    monkeypatch.setattr(
+        "deeptutor.api.routers.auth.exchange_google_code_for_identity",
+        _fake_exchange,
+    )
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        response = client.get(
+            '/api/v1/auth/google/callback?code=abc123&state={"role":"teacher","next":"/dashboard","nonce":"forged"}',
+            follow_redirects=False,
+        )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid Google login state"
 
 
 def test_forgot_password_is_generic_and_reset_token_changes_password(
@@ -469,8 +508,14 @@ def test_google_callback_rejects_suspended_user(
         updated_user = service.update_user_by_admin(user_id=user_id, status="suspended")
         assert updated_user is not None
 
+        start_response = client.get(
+            "/api/v1/auth/google/start?role=teacher",
+            follow_redirects=False,
+        )
+        assert start_response.status_code in {302, 307}
+        state = parse_qs(urlparse(start_response.headers["location"]).query)["state"][0]
         response = client.get(
-            '/api/v1/auth/google/callback?code=abc123&state={"role":"teacher"}',
+            f"/api/v1/auth/google/callback?code=abc123&state={state}",
             follow_redirects=False,
         )
 

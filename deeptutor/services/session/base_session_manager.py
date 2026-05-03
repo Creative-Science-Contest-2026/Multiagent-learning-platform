@@ -149,6 +149,25 @@ class BaseSessionManager(ABC):
         data = self._load_data()
         data["sessions"] = sessions
         self._save_data(data)
+
+    def _trim_sessions_for_owner(
+        self,
+        sessions: list[dict[str, Any]],
+        owner_user_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Trim only the current owner's sessions while preserving other owners' data."""
+        if owner_user_id is None:
+            return sessions[:self.MAX_SESSIONS]
+
+        trimmed: list[dict[str, Any]] = []
+        owned_count = 0
+        for session in sessions:
+            if self._matches_owner(session, owner_user_id):
+                owned_count += 1
+                if owned_count > self.MAX_SESSIONS:
+                    continue
+            trimmed.append(session)
+        return trimmed
     
     # =========================================================================
     # Session CRUD Operations
@@ -195,10 +214,9 @@ class BaseSessionManager(ABC):
         # Add to sessions list
         sessions = self._get_sessions()
         sessions.insert(0, session)  # Add to front (newest first)
-        
-        # Limit total sessions
-        if len(sessions) > self.MAX_SESSIONS:
-            sessions = sessions[:self.MAX_SESSIONS]
+
+        # Limit the current owner's sessions without evicting unrelated owners.
+        sessions = self._trim_sessions_for_owner(sessions, owner_user_id)
         
         self._save_sessions(sessions)
         

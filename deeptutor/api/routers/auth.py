@@ -31,11 +31,14 @@ from deeptutor.services.auth.schemas import ResetPasswordRequest
 from deeptutor.services.auth.schemas import SignupRequest
 from deeptutor.services.auth.schemas import VerifyEmailRequest
 from deeptutor.services.auth.service import AuthService
+from deeptutor.services.auth.session_tokens import mint_session_secret
 
 router = APIRouter()
 logger = getLogger(__name__)
 
 _PUBLIC_SIGNUP_ROLES = {"teacher", "student"}
+_GOOGLE_STATE_COOKIE_NAME = "deeptutor_google_oauth_state"
+_GOOGLE_STATE_COOKIE_MAX_AGE_SECONDS = 10 * 60
 
 
 def _bool_env(name: str, default: bool) -> bool:
@@ -109,27 +112,45 @@ def _post_auth_redirect(role: str, next_path: object = "") -> str:
     return f"/{role}"
 
 
-def _encode_google_state(role: str, next_path: str = "") -> str:
+def _encode_google_state(role: str, next_path: str = "", nonce: str = "") -> str:
     payload: dict[str, str] = {"role": role}
     normalized = _normalize_next_path(next_path, role=role)
     if normalized:
         payload["next"] = normalized
+    if nonce.strip():
+        payload["nonce"] = nonce.strip()
     return json.dumps(payload, separators=(",", ":"))
 
 
-def _decode_google_state(raw_state: str) -> tuple[str, str | None]:
+def _decode_google_state(raw_state: str) -> tuple[str, str | None, str | None]:
     state = raw_state.strip()
     if not state:
-        return "student", None
+        return "student", None, None
     try:
         payload = json.loads(state)
     except json.JSONDecodeError:
         role = state.lower()
-        return (role if role in _PUBLIC_SIGNUP_ROLES else "student"), None
+        return (role if role in _PUBLIC_SIGNUP_ROLES else "student"), None, None
     role = str(payload.get("role", "student")).strip().lower()
     if role not in _PUBLIC_SIGNUP_ROLES:
         role = "student"
-    return role, _normalize_next_path(payload.get("next"), role=role)
+    nonce = str(payload.get("nonce", "") or "").strip() or None
+    return role, _normalize_next_path(payload.get("next"), role=role), nonce
+
+
+def _set_google_state_cookie(response: Response, nonce: str) -> None:
+    response.set_cookie(
+        key=_GOOGLE_STATE_COOKIE_NAME,
+        value=nonce,
+        httponly=True,
+        samesite="lax",
+        secure=_cookie_secure(),
+        max_age=_GOOGLE_STATE_COOKIE_MAX_AGE_SECONDS,
+    )
+
+
+def _clear_google_state_cookie(response: Response) -> None:
+    response.delete_cookie(_GOOGLE_STATE_COOKIE_NAME)
 
 
 def _debug_token_payload(flow: str, token: str | None) -> dict[str, str]:
@@ -321,13 +342,19 @@ def verify_email(
 
 
 @router.get("/google/start")
-def google_start(role: str = "student", next: str = ""):
+def google_start(request: Request, role: str = "student", next: str = ""):
     normalized_role = role.strip().lower() or "student"
     if normalized_role not in _PUBLIC_SIGNUP_ROLES:
         raise HTTPException(status_code=400, detail="Unsupported signup role")
     settings = get_google_oauth_settings()
-    authorize_url = build_google_authorize_url(settings, state=_encode_google_state(normalized_role, next))
-    return RedirectResponse(authorize_url)
+    nonce = mint_session_secret()
+    authorize_url = build_google_authorize_url(
+        settings,
+        state=_encode_google_state(normalized_role, next, nonce),
+    )
+    redirect = RedirectResponse(authorize_url)
+    _set_google_state_cookie(redirect, nonce)
+    return redirect
 
 
 @router.get("/google/callback")
@@ -340,7 +367,10 @@ async def google_callback(
 ):
     if not code.strip():
         raise HTTPException(status_code=400, detail="Missing Google authorization code")
-    role, next_path = _decode_google_state(state)
+    role, next_path, state_nonce = _decode_google_state(state)
+    cookie_nonce = str(request.cookies.get(_GOOGLE_STATE_COOKIE_NAME, "") or "").strip() or None
+    if not state_nonce or not cookie_nonce or state_nonce != cookie_nonce:
+        raise HTTPException(status_code=400, detail="Invalid Google login state")
     settings = get_google_oauth_settings()
     try:
         identity = await exchange_google_code_for_identity(code.strip(), settings)
@@ -363,5 +393,6 @@ async def google_callback(
         ip_address=request.client.host if request.client else None,
     )
     redirect = RedirectResponse(url=_post_auth_redirect(str(user["role"]), next_path), status_code=302)
+    _clear_google_state_cookie(redirect)
     _set_auth_cookie(redirect, session_secret)
     return redirect
