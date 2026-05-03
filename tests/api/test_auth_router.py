@@ -335,3 +335,83 @@ def test_send_verification_sends_email_when_smtp_is_configured(
     assert len(sent_messages) == 1
     assert sent_messages[0]["To"] == "student@example.com"
     assert "https://app.example.com/verify-email?token=" in sent_messages[0].get_content()
+
+
+def test_suspended_user_cannot_login_or_use_existing_session(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services.auth.service import AuthService
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        signup_response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Teacher One",
+                "email": "teacher@example.com",
+                "password": "StrongPass123!",
+                "role": "teacher",
+            },
+        )
+        assert signup_response.status_code == 200
+        user_id = signup_response.json()["user"]["id"]
+
+        service = AuthService()
+        updated_user = service.update_user_by_admin(user_id=user_id, status="suspended")
+        assert updated_user is not None
+
+        me_response = client.get("/api/v1/auth/me")
+        client.cookies.clear()
+        login_response = client.post(
+            "/api/v1/auth/login",
+            json={
+                "email": "teacher@example.com",
+                "password": "StrongPass123!",
+            },
+        )
+
+    assert me_response.status_code == 401
+    assert login_response.status_code == 401
+
+
+def test_google_callback_rejects_suspended_user(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services.auth.google_oauth import GoogleIdentity
+    from deeptutor.services.auth.service import AuthService
+
+    async def _fake_exchange(_code: str, _settings) -> GoogleIdentity:
+        return GoogleIdentity(
+            subject="google-subject-suspended",
+            email="teacher@example.com",
+            name="Teacher One",
+        )
+
+    monkeypatch.setattr(
+        "deeptutor.api.routers.auth.exchange_google_code_for_identity",
+        _fake_exchange,
+    )
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        signup_response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Teacher One",
+                "email": "teacher@example.com",
+                "password": "StrongPass123!",
+                "role": "teacher",
+            },
+        )
+        assert signup_response.status_code == 200
+        user_id = signup_response.json()["user"]["id"]
+        service = AuthService()
+        updated_user = service.update_user_by_admin(user_id=user_id, status="suspended")
+        assert updated_user is not None
+
+        response = client.get(
+            '/api/v1/auth/google/callback?code=abc123&state={"role":"teacher"}',
+            follow_redirects=False,
+        )
+
+    assert response.status_code == 403

@@ -40,6 +40,11 @@ class AdminCreateUserRequest(BaseModel):
     role: Literal["teacher", "student", "admin"]
 
 
+class AdminUpdateUserRequest(BaseModel):
+    role: Literal["teacher", "student", "admin"] | None = None
+    status: Literal["active", "suspended"] | None = None
+
+
 class AuthenticatedUser(BaseModel):
     id: str
     email: EmailStr

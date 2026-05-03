@@ -27,6 +27,7 @@ export interface AdminUserRecord {
   display_name: string;
   role: AppRole;
   status: string;
+  email_verified_at?: string | null;
 }
 
 interface AdminUsersResponse {
@@ -167,6 +168,22 @@ export async function createAdminUser(payload: {
 }): Promise<{ user: AdminUserRecord }> {
   const response = await fetch(apiUrl("/api/v1/admin/users"), {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  return expectJson<{ user: AdminUserRecord }>(response);
+}
+
+export async function updateAdminUser(
+  userId: string,
+  payload: {
+    role?: AppRole;
+    status?: "active" | "suspended";
+  },
+): Promise<{ user: AdminUserRecord }> {
+  const response = await fetch(apiUrl(`/api/v1/admin/users/${userId}`), {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(payload),

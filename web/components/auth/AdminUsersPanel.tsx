@@ -2,14 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
-import { createAdminUser, listAdminUsers, type AdminUserRecord, type AppRole } from "@/lib/auth-api";
+import {
+  createAdminUser,
+  listAdminUsers,
+  updateAdminUser,
+  type AdminUserRecord,
+  type AppRole,
+} from "@/lib/auth-api";
 
 const PUBLIC_ADMIN_ROLES: AppRole[] = ["teacher", "student", "admin"];
+const USER_STATUSES = ["active", "suspended"] as const;
 
 export default function AdminUsersPanel() {
   const [users, setUsers] = useState<AdminUserRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [updatingUserId, setUpdatingUserId] = useState("");
   const [error, setError] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,6 +61,28 @@ export default function AdminUsersPanel() {
     }
   };
 
+  const handleUserFieldChange = (userId: string, field: "role" | "status", value: string) => {
+    setUsers((current) =>
+      current.map((user) => (user.id === userId ? { ...user, [field]: value } : user)),
+    );
+  };
+
+  const handleSaveUser = async (user: AdminUserRecord) => {
+    setUpdatingUserId(user.id);
+    setError("");
+    try {
+      const result = await updateAdminUser(user.id, {
+        role: user.role,
+        status: user.status as "active" | "suspended",
+      });
+      setUsers((current) => current.map((item) => (item.id === user.id ? result.user : item)));
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Không thể cập nhật tài khoản.");
+    } finally {
+      setUpdatingUserId("");
+    }
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_360px]">
       <section className="rounded-[28px] border border-[rgba(10,21,48,0.08)] bg-white px-6 py-6 shadow-[0_24px_60px_rgba(10,21,48,0.08)]">
@@ -75,6 +105,8 @@ export default function AdminUsersPanel() {
                   <th className="px-4 py-3 font-medium">Người dùng</th>
                   <th className="px-4 py-3 font-medium">Vai trò</th>
                   <th className="px-4 py-3 font-medium">Trạng thái</th>
+                  <th className="px-4 py-3 font-medium">Xác minh</th>
+                  <th className="px-4 py-3 font-medium">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[rgba(10,21,48,0.08)] bg-white text-[#0a1530]">
@@ -84,8 +116,51 @@ export default function AdminUsersPanel() {
                       <div className="font-medium">{user.display_name}</div>
                       <div className="mt-1 text-xs text-[#50607d]">{user.email}</div>
                     </td>
-                    <td className="px-4 py-4 capitalize">{user.role}</td>
-                    <td className="px-4 py-4 capitalize">{user.status}</td>
+                    <td className="px-4 py-4">
+                      <select
+                        value={user.role}
+                        onChange={(event) => handleUserFieldChange(user.id, "role", event.target.value)}
+                        className="rounded-xl border border-[rgba(10,21,48,0.12)] px-3 py-2 capitalize"
+                      >
+                        {PUBLIC_ADMIN_ROLES.map((value) => (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-4">
+                      <select
+                        value={user.status}
+                        onChange={(event) => handleUserFieldChange(user.id, "status", event.target.value)}
+                        className="rounded-xl border border-[rgba(10,21,48,0.12)] px-3 py-2 capitalize"
+                      >
+                        {USER_STATUSES.map((value) => (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                          user.email_verified_at ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                        }`}
+                      >
+                        {user.email_verified_at ? "verified" : "pending"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <Button
+                        type="button"
+                        loading={updatingUserId === user.id}
+                        className="rounded-xl px-4 py-2 text-sm"
+                        onClick={() => void handleSaveUser(user)}
+                      >
+                        Lưu
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

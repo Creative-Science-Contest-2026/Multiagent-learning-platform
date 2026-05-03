@@ -321,12 +321,17 @@ async def google_callback(
         identity = await exchange_google_code_for_identity(code.strip(), settings)
     except Exception as exc:  # pragma: no cover - external provider failures are integration-tested later
         raise HTTPException(status_code=502, detail="Google login failed") from exc
-    user = service.upsert_google_user(
-        email=identity.email,
-        display_name=identity.name,
-        provider_subject=identity.subject,
-        desired_role=role,
-    )
+    try:
+        user = service.upsert_google_user(
+            email=identity.email,
+            display_name=identity.name,
+            provider_subject=identity.subject,
+            desired_role=role,
+        )
+    except ValueError as exc:
+        if str(exc) == "user_inactive":
+            raise HTTPException(status_code=403, detail="Account is not active") from exc
+        raise
     session_secret, _session = service.create_auth_session(
         user_id=user["id"],
         user_agent=request.headers.get("user-agent"),

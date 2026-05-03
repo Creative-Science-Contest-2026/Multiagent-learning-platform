@@ -112,6 +112,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - authenticated role shells still lack a unified account surface for role, email, verification status, and sign-out, which makes the auth foundation feel unfinished despite the backend being real
 - Intended signed-in shell UX change:
   - add a shared signed-in account bar across owned auth shells and teacher-first legacy surfaces so users can always see identity, verification state, and logout affordances
+- Current admin account-lifecycle behavior:
+  - admin can list and create users, but cannot yet change role/status, and non-active account states are not enforced deeply enough across auth entry points
+- Intended admin account-lifecycle change:
+  - allow admin to update owned user role/status from the roster, and enforce non-active account states in email-password login, session lookup, and Google auth entry
 - Candidate approaches:
   - reuse the full `tutorbot` email channel implementation directly
   - add ad-hoc `smtplib` calls inside auth routers

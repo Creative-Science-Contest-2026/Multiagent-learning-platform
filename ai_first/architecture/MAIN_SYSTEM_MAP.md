@@ -54,6 +54,7 @@ flowchart TD
   PublicAuth --> RoleShells["Post-login shells: /teacher · /student · /admin"]
   PublicAuth --> VerificationSurface["Signed-in verification banner + resend / refresh actions"]
   PublicAuth --> AccountSurface["Signed-in account bar + logout + verification status"]
+  PublicAuth --> ActiveAccountPolicy["Only active accounts may enter auth shells"]
   RoleShells --> TeacherHub["Teacher hub links to knowledge · dashboard · agents"]
   RoleShells --> StudentHub["Student hub links to playground · student progress · docs"]
   RoleShells --> AdminHub["Admin hub roster + internal account creation"]

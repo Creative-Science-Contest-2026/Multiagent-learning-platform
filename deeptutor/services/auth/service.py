@@ -67,6 +67,8 @@ class AuthService:
             user = session.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
             if user is None:
                 return None
+            if str(user.status or "").strip().lower() != "active":
+                return None
             credential = session.get(UserPasswordCredential, user.id)
             if credential is None or not verify_password(password, credential.password_hash):
                 return None
@@ -114,6 +116,8 @@ class AuthService:
             if row is None:
                 return None
             user, auth_session = row
+            if str(user.status or "").strip().lower() != "active":
+                return None
             if auth_session.expires_at < datetime.utcnow():
                 return None
             auth_session.last_seen_at = datetime.utcnow()
@@ -141,9 +145,41 @@ class AuthService:
                     "display_name": user.display_name,
                     "role": str(user.role.value if hasattr(user.role, "value") else user.role),
                     "status": user.status,
+                    "email_verified_at": user.email_verified_at.isoformat() if user.email_verified_at else None,
                 }
                 for user in rows
             ]
+
+    def update_user_by_admin(
+        self,
+        *,
+        user_id: str,
+        role: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, str | None] | None:
+        with self._session() as session:
+            user = session.get(User, user_id)
+            if user is None:
+                return None
+            if role is not None:
+                user.role = role
+            if status is not None:
+                user.status = status
+                if status != "active":
+                    for auth_session in session.execute(
+                        select(AuthSession).where(AuthSession.user_id == user_id)
+                    ).scalars():
+                        if auth_session.revoked_at is None:
+                            auth_session.revoked_at = datetime.utcnow()
+            session.commit()
+            return {
+                "id": user.id,
+                "email": user.email,
+                "display_name": user.display_name,
+                "role": str(user.role.value if hasattr(user.role, "value") else user.role),
+                "status": user.status,
+                "email_verified_at": user.email_verified_at.isoformat() if user.email_verified_at else None,
+            }
 
     def request_password_reset(self, *, email: str) -> dict[str, str] | None:
         normalized_email = email.strip().lower()
@@ -250,6 +286,8 @@ class AuthService:
                 user = session.get(User, identity.user_id)
                 if user is None:
                     raise ValueError("google_identity_without_user")
+                if str(user.status or "").strip().lower() != "active":
+                    raise ValueError("user_inactive")
                 return self._serialize_user(user)
 
             user = session.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
@@ -263,6 +301,8 @@ class AuthService:
                 )
                 session.add(user)
                 session.flush()
+            elif str(user.status or "").strip().lower() != "active":
+                raise ValueError("user_inactive")
 
             session.add(
                 UserOAuthIdentity(

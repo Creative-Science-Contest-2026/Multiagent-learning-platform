@@ -66,3 +66,32 @@ def test_admin_can_create_teacher_accounts(tmp_path, monkeypatch: pytest.MonkeyP
     assert create_response.json()["user"]["email"] == "teacher2@example.com"
     users = list_response.json()["users"]
     assert any(user["email"] == "teacher2@example.com" and user["role"] == "teacher" for user in users)
+
+
+def test_admin_can_update_user_role_and_status(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    with TestClient(_build_admin_app(tmp_path, monkeypatch)) as client:
+        create_response = client.post(
+            "/api/v1/admin/users",
+            json={
+                "display_name": "Teacher Two",
+                "email": "teacher2@example.com",
+                "password": "StrongPass123!",
+                "role": "teacher",
+            },
+        )
+        user_id = create_response.json()["user"]["id"]
+
+        update_response = client.patch(
+            f"/api/v1/admin/users/{user_id}",
+            json={
+                "role": "student",
+                "status": "suspended",
+            },
+        )
+        list_response = client.get("/api/v1/admin/users")
+
+    assert update_response.status_code == 200
+    assert update_response.json()["user"]["role"] == "student"
+    assert update_response.json()["user"]["status"] == "suspended"
+    users = list_response.json()["users"]
+    assert any(user["id"] == user_id and user["role"] == "student" and user["status"] == "suspended" for user in users)
