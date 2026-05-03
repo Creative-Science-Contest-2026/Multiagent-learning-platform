@@ -19,9 +19,11 @@ from deeptutor.services.auth.google_oauth import build_google_authorize_url
 from deeptutor.services.auth.google_oauth import exchange_google_code_for_identity
 from deeptutor.services.auth.google_oauth import get_google_oauth_settings
 from deeptutor.services.auth.mailer import AuthEmailDeliverySettings
+from deeptutor.services.auth.mailer import AuthEmailDeliveryConfigError
+from deeptutor.services.auth.mailer import AuthEmailDeliveryTransportError
 from deeptutor.services.auth.mailer import build_password_reset_email
 from deeptutor.services.auth.mailer import build_verification_email
-from deeptutor.services.auth.mailer import send_auth_email
+from deeptutor.services.auth.mailer import deliver_auth_email
 from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.auth.schemas import ForgotPasswordRequest
 from deeptutor.services.auth.schemas import LoginRequest
@@ -150,38 +152,61 @@ def _deliver_password_reset_email(request: Request, reset_info: dict[str, str] |
     if reset_info is None:
         return
     settings = AuthEmailDeliverySettings.from_env()
-    if not settings.is_configured():
-        return
     message = build_password_reset_email(
         to_email=reset_info["email"],
         display_name=reset_info["display_name"],
         reset_url=_build_public_auth_url(request, "/reset-password", reset_info["token"]),
         from_address=settings.from_address,
         from_name=settings.from_name,
+        reply_to_address=settings.reply_to_address,
+        reply_to_name=settings.reply_to_name,
     )
     try:
-        send_auth_email(settings, message)
-    except Exception:  # pragma: no cover - logs only, privacy-preserving flow stays generic
+        result = deliver_auth_email(settings, message)
+    except (AuthEmailDeliveryConfigError, AuthEmailDeliveryTransportError):
         logger.exception("Password reset email delivery failed")
+        return
+    if result.status != "sent":
+        logger.warning(
+            "Password reset email was not sent",
+            extra={
+                "delivery_status": result.status,
+                "delivery_transport": result.transport,
+                "delivery_detail": result.detail,
+            },
+        )
 
 
 def _deliver_verification_email(request: Request, verification_info: dict[str, str] | None) -> None:
     if verification_info is None:
         return
     settings = AuthEmailDeliverySettings.from_env()
-    if not settings.is_configured():
-        return
     message = build_verification_email(
         to_email=verification_info["email"],
         display_name=verification_info["display_name"],
         verify_url=_build_public_auth_url(request, "/verify-email", verification_info["token"]),
         from_address=settings.from_address,
         from_name=settings.from_name,
+        reply_to_address=settings.reply_to_address,
+        reply_to_name=settings.reply_to_name,
     )
     try:
-        send_auth_email(settings, message)
-    except Exception:  # pragma: no cover - logs only, privacy-preserving flow stays generic
+        result = deliver_auth_email(settings, message)
+    except AuthEmailDeliveryConfigError as exc:
+        logger.exception("Email verification delivery is misconfigured")
+        raise HTTPException(status_code=503, detail="Email delivery is not configured") from exc
+    except AuthEmailDeliveryTransportError as exc:
         logger.exception("Email verification delivery failed")
+        raise HTTPException(status_code=503, detail="Email delivery failed") from exc
+    if result.status != "sent":
+        logger.warning(
+            "Email verification was not sent",
+            extra={
+                "delivery_status": result.status,
+                "delivery_transport": result.transport,
+                "delivery_detail": result.detail,
+            },
+        )
 
 
 @router.post("/signup")

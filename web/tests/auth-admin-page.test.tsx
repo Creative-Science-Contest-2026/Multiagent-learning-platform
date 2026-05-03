@@ -1,6 +1,6 @@
 import { fireEvent } from "@testing-library/react";
 import { render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const createAdminUser = vi.fn();
 const listAdminUsers = vi.fn();
@@ -17,6 +17,12 @@ vi.mock("../lib/auth-api", async () => {
 });
 
 describe("admin page", () => {
+  beforeEach(() => {
+    createAdminUser.mockReset();
+    listAdminUsers.mockReset();
+    updateAdminUser.mockReset();
+  });
+
   it("loads and renders the current account roster", async () => {
     listAdminUsers.mockResolvedValue({
       users: [
@@ -140,5 +146,55 @@ describe("admin page", () => {
     });
     expect(screen.getByDisplayValue("student")).toBeInTheDocument();
     expect(screen.getByDisplayValue("suspended")).toBeInTheDocument();
+  });
+
+  it("reloads the roster after a failed lifecycle update so local edits do not linger", async () => {
+    listAdminUsers
+      .mockResolvedValueOnce({
+        users: [
+          {
+            id: "teacher-1",
+            email: "teacher@example.com",
+            display_name: "Teacher One",
+            role: "teacher",
+            status: "active",
+            email_verified_at: null,
+          },
+        ],
+      })
+      .mockResolvedValueOnce({
+        users: [
+          {
+            id: "teacher-1",
+            email: "teacher@example.com",
+            display_name: "Teacher One",
+            role: "teacher",
+            status: "active",
+            email_verified_at: null,
+          },
+        ],
+      });
+    updateAdminUser.mockRejectedValue(new Error("update failed"));
+
+    const { default: AdminPage } = await import("../app/admin/page");
+    render(<AdminPage />);
+
+    await waitFor(() => {
+      expect(listAdminUsers).toHaveBeenCalledTimes(1);
+    });
+
+    const selects = screen.getAllByRole("combobox");
+    fireEvent.change(selects[0], { target: { value: "student" } });
+    fireEvent.change(selects[1], { target: { value: "suspended" } });
+    fireEvent.click(screen.getByRole("button", { name: /^lưu$/i }));
+
+    await waitFor(() => {
+      expect(updateAdminUser).toHaveBeenCalled();
+      expect(listAdminUsers).toHaveBeenCalledTimes(2);
+    });
+
+    const refreshedSelects = screen.getAllByRole("combobox");
+    expect(refreshedSelects[0]).toHaveDisplayValue("teacher");
+    expect(refreshedSelects[1]).toHaveDisplayValue("active");
   });
 });

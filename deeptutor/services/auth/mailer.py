@@ -4,9 +4,11 @@ import os
 import smtplib
 import ssl
 from email.message import EmailMessage
+from typing import Literal
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import model_validator
 
 
 def _truthy(value: str | None, *, default: bool) -> bool:
@@ -23,6 +25,7 @@ def _from_header(from_address: str, from_name: str = "") -> str:
 
 
 class AuthEmailDeliverySettings(BaseModel):
+    delivery_mode: Literal["auto", "disabled", "required"] = "auto"
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_username: str = ""
@@ -31,11 +34,15 @@ class AuthEmailDeliverySettings(BaseModel):
     smtp_use_ssl: bool = False
     from_address: str = ""
     from_name: str = ""
+    reply_to_address: str = ""
+    reply_to_name: str = ""
+    provider_name: str = ""
     timeout_seconds: int = Field(default=30, ge=1, le=120)
 
     @classmethod
     def from_env(cls) -> "AuthEmailDeliverySettings":
         return cls(
+            delivery_mode=os.getenv("DEEPTUTOR_AUTH_MAIL_DELIVERY_MODE", "auto"),
             smtp_host=os.getenv("DEEPTUTOR_AUTH_SMTP_HOST", ""),
             smtp_port=int(os.getenv("DEEPTUTOR_AUTH_SMTP_PORT", "587")),
             smtp_username=os.getenv("DEEPTUTOR_AUTH_SMTP_USERNAME", ""),
@@ -44,11 +51,49 @@ class AuthEmailDeliverySettings(BaseModel):
             smtp_use_ssl=_truthy(os.getenv("DEEPTUTOR_AUTH_SMTP_USE_SSL"), default=False),
             from_address=os.getenv("DEEPTUTOR_AUTH_FROM_ADDRESS", ""),
             from_name=os.getenv("DEEPTUTOR_AUTH_FROM_NAME", ""),
+            reply_to_address=os.getenv("DEEPTUTOR_AUTH_REPLY_TO_ADDRESS", ""),
+            reply_to_name=os.getenv("DEEPTUTOR_AUTH_REPLY_TO_NAME", ""),
+            provider_name=os.getenv("DEEPTUTOR_AUTH_MAIL_PROVIDER", ""),
             timeout_seconds=int(os.getenv("DEEPTUTOR_AUTH_SMTP_TIMEOUT_SECONDS", "30")),
         )
 
+    @model_validator(mode="after")
+    def _validate_transport(self) -> "AuthEmailDeliverySettings":
+        if self.smtp_use_tls and self.smtp_use_ssl:
+            raise ValueError("SMTP TLS and SSL modes are mutually exclusive")
+        return self
+
     def is_configured(self) -> bool:
         return bool(self.smtp_host.strip() and self.from_address.strip())
+
+    def is_disabled(self) -> bool:
+        return self.delivery_mode == "disabled"
+
+    def is_required(self) -> bool:
+        return self.delivery_mode == "required"
+
+    def transport_name(self) -> str:
+        return self.provider_name.strip() or "smtp"
+
+
+class AuthEmailDeliveryConfigError(ValueError):
+    """Raised when auth email delivery is required but not configured correctly."""
+
+
+class AuthEmailDeliveryTransportError(RuntimeError):
+    """Raised when auth email delivery fails while running in required mode."""
+
+
+class AuthEmailDeliveryResult(BaseModel):
+    status: Literal["sent", "skipped", "failed"]
+    transport: str
+    detail: str = ""
+
+
+def _apply_reply_to(message: EmailMessage, reply_to_address: str = "", reply_to_name: str = "") -> None:
+    if not reply_to_address.strip():
+        return
+    message["Reply-To"] = _from_header(reply_to_address, reply_to_name)
 
 
 def build_password_reset_email(
@@ -58,11 +103,14 @@ def build_password_reset_email(
     reset_url: str,
     from_address: str,
     from_name: str = "",
+    reply_to_address: str = "",
+    reply_to_name: str = "",
 ) -> EmailMessage:
     recipient_name = display_name.strip() or to_email.strip()
     message = EmailMessage()
     message["From"] = _from_header(from_address, from_name)
     message["To"] = to_email.strip()
+    _apply_reply_to(message, reply_to_address, reply_to_name)
     message["Subject"] = "Dat lai mat khau DeepTutor"
     message.set_content(
         "\n".join(
@@ -87,11 +135,14 @@ def build_verification_email(
     verify_url: str,
     from_address: str,
     from_name: str = "",
+    reply_to_address: str = "",
+    reply_to_name: str = "",
 ) -> EmailMessage:
     recipient_name = display_name.strip() or to_email.strip()
     message = EmailMessage()
     message["From"] = _from_header(from_address, from_name)
     message["To"] = to_email.strip()
+    _apply_reply_to(message, reply_to_address, reply_to_name)
     message["Subject"] = "Xac minh email DeepTutor"
     message.set_content(
         "\n".join(
@@ -124,3 +175,25 @@ def send_auth_email(settings: AuthEmailDeliverySettings, message: EmailMessage) 
         if settings.smtp_username.strip():
             smtp.login(settings.smtp_username, settings.smtp_password)
         smtp.send_message(message)
+
+
+def deliver_auth_email(
+    settings: AuthEmailDeliverySettings,
+    message: EmailMessage,
+) -> AuthEmailDeliveryResult:
+    transport = settings.transport_name()
+    if settings.is_disabled():
+        return AuthEmailDeliveryResult(status="skipped", transport=transport, detail="delivery-disabled")
+    if not settings.is_configured():
+        if settings.is_required():
+            raise AuthEmailDeliveryConfigError(
+                "Auth email delivery is required but SMTP transport is not fully configured"
+            )
+        return AuthEmailDeliveryResult(status="skipped", transport=transport, detail="smtp-not-configured")
+    try:
+        send_auth_email(settings, message)
+    except Exception as exc:
+        if settings.is_required():
+            raise AuthEmailDeliveryTransportError("Auth email delivery failed") from exc
+        return AuthEmailDeliveryResult(status="failed", transport=transport, detail=exc.__class__.__name__)
+    return AuthEmailDeliveryResult(status="sent", transport=transport, detail="smtp-sent")

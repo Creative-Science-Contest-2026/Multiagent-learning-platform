@@ -39,13 +39,20 @@ def get_auth_session_factory(database_url: str | None = None) -> Any:
     return sessionmaker(bind=get_auth_engine(database_url), autoflush=False, autocommit=False, future=True)
 
 
-def init_auth_schema(database_url: str | None = None) -> None:
+@lru_cache(maxsize=4)
+def _initialize_auth_schema_once(database_url: str) -> None:
     from deeptutor.services.auth.models import Base
 
     Base.metadata.create_all(bind=get_auth_engine(database_url))
+
+
+def init_auth_schema(database_url: str | None = None) -> None:
+    resolved_url = database_url or get_auth_database_url()
+    _initialize_auth_schema_once(resolved_url)
 
 
 def clear_auth_database_caches() -> None:
     get_auth_database_url.cache_clear()
     get_auth_engine.cache_clear()
     get_auth_session_factory.cache_clear()
+    _initialize_auth_schema_once.cache_clear()

@@ -78,6 +78,7 @@ export default function AdminUsersPanel() {
       setUsers((current) => current.map((item) => (item.id === user.id ? result.user : item)));
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Không thể cập nhật tài khoản.");
+      await loadUsers().catch(() => undefined);
     } finally {
       setUpdatingUserId("");
     }

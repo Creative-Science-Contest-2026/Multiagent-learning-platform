@@ -95,3 +95,18 @@ def test_admin_can_update_user_role_and_status(tmp_path, monkeypatch: pytest.Mon
     assert update_response.json()["user"]["status"] == "suspended"
     users = list_response.json()["users"]
     assert any(user["id"] == user_id and user["role"] == "student" and user["status"] == "suspended" for user in users)
+
+
+def test_admin_cannot_suspend_or_demote_self(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    with TestClient(_build_admin_app(tmp_path, monkeypatch)) as client:
+        suspend_response = client.patch(
+            "/api/v1/admin/users/admin-user-id",
+            json={"status": "suspended"},
+        )
+        demote_response = client.patch(
+            "/api/v1/admin/users/admin-user-id",
+            json={"role": "teacher"},
+        )
+
+    assert suspend_response.status_code == 400
+    assert demote_response.status_code == 400

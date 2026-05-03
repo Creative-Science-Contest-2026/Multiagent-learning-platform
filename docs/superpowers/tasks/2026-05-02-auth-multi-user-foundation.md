@@ -101,7 +101,7 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - Chosen approach:
   - FastAPI-owned auth and identity, Next.js as a client
 - Current auth-delivery behavior:
-  - password reset and email verification now issue real backend tokens and can send SMTP email when configured, while preserving explicit debug-link behavior for local development and tests
+  - password reset and email verification now issue real backend tokens and use an explicit auth-mail delivery policy: `auto` sends through SMTP when configured, `disabled` suppresses delivery, and `required` treats missing or broken transport as a production misconfiguration while preserving privacy-safe forgot-password semantics
 - Intended auth-delivery change:
   - add a bounded SMTP-backed auth mailer seam that sends reset and verification emails when configured, while preserving explicit debug-link behavior for local development and tests
 - Current verification UX behavior:

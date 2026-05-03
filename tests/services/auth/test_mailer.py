@@ -3,8 +3,10 @@ from __future__ import annotations
 from email.message import EmailMessage
 
 from deeptutor.services.auth.mailer import AuthEmailDeliverySettings
+from deeptutor.services.auth.mailer import AuthEmailDeliveryConfigError
 from deeptutor.services.auth.mailer import build_password_reset_email
 from deeptutor.services.auth.mailer import build_verification_email
+from deeptutor.services.auth.mailer import deliver_auth_email
 from deeptutor.services.auth.mailer import send_auth_email
 
 
@@ -39,9 +41,12 @@ def test_build_password_reset_email_includes_reset_link() -> None:
         display_name="Teacher One",
         reset_url="https://app.example.com/reset-password?token=abc",
         from_address="noreply@example.com",
+        reply_to_address="support@example.com",
+        reply_to_name="DeepTutor Support",
     )
 
     assert message["To"] == "teacher@example.com"
+    assert message["Reply-To"] == "DeepTutor Support <support@example.com>"
     assert "Teacher One" in message.get_content()
     assert "reset-password?token=abc" in message.get_content()
 
@@ -93,3 +98,49 @@ def test_send_auth_email_uses_configured_smtp_transport(monkeypatch) -> None:
     assert smtp.started_tls is True
     assert smtp.logged_in == ("mailer-user", "mailer-pass")
     assert smtp.sent_messages[0]["To"] == "teacher@example.com"
+
+
+def test_deliver_auth_email_skips_when_transport_is_not_configured() -> None:
+    settings = AuthEmailDeliverySettings(delivery_mode="auto")
+    message = build_verification_email(
+        to_email="student@example.com",
+        display_name="Student One",
+        verify_url="https://app.example.com/verify-email?token=xyz",
+        from_address="noreply@example.com",
+    )
+
+    result = deliver_auth_email(settings, message)
+
+    assert result.status == "skipped"
+    assert result.detail == "smtp-not-configured"
+
+
+def test_deliver_auth_email_requires_transport_in_required_mode() -> None:
+    settings = AuthEmailDeliverySettings(delivery_mode="required")
+    message = build_verification_email(
+        to_email="student@example.com",
+        display_name="Student One",
+        verify_url="https://app.example.com/verify-email?token=xyz",
+        from_address="noreply@example.com",
+    )
+
+    try:
+        deliver_auth_email(settings, message)
+    except AuthEmailDeliveryConfigError as exc:
+        assert "required" in str(exc).lower()
+    else:  # pragma: no cover - defensive
+        raise AssertionError("Expected AuthEmailDeliveryConfigError")
+
+
+def test_delivery_settings_reject_conflicting_tls_and_ssl() -> None:
+    try:
+        AuthEmailDeliverySettings(
+            smtp_host="smtp.example.com",
+            from_address="noreply@example.com",
+            smtp_use_tls=True,
+            smtp_use_ssl=True,
+        )
+    except ValueError as exc:
+        assert "mutually exclusive" in str(exc)
+    else:  # pragma: no cover - defensive
+        raise AssertionError("Expected ValueError")

@@ -54,6 +54,11 @@ def update_user(
     current_user: AuthenticatedUser = Depends(require_admin),
     service: AuthService = Depends(get_auth_service),
 ):
+    if user_id == current_user.id:
+        if payload.role is not None and payload.role != "admin":
+            raise HTTPException(status_code=400, detail="Admin cannot remove their own admin role")
+        if payload.status is not None and payload.status != "active":
+            raise HTTPException(status_code=400, detail="Admin cannot suspend their own account")
     user = service.update_user_by_admin(
         user_id=user_id,
         role=payload.role,

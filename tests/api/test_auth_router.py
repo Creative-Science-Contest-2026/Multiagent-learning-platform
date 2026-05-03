@@ -4,6 +4,7 @@ from email.message import EmailMessage
 from urllib.parse import parse_qs, urlparse
 
 import pytest
+from deeptutor.services.auth.mailer import AuthEmailDeliveryResult
 
 try:
     from fastapi import FastAPI
@@ -267,14 +268,15 @@ def test_forgot_password_sends_email_when_smtp_is_configured(
 ) -> None:
     sent_messages: list[EmailMessage] = []
 
-    def _capture_send(_settings, message: EmailMessage) -> None:
+    def _capture_send(_settings, message: EmailMessage):
         sent_messages.append(message)
+        return AuthEmailDeliveryResult(status="sent", transport="smtp", detail="smtp-sent")
 
     monkeypatch.setenv("DEEPTUTOR_AUTH_DEBUG_TOKENS", "0")
     monkeypatch.setenv("DEEPTUTOR_AUTH_SMTP_HOST", "smtp.example.com")
     monkeypatch.setenv("DEEPTUTOR_AUTH_FROM_ADDRESS", "noreply@example.com")
     monkeypatch.setenv("DEEPTUTOR_PUBLIC_APP_URL", "https://app.example.com")
-    monkeypatch.setattr("deeptutor.api.routers.auth.send_auth_email", _capture_send)
+    monkeypatch.setattr("deeptutor.api.routers.auth.deliver_auth_email", _capture_send)
 
     with TestClient(_build_app(tmp_path, monkeypatch)) as client:
         signup_response = client.post(
@@ -307,14 +309,15 @@ def test_send_verification_sends_email_when_smtp_is_configured(
 ) -> None:
     sent_messages: list[EmailMessage] = []
 
-    def _capture_send(_settings, message: EmailMessage) -> None:
+    def _capture_send(_settings, message: EmailMessage):
         sent_messages.append(message)
+        return AuthEmailDeliveryResult(status="sent", transport="smtp", detail="smtp-sent")
 
     monkeypatch.setenv("DEEPTUTOR_AUTH_DEBUG_TOKENS", "0")
     monkeypatch.setenv("DEEPTUTOR_AUTH_SMTP_HOST", "smtp.example.com")
     monkeypatch.setenv("DEEPTUTOR_AUTH_FROM_ADDRESS", "noreply@example.com")
     monkeypatch.setenv("DEEPTUTOR_PUBLIC_APP_URL", "https://app.example.com")
-    monkeypatch.setattr("deeptutor.api.routers.auth.send_auth_email", _capture_send)
+    monkeypatch.setattr("deeptutor.api.routers.auth.deliver_auth_email", _capture_send)
 
     with TestClient(_build_app(tmp_path, monkeypatch)) as client:
         signup_response = client.post(
@@ -335,6 +338,63 @@ def test_send_verification_sends_email_when_smtp_is_configured(
     assert len(sent_messages) == 1
     assert sent_messages[0]["To"] == "student@example.com"
     assert "https://app.example.com/verify-email?token=" in sent_messages[0].get_content()
+
+
+def test_send_verification_returns_503_when_required_mail_delivery_is_not_configured(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("DEEPTUTOR_AUTH_MAIL_DELIVERY_MODE", "required")
+    monkeypatch.delenv("DEEPTUTOR_AUTH_SMTP_HOST", raising=False)
+    monkeypatch.delenv("DEEPTUTOR_AUTH_FROM_ADDRESS", raising=False)
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        signup_response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Student One",
+                "email": "student@example.com",
+                "password": "StrongPass123!",
+                "role": "student",
+            },
+        )
+        assert signup_response.status_code == 200
+
+        send_response = client.post("/api/v1/auth/send-verification")
+
+    assert send_response.status_code == 503
+    assert send_response.json()["detail"] == "Email delivery is not configured"
+
+
+def test_forgot_password_stays_generic_when_required_mail_delivery_is_not_configured(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("DEEPTUTOR_AUTH_MAIL_DELIVERY_MODE", "required")
+    monkeypatch.setenv("DEEPTUTOR_AUTH_DEBUG_TOKENS", "0")
+    monkeypatch.delenv("DEEPTUTOR_AUTH_SMTP_HOST", raising=False)
+    monkeypatch.delenv("DEEPTUTOR_AUTH_FROM_ADDRESS", raising=False)
+
+    with TestClient(_build_app(tmp_path, monkeypatch)) as client:
+        signup_response = client.post(
+            "/api/v1/auth/signup",
+            json={
+                "display_name": "Teacher One",
+                "email": "teacher@example.com",
+                "password": "StrongPass123!",
+                "role": "teacher",
+            },
+        )
+        assert signup_response.status_code == 200
+        client.cookies.clear()
+
+        forgot_response = client.post(
+            "/api/v1/auth/forgot-password",
+            json={"email": "teacher@example.com"},
+        )
+
+    assert forgot_response.status_code == 200
+    assert forgot_response.json() == {"ok": True}
 
 
 def test_suspended_user_cannot_login_or_use_existing_session(
