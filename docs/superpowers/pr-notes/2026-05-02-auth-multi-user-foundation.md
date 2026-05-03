@@ -23,6 +23,8 @@
 - propagates that owner scope into tutoring turn runtime and context building, so live tutoring observations and retrieved student-state context no longer regress back to anonymous storage after authentication
 - moves lightweight `SUMMARY.md` / `PROFILE.md` memory into owner-specific storage, auth-gates `/api/v1/memory`, and binds runtime memory context/refresh writes to the authenticated actor instead of a global shared file pair
 - hardens the legacy `/api/v1/chat*` and `/api/v1/solve*` transports by requiring authenticated cookies on REST + websocket entrypoints and filtering their JSON session stores by `owner_user_id`
+- auth-gates the legacy guided-learning `/api/v1/guide*` REST + websocket surface and binds guided-learning session files to `owner_user_id`
+- auth-gates `/api/v1/tutorbot*`, persists bot owner metadata, filters teacher access to owned bots/workspaces/history/websockets, and keeps admin override for internal support
 - makes knowledge-pack default selection user-specific and stamps newly created/imported knowledge packs with auth-era ownership metadata
 - changes marketplace imports to create per-user imported copies, preventing two teachers from colliding on the same imported pack name
 
@@ -74,6 +76,11 @@ flowchart TD
   Public --> LegacyChatSolve["Legacy /chat and /solve routes"]
   LegacyChatSolve --> LegacySessionJSON["JSON session stores with owner_user_id"]
   LegacySessionJSON --> AuthBoundary["Auth cookie required for REST + WS access"]
+  TeacherShell --> GuideSurface["/api/v1/guide REST + WS"]
+  GuideSurface --> GuideSessions["guided session JSON with owner_user_id"]
+  TeacherShell --> TutorBotSurface["/api/v1/tutorbot"]
+  TutorBotSurface --> TutorBotConfigs["teacher-owned bot configs + workspace/history access"]
+  TutorBotSurface --> AdminOverride["admin override for tutorbot support"]
   AccountLifecycle --> ActiveOnlyAuth["Only active accounts may login or resume sessions"]
 ```
 
@@ -89,6 +96,8 @@ flowchart TD
 - live tutoring turns now persist observations and retrieve student-state context under the owning session account, not the legacy anonymous bucket
 - lightweight memory reads, writes, clears, and refreshes are now per-user, and runtime memory injection uses the authenticated actor id even when an admin is viewing a globally scoped session
 - legacy `/api/v1/chat*` and `/api/v1/solve*` routes now require authentication and filter their JSON-backed session CRUD + websocket resume flows by `owner_user_id`
+- legacy `/api/v1/guide*` routes now require authentication, and guide session create/get/list/chat/page/reset/delete flows resolve only owned guided-learning sessions for normal teachers while admins retain cross-session visibility
+- legacy `/api/v1/tutorbot*` routes now require authenticated `teacher` or `admin` access, and newly created bots persist owner metadata so non-admin teachers can only see and connect to their own bots, bot files, and history
 - assessment recommendation and diagnosis now use the same teacher/admin gate and owner-scoped signal store, so support-heavy diagnosis cannot be influenced by another teacher's sessions or tutoring evidence
 - `GET/PUT /api/v1/knowledge/default` is now per-user instead of global, and newly created/imported auth-era packs record `owner_user_id`, `owner_email`, and `owner_display_name`
 - unrelated `web/**` surfaces remain outside scope because this lane only owns the decomposed auth frontend subset

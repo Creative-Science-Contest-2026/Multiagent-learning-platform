@@ -44,6 +44,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/assessment.py`
 - `deeptutor/api/routers/chat.py`
 - `deeptutor/api/routers/solve.py`
+- `deeptutor/api/routers/guide.py`
+- `deeptutor/api/routers/tutorbot.py`
 - `deeptutor/services/auth/**`
 - `deeptutor/services/db/**`
 - `deeptutor/services/session/**`
@@ -51,6 +53,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/services/memory/**`
 - `deeptutor/agents/chat/session_manager.py`
 - `deeptutor/agents/solve/session_manager.py`
+- `deeptutor/agents/guide/guide_manager.py`
+- `deeptutor/services/tutorbot/**`
 - `alembic/**`
 - `tests/api/test_auth_router.py`
 - `tests/api/test_admin_users_router.py`
@@ -63,6 +67,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `tests/api/test_assessment_router.py`
 - `tests/api/test_chat_router.py`
 - `tests/api/test_solve_router.py`
+- `tests/api/test_guide_router.py`
+- `tests/api/test_tutorbot_router.py`
 - `tests/services/auth/**`
 - `tests/services/memory/**`
 - `tests/services/session/test_owned_session_store.py`
@@ -161,6 +167,14 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - the older `/chat` and `/solve` routes are still mounted publicly and store session history in shared JSON files without `owner_user_id`, so authenticated product users can bypass the new auth/session foundation through those legacy entrypoints
 - Intended legacy chat/solve change:
   - require auth on the legacy chat and solve REST/websocket entrypoints, extend their shared `BaseSessionManager` records with optional `owner_user_id`, and filter list/get/update/delete/create flows by the authenticated owner so those fallback transports stop leaking sessions across accounts
+- Current guided-learning behavior:
+  - `/api/v1/guide` still exposes session creation, mutation, page reads, and websocket control without auth or owner binding, so guided-learning sessions can bypass the new account/session model entirely
+- Intended guided-learning change:
+  - require auth on `guide` REST/websocket entrypoints, persist `owner_user_id` on guided-learning session files, and ensure all create/get/list/reset/delete/chat/page flows only resolve sessions owned by the authenticated user unless the caller is admin
+- Current tutorbot behavior:
+  - `/api/v1/tutorbot` exposes bot lifecycle, bot files, history, souls, and bot websocket chat without auth, and bot configs/workspaces do not yet carry ownership metadata
+- Intended tutorbot change:
+  - require authenticated teacher/admin access on tutorbot routes, persist bot owner metadata for newly created bots, filter normal teacher access to owned bots/workspaces/history/websockets, and keep admin with cross-bot visibility for internal support
 - Candidate approaches:
   - router-level role gates only, leaving underlying dashboard evidence tables global
   - full per-user isolation by extending router auth plus owner scoping into dashboard evidence services and auth-era knowledge-pack metadata
@@ -177,6 +191,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/memory.py`
 - `deeptutor/api/routers/chat.py`
 - `deeptutor/api/routers/solve.py`
+- `deeptutor/api/routers/guide.py`
+- `deeptutor/api/routers/tutorbot.py`
 - `deeptutor/api/routers/dashboard.py`
 - `deeptutor/api/routers/marketplace.py`
 - `deeptutor/api/routers/knowledge.py`
@@ -191,6 +207,8 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/services/session/base_session_manager.py`
 - `deeptutor/agents/chat/session_manager.py`
 - `deeptutor/agents/solve/session_manager.py`
+- `deeptutor/agents/guide/guide_manager.py`
+- `deeptutor/services/tutorbot/manager.py`
 - `deeptutor/services/path_service.py`
 - `deeptutor/tutorbot/channels/email.py`
 - `pyproject.toml`
@@ -219,6 +237,9 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - current stop condition for legacy transport hardening:
   - `/api/v1/chat*` and `/api/v1/solve*` reject unauthenticated requests and websockets
   - legacy chat/solve session CRUD and websocket resume paths use `owner_user_id` so one authenticated user cannot read or mutate another user's legacy JSON-backed sessions
+- current stop condition for guided-learning/tutorbot hardening:
+  - `/api/v1/guide*` rejects unauthenticated REST and websocket access and binds guided-learning session files to `owner_user_id`
+  - `/api/v1/tutorbot*` rejects unauthenticated access, and non-admin teachers can only access bots/workspaces/history/websockets they own
 
 ## Required Tests
 

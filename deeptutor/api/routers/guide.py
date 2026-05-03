@@ -5,7 +5,7 @@ Guided Learning API Router
 Provides session creation, learning progress management, and chat interaction.
 """
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from deeptutor.agents.notebook import NotebookAnalysisAgent
@@ -13,6 +13,10 @@ from deeptutor.agents.base_agent import BaseAgent
 from deeptutor.agents.guide.guide_manager import GuideManager
 from deeptutor.api.utils.task_id_manager import TaskIDManager
 from deeptutor.logging import get_logger
+from deeptutor.services.auth.deps import get_current_user
+from deeptutor.services.auth.deps import get_current_user_from_websocket
+from deeptutor.services.auth.deps import owner_scope_for_user
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.config import PROJECT_ROOT, load_config_with_main
 from deeptutor.services.llm import get_llm_config
 from deeptutor.services.notebook import notebook_manager
@@ -122,7 +126,10 @@ def _build_user_input_from_records(records: list[dict]) -> str:
 
 
 @router.post("/create_session")
-async def create_session(request: CreateSessionRequest):
+async def create_session(
+    request: CreateSessionRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Create a new guided learning session.
 
@@ -170,6 +177,7 @@ async def create_session(request: CreateSessionRequest):
             user_input=user_input,
             display_title=raw_user_input,
             notebook_context=notebook_context,
+            owner_user_id=owner_scope_for_user(current_user),
         )
 
         if result and "session_id" in result:
@@ -187,13 +195,19 @@ async def create_session(request: CreateSessionRequest):
 
 
 @router.post("/start")
-async def start_learning(request: SessionActionRequest):
+async def start_learning(
+    request: SessionActionRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Start learning (get the first knowledge point).
     """
     try:
         manager = get_guide_manager()
-        result = await manager.start_learning(request.session_id)
+        result = await manager.start_learning(
+            request.session_id,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         return result
     except Exception as e:
         logger.error(f"Start learning failed: {e}")
@@ -201,13 +215,20 @@ async def start_learning(request: SessionActionRequest):
 
 
 @router.post("/navigate")
-async def navigate_to_knowledge(request: NavigateRequest):
+async def navigate_to_knowledge(
+    request: NavigateRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Navigate to any knowledge point.
     """
     try:
         manager = get_guide_manager()
-        result = await manager.navigate_to_knowledge(request.session_id, request.knowledge_index)
+        result = await manager.navigate_to_knowledge(
+            request.session_id,
+            request.knowledge_index,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         return result
     except Exception as e:
         logger.error(f"Navigate knowledge failed: {e}")
@@ -215,13 +236,19 @@ async def navigate_to_knowledge(request: NavigateRequest):
 
 
 @router.post("/complete")
-async def complete_learning(request: SessionActionRequest):
+async def complete_learning(
+    request: SessionActionRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Complete guided learning and generate a summary.
     """
     try:
         manager = get_guide_manager()
-        result = await manager.complete_learning(request.session_id)
+        result = await manager.complete_learning(
+            request.session_id,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         BaseAgent.print_stats("guide")
         return result
     except Exception as e:
@@ -230,13 +257,21 @@ async def complete_learning(request: SessionActionRequest):
 
 
 @router.post("/chat")
-async def chat(request: ChatRequest):
+async def chat(
+    request: ChatRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Send a chat message.
     """
     try:
         manager = get_guide_manager()
-        result = await manager.chat(request.session_id, request.message, request.knowledge_index)
+        result = await manager.chat(
+            request.session_id,
+            request.message,
+            request.knowledge_index,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         return result
     except Exception as e:
         logger.error(f"Chat failed: {e}")
@@ -244,13 +279,20 @@ async def chat(request: ChatRequest):
 
 
 @router.post("/fix_html")
-async def fix_html(request: FixHtmlRequest):
+async def fix_html(
+    request: FixHtmlRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Fix HTML page bugs.
     """
     try:
         manager = get_guide_manager()
-        result = await manager.fix_html(request.session_id, request.bug_description)
+        result = await manager.fix_html(
+            request.session_id,
+            request.bug_description,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         return result
     except Exception as e:
         logger.error(f"Fix HTML failed: {e}")
@@ -258,13 +300,20 @@ async def fix_html(request: FixHtmlRequest):
 
 
 @router.post("/retry_page")
-async def retry_page(request: RetryPageRequest):
+async def retry_page(
+    request: RetryPageRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Retry a failed page generation.
     """
     try:
         manager = get_guide_manager()
-        result = await manager.retry_page(request.session_id, request.page_index)
+        result = await manager.retry_page(
+            request.session_id,
+            request.page_index,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         return result
     except Exception as e:
         logger.error(f"Retry page failed: {e}")
@@ -272,13 +321,19 @@ async def retry_page(request: RetryPageRequest):
 
 
 @router.post("/reset")
-async def reset_session(request: SessionActionRequest):
+async def reset_session(
+    request: SessionActionRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Reset the current guided learning session.
     """
     try:
         manager = get_guide_manager()
-        result = await manager.reset_session(request.session_id)
+        result = await manager.reset_session(
+            request.session_id,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         return result
     except Exception as e:
         logger.error(f"Reset session failed: {e}")
@@ -286,13 +341,19 @@ async def reset_session(request: SessionActionRequest):
 
 
 @router.delete("/session/{session_id}")
-async def delete_session(session_id: str):
+async def delete_session(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Permanently delete a guided learning session.
     """
     try:
         manager = get_guide_manager()
-        result = await manager.delete_session(session_id)
+        result = await manager.delete_session(
+            session_id,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         return result
     except Exception as e:
         logger.error(f"Delete session failed: {e}")
@@ -300,13 +361,13 @@ async def delete_session(session_id: str):
 
 
 @router.get("/sessions")
-async def list_sessions():
+async def list_sessions(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     List all guided learning sessions (summary only, no HTML).
     """
     try:
         manager = get_guide_manager()
-        sessions = manager.list_sessions()
+        sessions = manager.list_sessions(owner_user_id=owner_scope_for_user(current_user))
         return {"sessions": sessions}
     except Exception as e:
         logger.error(f"List sessions failed: {e}")
@@ -314,13 +375,16 @@ async def list_sessions():
 
 
 @router.get("/session/{session_id}")
-async def get_session(session_id: str):
+async def get_session(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Get session information.
     """
     try:
         manager = get_guide_manager()
-        session = manager.get_session(session_id)
+        session = manager.get_session(session_id, owner_user_id=owner_scope_for_user(current_user))
         if not session:
             raise HTTPException(status_code=404, detail="Session not found")
         return session
@@ -332,13 +396,19 @@ async def get_session(session_id: str):
 
 
 @router.get("/session/{session_id}/html")
-async def get_current_html(session_id: str):
+async def get_current_html(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Get the current HTML page.
     """
     try:
         manager = get_guide_manager()
-        html = manager.get_current_html(session_id)
+        html = manager.get_current_html(
+            session_id,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         if html is None:
             raise HTTPException(status_code=404, detail="Session not found or no HTML content")
         return {"html": html}
@@ -350,13 +420,19 @@ async def get_current_html(session_id: str):
 
 
 @router.get("/session/{session_id}/pages")
-async def get_session_pages(session_id: str):
+async def get_session_pages(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Get page generation status and ready HTML pages.
     """
     try:
         manager = get_guide_manager()
-        pages = manager.get_session_pages(session_id)
+        pages = manager.get_session_pages(
+            session_id,
+            owner_user_id=owner_scope_for_user(current_user),
+        )
         if not pages:
             raise HTTPException(status_code=404, detail="Session not found")
         return pages
@@ -382,6 +458,13 @@ async def websocket_guide(websocket: WebSocket, session_id: str):
     - fix_html: Fix HTML
     - get_session: Get session state
     """
+    try:
+        current_user = get_current_user_from_websocket(websocket)
+    except Exception:
+        await websocket.close(code=4401)
+        return
+
+    owner_scope = owner_scope_for_user(current_user)
     await websocket.accept()
 
     task_manager = TaskIDManager.get_instance()
@@ -395,7 +478,7 @@ async def websocket_guide(websocket: WebSocket, session_id: str):
     try:
         manager = get_guide_manager()
 
-        session = manager.get_session(session_id)
+        session = manager.get_session(session_id, owner_user_id=owner_scope)
         if not session:
             await websocket.send_json({"type": "error", "content": "Session not found"})
             await websocket.close()
@@ -412,18 +495,22 @@ async def websocket_guide(websocket: WebSocket, session_id: str):
 
                 if msg_type == "start":
                     logger.debug(f"[{task_id}] Start learning")
-                    result = await manager.start_learning(session_id)
+                    result = await manager.start_learning(session_id, owner_user_id=owner_scope)
                     await websocket.send_json({"type": "start_result", "data": result})
 
                 elif msg_type == "navigate":
                     knowledge_index = int(data.get("knowledge_index", 0))
                     logger.debug(f"[{task_id}] Navigate to knowledge point {knowledge_index}")
-                    result = await manager.navigate_to_knowledge(session_id, knowledge_index)
+                    result = await manager.navigate_to_knowledge(
+                        session_id,
+                        knowledge_index,
+                        owner_user_id=owner_scope,
+                    )
                     await websocket.send_json({"type": "navigate_result", "data": result})
 
                 elif msg_type == "complete":
                     logger.debug(f"[{task_id}] Complete learning")
-                    result = await manager.complete_learning(session_id)
+                    result = await manager.complete_learning(session_id, owner_user_id=owner_scope)
                     await websocket.send_json({"type": "complete_result", "data": result})
 
                 elif msg_type == "chat":
@@ -431,30 +518,43 @@ async def websocket_guide(websocket: WebSocket, session_id: str):
                     knowledge_index = data.get("knowledge_index")
                     if message:
                         logger.debug(f"[{task_id}] User message: {message[:50]}...")
-                        result = await manager.chat(session_id, message, knowledge_index)
+                        result = await manager.chat(
+                            session_id,
+                            message,
+                            knowledge_index,
+                            owner_user_id=owner_scope,
+                        )
                         await websocket.send_json({"type": "chat_result", "data": result})
 
                 elif msg_type == "fix_html":
                     bug_desc = data.get("bug_description", "")
                     logger.debug(f"[{task_id}] Fix HTML: {bug_desc[:50]}...")
-                    result = await manager.fix_html(session_id, bug_desc)
+                    result = await manager.fix_html(
+                        session_id,
+                        bug_desc,
+                        owner_user_id=owner_scope,
+                    )
                     await websocket.send_json({"type": "fix_result", "data": result})
 
                 elif msg_type == "get_session":
-                    session = manager.get_session(session_id)
+                    session = manager.get_session(session_id, owner_user_id=owner_scope)
                     await websocket.send_json({"type": "session_info", "data": session})
 
                 elif msg_type == "get_pages":
-                    pages = manager.get_session_pages(session_id)
+                    pages = manager.get_session_pages(session_id, owner_user_id=owner_scope)
                     await websocket.send_json({"type": "pages_info", "data": pages})
 
                 elif msg_type == "retry_page":
                     page_index = int(data.get("page_index", 0))
-                    result = await manager.retry_page(session_id, page_index)
+                    result = await manager.retry_page(
+                        session_id,
+                        page_index,
+                        owner_user_id=owner_scope,
+                    )
                     await websocket.send_json({"type": "retry_result", "data": result})
 
                 elif msg_type == "reset":
-                    result = await manager.reset_session(session_id)
+                    result = await manager.reset_session(session_id, owner_user_id=owner_scope)
                     await websocket.send_json({"type": "reset_result", "data": result})
                     await websocket.close()
                     return
