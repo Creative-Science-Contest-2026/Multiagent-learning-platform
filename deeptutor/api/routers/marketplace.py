@@ -5,16 +5,19 @@ from pathlib import Path
 import shutil
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from deeptutor.api.routers.knowledge import get_kb_manager
+from deeptutor.services.auth.deps import require_roles
+from deeptutor.services.auth.schemas import AuthenticatedUser
 
 router = APIRouter()
+require_teacher_or_admin = require_roles("teacher", "admin")
 
 
 class MarketplaceReviewRequest(BaseModel):
-    reviewer: str = Field(min_length=1, max_length=80)
+    reviewer: str | None = Field(default=None, min_length=1, max_length=80)
     rating: int = Field(ge=1, le=5)
     comment: str | None = Field(default=None, max_length=400)
 
@@ -175,7 +178,7 @@ def _preview_document_summary(pack_dir: Path) -> tuple[int, list[str]]:
     return len(documents), documents[:3]
 
 
-def _import_marketplace_pack_impl(pack_name: str) -> dict[str, Any]:
+def _import_marketplace_pack_impl(pack_name: str, *, current_user: AuthenticatedUser) -> dict[str, Any]:
     manager = get_kb_manager()
 
     source_info = next(
@@ -189,7 +192,7 @@ def _import_marketplace_pack_impl(pack_name: str) -> dict[str, Any]:
     if not source_path.exists() or not source_path.is_dir():
         raise HTTPException(status_code=404, detail=f"Knowledge pack directory '{pack_name}' not found")
 
-    imported_name = f"{pack_name}__imported"
+    imported_name = f"{pack_name}__imported__{current_user.id}"
     dest_path = manager.base_dir / imported_name
     import_timestamp = datetime.utcnow().isoformat()
 
@@ -201,7 +204,7 @@ def _import_marketplace_pack_impl(pack_name: str) -> dict[str, Any]:
                 "name": imported_name,
                 "subject": source_info.get("subject"),
                 "grade": source_info.get("grade"),
-                "owner": source_info.get("owner"),
+                "owner": current_user.display_name or current_user.email,
                 "import_date": import_timestamp,
                 "session_count": source_info.get("session_count", 0),
             },
@@ -214,7 +217,11 @@ def _import_marketplace_pack_impl(pack_name: str) -> dict[str, Any]:
     imported_cfg = dict(source_cfg)
     imported_cfg["path"] = imported_name
     imported_cfg["description"] = source_cfg.get("description") or f"Imported from {pack_name}"
-    imported_cfg["owner"] = source_cfg.get("owner") or source_info.get("owner")
+    imported_cfg["owner"] = current_user.display_name or current_user.email
+    imported_cfg["owner_user_id"] = current_user.id
+    imported_cfg["owner_email"] = current_user.email
+    imported_cfg["owner_display_name"] = current_user.display_name
+    imported_cfg["source_owner"] = source_cfg.get("owner") or source_info.get("owner")
     imported_cfg["sharing_status"] = "private"
     imported_cfg["updated_at"] = import_timestamp
     imported_cfg["created_at"] = source_cfg.get("created_at") or import_timestamp
@@ -233,7 +240,7 @@ def _import_marketplace_pack_impl(pack_name: str) -> dict[str, Any]:
             "name": imported_name,
             "subject": source_info.get("subject"),
             "grade": source_info.get("grade"),
-            "owner": source_info.get("owner"),
+            "owner": current_user.display_name or current_user.email,
             "import_date": import_timestamp,
             "session_count": source_info.get("session_count", 0),
         },
@@ -252,6 +259,7 @@ async def list_marketplace_packs(
     ),
     limit: int = Query(50, ge=1, le=500),
     offset: int = Query(0, ge=0),
+    _current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ):
     """
     List marketplace knowledge packs (public or team sharing status).
@@ -300,7 +308,10 @@ async def list_marketplace_packs(
 
 
 @router.get("/{pack_name}")
-async def get_marketplace_pack(pack_name: str):
+async def get_marketplace_pack(
+    pack_name: str,
+    _current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Get detailed information about a specific marketplace pack."""
     try:
         manager = get_kb_manager()
@@ -335,7 +346,10 @@ async def get_marketplace_pack(pack_name: str):
 
 
 @router.get("/{pack_name}/preview")
-async def preview_marketplace_pack(pack_name: str):
+async def preview_marketplace_pack(
+    pack_name: str,
+    _current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Return a compact preview payload for a marketplace knowledge pack."""
     try:
         manager = get_kb_manager()
@@ -369,7 +383,11 @@ async def preview_marketplace_pack(pack_name: str):
 
 
 @router.post("/{pack_name}/reviews")
-async def submit_marketplace_review(pack_name: str, payload: MarketplaceReviewRequest):
+async def submit_marketplace_review(
+    pack_name: str,
+    payload: MarketplaceReviewRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     try:
         manager = get_kb_manager()
         _get_marketplace_match(pack_name)
@@ -379,7 +397,8 @@ async def submit_marketplace_review(pack_name: str, payload: MarketplaceReviewRe
             raise HTTPException(status_code=404, detail=f"Knowledge pack '{pack_name}' not found")
 
         review = {
-            "reviewer": payload.reviewer.strip(),
+            "reviewer": current_user.display_name or current_user.email,
+            "reviewer_user_id": current_user.id,
             "rating": payload.rating,
             "comment": (payload.comment or "").strip(),
             "created_at": datetime.utcnow().isoformat(),
@@ -402,7 +421,10 @@ async def submit_marketplace_review(pack_name: str, payload: MarketplaceReviewRe
 
 
 @router.post("/import/{pack_name}")
-async def import_marketplace_pack(pack_name: str):
+async def import_marketplace_pack(
+    pack_name: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """
     Import a marketplace knowledge pack to user's workspace.
     
@@ -410,7 +432,7 @@ async def import_marketplace_pack(pack_name: str):
     Updates metadata with import_date and imported_from fields.
     """
     try:
-        return _import_marketplace_pack_impl(pack_name)
+        return _import_marketplace_pack_impl(pack_name, current_user=current_user)
     except HTTPException:
         raise
     except Exception as e:
@@ -418,7 +440,10 @@ async def import_marketplace_pack(pack_name: str):
 
 
 @router.post("/import-batch")
-async def import_marketplace_packs_batch(payload: MarketplaceBatchImportRequest):
+async def import_marketplace_packs_batch(
+    payload: MarketplaceBatchImportRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     results: list[dict[str, Any]] = []
 
     for pack_name in payload.pack_names:
@@ -426,7 +451,7 @@ async def import_marketplace_packs_batch(payload: MarketplaceBatchImportRequest)
         if not normalized_name:
             continue
         try:
-            result = _import_marketplace_pack_impl(normalized_name)
+            result = _import_marketplace_pack_impl(normalized_name, current_user=current_user)
             results.append(
                 {
                     "source_pack": normalized_name,

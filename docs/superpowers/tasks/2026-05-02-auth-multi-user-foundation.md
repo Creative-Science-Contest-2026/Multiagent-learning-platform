@@ -36,13 +36,20 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
 - `deeptutor/api/routers/auth.py`
 - `deeptutor/api/routers/admin_users.py`
 - `deeptutor/api/routers/sessions.py`
+- `deeptutor/api/routers/dashboard.py`
+- `deeptutor/api/routers/marketplace.py`
+- `deeptutor/api/routers/knowledge.py`
 - `deeptutor/services/auth/**`
 - `deeptutor/services/db/**`
 - `deeptutor/services/session/**`
+- `deeptutor/services/evidence/**`
 - `alembic/**`
 - `tests/api/test_auth_router.py`
 - `tests/api/test_admin_users_router.py`
 - `tests/api/test_session_review_router.py`
+- `tests/api/test_dashboard_router.py`
+- `tests/api/test_marketplace_router.py`
+- `tests/api/test_knowledge_router.py`
 - `tests/services/auth/**`
 - `tests/services/session/test_owned_session_store.py`
 - `pyproject.toml`
@@ -116,19 +123,32 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - admin can list and create users, but cannot yet change role/status, and non-active account states are not enforced deeply enough across auth entry points
 - Intended admin account-lifecycle change:
   - allow admin to update owned user role/status from the roster, and enforce non-active account states in email-password login, session lookup, and Google auth entry
+- Current backend product-router behavior:
+  - `dashboard`, `knowledge`, and `marketplace` still expose teacher-first product data and mutations without authenticated role enforcement, and `dashboard` evidence rows are still global rather than bound to the authenticated owner
+- Intended backend product-router change:
+  - require authenticated `teacher` or `admin` access on the teacher-first backend routers, scope session-backed dashboard reads to the authenticated owner for teachers, scope dashboard evidence rows to the authenticated owner, and stamp/import knowledge-pack ownership metadata so new auth-era records stop leaking across users
 - Candidate approaches:
-  - reuse the full `tutorbot` email channel implementation directly
-  - add ad-hoc `smtplib` calls inside auth routers
-  - chosen: add a focused `deeptutor/services/auth/mailer.py` module with SMTP settings, message builders, and a small delivery API used by the auth router
+  - router-level role gates only, leaving underlying dashboard evidence tables global
+  - full per-user isolation by extending router auth plus owner scoping into dashboard evidence services and auth-era knowledge-pack metadata
+  - chosen: combine explicit role gates with owner-aware dashboard/evidence filtering and ownership metadata for auth-era knowledge packs/imports
 - Chosen reason:
-  - this keeps auth delivery isolated from the larger tutorbot subsystem, avoids scattered mail logic in routers, and stays dependency-light by reusing stdlib email/SMTP primitives
+  - shallow route guards alone would still leak global teacher analytics rows and mutable teacher actions across accounts, while full data-model ownership for every legacy KB is too large for this lane; this hybrid approach hardens the current product surfaces without rewriting the entire knowledge subsystem
 
 ## Required Code Reading
 
 - `deeptutor/api/main.py`
 - `deeptutor/api/routers/auth.py`
 - `deeptutor/api/routers/sessions.py`
+- `deeptutor/api/routers/dashboard.py`
+- `deeptutor/api/routers/marketplace.py`
+- `deeptutor/api/routers/knowledge.py`
 - `deeptutor/services/session/sqlite_store.py`
+- `deeptutor/services/evidence/teacher_actions.py`
+- `deeptutor/services/evidence/recommendation_acks.py`
+- `deeptutor/services/evidence/recommendation_feedback.py`
+- `deeptutor/services/evidence/teacher_overrides.py`
+- `deeptutor/services/evidence/diagnosis_feedback.py`
+- `deeptutor/services/evidence/intervention_assignments.py`
 - `deeptutor/services/path_service.py`
 - `deeptutor/tutorbot/channels/email.py`
 - `pyproject.toml`
@@ -147,6 +167,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - local/debug environments still expose explicit debug links for development and tests
 - current stop condition for authorization depth inside owned session scope:
   - assessment review read/write endpoints and quiz-result writes enforce the authenticated owner boundary, not only the session id
+- current stop condition for authorization depth across teacher-first product routers:
+  - `dashboard`, `knowledge`, and `marketplace` require authenticated `teacher` or `admin`
+  - teacher-scoped dashboard reads stop returning other users' sessions and evidence rows
+  - new imported or created knowledge-pack records carry auth-era ownership metadata for later filtering and audits
 
 ## Required Tests
 

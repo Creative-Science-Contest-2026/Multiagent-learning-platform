@@ -88,7 +88,8 @@ flowchart TD
   Marketplace --> MarketplaceBatchImport["POST /api/v1/marketplace/import-batch"]
   Marketplace --> MarketplaceReviewAPI["POST /api/v1/marketplace/{pack_name}/reviews"]
   MarketplaceReviewAPI --> ReviewStorage["KB config: marketplace_reviews metadata"]
-  MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported"]
+  MarketplaceImport --> ImportedClone["Imported KB clone: <pack>__imported__<user_id>"]
+  MarketplaceImport --> MarketplaceOwnerMetadata["Imported KB owner_user_id + owner_email + owner_display_name"]
   MarketplaceBatchImport --> BatchSelectUI["Multi-select cards + import selected action bar"]
   MarketplaceBatchImport --> ImportedClone
   ImportedClone --> OfflinePackManifest["Browser offline imported-pack manifest"]
@@ -138,6 +139,7 @@ flowchart TD
   TeacherInsights --> TeacherActionAPI["POST/PATCH /api/v1/dashboard/teacher-actions"]
   TeacherInsights --> InterventionAssignmentAPI["POST/PATCH /api/v1/dashboard/intervention-assignments"]
   TeacherInsights --> InsightTrustTrace["Student + small-group trust traces"]
+  TeacherInsights --> TeacherSurfaceAuth["Teacher/Admin API gate + teacher owner scope"]
   InsightsAPI --> DiagnosisEngine
   EvidenceGate --> InsightsAPI
   InsightsAPI --> DiagnosisFeedback["Diagnosis feedback records"]
@@ -148,6 +150,12 @@ flowchart TD
   InsightsAPI --> TeacherActions["Teacher action records"]
   InsightsAPI --> InterventionAssignments["Intervention assignment records"]
   InsightsAPI --> InterventionEffectiveness["Observational intervention effectiveness summaries"]
+  TeacherSurfaceAuth --> DiagnosisFeedback
+  TeacherSurfaceAuth --> RecommendationAcks
+  TeacherSurfaceAuth --> RecommendationFeedback
+  TeacherSurfaceAuth --> TeacherOverrides
+  TeacherSurfaceAuth --> TeacherActions
+  TeacherSurfaceAuth --> InterventionAssignments
   DiagnosisFeedbackAPI --> DiagnosisFeedback
   RecommendationAckAPI --> RecommendationAcks
   RecommendationFeedbackAPI --> RecommendationFeedback
@@ -221,6 +229,7 @@ flowchart TD
   Data --> Workspace["data/user/workspace"]
   Workspace --> AgentSpecWorkspace["agent_specs/<agent_id>/ + versions/"]
   SQLite --> OwnedSessions["Owned learning sessions: owner_user_id boundary"]
+  KnowledgeBases --> KBAuthMetadata["Knowledge-pack owner_user_id + user-specific default selection"]
   Postgres --> AuthTables["users · credentials · oauth identities · auth sessions · tokens"]
 
   Project --> AIFirst["AI-first Operating Layer"]

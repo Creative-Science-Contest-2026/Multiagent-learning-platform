@@ -10,11 +10,13 @@ from datetime import datetime
 import os
 from pathlib import Path
 import traceback
+from typing import Any
 from uuid import uuid4
 
 from fastapi import (
     APIRouter,
     BackgroundTasks,
+    Depends,
     File,
     Form,
     HTTPException,
@@ -38,6 +40,9 @@ from deeptutor.utils.document_validator import DocumentValidator
 from deeptutor.utils.error_utils import format_exception_message
 
 from deeptutor.logging import get_logger
+from deeptutor.services.auth.deps import require_roles
+from deeptutor.services.auth.deps import require_roles_websocket
+from deeptutor.services.auth.schemas import AuthenticatedUser
 from deeptutor.services.config import PROJECT_ROOT, load_config_with_main
 
 # Initialize logger with config
@@ -46,6 +51,9 @@ log_dir = config.get("paths", {}).get("user_log_dir") or config.get("logging", {
 logger = get_logger("Knowledge", level="INFO", log_dir=log_dir)
 
 router = APIRouter()
+require_teacher_or_admin = require_roles("teacher", "admin")
+require_admin = require_roles("admin")
+require_teacher_or_admin_ws = require_roles_websocket("teacher", "admin")
 
 # Constants for byte conversions
 BYTES_PER_GB = 1024**3
@@ -303,12 +311,91 @@ def _normalize_teacher_pack_config(config: dict) -> dict:
     return normalized
 
 
-def _load_kb_entry_or_404(manager: KnowledgeBaseManager, kb_name: str) -> dict:
+def _kb_owner_user_id(kb_entry: dict[str, Any]) -> str:
+    return str(kb_entry.get("owner_user_id") or "").strip()
+
+
+def _kb_visible_to_user(current_user: AuthenticatedUser, kb_entry: dict[str, Any]) -> bool:
+    if current_user.role == "admin":
+        return True
+    owner_user_id = _kb_owner_user_id(kb_entry)
+    if not owner_user_id:
+        return True
+    return owner_user_id == current_user.id
+
+
+def _load_kb_entry_or_404(
+    manager: KnowledgeBaseManager,
+    kb_name: str,
+    *,
+    current_user: AuthenticatedUser | None = None,
+) -> dict:
     manager.config = manager._load_config()
     kb_entry = manager.config.get("knowledge_bases", {}).get(kb_name)
     if kb_entry is None:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+    if current_user is not None and not _kb_visible_to_user(current_user, kb_entry):
+        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     return kb_entry
+
+
+def _visible_kb_names(manager: KnowledgeBaseManager, current_user: AuthenticatedUser) -> list[str]:
+    manager.config = manager._load_config()
+    names = manager.list_knowledge_bases()
+    return [
+        name
+        for name in names
+        if _kb_visible_to_user(current_user, manager.config.get("knowledge_bases", {}).get(name, {}))
+    ]
+
+
+def _stamp_kb_owner(kb_entry: dict[str, Any], current_user: AuthenticatedUser) -> None:
+    kb_entry["owner_user_id"] = current_user.id
+    kb_entry["owner_email"] = current_user.email
+    kb_entry["owner_display_name"] = current_user.display_name
+    if not str(kb_entry.get("owner") or "").strip():
+        kb_entry["owner"] = current_user.display_name or current_user.email
+
+
+def _get_user_default_kb(manager: KnowledgeBaseManager, current_user: AuthenticatedUser) -> str | None:
+    manager.config = manager._load_config()
+    user_defaults = manager.config.get("user_defaults") or {}
+    if not isinstance(user_defaults, dict):
+        return None
+    value = user_defaults.get(current_user.id)
+    if value is None:
+        return manager.get_default() if current_user.role == "admin" else None
+    return str(value).strip() or None
+
+
+def _set_user_default_kb(
+    manager: KnowledgeBaseManager,
+    current_user: AuthenticatedUser,
+    kb_name: str | None,
+) -> str | None:
+    manager.config = manager._load_config()
+    user_defaults = manager.config.setdefault("user_defaults", {})
+    if not isinstance(user_defaults, dict):
+        user_defaults = {}
+        manager.config["user_defaults"] = user_defaults
+    if kb_name is None:
+        user_defaults.pop(current_user.id, None)
+        manager._save_config()
+        return None
+    user_defaults[current_user.id] = kb_name
+    manager._save_config()
+    return kb_name
+
+
+def _assert_config_visibility(
+    manager: KnowledgeBaseManager,
+    kb_name: str,
+    current_user: AuthenticatedUser,
+) -> None:
+    manager.config = manager._load_config()
+    kb_entry = manager.config.get("knowledge_bases", {}).get(kb_name)
+    if kb_entry is not None and not _kb_visible_to_user(current_user, kb_entry):
+        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
 
 
 def _build_versioned_teacher_pack_config(
@@ -587,7 +674,9 @@ async def run_upload_processing_task(
 
 
 @router.get("/health")
-async def health_check():
+async def health_check(
+    _current_user: AuthenticatedUser = Depends(require_admin),
+):
     """Health check endpoint"""
     try:
         manager = get_kb_manager()
@@ -606,7 +695,9 @@ async def health_check():
 
 
 @router.get("/rag-providers")
-async def get_rag_providers():
+async def get_rag_providers(
+    _current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Get list of available RAG providers."""
     try:
         from deeptutor.services.rag.service import RAGService
@@ -619,24 +710,42 @@ async def get_rag_providers():
 
 
 @router.get("/configs")
-async def get_all_kb_configs():
+async def get_all_kb_configs(
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Get all knowledge base configurations from centralized config file."""
     try:
         from deeptutor.services.config import get_kb_config_service
 
         service = get_kb_config_service()
-        return service.get_all_configs()
+        manager = get_kb_manager()
+        return {
+            name: config
+            for name, config in service.get_all_configs().items()
+            if (
+                manager.config.get("knowledge_bases", {}).get(name) is None
+                or _kb_visible_to_user(
+                    current_user,
+                    manager.config.get("knowledge_bases", {}).get(name, {}),
+                )
+            )
+        }
     except Exception as e:
         logger.error(f"Error getting KB configs: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/{kb_name}/config")
-async def get_kb_config(kb_name: str):
+async def get_kb_config(
+    kb_name: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Get configuration for a specific knowledge base."""
     try:
         from deeptutor.services.config import get_kb_config_service
 
+        manager = get_kb_manager()
+        _assert_config_visibility(manager, kb_name, current_user)
         service = get_kb_config_service()
         config = service.get_kb_config(kb_name)
         return {"kb_name": kb_name, "config": config}
@@ -646,11 +755,17 @@ async def get_kb_config(kb_name: str):
 
 
 @router.put("/{kb_name}/config")
-async def update_kb_config(kb_name: str, config: dict):
+async def update_kb_config(
+    kb_name: str,
+    config: dict,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Update configuration for a specific knowledge base."""
     try:
         from deeptutor.services.config import get_kb_config_service
 
+        manager = get_kb_manager()
+        _assert_config_visibility(manager, kb_name, current_user)
         normalized_config = _normalize_teacher_pack_config(config)
 
         if "rag_provider" in normalized_config:
@@ -671,7 +786,9 @@ async def update_kb_config(kb_name: str, config: dict):
 
 
 @router.post("/configs/sync")
-async def sync_configs_from_metadata():
+async def sync_configs_from_metadata(
+    _current_user: AuthenticatedUser = Depends(require_admin),
+):
     """Sync all KB configurations from their metadata.json files to centralized config."""
     try:
         from deeptutor.services.config import get_kb_config_service
@@ -685,11 +802,15 @@ async def sync_configs_from_metadata():
 
 
 @router.get("/default")
-async def get_default_kb():
+async def get_default_kb(
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Get the default knowledge base."""
     try:
         manager = get_kb_manager()
-        default_kb = manager.get_default()
+        default_kb = _get_user_default_kb(manager, current_user)
+        if default_kb is not None:
+            _load_kb_entry_or_404(manager, default_kb, current_user=current_user)
         return {"default_kb": default_kb}
     except Exception as e:
         logger.error(f"Error getting default KB: {e}")
@@ -697,17 +818,16 @@ async def get_default_kb():
 
 
 @router.put("/default/{kb_name}")
-async def set_default_kb(kb_name: str):
+async def set_default_kb(
+    kb_name: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Set the default knowledge base."""
     try:
         manager = get_kb_manager()
-
-        # Verify KB exists
-        if kb_name not in manager.list_knowledge_bases():
-            raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
-
-        manager.set_default(kb_name)
-        return {"status": "success", "default_kb": kb_name}
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
+        default_kb = _set_user_default_kb(manager, current_user, kb_name)
+        return {"status": "success", "default_kb": default_kb}
     except HTTPException:
         raise
     except Exception as e:
@@ -716,11 +836,14 @@ async def set_default_kb(kb_name: str):
 
 
 @router.get("/list", response_model=list[KnowledgeBaseInfo])
-async def list_knowledge_bases():
+async def list_knowledge_bases(
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """List all available knowledge bases with their details."""
     try:
         manager = get_kb_manager()
-        kb_names = manager.list_knowledge_bases()
+        kb_names = _visible_kb_names(manager, current_user)
+        current_default = _get_user_default_kb(manager, current_user)
 
         logger.debug(f"Found {len(kb_names)} knowledge bases: {kb_names}")
 
@@ -738,7 +861,7 @@ async def list_knowledge_bases():
                 result.append(
                     KnowledgeBaseInfo(
                         name=info["name"],
-                        is_default=info["is_default"],
+                        is_default=info["name"] == current_default,
                         statistics=info.get("statistics", {}),
                         status=info.get("status"),
                         progress=info.get("progress"),
@@ -756,7 +879,7 @@ async def list_knowledge_bases():
                         result.append(
                             KnowledgeBaseInfo(
                                 name=name,
-                                is_default=name == manager.get_default(),
+                                is_default=name == current_default,
                                 statistics={
                                     "raw_documents": 0,
                                     "images": 0,
@@ -792,11 +915,19 @@ async def list_knowledge_bases():
 
 
 @router.get("/{kb_name}")
-async def get_knowledge_base_details(kb_name: str):
+async def get_knowledge_base_details(
+    kb_name: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Get detailed info for a specific KB."""
     try:
         manager = get_kb_manager()
-        return manager.get_info(kb_name)
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
+        info = manager.get_info(kb_name)
+        info["is_default"] = kb_name == _get_user_default_kb(manager, current_user)
+        return info
+    except HTTPException:
+        raise
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
@@ -804,15 +935,23 @@ async def get_knowledge_base_details(kb_name: str):
 
 
 @router.delete("/{kb_name}")
-async def delete_knowledge_base(kb_name: str):
+async def delete_knowledge_base(
+    kb_name: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Delete a knowledge base."""
     try:
         manager = get_kb_manager()
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         success = manager.delete_knowledge_base(kb_name, confirm=True)
         if not success:
             raise HTTPException(status_code=400, detail="Failed to delete knowledge base")
+        if _get_user_default_kb(manager, current_user) == kb_name:
+            _set_user_default_kb(manager, current_user, None)
         logger.info(f"KB '{kb_name}' deleted")
         return {"message": f"Knowledge base '{kb_name}' deleted successfully"}
+    except HTTPException:
+        raise
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
@@ -837,10 +976,12 @@ async def upload_files(
     background_tasks: BackgroundTasks,
     files: list[UploadFile] = File(...),
     rag_provider: str = Form(None),
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ):
     """Upload files to a knowledge base and process them in background."""
     try:
         manager = get_kb_manager()
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         kb_path = manager.get_knowledge_base_path(kb_name)
         raw_dir = kb_path / "raw"
         raw_dir.mkdir(parents=True, exist_ok=True)
@@ -849,7 +990,7 @@ async def upload_files(
         if rag_provider is not None and str(rag_provider).strip():
             requested_provider = _validate_registered_provider(rag_provider)
 
-        kb_entry = _load_kb_entry_or_404(manager, kb_name)
+        kb_entry = _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         _assert_kb_writable_or_409(kb_name, kb_entry)
         kb_provider = _validate_registered_provider(kb_entry.get("rag_provider") or DEFAULT_PROVIDER)
         if requested_provider and requested_provider != kb_provider:
@@ -899,6 +1040,7 @@ async def create_knowledge_base(
     name: str = Form(...),
     files: list[UploadFile] = File(...),
     rag_provider: str = Form(DEFAULT_PROVIDER),
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
 ):
     """Create a new knowledge base and initialize it with files."""
     try:
@@ -931,7 +1073,10 @@ async def create_knowledge_base(
         if name in manager.config.get("knowledge_bases", {}):
             manager.config["knowledge_bases"][name]["rag_provider"] = rag_provider
             manager.config["knowledge_bases"][name]["needs_reindex"] = False
+            _stamp_kb_owner(manager.config["knowledge_bases"][name], current_user)
             manager._save_config()
+            if _get_user_default_kb(manager, current_user) is None:
+                _set_user_default_kb(manager, current_user, name)
 
         progress_tracker = ProgressTracker(name, _kb_base_dir)
 
@@ -983,9 +1128,14 @@ async def create_knowledge_base(
 
 
 @router.get("/{kb_name}/progress")
-async def get_progress(kb_name: str):
+async def get_progress(
+    kb_name: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Get initialization progress for a knowledge base"""
     try:
+        manager = get_kb_manager()
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         progress_tracker = ProgressTracker(kb_name, _kb_base_dir)
         progress = progress_tracker.get_progress()
 
@@ -998,9 +1148,14 @@ async def get_progress(kb_name: str):
 
 
 @router.post("/{kb_name}/progress/clear")
-async def clear_progress(kb_name: str):
+async def clear_progress(
+    kb_name: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Clear progress file for a knowledge base (useful for stuck states)"""
     try:
+        manager = get_kb_manager()
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         progress_tracker = ProgressTracker(kb_name, _kb_base_dir)
         progress_tracker.clear()
         return {"status": "success", "message": f"Progress cleared for {kb_name}"}
@@ -1011,6 +1166,13 @@ async def clear_progress(kb_name: str):
 @router.websocket("/{kb_name}/progress/ws")
 async def websocket_progress(websocket: WebSocket, kb_name: str):
     """WebSocket endpoint for real-time progress updates"""
+    try:
+        current_user = require_teacher_or_admin_ws(websocket)
+        manager = get_kb_manager()
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
+    except HTTPException as exc:
+        await websocket.close(code=4401 if exc.status_code == 401 else 4403)
+        return
     await websocket.accept()
 
     broadcaster = ProgressBroadcaster.get_instance()
@@ -1131,7 +1293,11 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
 
 
 @router.post("/{kb_name}/link-folder", response_model=LinkedFolderInfo)
-async def link_folder(kb_name: str, request: LinkFolderRequest):
+async def link_folder(
+    kb_name: str,
+    request: LinkFolderRequest,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """
     Link a local folder to a knowledge base.
 
@@ -1145,6 +1311,7 @@ async def link_folder(kb_name: str, request: LinkFolderRequest):
     """
     try:
         manager = get_kb_manager()
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         folder_info = manager.link_folder(kb_name, request.folder_path)
         logger.info(f"Linked folder '{request.folder_path}' to KB '{kb_name}'")
         return LinkedFolderInfo(**folder_info)
@@ -1158,10 +1325,14 @@ async def link_folder(kb_name: str, request: LinkFolderRequest):
 
 
 @router.get("/{kb_name}/linked-folders", response_model=list[LinkedFolderInfo])
-async def get_linked_folders(kb_name: str):
+async def get_linked_folders(
+    kb_name: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Get list of linked folders for a knowledge base."""
     try:
         manager = get_kb_manager()
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         folders = manager.get_linked_folders(kb_name)
         return [LinkedFolderInfo(**f) for f in folders]
     except ValueError:
@@ -1171,10 +1342,15 @@ async def get_linked_folders(kb_name: str):
 
 
 @router.delete("/{kb_name}/linked-folders/{folder_id}")
-async def unlink_folder(kb_name: str, folder_id: str):
+async def unlink_folder(
+    kb_name: str,
+    folder_id: str,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """Unlink a folder from a knowledge base."""
     try:
         manager = get_kb_manager()
+        _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         success = manager.unlink_folder(kb_name, folder_id)
         if not success:
             raise HTTPException(status_code=404, detail=f"Folder '{folder_id}' not found")
@@ -1187,7 +1363,12 @@ async def unlink_folder(kb_name: str, folder_id: str):
 
 
 @router.post("/{kb_name}/sync-folder/{folder_id}")
-async def sync_folder(kb_name: str, folder_id: str, background_tasks: BackgroundTasks):
+async def sync_folder(
+    kb_name: str,
+    folder_id: str,
+    background_tasks: BackgroundTasks,
+    current_user: AuthenticatedUser = Depends(require_teacher_or_admin),
+):
     """
     Sync files from a linked folder to the knowledge base.
 
@@ -1196,7 +1377,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
     """
     try:
         manager = get_kb_manager()
-        kb_entry = _load_kb_entry_or_404(manager, kb_name)
+        kb_entry = _load_kb_entry_or_404(manager, kb_name, current_user=current_user)
         _assert_kb_writable_or_409(kb_name, kb_entry)
         kb_provider = _validate_registered_provider(kb_entry.get("rag_provider") or DEFAULT_PROVIDER)
 

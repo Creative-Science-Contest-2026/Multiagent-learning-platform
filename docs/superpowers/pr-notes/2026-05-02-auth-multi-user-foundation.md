@@ -17,6 +17,10 @@
 - adds public auth routes, recovery/verification pages, and role-specific `/teacher`, `/student`, and `/admin` shells in the approved frontend auth scope
 - upgrades `/teacher` and `/student` from placeholder shells into role hubs that link into the current teacher-first and student-facing routes
 - gates the legacy teacher-first `(workspace)` and `(utility)` shells behind authenticated teacher/admin access
+- extends that teacher/admin gate into backend teacher-first routers: `dashboard`, `knowledge`, and `marketplace`
+- scopes dashboard evidence rows by `owner_user_id` so teacher actions, acknowledgements, feedback, overrides, and intervention assignments no longer bleed across accounts
+- makes knowledge-pack default selection user-specific and stamps newly created/imported knowledge packs with auth-era ownership metadata
+- changes marketplace imports to create per-user imported copies, preventing two teachers from colliding on the same imported pack name
 
 ## Architecture
 
@@ -52,6 +56,10 @@ flowchart TD
   StudentShell --> OwnedSessionAPI
   OwnedSessionAPI --> SQLiteStore["SQLite learning-session store with owner boundary"]
   OwnedSessionAPI --> ReviewFlows["assessment-review + rubric-review + quiz-results now owner-scoped"]
+  TeacherShell --> TeacherFirstAPIs["/api/v1/dashboard · /api/v1/knowledge · /api/v1/marketplace require teacher/admin"]
+  TeacherFirstAPIs --> DashboardEvidence["teacher_actions · recommendation_* · diagnosis_feedback · intervention_assignments owner-scoped"]
+  TeacherFirstAPIs --> KnowledgeDefaults["user-specific knowledge default + KB ownership metadata"]
+  TeacherFirstAPIs --> MarketplaceImports["per-user imported pack copies"]
   AccountLifecycle --> ActiveOnlyAuth["Only active accounts may login or resume sessions"]
 ```
 
@@ -62,4 +70,6 @@ flowchart TD
 - delivery now uses SMTP when `DEEPTUTOR_AUTH_SMTP_*` and `DEEPTUTOR_AUTH_FROM_*` are configured, with debug-link fallback preserved for local/test environments
 - signed-in verification resend now fails loudly with `503` in `required` mail-delivery mode when production email transport is missing or broken, while forgot-password keeps a privacy-safe generic response
 - assessment review write/read flows now require the authenticated owner instead of only the session id
+- dashboard analytics and teacher-evidence mutations are now teacher-owner scoped for non-admin users
+- `GET/PUT /api/v1/knowledge/default` is now per-user instead of global, and newly created/imported auth-era packs record `owner_user_id`, `owner_email`, and `owner_display_name`
 - unrelated `web/**` surfaces remain outside scope because this lane only owns the decomposed auth frontend subset

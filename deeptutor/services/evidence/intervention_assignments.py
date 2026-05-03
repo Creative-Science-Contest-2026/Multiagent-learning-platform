@@ -31,6 +31,7 @@ def _ensure_tables(db_path) -> None:
             """
             CREATE TABLE IF NOT EXISTS intervention_assignments (
                 id TEXT PRIMARY KEY,
+                owner_user_id TEXT NOT NULL DEFAULT '',
                 teacher_action_id TEXT NOT NULL,
                 target_type TEXT NOT NULL,
                 target_id TEXT NOT NULL,
@@ -57,12 +58,24 @@ def _ensure_tables(db_path) -> None:
                 ON intervention_assignments(teacher_action_id, updated_at DESC)
             """
         )
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(intervention_assignments)").fetchall()}
+        if "owner_user_id" not in columns:
+            conn.execute(
+                "ALTER TABLE intervention_assignments ADD COLUMN owner_user_id TEXT NOT NULL DEFAULT ''"
+            )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_intervention_assignments_owner
+                ON intervention_assignments(owner_user_id, updated_at DESC)
+            """
+        )
         conn.commit()
 
 
 def _row_to_record(row: sqlite3.Row) -> dict[str, Any]:
     return {
         "id": row["id"],
+        "owner_user_id": row["owner_user_id"],
         "teacher_action_id": row["teacher_action_id"],
         "target_type": row["target_type"],
         "target_id": row["target_id"],
@@ -77,17 +90,24 @@ def _row_to_record(row: sqlite3.Row) -> dict[str, Any]:
     }
 
 
-def list_intervention_assignments(store: Any) -> list[dict[str, Any]]:
+def list_intervention_assignments(
+    store: Any,
+    *,
+    owner_user_id: str | None = None,
+) -> list[dict[str, Any]]:
     _ensure_tables(store.db_path)
     with _connect(store.db_path) as conn:
-        rows = conn.execute(
-            """
+        query = """
             SELECT id, teacher_action_id, target_type, target_id, assignment_type,
-                   topic, title, teacher_note, practice_note, status, created_at, updated_at
+                   topic, title, teacher_note, practice_note, status, created_at, updated_at, owner_user_id
             FROM intervention_assignments
-            ORDER BY updated_at DESC, created_at DESC, id DESC
             """
-        ).fetchall()
+        params: list[str] = []
+        if owner_user_id is not None:
+            query += " WHERE owner_user_id = ?"
+            params.append((owner_user_id or "").strip())
+        query += " ORDER BY updated_at DESC, created_at DESC, id DESC"
+        rows = conn.execute(query, params).fetchall()
     return [_row_to_record(row) for row in rows]
 
 
@@ -99,6 +119,7 @@ def create_intervention_assignment(
     title: str,
     teacher_note: str,
     practice_note: str,
+    owner_user_id: str = "",
 ) -> dict[str, Any]:
     if assignment_type not in _ALLOWED_ASSIGNMENT_TYPES:
         raise ValueError("invalid assignment_type")
@@ -115,7 +136,7 @@ def create_intervention_assignment(
     with _connect(store.db_path) as conn:
         action = conn.execute(
             """
-            SELECT id, target_type, target_id, topic
+            SELECT id, target_type, target_id, topic, owner_user_id
             FROM teacher_actions
             WHERE id = ?
             """,
@@ -123,9 +144,12 @@ def create_intervention_assignment(
         ).fetchone()
         if action is None:
             raise KeyError(cleaned_action_id)
+        if (action["owner_user_id"] or "") != owner_user_id.strip():
+            raise KeyError(cleaned_action_id)
 
         record = {
             "id": f"intervention-assignment:{uuid4().hex}",
+            "owner_user_id": owner_user_id.strip(),
             "teacher_action_id": cleaned_action_id,
             "target_type": action["target_type"],
             "target_id": action["target_id"],
@@ -141,12 +165,13 @@ def create_intervention_assignment(
         conn.execute(
             """
             INSERT INTO intervention_assignments (
-                id, teacher_action_id, target_type, target_id, assignment_type,
+                id, owner_user_id, teacher_action_id, target_type, target_id, assignment_type,
                 topic, title, teacher_note, practice_note, status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 record["id"],
+                record["owner_user_id"],
                 record["teacher_action_id"],
                 record["target_type"],
                 record["target_id"],
@@ -169,6 +194,7 @@ def update_intervention_assignment_status(
     assignment_id: str,
     *,
     status: str,
+    owner_user_id: str | None = None,
 ) -> dict[str, Any]:
     if status not in _ALLOWED_ASSIGNMENT_STATUSES:
         raise ValueError("invalid status")
@@ -176,15 +202,17 @@ def update_intervention_assignment_status(
     _ensure_tables(store.db_path)
     now = _now_ts()
     with _connect(store.db_path) as conn:
-        row = conn.execute(
-            """
+        query = """
             SELECT id, teacher_action_id, target_type, target_id, assignment_type,
-                   topic, title, teacher_note, practice_note, status, created_at, updated_at
+                   topic, title, teacher_note, practice_note, status, created_at, updated_at, owner_user_id
             FROM intervention_assignments
             WHERE id = ?
-            """,
-            (assignment_id,),
-        ).fetchone()
+            """
+        params: list[str] = [assignment_id]
+        if owner_user_id is not None:
+            query += " AND owner_user_id = ?"
+            params.append((owner_user_id or "").strip())
+        row = conn.execute(query, params).fetchone()
         if row is None:
             raise KeyError(assignment_id)
 

@@ -25,6 +25,7 @@ def _ensure_table(db_path) -> None:
             """
             CREATE TABLE IF NOT EXISTS diagnosis_feedback (
                 id TEXT PRIMARY KEY,
+                owner_user_id TEXT NOT NULL DEFAULT '',
                 student_id TEXT NOT NULL,
                 source_topic TEXT NOT NULL,
                 source_diagnosis_type TEXT NOT NULL,
@@ -47,12 +48,24 @@ def _ensure_table(db_path) -> None:
                 ON diagnosis_feedback(student_id, source_topic, source_diagnosis_type, updated_at DESC)
             """
         )
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(diagnosis_feedback)").fetchall()}
+        if "owner_user_id" not in columns:
+            conn.execute(
+                "ALTER TABLE diagnosis_feedback ADD COLUMN owner_user_id TEXT NOT NULL DEFAULT ''"
+            )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_diagnosis_feedback_owner
+                ON diagnosis_feedback(owner_user_id, updated_at DESC)
+            """
+        )
         conn.commit()
 
 
 def _row_to_record(row: sqlite3.Row) -> dict[str, Any]:
     return {
         "id": row["id"],
+        "owner_user_id": row["owner_user_id"],
         "student_id": row["student_id"],
         "source_topic": row["source_topic"],
         "source_diagnosis_type": row["source_diagnosis_type"],
@@ -63,17 +76,20 @@ def _row_to_record(row: sqlite3.Row) -> dict[str, Any]:
     }
 
 
-def list_diagnosis_feedback(store: Any) -> list[dict[str, Any]]:
+def list_diagnosis_feedback(store: Any, *, owner_user_id: str | None = None) -> list[dict[str, Any]]:
     _ensure_table(store.db_path)
     with _connect(store.db_path) as conn:
-        rows = conn.execute(
-            """
+        query = """
             SELECT id, student_id, source_topic, source_diagnosis_type, feedback_label,
-                   teacher_note, created_at, updated_at
+                   teacher_note, created_at, updated_at, owner_user_id
             FROM diagnosis_feedback
-            ORDER BY updated_at DESC, created_at DESC, id DESC
             """
-        ).fetchall()
+        params: list[str] = []
+        if owner_user_id is not None:
+            query += " WHERE owner_user_id = ?"
+            params.append((owner_user_id or "").strip())
+        query += " ORDER BY updated_at DESC, created_at DESC, id DESC"
+        rows = conn.execute(query, params).fetchall()
     return [_row_to_record(row) for row in rows]
 
 
@@ -85,6 +101,7 @@ def create_diagnosis_feedback(
     source_diagnosis_type: str,
     feedback_label: str,
     teacher_note: str = "",
+    owner_user_id: str = "",
 ) -> dict[str, Any]:
     if feedback_label not in _ALLOWED_LABELS:
         raise ValueError("invalid feedback_label")
@@ -99,6 +116,7 @@ def create_diagnosis_feedback(
     now = _now_ts()
     record = {
         "id": f"diagnosis-feedback:{uuid4().hex}",
+        "owner_user_id": owner_user_id.strip(),
         "student_id": cleaned_student_id,
         "source_topic": cleaned_topic,
         "source_diagnosis_type": cleaned_type,
@@ -113,12 +131,13 @@ def create_diagnosis_feedback(
         conn.execute(
             """
             INSERT INTO diagnosis_feedback (
-                id, student_id, source_topic, source_diagnosis_type, feedback_label,
+                id, owner_user_id, student_id, source_topic, source_diagnosis_type, feedback_label,
                 teacher_note, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 record["id"],
+                record["owner_user_id"],
                 record["student_id"],
                 record["source_topic"],
                 record["source_diagnosis_type"],
@@ -138,6 +157,7 @@ def update_diagnosis_feedback(
     *,
     feedback_label: str,
     teacher_note: str | None = None,
+    owner_user_id: str | None = None,
 ) -> dict[str, Any]:
     if feedback_label not in _ALLOWED_LABELS:
         raise ValueError("invalid feedback_label")
@@ -146,15 +166,17 @@ def update_diagnosis_feedback(
     _ensure_table(store.db_path)
     now = _now_ts()
     with _connect(store.db_path) as conn:
-        row = conn.execute(
-            """
+        query = """
             SELECT id, student_id, source_topic, source_diagnosis_type, feedback_label,
-                   teacher_note, created_at, updated_at
+                   teacher_note, created_at, updated_at, owner_user_id
             FROM diagnosis_feedback
             WHERE id = ?
-            """,
-            (feedback_id,),
-        ).fetchone()
+            """
+        params: list[str] = [feedback_id]
+        if owner_user_id is not None:
+            query += " AND owner_user_id = ?"
+            params.append((owner_user_id or "").strip())
+        row = conn.execute(query, params).fetchone()
         if row is None:
             raise KeyError(feedback_id)
 
