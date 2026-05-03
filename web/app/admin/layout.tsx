@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import EmailVerificationBanner from "@/components/auth/EmailVerificationBanner";
+import SignedInAccountBar from "@/components/auth/SignedInAccountBar";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -29,6 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     >
       <div className="space-y-4 px-4 py-4">
+        <SignedInAccountBar />
         <EmailVerificationBanner />
         <div>{children}</div>
       </div>

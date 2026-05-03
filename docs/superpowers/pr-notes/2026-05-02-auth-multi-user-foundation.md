@@ -11,6 +11,7 @@
 - makes the auth session cookie production-configurable for `secure`, `samesite`, and `max-age` instead of hardcoding demo defaults
 - preserves safe `next` redirects across login/signup and Google auth entry so protected teacher surfaces now bounce users back to the route they originally requested
 - surfaces non-blocking email-verification banners across signed-in shells and teacher-first legacy surfaces, with resend and refresh-status actions instead of leaving verification hidden behind a standalone route
+- adds a shared signed-in account bar so teacher, student, admin, and legacy teacher-first shells always expose current identity, role, verification state, and logout
 - adds public auth routes, recovery/verification pages, and role-specific `/teacher`, `/student`, and `/admin` shells in the approved frontend auth scope
 - upgrades `/teacher` and `/student` from placeholder shells into role hubs that link into the current teacher-first and student-facing routes
 - gates the legacy teacher-first `(workspace)` and `(utility)` shells behind authenticated teacher/admin access
@@ -27,6 +28,7 @@ flowchart TD
   Recovery --> AuthAPI
   Login --> NextRedirect["Safe next redirect + Google role selection"]
   Me --> VerificationBanner["Signed-in verification banner + resend / refresh actions"]
+  Me --> AccountBar["Signed-in account bar + logout"]
   AuthAPI --> Users["PostgreSQL users + credentials + oauth identities"]
   AuthAPI --> Sessions["HttpOnly deeptutor_session"]
   AuthAPI --> OneTimeTokens["Password-reset + email-verification tokens"]

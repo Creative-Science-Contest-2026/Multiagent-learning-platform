@@ -20,13 +20,16 @@ describe("shared shell layouts", () => {
 
   it("render the verification banner in the teacher shell", () => {
     expect(teacherLayout).toContain("EmailVerificationBanner");
+    expect(teacherLayout).toContain("SignedInAccountBar");
   });
 
   it("render the verification banner in the student shell", () => {
     expect(studentLayout).toContain("EmailVerificationBanner");
+    expect(studentLayout).toContain("SignedInAccountBar");
   });
 
   it("render the verification banner in the admin shell", () => {
     expect(adminLayout).toContain("EmailVerificationBanner");
+    expect(adminLayout).toContain("SignedInAccountBar");
   });
 });

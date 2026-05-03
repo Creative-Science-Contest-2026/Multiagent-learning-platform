@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import EmailVerificationBanner from "./EmailVerificationBanner";
+import SignedInAccountBar from "./SignedInAccountBar";
 
 export default function TeacherSurfaceGate({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -33,7 +34,8 @@ export default function TeacherSurfaceGate({ children }: { children: React.React
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--background)]">
-      <div className="px-4 pt-4">
+      <div className="space-y-4 px-4 pt-4">
+        <SignedInAccountBar />
         <EmailVerificationBanner />
       </div>
       <div className="min-h-0 flex-1">{children}</div>

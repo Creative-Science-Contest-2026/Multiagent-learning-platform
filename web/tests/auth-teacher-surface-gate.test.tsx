@@ -84,6 +84,8 @@ describe("TeacherSurfaceGate", () => {
     );
 
     expect(await screen.findByText("Teacher surface")).toBeInTheDocument();
+    expect(screen.getByText("Teacher One")).toBeInTheDocument();
+    expect(screen.getAllByText("teacher@example.com")).toHaveLength(2);
     expect(screen.getByText(/xác minh email để tăng độ tin cậy/i)).toBeInTheDocument();
     expect(replace).not.toHaveBeenCalled();
   });

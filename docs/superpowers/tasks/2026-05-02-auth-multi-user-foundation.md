@@ -108,6 +108,10 @@ Introduce PostgreSQL-backed authentication, role-aware product entry, and user-o
   - `email_verified_at` exists in the auth contract, but signed-in teacher, student, and admin shells do not yet surface any inline verification state or resend path unless the user manually navigates to `/verify-email`
 - Intended verification UX change:
   - add a shared non-blocking verification banner across signed-in shells and owned teacher-first layouts, with resend action and local refresh of auth state after successful verification
+- Current signed-in shell UX behavior:
+  - authenticated role shells still lack a unified account surface for role, email, verification status, and sign-out, which makes the auth foundation feel unfinished despite the backend being real
+- Intended signed-in shell UX change:
+  - add a shared signed-in account bar across owned auth shells and teacher-first legacy surfaces so users can always see identity, verification state, and logout affordances
 - Candidate approaches:
   - reuse the full `tutorbot` email channel implementation directly
   - add ad-hoc `smtplib` calls inside auth routers
