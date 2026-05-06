@@ -30,21 +30,6 @@ Rules:
 
 ## Active
 
-### Assignment
-
-- Owner: Codex session
-- Machine: local desktop
-- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-build-hygiene-productization`
-- Task: Fix `L1` build hygiene blockers so the web app builds cleanly on a clean machine and test/dev config no longer leaks into the production compile path
-- Status: implemented, validation passing
-- Branch: `fix/build-hygiene-productization`
-- Task packet: `docs/superpowers/tasks/2026-05-06-l1-build-hygiene-productization.md`
-- Owned files: `web/tsconfig.json`, `web/vitest.config.ts`, `web/package.json`, `web/package-lock.json` only if required, `web/next.config.*`, `web/next-env.d.ts` only if required, `web/tests/build-config-hygiene.test.ts`, `docs/superpowers/tasks/2026-05-06-l1-build-hygiene-productization.md`, `docs/superpowers/specs/2026-05-06-l1-build-hygiene-productization-design.md`, `docs/superpowers/pr-notes/2026-05-06-l1-build-hygiene-productization.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-06.md`
-- PR: uncreated
-- Last update: 2026-05-06
-- Next action: self-review the bounded config/docs diff, then stage and open a draft PR if requested
-- Blocker: none
-
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-auth-multi-user-foundation`
