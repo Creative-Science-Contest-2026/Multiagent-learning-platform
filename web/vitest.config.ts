@@ -18,6 +18,7 @@ export default defineConfig({
       "tests/auth-signup-page.test.tsx",
       "tests/auth-teacher-surface-gate.test.tsx",
       "tests/auth-verify-page.test.tsx",
+      "tests/build-config-hygiene.test.ts",
       "tests/class-tutor-pack-presenters.test.ts",
       "tests/introduce-content.test.ts",
       "tests/introduce-gallery.test.tsx",
