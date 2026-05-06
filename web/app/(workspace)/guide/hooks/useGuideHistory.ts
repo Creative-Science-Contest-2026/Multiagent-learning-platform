@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { SessionSummary } from "../types";
 
 export function useGuideHistory() {
@@ -9,7 +9,7 @@ export function useGuideHistory() {
   const fetchHistory = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(apiUrl("/api/v1/guide/sessions"));
+      const res = await apiFetch("/api/v1/guide/sessions");
       if (!res.ok) {
         setSessions([]);
         return;

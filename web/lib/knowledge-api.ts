@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { invalidateClientCache, withClientCache } from "@/lib/client-cache";
 import { listOfflineImportedPacks } from "@/lib/offline-pack-cache";
 
@@ -64,21 +64,33 @@ export interface RagProviderSummary {
   description: string;
 }
 
+async function expectJson<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    const detail = typeof error?.detail === "string" ? error.detail : "";
+    throw new Error(detail || `Request failed: ${response.status}`);
+  }
+  return response.json() as Promise<T>;
+}
+
 export async function listKnowledgeBases(options?: { force?: boolean }) {
   return withClientCache<KnowledgeBaseSummary[]>(
     `${KNOWLEDGE_CACHE_PREFIX}list`,
     async () => {
       try {
-        const response = await fetch(apiUrl("/api/v1/knowledge/list"), {
+        const response = await apiFetch("/api/v1/knowledge/list", {
           cache: "no-store",
         });
-        const data = await response.json();
+        const data = await expectJson<KnowledgeBaseSummary[] | { knowledge_bases?: KnowledgeBaseSummary[] }>(response);
         return Array.isArray(data)
           ? data
           : Array.isArray(data?.knowledge_bases)
             ? data.knowledge_bases
             : [];
-      } catch {
+      } catch (error) {
+        if (!(error instanceof TypeError)) {
+          throw error;
+        }
         return listOfflineImportedPacks().map((pack) => ({
           name: pack.name,
           is_default: false,
@@ -97,10 +109,10 @@ export async function listRagProviders(options?: { force?: boolean }) {
   return withClientCache<RagProviderSummary[]>(
     `${KNOWLEDGE_CACHE_PREFIX}providers`,
     async () => {
-      const response = await fetch(apiUrl("/api/v1/knowledge/rag-providers"), {
+      const response = await apiFetch("/api/v1/knowledge/rag-providers", {
         cache: "no-store",
       });
-      const data = await response.json();
+      const data = await expectJson<{ providers?: RagProviderSummary[] }>(response);
       return Array.isArray(data?.providers) ? data.providers : [];
     },
     {
@@ -113,7 +125,7 @@ export async function updateKnowledgeBaseConfig(
   kbName: string,
   config: TeacherPackMetadata | Record<string, unknown>,
 ) {
-  const response = await fetch(apiUrl(`/api/v1/knowledge/${encodeURIComponent(kbName)}/config`), {
+  const response = await apiFetch(`/api/v1/knowledge/${encodeURIComponent(kbName)}/config`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -121,13 +133,8 @@ export async function updateKnowledgeBaseConfig(
     body: JSON.stringify(config),
   });
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error?.detail || `Failed to update config for ${kbName}`);
-  }
-
   invalidateKnowledgeCaches();
-  return response.json();
+  return expectJson(response);
 }
 
 export function invalidateKnowledgeCaches() {

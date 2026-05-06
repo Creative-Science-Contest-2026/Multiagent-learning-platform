@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Bot } from "lucide-react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 interface RecentBot {
   bot_id: string;
@@ -31,7 +31,7 @@ export function TutorBotRecent({ collapsed = false }: { collapsed?: boolean }) {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(apiUrl("/api/v1/tutorbot/recent?limit=3"));
+        const res = await apiFetch("/api/v1/tutorbot/recent?limit=3");
         if (!res.ok) return;
         const data = await res.json();
         if (!cancelled) setBots(data);

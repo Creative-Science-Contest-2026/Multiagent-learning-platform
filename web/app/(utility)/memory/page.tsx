@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Brain, Eraser, Loader2, RefreshCw, Save, BookOpen, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAppShell } from "@/context/AppShellContext";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 const MarkdownRenderer = dynamic(() => import("@/components/common/MarkdownRenderer"), {
   ssr: false,
@@ -79,7 +79,7 @@ export default function MemoryPage() {
   const loadMemory = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(apiUrl("/api/v1/memory"));
+      const res = await apiFetch("/api/v1/memory");
       const d: MemoryData = await res.json();
       setData(d);
       setEditors({ summary: d.summary || "", profile: d.profile || "" });
@@ -93,7 +93,7 @@ export default function MemoryPage() {
   const saveMemory = useCallback(async () => {
     setSaving(true);
     try {
-      const res = await fetch(apiUrl("/api/v1/memory"), {
+      const res = await apiFetch("/api/v1/memory", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ file: activeTab, content: editorValue }),
@@ -110,7 +110,7 @@ export default function MemoryPage() {
   const refreshMemory = useCallback(async () => {
     setRefreshing(true);
     try {
-      const res = await fetch(apiUrl("/api/v1/memory/refresh"), {
+      const res = await apiFetch("/api/v1/memory/refresh", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: activeSessionId || undefined, language }),
@@ -128,7 +128,7 @@ export default function MemoryPage() {
     if (!window.confirm(`Clear ${tab.label}?`)) return;
     setClearing(true);
     try {
-      const res = await fetch(apiUrl("/api/v1/memory/clear"), {
+      const res = await apiFetch("/api/v1/memory/clear", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ file: activeTab }),

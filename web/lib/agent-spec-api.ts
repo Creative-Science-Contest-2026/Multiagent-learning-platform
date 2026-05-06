@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 export interface AgentSpecSummary {
   agent_id: string;
@@ -97,18 +97,18 @@ async function expectJson<T>(response: Response): Promise<T> {
 }
 
 export async function listAgentSpecs(): Promise<AgentSpecSummary[]> {
-  const response = await fetch(apiUrl("/api/v1/agent-specs"), { cache: "no-store" });
+  const response = await apiFetch("/api/v1/agent-specs", { cache: "no-store" });
   const payload = await expectJson<{ items: AgentSpecSummary[] }>(response);
   return payload.items;
 }
 
 export async function getAgentSpec(agentId: string): Promise<AgentSpecDetail> {
-  const response = await fetch(apiUrl(`/api/v1/agent-specs/${agentId}`), { cache: "no-store" });
+  const response = await apiFetch(`/api/v1/agent-specs/${agentId}`, { cache: "no-store" });
   return expectJson<AgentSpecDetail>(response);
 }
 
 export async function createAgentSpec(payload: AgentSpecUpsertPayload): Promise<AgentSpecDetail> {
-  const response = await fetch(apiUrl("/api/v1/agent-specs"), {
+  const response = await apiFetch("/api/v1/agent-specs", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -117,7 +117,7 @@ export async function createAgentSpec(payload: AgentSpecUpsertPayload): Promise<
 }
 
 export async function updateAgentSpec(agentId: string, payload: AgentSpecUpsertPayload): Promise<AgentSpecDetail> {
-  const response = await fetch(apiUrl(`/api/v1/agent-specs/${agentId}`), {
+  const response = await apiFetch(`/api/v1/agent-specs/${agentId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -126,7 +126,7 @@ export async function updateAgentSpec(agentId: string, payload: AgentSpecUpsertP
 }
 
 export async function exportAgentSpec(agentId: string): Promise<Blob> {
-  const response = await fetch(apiUrl(`/api/v1/agent-specs/${agentId}/export`), { cache: "no-store" });
+  const response = await apiFetch(`/api/v1/agent-specs/${agentId}/export`, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Export failed: ${response.status}`);
   }
@@ -137,8 +137,8 @@ export async function getAgentSpecRuntimePolicyAudit(
   agentId: string,
   capability = "chat",
 ): Promise<RuntimePolicyAuditPayload> {
-  const response = await fetch(
-    apiUrl(`/api/v1/agent-specs/${agentId}/runtime-policy-audit?capability=${encodeURIComponent(capability)}`),
+  const response = await apiFetch(
+    `/api/v1/agent-specs/${agentId}/runtime-policy-audit?capability=${encodeURIComponent(capability)}`,
     { cache: "no-store" },
   );
   return expectJson<RuntimePolicyAuditPayload>(response);

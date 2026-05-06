@@ -16,7 +16,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { apiUrl, wsUrl } from "@/lib/api";
+import { apiFetch, apiUrl, wsUrl } from "@/lib/api";
 import {
   invalidateKnowledgeCaches,
   listKnowledgeBases,
@@ -447,7 +447,7 @@ export default function KnowledgePage() {
       form.append("name", kbName);
       selectedFiles.forEach((file) => form.append("files", file));
 
-      const res = await fetch(apiUrl("/api/v1/knowledge/create"), {
+      const res = await apiFetch("/api/v1/knowledge/create", {
         method: "POST",
         body: form,
       });
@@ -604,7 +604,7 @@ export default function KnowledgePage() {
 
   const deleteKnowledgeBase = async (kbName: string) => {
     if (!window.confirm(`Bạn muốn xóa gói kiến thức "${kbName}"?`)) return;
-    await fetch(apiUrl(`/api/v1/knowledge/${kbName}`), { method: "DELETE" });
+    await apiFetch(`/api/v1/knowledge/${kbName}`, { method: "DELETE" });
     invalidateKnowledgeCaches();
     if (detailPackName === kbName) setDetailPackName(null);
     if (activePackName === kbName) setActivePackName(null);

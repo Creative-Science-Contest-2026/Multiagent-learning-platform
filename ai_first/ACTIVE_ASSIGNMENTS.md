@@ -30,8 +30,6 @@ Rules:
 
 ## Active
 
-### Assignment
-
 - Owner: Codex session
 - Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-auth-multi-user-foundation`

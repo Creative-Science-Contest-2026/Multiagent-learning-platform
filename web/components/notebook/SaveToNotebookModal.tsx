@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { invalidateNotebookCaches, listNotebooks } from "@/lib/notebook-api";
 
 type RecordType =
@@ -117,7 +117,7 @@ export default function SaveToNotebookModal({
     setSummaryPreview("");
 
     try {
-      const response = await fetch(apiUrl("/api/v1/notebook/add_record_with_summary"), {
+      const response = await apiFetch("/api/v1/notebook/add_record_with_summary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

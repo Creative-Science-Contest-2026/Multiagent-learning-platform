@@ -28,7 +28,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { PlaygroundRightPanel } from "@/components/chat/home/PlaygroundRightPanel";
 import { PlaygroundWorkspaceShell } from "@/components/chat/home/PlaygroundWorkspaceShell";
 import AssistantResponse from "@/components/common/AssistantResponse";
@@ -528,7 +528,7 @@ function ToolExecutor({ tool, knowledgeBases }: { tool: ToolInfo; knowledgeBases
         else coerced[p.name] = raw;
       }
 
-      const res = await fetch(apiUrl(`/api/v1/plugins/tools/${tool.name}/execute-stream`), {
+      const res = await apiFetch(`/api/v1/plugins/tools/${tool.name}/execute-stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ params: coerced }),
@@ -908,8 +908,8 @@ function DeepQuestionTester({
               max_questions: config.max_questions,
             };
 
-      const res = await fetch(
-        apiUrl(`/api/v1/plugins/capabilities/${capability.name}/execute-stream`),
+      const res = await apiFetch(
+        `/api/v1/plugins/capabilities/${capability.name}/execute-stream`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1242,8 +1242,8 @@ function DeepResearchTester({
     setStreaming(true);
 
     try {
-      const res = await fetch(
-        apiUrl(`/api/v1/plugins/capabilities/${capability.name}/execute-stream`),
+      const res = await apiFetch(
+        `/api/v1/plugins/capabilities/${capability.name}/execute-stream`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1482,8 +1482,8 @@ function CapabilityTester({
     setStreaming(true);
 
     try {
-      const res = await fetch(
-        apiUrl(`/api/v1/plugins/capabilities/${capability.name}/execute-stream`),
+      const res = await apiFetch(
+        `/api/v1/plugins/capabilities/${capability.name}/execute-stream`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1660,7 +1660,7 @@ export default function PlaygroundPage() {
       setLoading(true);
       try {
         const [pluginRes, knowledgeBaseList] = await Promise.all([
-          fetch(apiUrl("/api/v1/plugins/list")),
+          apiFetch("/api/v1/plugins/list"),
           listKnowledgeBases(),
         ]);
         const data = await pluginRes.json();
