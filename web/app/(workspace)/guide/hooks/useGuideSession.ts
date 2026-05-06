@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch, apiUrl } from "@/lib/api";
 import {
   SessionState,
   ChatMessage,
@@ -196,8 +196,8 @@ export function useGuideSession() {
     if (!sessionState.session_id) return;
 
     try {
-      const res = await fetch(
-        apiUrl(`/api/v1/guide/session/${sessionState.session_id}/pages`),
+      const res = await apiFetch(
+        `/api/v1/guide/session/${sessionState.session_id}/pages`,
       );
       let data: unknown = null;
       try {
@@ -283,8 +283,8 @@ export function useGuideSession() {
       }
 
       try {
-        const res = await fetch(
-          apiUrl(`/api/v1/guide/session/${persistedSessionId}`),
+        const res = await apiFetch(
+          `/api/v1/guide/session/${persistedSessionId}`,
         );
         let data: unknown = null;
         try {
@@ -387,7 +387,7 @@ export function useGuideSession() {
       );
 
       try {
-        const res = await fetch(apiUrl("/api/v1/guide/create_session"), {
+        const res = await apiFetch("/api/v1/guide/create_session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -465,7 +465,7 @@ export function useGuideSession() {
     );
 
     try {
-      const res = await fetch(apiUrl("/api/v1/guide/start"), {
+      const res = await apiFetch("/api/v1/guide/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: sessionState.session_id }),
@@ -549,7 +549,7 @@ export function useGuideSession() {
       }
 
       try {
-        const res = await fetch(apiUrl("/api/v1/guide/navigate"), {
+        const res = await apiFetch("/api/v1/guide/navigate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -603,7 +603,7 @@ export function useGuideSession() {
       if (!sessionState.session_id) return;
 
       try {
-        const res = await fetch(apiUrl("/api/v1/guide/retry_page"), {
+        const res = await apiFetch("/api/v1/guide/retry_page", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -653,7 +653,7 @@ export function useGuideSession() {
     const loadingId = addLoadingMessage("Generating learning summary...");
 
     try {
-      const res = await fetch(apiUrl("/api/v1/guide/complete"), {
+      const res = await apiFetch("/api/v1/guide/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: sessionState.session_id }),
@@ -722,7 +722,7 @@ export function useGuideSession() {
       const loadingId = addLoadingMessage("Thinking...");
 
       try {
-        const res = await fetch(apiUrl("/api/v1/guide/chat"), {
+        const res = await apiFetch("/api/v1/guide/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -796,7 +796,7 @@ export function useGuideSession() {
       const loadingId = addLoadingMessage("Fixing HTML page...");
 
       try {
-        const res = await fetch(apiUrl("/api/v1/guide/fix_html"), {
+        const res = await apiFetch("/api/v1/guide/fix_html", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -870,7 +870,7 @@ export function useGuideSession() {
 
     if (!sessionId) return;
     try {
-      await fetch(apiUrl("/api/v1/guide/reset"), {
+      await apiFetch("/api/v1/guide/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: sessionId }),
@@ -887,7 +887,7 @@ export function useGuideSession() {
       setLoadingMessage("Loading session...");
 
       try {
-        const res = await fetch(apiUrl(`/api/v1/guide/session/${sessionId}`));
+        const res = await apiFetch(`/api/v1/guide/session/${sessionId}`);
         if (!res.ok) {
           setIsLoading(false);
           setLoadingMessage("");

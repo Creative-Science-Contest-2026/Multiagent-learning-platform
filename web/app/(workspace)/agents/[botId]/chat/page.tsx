@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Bot, Loader2, Send } from "lucide-react";
-import { apiUrl, wsUrl } from "@/lib/api";
+import { apiFetch, wsUrl } from "@/lib/api";
 import AssistantResponse from "@/components/common/AssistantResponse";
 import { CoreLoopVisibilityStrip } from "@/components/contest/CoreLoopVisibilityStrip";
 
@@ -43,12 +43,12 @@ export default function BotChatPage() {
   }, []);
 
   useEffect(() => {
-    fetch(apiUrl(`/api/v1/tutorbot/${botId}`))
+    apiFetch(`/api/v1/tutorbot/${botId}`)
       .then((r) => (r.ok ? r.json() : null))
       .then(setBot)
       .catch(() => setBot(null));
 
-    fetch(apiUrl(`/api/v1/tutorbot/${botId}/history`))
+    apiFetch(`/api/v1/tutorbot/${botId}/history`)
       .then((r) => (r.ok ? r.json() : []))
       .then((history: { role: string; content: string }[]) => {
         const restored: ChatMsg[] = history

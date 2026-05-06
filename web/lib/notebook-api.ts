@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { invalidateClientCache, withClientCache } from "@/lib/client-cache";
 
 const NOTEBOOK_CACHE_PREFIX = "notebook:";
@@ -32,7 +32,7 @@ export async function listNotebooks(options?: { force?: boolean }) {
   return withClientCache<NotebookSummary[]>(
     `${NOTEBOOK_CACHE_PREFIX}list`,
     async () => {
-      const response = await fetch(apiUrl("/api/v1/notebook/list"), {
+      const response = await apiFetch("/api/v1/notebook/list", {
         cache: "no-store",
       });
       const data = await response.json();
@@ -48,7 +48,7 @@ export async function getNotebookDetail(notebookId: string, options?: { force?: 
   return withClientCache<NotebookDetail>(
     `${NOTEBOOK_CACHE_PREFIX}detail:${notebookId}`,
     async () => {
-      const response = await fetch(apiUrl(`/api/v1/notebook/${notebookId}`), {
+      const response = await apiFetch(`/api/v1/notebook/${notebookId}`, {
         cache: "no-store",
       });
       return response.json() as Promise<NotebookDetail>;

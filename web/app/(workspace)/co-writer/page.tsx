@@ -40,7 +40,7 @@ import {
   WandSparkles,
   Workflow,
 } from "lucide-react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { listKnowledgeBases } from "@/lib/knowledge-api";
 import { CO_WRITER_SAMPLE_TEMPLATE } from "./sampleTemplate";
 
@@ -586,7 +586,7 @@ export default function CoWriterPage() {
       selectionRequestAbortRef.current = controller;
 
       try {
-        const response = await fetch(apiUrl("/api/v1/co_writer/edit_react/stream"), {
+        const response = await apiFetch("/api/v1/co_writer/edit_react/stream", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           signal: controller.signal,
@@ -696,7 +696,7 @@ export default function CoWriterPage() {
     setError("");
     setStatus("");
     try {
-      const response = await fetch(apiUrl("/api/v1/co_writer/edit"), {
+      const response = await apiFetch("/api/v1/co_writer/edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -726,7 +726,7 @@ export default function CoWriterPage() {
     setError("");
     setStatus("");
     try {
-      const response = await fetch(apiUrl("/api/v1/co_writer/automark"), {
+      const response = await apiFetch("/api/v1/co_writer/automark", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: markdown }),

@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 export interface AssessmentSummary {
   total_questions: number;
@@ -219,14 +219,14 @@ export async function getDashboardOverview(
   if (filters.search) params.set("search", filters.search);
   if (typeof filters.min_score === "number") params.set("min_score", String(filters.min_score));
 
-  const response = await fetch(apiUrl(`/api/v1/dashboard/overview?${params.toString()}`), {
+  const response = await apiFetch(`/api/v1/dashboard/overview?${params.toString()}`, {
     cache: "no-store",
   });
   return expectJson<DashboardOverview>(response);
 }
 
 export async function getAssessmentReview(sessionId: string): Promise<AssessmentReview> {
-  const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/assessment-review`), {
+  const response = await apiFetch(`/api/v1/sessions/${sessionId}/assessment-review`, {
     cache: "no-store",
   });
   return expectJson<AssessmentReview>(response);
@@ -236,7 +236,7 @@ export async function createAssessmentRubricReview(
   sessionId: string,
   payload: CreateTeacherAssessmentReviewRequest,
 ): Promise<TeacherAssessmentReviewRecord> {
-  const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/assessment-rubric-review`), {
+  const response = await apiFetch(`/api/v1/sessions/${sessionId}/assessment-rubric-review`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -248,7 +248,7 @@ export async function updateAssessmentRubricReview(
   sessionId: string,
   payload: CreateTeacherAssessmentReviewRequest,
 ): Promise<TeacherAssessmentReviewRecord> {
-  const response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/assessment-rubric-review`), {
+  const response = await apiFetch(`/api/v1/sessions/${sessionId}/assessment-rubric-review`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -257,21 +257,21 @@ export async function updateAssessmentRubricReview(
 }
 
 export async function getAssessmentAnalysis(sessionId: string): Promise<AssessmentAnalysis> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/assessment-analysis/${sessionId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/assessment-analysis/${sessionId}`, {
     cache: "no-store",
   });
   return expectJson<AssessmentAnalysis>(response);
 }
 
 export async function getStudentProgress(limit = 50): Promise<StudentProgressOverview> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/student-progress?limit=${limit}`), {
+  const response = await apiFetch(`/api/v1/dashboard/student-progress?limit=${limit}`, {
     cache: "no-store",
   });
   return expectJson<StudentProgressOverview>(response);
 }
 
 export async function downloadAssessmentExportPdf(sessionId: string): Promise<Blob> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/assessment-export/${sessionId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/assessment-export/${sessionId}`, {
     cache: "no-store",
   });
 
@@ -283,7 +283,7 @@ export async function downloadAssessmentExportPdf(sessionId: string): Promise<Bl
 }
 
 export async function getDashboardActivityDetail(entryId: string): Promise<DashboardActivityDetail> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/${entryId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/${entryId}`, {
     cache: "no-store",
   });
   return expectJson<DashboardActivityDetail>(response);
@@ -559,7 +559,7 @@ export async function getDashboardInsights(
   if (typeof filters.end_ts === "number") params.set("end_ts", String(filters.end_ts));
   if (filters.cohort) params.set("cohort", filters.cohort);
 
-  const response = await fetch(apiUrl(`/api/v1/dashboard/insights?${params.toString()}`), {
+  const response = await apiFetch(`/api/v1/dashboard/insights?${params.toString()}`, {
     cache: "no-store",
   });
   return expectJson<DashboardInsights>(response);
@@ -568,7 +568,7 @@ export async function getDashboardInsights(
 export async function createTeacherAction(
   payload: CreateTeacherActionRequest,
 ): Promise<TeacherActionRecord> {
-  const response = await fetch(apiUrl("/api/v1/dashboard/teacher-actions"), {
+  const response = await apiFetch("/api/v1/dashboard/teacher-actions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -579,7 +579,7 @@ export async function createTeacherAction(
 export async function createRecommendationAck(
   payload: CreateRecommendationAckRequest,
 ): Promise<RecommendationAckRecord> {
-  const response = await fetch(apiUrl("/api/v1/dashboard/recommendation-acks"), {
+  const response = await apiFetch("/api/v1/dashboard/recommendation-acks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -590,7 +590,7 @@ export async function createRecommendationAck(
 export async function createRecommendationFeedback(
   payload: CreateRecommendationFeedbackRequest,
 ): Promise<RecommendationFeedbackRecord> {
-  const response = await fetch(apiUrl("/api/v1/dashboard/recommendation-feedback"), {
+  const response = await apiFetch("/api/v1/dashboard/recommendation-feedback", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -601,7 +601,7 @@ export async function createRecommendationFeedback(
 export async function createTeacherOverride(
   payload: CreateTeacherOverrideRequest,
 ): Promise<TeacherOverrideRecord> {
-  const response = await fetch(apiUrl("/api/v1/dashboard/teacher-overrides"), {
+  const response = await apiFetch("/api/v1/dashboard/teacher-overrides", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -612,7 +612,7 @@ export async function createTeacherOverride(
 export async function createDiagnosisFeedback(
   payload: CreateDiagnosisFeedbackRequest,
 ): Promise<DiagnosisFeedbackRecord> {
-  const response = await fetch(apiUrl("/api/v1/dashboard/diagnosis-feedback"), {
+  const response = await apiFetch("/api/v1/dashboard/diagnosis-feedback", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -624,7 +624,7 @@ export async function updateDiagnosisFeedback(
   feedbackId: string,
   payload: { feedback_label: DiagnosisFeedbackLabel; teacher_note?: string },
 ): Promise<DiagnosisFeedbackRecord> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/diagnosis-feedback/${feedbackId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/diagnosis-feedback/${feedbackId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -636,7 +636,7 @@ export async function updateRecommendationAck(
   ackId: string,
   payload: { status: RecommendationAckStatus; teacher_note?: string },
 ): Promise<RecommendationAckRecord> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/recommendation-acks/${ackId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/recommendation-acks/${ackId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -648,7 +648,7 @@ export async function updateRecommendationFeedback(
   feedbackId: string,
   payload: { feedback_label: RecommendationFeedbackLabel; teacher_note?: string },
 ): Promise<RecommendationFeedbackRecord> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/recommendation-feedback/${feedbackId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/recommendation-feedback/${feedbackId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -664,7 +664,7 @@ export async function updateTeacherOverride(
     teacher_note?: string;
   },
 ): Promise<TeacherOverrideRecord> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/teacher-overrides/${overrideId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/teacher-overrides/${overrideId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -676,7 +676,7 @@ export async function updateTeacherActionStatus(
   actionId: string,
   status: TeacherActionStatus,
 ): Promise<TeacherActionRecord> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/teacher-actions/${actionId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/teacher-actions/${actionId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status }),
@@ -687,7 +687,7 @@ export async function updateTeacherActionStatus(
 export async function createInterventionAssignment(
   payload: CreateInterventionAssignmentRequest,
 ): Promise<InterventionAssignmentRecord> {
-  const response = await fetch(apiUrl("/api/v1/dashboard/intervention-assignments"), {
+  const response = await apiFetch("/api/v1/dashboard/intervention-assignments", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -699,7 +699,7 @@ export async function updateInterventionAssignmentStatus(
   assignmentId: string,
   status: InterventionAssignmentStatus,
 ): Promise<InterventionAssignmentRecord> {
-  const response = await fetch(apiUrl(`/api/v1/dashboard/intervention-assignments/${assignmentId}`), {
+  const response = await apiFetch(`/api/v1/dashboard/intervention-assignments/${assignmentId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status }),

@@ -35,6 +35,13 @@ export function apiUrl(path: string): string {
   return `${base}${normalizedPath}`;
 }
 
+export function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  return fetch(apiUrl(path), {
+    credentials: "include",
+    ...init,
+  });
+}
+
 /**
  * Construct a WebSocket URL from a path
  * @param path - WebSocket path (e.g., '/api/v1/solve')

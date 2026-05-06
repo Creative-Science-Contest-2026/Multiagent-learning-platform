@@ -18,7 +18,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import dynamic from "next/dynamic";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import SpecPackAuthoringTab from "@/components/agents/SpecPackAuthoringTab";
 
 const MarkdownRenderer = dynamic(() => import("@/components/common/MarkdownRenderer"), {
@@ -69,7 +69,7 @@ export default function AgentsPage() {
   const loadBots = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(apiUrl("/api/v1/tutorbot"));
+      const res = await apiFetch("/api/v1/tutorbot");
       setBots(await res.json());
     } finally {
       setLoading(false);
@@ -78,7 +78,7 @@ export default function AgentsPage() {
 
   const loadSouls = useCallback(async () => {
     try {
-      const res = await fetch(apiUrl("/api/v1/tutorbot/souls"));
+      const res = await apiFetch("/api/v1/tutorbot/souls");
       if (res.ok) setSouls(await res.json());
     } catch { /* ignore */ }
   }, []);
@@ -199,7 +199,7 @@ function BotsTab({
     if (!botId) return;
     setCreating(true);
     try {
-      const res = await fetch(apiUrl("/api/v1/tutorbot"), {
+      const res = await apiFetch("/api/v1/tutorbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -222,7 +222,7 @@ function BotsTab({
   }, [botId, formName, formDesc, formSoul, formModel, onReload, onToast]);
 
   const startBot = useCallback(async (bid: string) => {
-    const res = await fetch(apiUrl("/api/v1/tutorbot"), {
+    const res = await apiFetch("/api/v1/tutorbot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bot_id: bid }),
@@ -231,13 +231,13 @@ function BotsTab({
   }, [onReload, onToast]);
 
   const stopBot = useCallback(async (bid: string) => {
-    const res = await fetch(apiUrl(`/api/v1/tutorbot/${bid}`), { method: "DELETE" });
+    const res = await apiFetch(`/api/v1/tutorbot/${bid}`, { method: "DELETE" });
     if (res.ok) { onToast(`${bid} stopped`); await onReload(); }
   }, [onReload, onToast]);
 
   const destroyBot = useCallback(async (bid: string, name: string) => {
     if (!window.confirm(t("Permanently delete \"{{name}}\" ({{id}})? This cannot be undone.", { name, id: bid }))) return;
-    const res = await fetch(apiUrl(`/api/v1/tutorbot/${bid}/destroy`), { method: "DELETE" });
+    const res = await apiFetch(`/api/v1/tutorbot/${bid}/destroy`, { method: "DELETE" });
     if (res.ok) { onToast(`${name} deleted`); await onReload(); }
   }, [onReload, onToast, t]);
 
@@ -461,7 +461,7 @@ function ProfilesTab({
     if (!bid) return;
     setLoadingFiles(true);
     try {
-      const res = await fetch(apiUrl(`/api/v1/tutorbot/${bid}/files`));
+      const res = await apiFetch(`/api/v1/tutorbot/${bid}/files`);
       const data: Record<string, string> = await res.json();
       setFiles(data);
       setEditor(data[activeFile] ?? "");
@@ -483,7 +483,7 @@ function ProfilesTab({
     if (!selectedBot) return;
     setSaving(true);
     try {
-      const res = await fetch(apiUrl(`/api/v1/tutorbot/${selectedBot}/files/${activeFile}`), {
+      const res = await apiFetch(`/api/v1/tutorbot/${selectedBot}/files/${activeFile}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: editor }),
@@ -672,7 +672,7 @@ function SoulsTab({
     if (!editing) return;
     setSaving(true);
     try {
-      const res = await fetch(apiUrl(`/api/v1/tutorbot/souls/${editing}`), {
+      const res = await apiFetch(`/api/v1/tutorbot/souls/${editing}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: editName.trim(), content: editContent }),
@@ -694,7 +694,7 @@ function SoulsTab({
     if (!id) return;
     setSaving(true);
     try {
-      const res = await fetch(apiUrl("/api/v1/tutorbot/souls"), {
+      const res = await apiFetch("/api/v1/tutorbot/souls", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, name, content: newContent }),
@@ -715,7 +715,7 @@ function SoulsTab({
 
   const deleteSoul = useCallback(async (soul: SoulTemplate) => {
     if (!window.confirm(t("Delete soul \"{{name}}\"?", { name: soul.name }))) return;
-    const res = await fetch(apiUrl(`/api/v1/tutorbot/souls/${soul.id}`), { method: "DELETE" });
+    const res = await apiFetch(`/api/v1/tutorbot/souls/${soul.id}`, { method: "DELETE" });
     if (res.ok) {
       if (editing === soul.id) cancelEdit();
       onToast(`"${soul.name}" deleted`);

@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { cacheImportedPack } from "@/lib/offline-pack-cache";
 
 export interface MarketplacePackMetadata {
@@ -191,7 +191,7 @@ export async function listMarketplacePacks(
   if (owner) params.append("owner", owner);
   if (sortBy) params.append("sort_by", sortBy);
 
-  const request = fetch(apiUrl(`/api/v1/marketplace/list?${params}`), {
+  const request = apiFetch(`/api/v1/marketplace/list?${params}`, {
     cache: "no-store",
   }).then(async (response) => {
     if (!response.ok) {
@@ -223,8 +223,8 @@ export async function listMarketplacePacks(
 }
 
 export async function getMarketplacePack(packName: string): Promise<MarketplacePack> {
-  const response = await fetch(
-    apiUrl(`/api/v1/marketplace/${encodeURIComponent(packName)}`),
+  const response = await apiFetch(
+    `/api/v1/marketplace/${encodeURIComponent(packName)}`,
     {
       cache: "no-store",
     },
@@ -240,8 +240,8 @@ export async function getMarketplacePack(packName: string): Promise<MarketplaceP
 export async function getMarketplacePackPreview(
   packName: string,
 ): Promise<MarketplacePackPreview> {
-  const response = await fetch(
-    apiUrl(`/api/v1/marketplace/${encodeURIComponent(packName)}/preview`),
+  const response = await apiFetch(
+    `/api/v1/marketplace/${encodeURIComponent(packName)}/preview`,
     {
       cache: "no-store",
     },
@@ -297,8 +297,8 @@ export interface SubmitMarketplaceReviewResult {
 export async function importMarketplacePack(
   packName: string,
 ): Promise<ImportPackResult> {
-  const response = await fetch(
-    apiUrl(`/api/v1/marketplace/import/${encodeURIComponent(packName)}`),
+  const response = await apiFetch(
+    `/api/v1/marketplace/import/${encodeURIComponent(packName)}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -333,8 +333,8 @@ export async function importMarketplacePack(
 export async function importMarketplacePacks(
   packNames: string[],
 ): Promise<BatchImportPacksResult> {
-  const response = await fetch(
-    apiUrl("/api/v1/marketplace/import-batch"),
+  const response = await apiFetch(
+    "/api/v1/marketplace/import-batch",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -375,8 +375,8 @@ export async function submitMarketplaceReview(
   packName: string,
   payload: SubmitMarketplaceReviewRequest,
 ): Promise<SubmitMarketplaceReviewResult> {
-  const response = await fetch(
-    apiUrl(`/api/v1/marketplace/${encodeURIComponent(packName)}/reviews`),
+  const response = await apiFetch(
+    `/api/v1/marketplace/${encodeURIComponent(packName)}/reviews`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

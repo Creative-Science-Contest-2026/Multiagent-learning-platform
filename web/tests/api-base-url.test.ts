@@ -34,4 +34,43 @@ describe("api base url", () => {
       "https://contest.example/api/api/v1/dashboard/overview",
     );
   });
+
+  it("defaults protected api fetches to include auth cookies", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_EXTERNAL", "https://contest.example/api");
+    const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const { apiFetch } = await importApiModule();
+
+    await apiFetch("/api/v1/knowledge/list", { cache: "no-store" });
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "https://contest.example/api/api/v1/knowledge/list",
+      expect.objectContaining({
+        cache: "no-store",
+        credentials: "include",
+      }),
+    );
+  });
+
+  it("lets callers override credentials explicitly when needed", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_EXTERNAL", "https://contest.example/api");
+    const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const { apiFetch } = await importApiModule();
+
+    await apiFetch("/api/v1/auth/verify-email", {
+      method: "POST",
+      credentials: "omit",
+    });
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "https://contest.example/api/api/v1/auth/verify-email",
+      expect.objectContaining({
+        method: "POST",
+        credentials: "omit",
+      }),
+    );
+  });
 });

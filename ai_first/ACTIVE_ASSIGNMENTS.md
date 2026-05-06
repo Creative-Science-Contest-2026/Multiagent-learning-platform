@@ -34,6 +34,21 @@ Rules:
 
 - Owner: Codex session
 - Machine: local desktop
+- Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-frontend-auth-cookie-hardening`
+- Task: Harden teacher-first frontend protected API calls so the post-auth `HttpOnly` session cookie is always sent and legacy helper/page fetches stop returning `401` after successful login
+- Status: implemented, pending review
+- Branch: `fix/frontend-auth-cookie-hardening`
+- Task packet: `docs/superpowers/tasks/2026-05-06-frontend-auth-cookie-hardening.md`
+- Owned files: `web/lib/api.ts`, `web/lib/knowledge-api.ts`, `web/lib/dashboard-api.ts`, `web/lib/marketplace-api.ts`, `web/lib/notebook-api.ts`, `web/lib/agent-spec-api.ts`, `web/app/(utility)/knowledge/page.tsx`, `web/app/(utility)/memory/page.tsx`, `web/app/(utility)/settings/page.tsx`, `web/app/(workspace)/guide/hooks/useGuideHistory.ts`, `web/app/(workspace)/guide/hooks/useGuideSession.ts`, `web/app/(workspace)/agents/[botId]/chat/page.tsx`, `web/app/(workspace)/agents/page.tsx`, `web/app/(workspace)/co-writer/page.tsx`, `web/app/(workspace)/playground/page.tsx`, `web/components/notebook/SaveToNotebookModal.tsx`, `web/components/sidebar/TutorBotRecent.tsx`, `web/tests/**`, `docs/superpowers/specs/2026-05-06-frontend-auth-cookie-hardening-design.md`, `docs/superpowers/plans/2026-05-06-frontend-auth-cookie-hardening.md`, `docs/superpowers/tasks/2026-05-06-frontend-auth-cookie-hardening.md`, `ai_first/ACTIVE_ASSIGNMENTS.md`, `ai_first/daily/2026-05-06.md`
+- PR: uncreated
+- Last update: 2026-05-06
+- Next action: self-review the bounded cookie-auth hardening diff, then commit and open a draft PR if requested
+- Blocker: none
+
+### Assignment
+
+- Owner: Codex session
+- Machine: local desktop
 - Worktree: `/Users/nguyenhuuloc/Documents/Multiagent-learning-platform/.worktrees/fix-auth-multi-user-foundation`
 - Task: Complete multi-user auth hardening, then extend authenticated owner-scoping through teacher-first routers, tutoring runtime, the unified websocket entrypoint, the lightweight memory layer, the legacy chat/solve transports, the remaining guide/tutorbot legacy surfaces, the still-global notebook/settings/agent-spec authoring routers, and the remaining operator/public runtime surfaces around question/co-writer/system/vision/plugins
 - Status: implementing

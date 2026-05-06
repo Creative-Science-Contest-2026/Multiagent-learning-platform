@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { writeStoredLanguage, type AppLanguage } from "@/context/AppShellContext";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { setTheme as applyThemePreference } from "@/lib/theme";
 
 type UiSettings = {
@@ -25,7 +25,7 @@ function SettingsPageContent() {
 
   useEffect(() => {
     const load = async () => {
-      const response = await fetch(apiUrl("/api/v1/settings"));
+      const response = await apiFetch("/api/v1/settings");
       const payload = (await response.json()) as SettingsPayload;
       setTheme(payload.ui.theme);
       setLanguage(payload.ui.language);
@@ -41,7 +41,7 @@ function SettingsPageContent() {
   }, [message]);
 
   const persistUi = async (nextTheme: "light" | "dark", nextLanguage: AppLanguage) => {
-    await fetch(apiUrl("/api/v1/settings/ui"), {
+    await apiFetch("/api/v1/settings/ui", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ theme: nextTheme, language: nextLanguage }),
